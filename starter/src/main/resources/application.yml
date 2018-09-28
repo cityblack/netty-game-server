@@ -1,0 +1,11 @@
+game:
+  port: 8099
+  respnse-time: 5
+  protocol-version: 100101
+  scene-process: 5
+  open-gm: true
+
+logging:
+  level:
+    com.lzh.netty: debug
+

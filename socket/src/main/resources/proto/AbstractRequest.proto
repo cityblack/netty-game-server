@@ -1,0 +1,9 @@
+syntax = "proto3";
+option java_package = "com.lzh.netty.socket.protocol.coder";
+option java_outer_classname = "AbstractRequest";
+
+message Request {
+    int32 protocol_id = 1;
+    string data = 2;
+    int32 version = 3;
+}
