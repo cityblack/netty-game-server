@@ -1,0 +1,12 @@
+spring:
+  redis:
+    redisson:
+      config: classpath:redisson.yml
+
+logging:
+  level:
+    com.lzh.game.repository: debug
+game:
+  repository:
+    clear-redis-after-close: false
+

@@ -1,0 +1,24 @@
+game:
+  socket:
+    port: 8089
+    protocol-version: 100101
+    open-gm: true
+  resource:
+    resource-scanner-path: com.lzh.game
+  repository:
+      clear-redis-after-close: false
+spring:
+  data:
+    mongodb:
+      host: 111.230.149.152
+      database: game
+      port: 17217
+  redis:
+#    host: 111.230.149.152
+#    port: 16379
+#    lettuce:
+#      pool:
+#        max-active: 8
+#    password: as123456
+    redisson:
+      config: classpath:redisson.yml

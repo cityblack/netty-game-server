@@ -1,0 +1,22 @@
+singleServerConfig:
+  idleConnectionTimeout: 10000
+  pingTimeout: 1000
+  connectTimeout: 10000
+  timeout: 3000
+  retryAttempts: 3
+  retryInterval: 1500
+  reconnectionTimeout: 3000
+  failedAttempts: 3
+  password: as123456
+  subscriptionsPerConnection: 5
+#  clientName: null
+  address: "redis://111.230.149.152:16379"
+  subscriptionConnectionMinimumIdleSize: 1
+  subscriptionConnectionPoolSize: 16
+  connectionMinimumIdleSize: 8
+  connectionPoolSize: 16
+#  database: 1
+  dnsMonitoringInterval: 5000
+#threads: 0
+#nettyThreads: 0
+codec: !<org.redisson.codec.JsonJacksonCodec> {}
