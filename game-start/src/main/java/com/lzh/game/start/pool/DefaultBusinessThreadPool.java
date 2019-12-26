@@ -38,6 +38,7 @@ public class DefaultBusinessThreadPool implements ExchangeProcess, GameExecutorS
           specialCmd = new HashSet<>();
           specialCmd.add(CmdMessage.CM_LOGIN);
           specialCmd.add(CmdMessage.CM_REGISTER);
+          specialCmd.add(CmdMessage.CM_HELLO);
     }
 
     /**

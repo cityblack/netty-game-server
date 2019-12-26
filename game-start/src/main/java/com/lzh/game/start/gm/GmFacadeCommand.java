@@ -20,10 +20,10 @@ import java.util.List;
  *      Boolean/boolean/Boolean[]/boolean[],
  *      Long/long/Long[]/long[]
  * for example:
- *  test(int id) -- wrong
- *  test(Play play, int id) -- right
- *  test(Play play, int id) test(Play play, float id) -- wrong
- *  test(Play play, int id) test(Play play, int id, int age) -- right
+ *  hello(int id) -- wrong
+ *  hello(Play play, int id) -- right
+ *  hello(Play play, int id) hello(Play play, float id) -- wrong
+ *  hello(Play play, int id) hello(Play play, int id, int age) -- right
  *
  */
 @GmFacade

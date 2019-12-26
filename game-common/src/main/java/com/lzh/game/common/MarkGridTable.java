@@ -1,14 +1,11 @@
 package com.lzh.game.common;
 
-import org.springframework.data.annotation.Transient;
-
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MarkGridTable<T> extends GridTable<T> implements MarkTable<T> {
 
-    @Transient
     private transient BitSet mark = new BitSet();
 
     protected MarkGridTable(int size) {

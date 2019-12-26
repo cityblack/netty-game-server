@@ -10,15 +10,9 @@ game:
 spring:
   data:
     mongodb:
-      host: 111.230.149.152
+      host: 127.0.0.1
       database: game
-      port: 17217
+      port: 27017
   redis:
-#    host: 111.230.149.152
-#    port: 16379
-#    lettuce:
-#      pool:
-#        max-active: 8
-#    password: as123456
     redisson:
       config: classpath:redisson.yml

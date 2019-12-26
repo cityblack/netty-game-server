@@ -22,6 +22,8 @@ public interface CmdMessage {
     // == Item begin ====
     int CM_USE_ITEM = -170;
 
+    int CM_HELLO = -10086;
+    int SM_HELLO = -10087;
     ;
 
 }

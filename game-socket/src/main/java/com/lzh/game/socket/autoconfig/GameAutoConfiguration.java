@@ -24,6 +24,7 @@ import com.lzh.game.socket.exchange.session.manage.GameSessionManage;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -73,9 +74,9 @@ public class GameAutoConfiguration {
      * @return
      */
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingClass
     public ChannelInitializer<SocketChannel> channelInitializer() {
-        return new WebSocketChannelInitializer();
+        return new CommonChannelInitializer();
     }
 
     @Bean

@@ -1,7 +1,6 @@
 package com.lzh.game.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.data.annotation.Transient;
 
 import java.io.Serializable;
 import java.util.*;
@@ -15,12 +14,10 @@ public class GridTable<T> implements Table<T>, Serializable {
     // Table current size
     private int size;
     // Empty grid queue
-    @Transient
     private transient PriorityQueue<Integer> emptyIndex;
     /**
      * Delay reset {@link #emptyIndex} sign
      */
-    @Transient
     private transient boolean initEmptyIndex;
 
     @Override

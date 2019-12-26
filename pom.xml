@@ -15,6 +15,7 @@
         <module>game-common</module>
         <module>game-start</module>
         <module>game-repository</module>
+        <module>game-client</module>
     </modules>
 
     <properties>

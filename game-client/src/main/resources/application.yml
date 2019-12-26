@@ -1,0 +1,8 @@
+game:
+  client:
+    port: 8089
+    host: localhost
+
+logging:
+  level:
+    com.lzh.netty.client: debug
