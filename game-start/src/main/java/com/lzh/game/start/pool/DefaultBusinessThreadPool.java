@@ -17,6 +17,10 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+/**
+ * 将场景与线程绑定
+ * 按玩家所在场景执行玩家操作
+ */
 @Slf4j
 public class DefaultBusinessThreadPool implements ExchangeProcess, GameExecutorService, InitializingBean {
 

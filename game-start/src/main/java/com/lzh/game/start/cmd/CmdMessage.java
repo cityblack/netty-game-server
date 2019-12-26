@@ -19,9 +19,8 @@ public interface CmdMessage {
     int CM_REGISTER = -104;
     int SM_REGISTER = -105;
 
-    // == Item begin -170 ====
+    // == Item begin ====
     int CM_USE_ITEM = -170;
-    //========= Base end !=========
 
     ;
 

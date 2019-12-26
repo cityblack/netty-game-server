@@ -43,21 +43,21 @@ public class ItemResource {
 
     public Reward getReward() {
         if (Objects.isNull(rewardCache)) {
-            rewardCache = Objects.isNull(reward) ? RewardUtils.createEmptyReward() : RewardUtils.createRewardByDef(reward);
+            rewardCache = RewardUtils.createRewardByDef(reward);
         }
         return rewardCache;
     }
 
     public Consume getConsume() {
         if (Objects.isNull(consumeCache)) {
-            consumeCache = Objects.isNull(consume) ? ConsumeUtils.createEmptyAndConsume() : ConsumeUtils.createConsumeByDef(consume);
+            consumeCache = ConsumeUtils.createConsumeByDef(consume);
         }
         return consumeCache;
     }
 
     public Condition getCondition() {
         if (Objects.isNull(conditionCache)) {
-            conditionCache = Objects.isNull(condition) ? ConditionUtils.createEmptyAndConsume() : ConditionUtils.createConditionByDef(condition);
+            conditionCache = ConditionUtils.createConditionByDef(condition);
         }
         return conditionCache;
     }

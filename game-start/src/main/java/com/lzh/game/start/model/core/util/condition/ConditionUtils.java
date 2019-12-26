@@ -13,8 +13,11 @@ public class ConditionUtils {
     }
 
     public static Condition createConditionByDef(ConditionDef[] def) {
-        Objects.requireNonNull(def);
+
         AndCondition and = createEmptyAndConsume();
+        if (Objects.isNull(def)) {
+            return and;
+        }
         Stream.of(def)
                 .map(e -> createCondition(e.getType(),e.getValue()))
                 .forEach(and::addCondition);
