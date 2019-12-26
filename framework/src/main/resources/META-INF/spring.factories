@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.lzh.netty.framework.config.FrameworkConfiguration
