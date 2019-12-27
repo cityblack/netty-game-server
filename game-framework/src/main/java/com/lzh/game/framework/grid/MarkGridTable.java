@@ -1,4 +1,4 @@
-package com.lzh.game.common;
+package com.lzh.game.framework.grid;
 
 import java.util.BitSet;
 import java.util.HashMap;

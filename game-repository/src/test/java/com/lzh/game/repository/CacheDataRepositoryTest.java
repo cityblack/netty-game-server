@@ -2,12 +2,9 @@ package com.lzh.game.repository;
 
 import com.alibaba.fastjson.JSON;
 import com.lzh.game.common.bean.BeanUtil;
-import com.lzh.game.repository.db.persist.MongoPersistRepository;
 import com.lzh.game.repository.entity.Common;
-import com.lzh.game.repository.entity.PlayerItemBox;
 import com.lzh.game.repository.entity.User;
 import com.lzh.game.repository.model.AbstractItem;
-import com.lzh.game.repository.repository.ItemBoxRepository;
 import com.lzh.game.repository.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -17,12 +14,9 @@ import org.redisson.codec.JsonJacksonCodec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,9 +35,6 @@ public class CacheDataRepositoryTest {
 
     @Autowired
     private CacheDataRepository dataRepository;
-
-    @Autowired
-    private ItemBoxRepository itemBoxRepository;
 
     @Autowired
     private RedissonClient redissonClient;
@@ -69,19 +60,19 @@ public class CacheDataRepositoryTest {
             return newUser;
         });
         user.setTel("110120130140");
-        PlayerItemBox box = dataRepository.enhanceLoadOrCreate(user.cacheKey(), PlayerItemBox.class
+        /*PlayerItemBox box = dataRepository.enhanceLoadOrCreate(user.cacheKey(), PlayerItemBox.class
                 , itemBoxRepository, e -> {
                     PlayerItemBox box1 = new PlayerItemBox();
                     box1.setPlayer(e);
                     return box1;
-                });
+                });*/
 
         AbstractItem item = new AbstractItem();
         item.setName("白色金卡");
         item.setNum(10);
 //        box.addItem(item);
-        box.setUpdateTime(System.currentTimeMillis());
-        dataRepository.update(box);
+        /*box.setUpdateTime(System.currentTimeMillis());
+        dataRepository.update(box);*/
         dataRepository.update(user);
     }
 

@@ -1,4 +1,6 @@
-package com.lzh.game.common;
+package com.lzh.game.framework.grid;
+
+import com.lzh.game.common.Table;
 
 import java.util.Map;
 

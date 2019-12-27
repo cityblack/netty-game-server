@@ -78,12 +78,12 @@ public class User extends PersistEntity<String> implements Serializable {
     public static User createUser() {
         User user = new User();
 
-        user.setAddress("福建省宁德市，寿宁县");
-        user.setName("刘泽弘");
+        user.setAddress("GuangZhou.China");
+        user.setName("lzh");
         user.setAge(26);
         user.setMoney(10.23f);
-        user.setWork("37互娱");
-        user.setTel("18928907870");
+        user.setWork("37");
+        user.setTel("10086111");
         Map<String, Equipment> equipmentMap = new HashMap<>();
         equipmentMap.put("A", equipment());
         equipmentMap.put("B", equipment());
