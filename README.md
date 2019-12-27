@@ -18,8 +18,8 @@ java -jar game-start/target/*.jar
 
 ### Prerequisites
 
-1. Install redis 
-2. Install mongodb
+1. Installing redis 
+2. Installing mongodb
 3. Using the python execute the script `static-resource/run.py` to add some data
 4. Executing game-start module App
 
