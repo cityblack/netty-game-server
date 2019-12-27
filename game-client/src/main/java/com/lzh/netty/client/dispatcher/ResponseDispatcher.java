@@ -26,11 +26,13 @@ public class ResponseDispatcher {
         if (Objects.isNull(method)) {
             throw new IllegalArgumentException("Not register the " + cmd + " protocol !!");
         }
-        Object[] params = getArgumentValues(response.getData().toByteArray(), method);
+
         try {
+            Object[] params = getArgumentValues(response.getData().toByteArray(), method);
             method.doInvoke(params);
         } catch (Exception e) {
             e.printStackTrace();
+            log.error("{} response error", cmd);
         }
         // response.getData().toByteArray();
     }
