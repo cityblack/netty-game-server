@@ -35,6 +35,8 @@ public class TcpGameServerBootstrap implements GameServer, DisposableBean {
         this.bootstrap = new ServerBootstrap();
         bootstrap.group(workerGroup)
                 .channel(NioServerSocketChannel.class)
+                .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+                .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
                 .childHandler(initializer);
     }
 
