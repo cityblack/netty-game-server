@@ -13,9 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.MethodParameter;
+import org.springframework.util.ReflectionUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -66,16 +68,14 @@ public class DefaultActionMethodSupport implements ActionMethodSupport, Applicat
                     if (clazz.isInterface()) {
                         throw new IllegalArgumentException("@Action can't use to interface.");
                     }
-                    Stream.of(clazz.getDeclaredMethods())
-                            .filter(m -> Objects.nonNull(m.getAnnotation(RequestMapping.class)))
-                            .map(m -> new HandlerMethod(v, m))
-                            .forEach(method -> {
-                                RequestMapping mapping = method.getMethodAnnotation(RequestMapping.class);
+                    ReflectionUtils.doWithMethods(clazz, e -> {
+                        HandlerMethod method = new HandlerMethod(v, e);
+                        RequestMapping mapping = method.getMethodAnnotation(RequestMapping.class);
 
-                                RequestMethodMapping methodMapping = parseTargetMethod(mapping, method);
+                        RequestMethodMapping methodMapping = parseTargetMethod(mapping, method);
 
-                                registerCmd(methodMapping.getValue(), methodMapping);
-                            });
+                        registerCmd(methodMapping.getValue(), methodMapping);
+                    }, m -> m.isAnnotationPresent(RequestMapping.class));
                 });
             }
         } else {
@@ -102,10 +102,9 @@ public class DefaultActionMethodSupport implements ActionMethodSupport, Applicat
         CmdModel model = cmdMappingManage.getCmd(cmd);
         checkModel(model, CmdType.REQUEST);
 
-        int protoParam = Stream.of(method.getMethodParameters())
+        long protoParam = Stream.of(method.getMethodParameters())
                 .filter(e -> !innerParamDataBindHandler.isInnerParam(e))
-                .mapToInt(e -> 1)
-                .sum();
+                .count();
         // Just allow one mapping proto class
         if (protoParam > 1) {
             throw new IllegalArgumentException(method.getBean().getClass().getSimpleName() + " " + method.getMethod().getName() + " has multi map protocol class.");
