@@ -33,13 +33,12 @@ python static-resource/run.py
 
 ## Usage
 
-#### Server
 ```
 @Action
 public class HelloAction {
 
-    @RequestMapping(CmdMessage.CM_HELLO)
-    @ResponseMapping(CmdMessage.SM_HELLO)
+    @RequestMapping(-10086)
+    @ResponseMapping(-10087)
     public ResponseHello hello(Session session, RequestHello hello) {
         System.out.println("Get session: " + session.getId() + " info:" + hello);      
         return new ResponseHello("I am server.", 10001);
