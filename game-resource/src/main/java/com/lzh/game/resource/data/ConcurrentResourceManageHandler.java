@@ -32,56 +32,45 @@ public class ConcurrentResourceManageHandler implements ResourceManageHandler {
     @Override
     public <T> List<T> findAll(Class<T> clazz) {
         AtomicBoolean status = getStatus(clazz);
-        while (status.compareAndSet(!WRITING, !WRITING)) {
-            return handler.findAll(clazz);
-        }
+        while (!status.compareAndSet(!WRITING, !WRITING)) {}
+
         return handler.findAll(clazz);
     }
 
     @Override
     public <T> List<T> findByIndex(Class<T> clazz, String index, Object value) {
         AtomicBoolean status = getStatus(clazz);
-        while (status.compareAndSet(!WRITING, !WRITING)) {
-            return handler.findByIndex(clazz, index, value);
-        }
+        while (!status.compareAndSet(!WRITING, !WRITING)) {}
         return handler.findByIndex(clazz, index, value);
     }
 
     @Override
     public <T> T findOne(Class<T> clazz, String uniqueIndex, Object value) {
         AtomicBoolean status = getStatus(clazz);
-        while (status.compareAndSet(!WRITING, !WRITING)) {
-            return handler.findOne(clazz, uniqueIndex, value);
-        }
+        while (!status.compareAndSet(!WRITING, !WRITING)) {}
         return handler.findOne(clazz, uniqueIndex, value);
     }
 
     @Override
     public <T, K> T findById(Class<T> clazz, K k) {
         AtomicBoolean status = getStatus(clazz);
-        while (status.compareAndSet(!WRITING, !WRITING)) {
-            return handler.findById(clazz, k);
-        }
+        while (!status.compareAndSet(!WRITING, !WRITING)) {}
         return handler.findById(clazz, k);
     }
 
     @Override
     public void reload() {
-        this.status.forEach((k,v) -> {
-            v.getAndSet(WRITING);
-        });
+        this.status.forEach((k,v) -> setStatus(v, WRITING));
         handler.reload();
-        this.status.forEach((k,v) -> {
-            v.getAndSet(!WRITING);
-        });
+        this.status.forEach((k,v) -> setStatus(v, !WRITING));
     }
 
     @Override
     public void reload(Class<?> clazz) {
         AtomicBoolean status = getStatus(clazz);
-        status.getAndSet(WRITING);
+        setStatus(status, WRITING);
         handler.reload(clazz);
-        status.getAndSet(!WRITING);
+        setStatus(status, !WRITING);
     }
 
     /**
@@ -91,6 +80,10 @@ public class ConcurrentResourceManageHandler implements ResourceManageHandler {
      */
     private AtomicBoolean getStatus(Class<?> clazz) {
         return this.status.get(clazz);
+    }
+
+    private void setStatus(AtomicBoolean status, boolean value) {
+        status.getAndSet(value);
     }
 
     public void init() {
