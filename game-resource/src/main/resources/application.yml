@@ -3,4 +3,4 @@ spring:
     mongodb:
       host: 127.0.0.1
       database: game
-      port: 17217
+      port: 27017

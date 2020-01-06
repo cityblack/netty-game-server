@@ -7,7 +7,6 @@ import com.lzh.game.resource.data.ResourceModelFactory;
 import com.lzh.game.resource.data.mongo.MongoResourceManageHandler;
 import com.lzh.game.resource.reload.ResourceReloadMange;
 import com.lzh.game.resource.reload.ResourceReloadMangeImpl;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +26,7 @@ public class GameResourceBean {
     @ConditionalOnMissingClass
     public ResourceManageHandler resourceManageHandler(ResourceModelFactory resourceModelFactory, MongoTemplate mongoTemplate) {
         MongoResourceManageHandler handler = new MongoResourceManageHandler(resourceModelFactory, mongoTemplate, reloadMange());
-        ConcurrentResourceManageHandler concurrent = new ConcurrentResourceManageHandler(handler);
+        ConcurrentResourceManageHandler concurrent = new ConcurrentResourceManageHandler(resourceModelFactory, handler);
         concurrent.reload();
         return concurrent;
     }

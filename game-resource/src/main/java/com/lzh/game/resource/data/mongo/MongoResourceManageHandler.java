@@ -1,6 +1,5 @@
 package com.lzh.game.resource.data.mongo;
 
-import com.lzh.game.resource.ResourceReload;
 import com.lzh.game.resource.data.DefaultResourceManageHandler;
 import com.lzh.game.resource.data.ResourceModelFactory;
 import com.lzh.game.resource.reload.ResourceReloadMange;
