@@ -31,30 +31,25 @@ public class ConcurrentResourceManageHandler implements ResourceManageHandler {
 
     @Override
     public <T> List<T> findAll(Class<T> clazz) {
-        AtomicBoolean status = getStatus(clazz);
-        while (!status.compareAndSet(!WRITING, !WRITING)) {}
-
+        writingWait(clazz);
         return handler.findAll(clazz);
     }
 
     @Override
     public <T> List<T> findByIndex(Class<T> clazz, String index, Object value) {
-        AtomicBoolean status = getStatus(clazz);
-        while (!status.compareAndSet(!WRITING, !WRITING)) {}
+        writingWait(clazz);
         return handler.findByIndex(clazz, index, value);
     }
 
     @Override
     public <T> T findOne(Class<T> clazz, String uniqueIndex, Object value) {
-        AtomicBoolean status = getStatus(clazz);
-        while (!status.compareAndSet(!WRITING, !WRITING)) {}
+        writingWait(clazz);
         return handler.findOne(clazz, uniqueIndex, value);
     }
 
     @Override
     public <T, K> T findById(Class<T> clazz, K k) {
-        AtomicBoolean status = getStatus(clazz);
-        while (!status.compareAndSet(!WRITING, !WRITING)) {}
+        writingWait(clazz);
         return handler.findById(clazz, k);
     }
 
@@ -90,5 +85,10 @@ public class ConcurrentResourceManageHandler implements ResourceManageHandler {
         Map<Class<?>, AtomicBoolean> map = new HashMap<>();
         factory.forEach(e -> map.put(e.getDataType(), new AtomicBoolean(!WRITING)));
         this.status = map;
+    }
+
+    private void writingWait(Class<?> clazz) {
+        AtomicBoolean status = getStatus(clazz);
+        while (!status.compareAndSet(!WRITING, !WRITING)) {}
     }
 }
