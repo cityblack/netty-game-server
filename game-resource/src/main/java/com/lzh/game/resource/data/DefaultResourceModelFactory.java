@@ -14,6 +14,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 @Slf4j
 public class DefaultResourceModelFactory implements ResourceModelFactory, InitializingBean, DisposableBean {
@@ -35,6 +36,16 @@ public class DefaultResourceModelFactory implements ResourceModelFactory, Initia
     @Override
     public ResourceModel getResource(Class<?> resourceClass) {
         return classCache.get(resourceClass);
+    }
+
+    @Override
+    public Stream<String> getAllResourceName() {
+        return nameCache.keySet().stream();
+    }
+
+    @Override
+    public Stream<Class<?>> getAllResourceType() {
+        return classCache.keySet().stream();
     }
 
     @Override

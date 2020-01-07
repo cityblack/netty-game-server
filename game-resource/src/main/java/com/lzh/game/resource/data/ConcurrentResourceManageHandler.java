@@ -55,17 +55,27 @@ public class ConcurrentResourceManageHandler implements ResourceManageHandler {
 
     @Override
     public void reload() {
-        this.status.forEach((k,v) -> setStatus(v, WRITING));
-        handler.reload();
-        this.status.forEach((k,v) -> setStatus(v, !WRITING));
+        try {
+            this.status.forEach((k,v) -> setStatus(v, WRITING));
+            handler.reload();
+        } finally {
+            this.status.forEach((k,v) -> setStatus(v, !WRITING));
+        }
+
     }
 
     @Override
-    public void reload(Class<?> clazz) {
-        AtomicBoolean status = getStatus(clazz);
-        setStatus(status, WRITING);
-        handler.reload(clazz);
-        setStatus(status, !WRITING);
+    public void reload(Class<?>[] clazz) {
+        try {
+            for (Class<?> c: clazz) {
+                setStatus(getStatus(c), WRITING);
+            }
+            handler.reload(clazz);
+        } finally {
+            for (Class<?> c: clazz) {
+                setStatus(getStatus(c), !WRITING);
+            }
+        }
     }
 
     /**

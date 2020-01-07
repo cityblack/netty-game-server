@@ -17,5 +17,5 @@ public interface ResourceManageHandler {
 
     void reload();
 
-    void reload(Class<?> clazz);
+    void reload(Class<?>[] clazz);
 }

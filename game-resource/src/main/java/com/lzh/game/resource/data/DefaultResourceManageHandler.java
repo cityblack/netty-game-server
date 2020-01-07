@@ -12,7 +12,8 @@ import org.springframework.lang.NonNull;
 
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 public abstract class DefaultResourceManageHandler implements ResourceManageHandler {
@@ -76,26 +77,28 @@ public abstract class DefaultResourceManageHandler implements ResourceManageHand
     public void reload() {
         clear();
         getResourceModelManage().forEach(e -> flashData(e.getDataType()));
-
-        reloadMange.getAllReload().forEach(e -> e.reload(e.classes()));
+        Class<?>[] clazz = getResourceModelManage().getAllResourceType().toArray(Class<?>[]::new);
+        reloadMange.getAllReload().forEach(e -> e.reload(clazz));
     }
 
     @Override
-    public void reload(Class<?> clazz) {
+    public void reload(Class<?>[] clazz) {
+        // 先全部加载完成 再执行reload方法 防止reload实现有互相依赖关系出错中断流程
+        Stream.of(clazz).peek(this::reload)
+                .flatMap(c -> reloadMange.getReload(c).stream())
+                .collect(Collectors.toList())
+                .forEach(e -> e.reload(clazz));
+    }
+
+    protected void reload(Class<?> clazz) {
         clear(clazz);
         flashData(clazz);
-        reloadMange.getReload(clazz).forEach(e -> e.reload(new Class[]{clazz}));
     }
 
     private void flashData(Class<?> type) {
         ResourceModel model = getResourceModelManage().getResource(type);
-        try {
-            List<?> list = getData(type, model.getResourceName());
-            list.forEach(e -> put(e, model));
-        } catch (Exception e) {
-            throw new RuntimeException("Load " + type.getName() + " error. " + e);
-        }
-
+        List<?> list = getData(type, model.getResourceName());
+        list.forEach(e -> put(e, model));
     }
 
     protected <V>void put(V data, ResourceModel resourceModel) {
