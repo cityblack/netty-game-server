@@ -1,12 +1,14 @@
 package com.lzh.game.resource.inject;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.lzh.game.resource.*;
+import com.lzh.game.common.serialization.JsonUtils;
+import com.lzh.game.resource.ConfigValue;
+import com.lzh.game.resource.Static;
+import com.lzh.game.resource.Storage;
 import com.lzh.game.resource.data.ResourceManageHandler;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -15,12 +17,18 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Component
-public class StaticInjectProcessor implements BeanPostProcessor {
+public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
 
-    private class DefaultConfigValue<T> implements ConfigValue<T> {
+    @Override
+    public int getOrder() {
+        return Ordered.LOWEST_PRECEDENCE;
+    }
+
+    private static class DefaultConfigValue<T> implements ConfigValue<T> {
 
         private String sign;
         private ResourceManageHandler resourceManageHandler;
@@ -37,9 +45,9 @@ public class StaticInjectProcessor implements BeanPostProcessor {
             ConfigValueResource data = resourceManageHandler.findById(ConfigValueResource.class, sign);
 
             if (collect) {
-                return (T)JSONArray.parseArray(data.getValue(), dataType);
+                return (T) JsonUtils.toCollection(data.getValue(), ArrayList.class, dataType);
             } else {
-                return JSON.parseObject(data.getValue(), dataType);
+                return JsonUtils.toObj(data.getValue(), dataType);
             }
 
         }

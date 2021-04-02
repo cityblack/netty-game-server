@@ -14,7 +14,7 @@ import java.util.Set;
 public interface TargetModelStrategy {
 
     /**
-     * 模块标识
+     * Model sign
      * @return
      */
     TargetModelSign modelSign();

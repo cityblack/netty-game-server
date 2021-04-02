@@ -1,5 +1,6 @@
 package com.lzh.game.start.model.common.model;
 
+import com.lzh.game.repository.BaseEntity;
 import com.lzh.game.repository.db.PersistEntity;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -9,7 +10,7 @@ import java.io.Serializable;
 
 @Document
 @Data
-public class CommonData extends PersistEntity<Integer> implements Serializable {
+public class CommonData extends BaseEntity<Integer> implements Serializable {
 
     @Id
     private Integer id;
@@ -18,6 +19,11 @@ public class CommonData extends PersistEntity<Integer> implements Serializable {
 
     @Override
     public Integer cacheKey() {
+        return id;
+    }
+
+    @Override
+    public Integer getKey() {
         return id;
     }
 }

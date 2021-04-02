@@ -4,6 +4,7 @@ import com.lzh.game.common.event.SubscribeListener;
 import com.lzh.game.start.model.player.Player;
 import com.lzh.game.start.model.target.Target;
 import com.lzh.game.start.model.target.TargetType;
+import com.lzh.game.start.model.target.TargetUtils;
 import com.lzh.game.start.model.target.handler.AbstractTargetHandler;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,6 @@ public class LevelEtTargetHandler extends AbstractTargetHandler {
     }
 
     private void doLevelUp(Player player) {
-        foreachTargetModel(player, target -> Long.valueOf(player.getLevel()));
+        TargetUtils.foreachTargetModel(player, target -> Long.valueOf(player.getLevel()), type());
     }
 }

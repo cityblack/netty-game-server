@@ -23,15 +23,9 @@ public enum RewardType {
         public CurrencyReward create() {
             return new CurrencyReward();
         }
-    },
+    }
+    ;
 
-    // 经验
-    EXP {
-        @Override
-        public ExpReward create() {
-            return new ExpReward();
-        }
-    };
     public abstract <T extends AbstractReward> T create();
 
 }

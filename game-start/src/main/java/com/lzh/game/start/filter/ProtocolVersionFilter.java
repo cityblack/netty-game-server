@@ -1,9 +1,9 @@
 package com.lzh.game.start.filter;
 
-import com.lzh.game.socket.autoconfig.GameSocketProperties;
-import com.lzh.game.socket.dispatcher.ServerExchange;
-import com.lzh.game.socket.dispatcher.filter.Filter;
-import com.lzh.game.socket.dispatcher.filter.FilterChain;
+import com.lzh.game.socket.config.GameServerSocketProperties;
+import com.lzh.game.socket.core.ServerExchange;
+import com.lzh.game.socket.core.filter.Filter;
+import com.lzh.game.socket.core.filter.FilterChain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ProtocolVersionFilter implements Filter {
 
     @Autowired
-    private GameSocketProperties gameSocketProperties;
+    private GameServerSocketProperties gameSocketProperties;
 
     @Override
     public void doFilter(ServerExchange exchange, FilterChain chain) {

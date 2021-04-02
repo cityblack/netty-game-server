@@ -1,24 +1,23 @@
 package com.lzh.game.start.model.player;
 
+import com.lzh.game.common.ApplicationUtils;
 import com.lzh.game.common.Forward;
-import com.lzh.game.start.model.game.GameObjectType;
-import com.lzh.game.start.model.game.SceneObject;
+import com.lzh.game.common.util.TimeUtils;
+import com.lzh.game.repository.BaseEntity;
 import com.lzh.game.start.model.item.bag.Bag;
+import com.lzh.game.start.model.item.bag.dao.BagDataManage;
 import com.lzh.game.start.model.player.model.PlayerEnt;
-import com.lzh.game.start.util.TimeUtils;
 import com.lzh.game.start.model.wallet.Wallet;
-import com.lzh.game.start.util.SpringContext;
-import com.lzh.game.start.model.world.scene.Scene;
-import com.lzh.game.start.model.world.scene.SceneKey;
+import com.lzh.game.start.model.wallet.service.WalletService;
 
 import java.util.Objects;
 
 /**
- * 不要在任何地方缓存Player对象!! Player存储在redis当中，获取的时候反序列化PlayerEnt获得
- * 为了减少序列化大小，所有字段不会主动赋值，所以获取不同的模块数据都需要延迟加载
- * 与玩家相关的模块数据 都需要从该类中延迟获取 防止数据不一致
+ * Don't cache player data anywhere.
  */
-public class Player extends SceneObject {
+public class Player extends BaseEntity<Long> {
+
+    private long objectId;
 
     private Wallet wallet;
 
@@ -26,15 +25,6 @@ public class Player extends SceneObject {
 
     // =====
     private PlayerEnt playerEnt;
-
-    public long getObjectId() {
-        return playerEnt.getId();
-    }
-
-    @Override
-    public GameObjectType objectType() {
-        return GameObjectType.PLAYER;
-    }
 
     public PlayerEnt getPlayerEnt() {
         return playerEnt;
@@ -45,9 +35,11 @@ public class Player extends SceneObject {
             ent.setForward(Forward.RIGHT.name());
         }
         Player player = new Player();
+        player.objectId = ent.getId();
         player.playerEnt = ent;
         return player;
     }
+
 
 
     public int currentMap() {
@@ -60,7 +52,7 @@ public class Player extends SceneObject {
 
     public Wallet getWallet() {
         if (Objects.isNull(wallet)) {
-            wallet = context().getWalletService().getWalletById(getObjectId());
+            wallet = ApplicationUtils.getBean(WalletService.class).getWalletById(getKey());
         }
         return wallet;
     }
@@ -69,32 +61,17 @@ public class Player extends SceneObject {
         return playerEnt.isFirstLogin();
     }
 
-    /**
-     * 当前所在场景
-     * @return
-     */
-    public Scene currentScene() {
-        return context().getSceneManage().getScene(getSceneKey());
-    }
 
     public Bag getBag() {
         if (Objects.isNull(bag)) {
-            bag = context().getBagDataManage().findBagByPlayer(this);
+            bag = ApplicationUtils.getBean(BagDataManage.class).findBagByPlayer(this);
         }
         return bag;
     }
 
-    @Override
-    public SceneKey getSceneKey() {
-        return SceneKey.of(playerEnt.getMapId(), playerEnt.getChannel());
-    }
 
     public int getLevel() {
         return playerEnt.getLevel();
-    }
-
-    private SpringContext context() {
-        return SpringContext.singleTon();
     }
 
     // ===
@@ -118,4 +95,8 @@ public class Player extends SceneObject {
         return playerEnt.getExp();
     }
 
+    @Override
+    public Long getKey() {
+        return objectId;
+    }
 }

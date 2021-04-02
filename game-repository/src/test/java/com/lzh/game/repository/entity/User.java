@@ -1,5 +1,6 @@
 package com.lzh.game.repository.entity;
 
+import com.lzh.game.repository.BaseEntity;
 import com.lzh.game.repository.db.PersistEntity;
 import lombok.Data;
 import lombok.ToString;
@@ -15,7 +16,7 @@ import java.util.Map;
 
 @ToString
 @Document
-public class User extends PersistEntity<String> implements Serializable {
+public class User extends BaseEntity<String> implements Serializable {
 
     @Id
     private String id;
@@ -30,7 +31,7 @@ public class User extends PersistEntity<String> implements Serializable {
     private List<Item> items;
 
     @Override
-    public String cacheKey() {
+    public String getKey() {
         return id;
     }
 
@@ -78,12 +79,12 @@ public class User extends PersistEntity<String> implements Serializable {
     public static User createUser() {
         User user = new User();
 
-        user.setAddress("GuangZhou.China");
-        user.setName("lzh");
+        user.setAddress("福建省宁德市，寿宁县");
+        user.setName("刘泽弘");
         user.setAge(26);
         user.setMoney(10.23f);
-        user.setWork("37");
-        user.setTel("10086111");
+        user.setWork("37互娱");
+        user.setTel("18928907870");
         Map<String, Equipment> equipmentMap = new HashMap<>();
         equipmentMap.put("A", equipment());
         equipmentMap.put("B", equipment());

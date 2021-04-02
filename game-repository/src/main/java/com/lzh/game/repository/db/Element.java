@@ -3,7 +3,6 @@ package com.lzh.game.repository.db;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.util.Map;
 
 @ToString
 public class Element implements Serializable {
@@ -32,15 +31,15 @@ public class Element implements Serializable {
     }
 
     public static Element saveOf(PersistEntity entity, Class<? extends PersistEntity> clazz) {
-        return new Element(entity.cacheKey(), clazz, entity, EventType.SAVE);
+        return new Element(entity.getKey(), clazz, entity, EventType.SAVE);
     }
 
     public static Element deleterOf(PersistEntity entity, Class<? extends PersistEntity> clazz) {
-        return new Element(entity.cacheKey(), clazz, entity, EventType.DELETER);
+        return new Element(entity.getKey(), clazz, entity, EventType.DELETER);
     }
 
     public static Element updateOf(PersistEntity entity, Class<? extends PersistEntity> clazz) {
-        return new Element(entity.cacheKey(), clazz, entity, EventType.UPDATE);
+        return new Element(entity.getKey(), clazz, entity, EventType.UPDATE);
     }
 
     public Serializable getId() {

@@ -1,12 +1,9 @@
 package com.lzh.game.common.bean;
 
-import com.alibaba.fastjson.parser.ParserConfig;
-import com.alibaba.fastjson.util.TypeUtils;
 import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,20 +22,6 @@ public class BeanUtil extends BeanUtils {
 
     public static Map<String, Object> beanToMap(Object bean) {
         return beanToMap(bean, DEFAULT_BEAN_CONFIG);
-    }
-
-    public static <T> T mapToBean(Map<String, Object> map, Class<T> clazz) {
-        /*T entity = instantiateClass(clazz);
-        map.forEach((k,v) -> {
-           Field field = ReflectionUtils.findField(clazz, k);
-           if (Objects.nonNull(field)) {
-               ReflectionUtils.makeAccessible(field);
-               ReflectionUtils.setField(field, entity, v);
-           }
-        });*/
-
-        ;
-        return TypeUtils.castToJavaBean(map, clazz, ParserConfig.getGlobalInstance());
     }
 
     public static <F,D>Map<F, D> beanToMap(Object bean, BeanSerializer<F> fieldSerializer, BeanSerializer<D> valueSerializer, BeanToMapConfig config) {

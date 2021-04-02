@@ -1,8 +1,9 @@
 package com.lzh.game.start.model.player.model;
 
 import com.lzh.game.common.Forward;
+import com.lzh.game.repository.BaseEntity;
 import com.lzh.game.repository.db.PersistEntity;
-import com.lzh.game.start.util.TimeUtils;
+import com.lzh.game.common.util.TimeUtils;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,7 +13,7 @@ import java.io.Serializable;
 
 @Data
 @Document
-public class PlayerEnt extends PersistEntity<Long> implements Serializable {
+public class PlayerEnt extends BaseEntity<Long> implements Serializable {
 
     private static final long serialVersionUID = 2728415253086770853L;
 
@@ -65,5 +66,10 @@ public class PlayerEnt extends PersistEntity<Long> implements Serializable {
         ent.setCreateTime(TimeUtils.now());
         ent.setForward(Forward.RIGHT.name());
         return ent;
+    }
+
+    @Override
+    public Long getKey() {
+        return id;
     }
 }

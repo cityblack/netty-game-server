@@ -1,17 +1,14 @@
 package com.lzh.game.start.exception;
 
-import com.lzh.game.socket.annotation.ControllerAdvice;
-import com.lzh.game.socket.annotation.ExceptionHandler;
-import com.lzh.game.socket.exchange.response.GameResponse;
 import com.lzh.game.start.cmd.CmdMessage;
 import com.lzh.game.start.model.i18n.I18n;
 import com.lzh.game.start.model.i18n.Notify;
 import com.lzh.game.start.model.i18n.RequestException;
+import com.lzh.game.socket.annotation.ControllerAdvice;
+import com.lzh.game.socket.annotation.ExceptionHandler;
+import com.lzh.game.socket.core.exchange.GameResponse;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * 通用请求异常处理接口
- */
 @ControllerAdvice
 @Slf4j
 public class ControllerAdviceHandler {

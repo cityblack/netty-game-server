@@ -201,7 +201,7 @@ public class HandlerMethod {
     /**
      * SessionCloseException MethodParameter for a HandlerMethod return type based on an actual return value.
      */
-    private class ReturnValueMethodParameter extends HandlerMethodParameter {
+    protected class ReturnValueMethodParameter extends HandlerMethodParameter {
 
         @Nullable
         private final Object returnValue;

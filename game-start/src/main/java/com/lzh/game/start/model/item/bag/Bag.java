@@ -1,7 +1,8 @@
 package com.lzh.game.start.model.item.bag;
 
-import com.lzh.game.repository.db.PersistEntity;
+import com.lzh.game.repository.BaseEntity;
 import com.lzh.game.start.model.item.bag.model.ItemStorage;
+import com.lzh.game.repository.db.PersistEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,7 +16,7 @@ import java.io.Serializable;
  */
 @Document
 @ToString
-public class Bag extends PersistEntity<Long> implements Serializable {
+public class Bag extends BaseEntity<Long> implements Serializable {
 
     @Id
     @Getter
@@ -26,16 +27,15 @@ public class Bag extends PersistEntity<Long> implements Serializable {
     @Setter
     private ItemStorage pack;
 
-    @Override
-    public Long cacheKey() {
-        return playerId;
-    }
-
-
     public static Bag of(long playerId) {
         Bag bag = new Bag();
         bag.playerId = playerId;
         bag.pack = ItemStorage.of();
         return bag;
+    }
+
+    @Override
+    public Long getKey() {
+        return playerId;
     }
 }

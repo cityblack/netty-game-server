@@ -1,13 +1,16 @@
 package com.lzh.game.start.model.item.model;
 
+import com.lzh.game.common.ApplicationUtils;
+import com.lzh.game.start.model.item.bag.service.PlayerBagService;
+import com.lzh.game.start.model.item.resource.PandoraModel;
+import com.lzh.game.start.model.item.resource.PandoraResource;
 import com.lzh.game.start.log.LogReason;
 import com.lzh.game.start.model.i18n.I18n;
 import com.lzh.game.start.model.i18n.RequestException;
-import com.lzh.game.start.model.item.resource.PandoraModel;
-import com.lzh.game.start.model.item.resource.PandoraResource;
+import com.lzh.game.start.model.item.service.ItemResourceManage;
+import com.lzh.game.start.model.item.service.ItemService;
 import com.lzh.game.start.model.player.Player;
 import com.lzh.game.start.util.RandomUtils;
-import com.lzh.game.start.util.SpringContext;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -43,7 +46,7 @@ public class PandoraItem extends UseAbleItem {
             for (PandoraModel.PandoraModelInner inner: model.getItem()) {
                 items.put(inner.getItemId(), inner.getNum());
             }
-            SpringContext.singleTon().getBagService().isEnoughGrid(player, items);
+            ApplicationUtils.getBean(PlayerBagService.class).isEnoughGrid(player, items);
         }
     }
 
@@ -52,11 +55,11 @@ public class PandoraItem extends UseAbleItem {
         super.useEffect(player, params, logReason);
         PandoraResource resource = pandoraResource();
         List<AbstractItem> items = openPandora(resource, params);
-        SpringContext.singleTon().getBagService().addItem(player, items, logReason);
+        ApplicationUtils.getBean(PlayerBagService.class).addItem(player, items, logReason);
     }
 
     private PandoraResource pandoraResource() {
-        return SpringContext.singleTon().getItemResourceManage().findPandoraResourceById(getResourceId());
+        return ApplicationUtils.getBean(ItemResourceManage.class).findPandoraResourceById(getResourceId());
     }
 
     private List<AbstractItem> openPandora(PandoraResource resource, Map<String, String> params) {
@@ -69,7 +72,7 @@ public class PandoraItem extends UseAbleItem {
             return modelToItem(selected);
 
         } else {
-            int selectIndex = Integer.valueOf(params.getOrDefault(selectParamKey(), "0"));
+            int selectIndex = Integer.parseInt(params.getOrDefault(selectParamKey(), "0"));
             PandoraModel selected = resource.getItem()[selectIndex];
             if (log.isDebugEnabled()) {
                 log.debug("Pandora选中:{}", selected);
@@ -80,7 +83,7 @@ public class PandoraItem extends UseAbleItem {
 
     private List<AbstractItem> modelToItem(PandoraModel selected) {
         return Stream.of(selected.getItem())
-                .flatMap(e -> SpringContext.singleTon().getItemService().createItem(e.getItemId(), e.getNum()).stream())
+                .flatMap(e -> ApplicationUtils.getBean(ItemService.class).createItem(e.getItemId(), e.getNum()).stream())
                 .collect(Collectors.toList());
     }
 

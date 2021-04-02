@@ -1,6 +1,6 @@
 spring:
   data:
     mongodb:
-      host: 127.0.0.1
+      host: localhost
       database: game
-      port: 27017
+      port: 17217

@@ -1,24 +1,22 @@
 package com.lzh.game.start.model.common.service;
 
-import com.lzh.game.repository.CacheDataRepository;
+import com.lzh.game.repository.Repository;
+import com.lzh.game.repository.DataRepository;
 import com.lzh.game.start.model.common.CommonIdGenerator;
 import com.lzh.game.start.model.common.model.CommonData;
-import com.lzh.game.start.model.common.repository.CommonRepository;
+import com.lzh.game.start.server.AfterServerStartInit;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Stream;
 
 @Component
 @Slf4j
-public class CommonDataManage {
+public class CommonDataManage implements AfterServerStartInit {
 
-    @Autowired
-    private CacheDataRepository dataRepository;
-
-    @Autowired
-    private CommonRepository repository;
+    @Repository
+    private DataRepository<Integer, CommonData> dataRepository;
 
     public Object getCommon(CommonIdGenerator id) {
         return getCommonData(id).getData();
@@ -31,21 +29,16 @@ public class CommonDataManage {
     }
 
     private CommonData getCommonData(CommonIdGenerator id) {
-        return dataRepository.get(id.getId(), CommonData.class);
+        return dataRepository.get(id.getId());
     }
 
+    @Override
     public void init() {
         log.info("Global data loading.");
+    }
 
-        Stream.of(CommonIdGenerator.values()).forEach(idGenerator -> {
-
-            dataRepository.enhanceLoadOrCreate(idGenerator.getId(), CommonData.class
-                    , repository, (e) -> {
-                        CommonData dataEnt = new CommonData();
-                        dataEnt.setId(e);
-                        dataEnt.setData(idGenerator.of());
-                        return dataEnt;
-                    });
-        });
+    @Override
+    public int getOrder() {
+        return Ordered.HIGHEST_PRECEDENCE;
     }
 }

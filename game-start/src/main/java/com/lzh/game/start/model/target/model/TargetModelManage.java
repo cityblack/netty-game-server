@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 public interface TargetModelManage {
     /**
-     * 获取对应的TargetModel
+     * Get Target model by Sign
      * @param sign
      * @return
      */

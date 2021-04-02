@@ -1,31 +1,45 @@
 package com.lzh.game.start.log;
 
-import com.lzh.game.common.serialization.JsonUtil;
-import com.lzh.game.framework.log.Log4jLoggerFactoryAdapter;
+import com.lzh.game.common.serialization.JsonUtils;
 import com.lzh.game.start.model.player.Player;
+import com.lzh.game.framework.log.Log4jLoggerFactoryAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Slf4j
 public class LoggerUtils {
 
     private static ILoggerFactory loggerFactory = new Log4jLoggerFactoryAdapter();
 
+    private final static ExecutorService service = Executors.newFixedThreadPool(2);
+    // Default param size
+    private final static int DEFAULT_PARAM_SIZE = 2 << 2;
+
+    /**
+     * Use async function to log
+     * @param logFile
+     * @param build
+     */
     private static void log(LogFile logFile, LogBuild build) {
-        try {
-            getLogger(logFile).info(toContent(build));
-        } catch (Exception e) {
-            log.error("日志记录异常:", e);
-        }
+
+        CompletableFuture
+                .runAsync(() -> getLogger(logFile).info(toContent(build)), service)
+                .exceptionally(e -> {
+                    log.error("日志记录异常:", e);
+                    return null;
+                });
     }
 
     private static void log(LogFile logFile, Player player, LogBuild logBuild) {
         Map<String, Object> param = logBuild.param;
-        param.put("playerId", player.getObjectId());
+        param.put("playerId", player.getKey());
 //        param.put("playerName", player.getPlayerEnt().getName());
         param.put("playerAccount", player.getPlayerEnt().getAccount());
 
@@ -54,7 +68,7 @@ public class LoggerUtils {
             LogBuild build = new LogBuild();
             build.logFile = logFile;
             build.logReason = logReason;
-            build.param = new HashMap<>(8);
+            build.param = new HashMap<>(DEFAULT_PARAM_SIZE);
             return build;
         }
 
@@ -81,10 +95,11 @@ public class LoggerUtils {
         LogReason logReason = build.logReason;
         Map<String, Object> map = build.param;
         map.put("logReason", logReason.getId());
-        return JsonUtil.toJSON(map);
+        return JsonUtils.toJson(map);
     }
 
     public static void close() {
-        log.debug("关闭日志.");
+        log.debug("closing log..");
+        service.shutdown();
     }
 }

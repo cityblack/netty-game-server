@@ -8,5 +8,4 @@ public interface GameServer {
 
     int getPort();
 
-    boolean isStart();
 }

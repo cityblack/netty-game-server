@@ -2,17 +2,18 @@ package com.lzh.game.start.model.core.util.condition.handle;
 
 import com.lzh.game.start.model.core.util.VerifyResult;
 import com.lzh.game.start.model.core.util.condition.AbstractCondition;
+import com.lzh.game.start.model.player.Player;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class AndCondition<T> extends AbstractCondition<T> implements Iterable<AbstractCondition> {
+public class AndCondition extends AbstractCondition<Player> implements Iterable<AbstractCondition> {
 
     private List<AbstractCondition> list = new ArrayList<>();
 
     @Override
-    public void doVerify(T param, VerifyResult result) {
+    public void doVerify(Player param, VerifyResult result) {
         if (!list.isEmpty()) {
             for (int i = 0; i < list.size(); i++) {
                 AbstractCondition condition = list.get(i);
@@ -34,7 +35,10 @@ public class AndCondition<T> extends AbstractCondition<T> implements Iterable<Ab
 
     public AndCondition addCondition(AbstractCondition condition) {
         if (condition instanceof AndCondition) {
-            addCondition(condition);
+            AndCondition and = (AndCondition)condition;
+            for (AbstractCondition inner: and) {
+                addCondition(inner);
+            }
         } else {
             list.add(condition);
         }

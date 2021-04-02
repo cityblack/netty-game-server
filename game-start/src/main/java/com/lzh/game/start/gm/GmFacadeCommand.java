@@ -1,10 +1,12 @@
 package com.lzh.game.start.gm;
 
+import com.lzh.game.common.ApplicationUtils;
 import com.lzh.game.start.gm.service.DefaultGmServiceImpl;
 import com.lzh.game.start.log.LogReason;
+import com.lzh.game.start.model.item.bag.service.PlayerBagService;
 import com.lzh.game.start.model.item.model.AbstractItem;
+import com.lzh.game.start.model.item.service.ItemService;
 import com.lzh.game.start.model.player.Player;
-import com.lzh.game.start.util.SpringContext;
 
 import java.util.List;
 
@@ -20,10 +22,10 @@ import java.util.List;
  *      Boolean/boolean/Boolean[]/boolean[],
  *      Long/long/Long[]/long[]
  * for example:
- *  hello(int id) -- wrong
- *  hello(Play play, int id) -- right
- *  hello(Play play, int id) hello(Play play, float id) -- wrong
- *  hello(Play play, int id) hello(Play play, int id, int age) -- right
+ *  test(int id) -- wrong
+ *  test(Play play, int id) -- right
+ *  test(Play play, int id) test(Play play, float id) -- wrong
+ *  test(Play play, int id) test(Play play, int id, int age) -- right
  *
  */
 @GmFacade
@@ -40,11 +42,7 @@ public class GmFacadeCommand {
         int itemModelId = param[0];
         int num = param.length >= 2 ? param[1] : 1;
 
-        List<AbstractItem> items = getContext().getItemService().createItem(itemModelId, num);
-        getContext().getBagService().addItem(player, items, LogReason.CONSOLE);
-    }
-
-    private SpringContext getContext() {
-        return SpringContext.singleTon();
+        List<AbstractItem> items = ApplicationUtils.getBean(ItemService.class).createItem(itemModelId, num);
+        ApplicationUtils.getBean(PlayerBagService.class).addItem(player, items, LogReason.CONSOLE);
     }
 }

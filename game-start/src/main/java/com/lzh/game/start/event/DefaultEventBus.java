@@ -14,7 +14,6 @@ public class DefaultEventBus implements EventBus {
 
     @Override
     public void globalPost(Event event) {
-        // todo. cross server
         org.greenrobot.eventbus.EventBus.getDefault().post(event);
     }
 }

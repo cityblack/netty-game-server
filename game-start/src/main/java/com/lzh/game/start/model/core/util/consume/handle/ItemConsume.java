@@ -1,12 +1,13 @@
 package com.lzh.game.start.model.core.util.consume.handle;
 
 
+import com.lzh.game.common.ApplicationUtils;
 import com.lzh.game.start.log.LogReason;
 import com.lzh.game.start.model.item.bag.exception.NotEnoughItemException;
 import com.lzh.game.start.model.core.util.consume.AbstractConsume;
+import com.lzh.game.start.model.item.bag.service.PlayerBagService;
 import com.lzh.game.start.model.player.Player;
 import com.lzh.game.start.model.core.util.VerifyResult;
-import com.lzh.game.start.util.SpringContext;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,8 +29,8 @@ public class ItemConsume extends AbstractConsume<Player> {
     @Override
     protected void doParse(String value) {
         String[] strings = value.split("_");
-        itemId = Integer.valueOf(strings[0]);
-        num = Integer.valueOf(strings[1]);
+        itemId = Integer.parseInt(strings[0]);
+        num = Integer.parseInt(strings[1]);
     }
 
     @Override
@@ -49,7 +50,7 @@ public class ItemConsume extends AbstractConsume<Player> {
 
     private void verify(Player player, Map<Object, Object> context) {
         for (Map.Entry<Object, Object> entry: context.entrySet()) {
-            SpringContext.singleTon().getBagService().isEnoughItemsThrow(player, (int)entry.getKey(), (int)entry.getValue());
+            ApplicationUtils.getBean(PlayerBagService.class).isEnoughItemsThrow(player, (int)entry.getKey(), (int)entry.getValue());
         }
     }
 
@@ -57,7 +58,7 @@ public class ItemConsume extends AbstractConsume<Player> {
     public void consume(Player player, int multiple, LogReason logReason) {
         int count = num * multiple;
         try {
-            SpringContext.singleTon().getBagService().reduceItems(player, itemId, count, logReason);
+            ApplicationUtils.getBean(PlayerBagService.class).reduceItems(player, itemId, count, logReason);
         } catch (NotEnoughItemException e) {
             e.printStackTrace();
         }

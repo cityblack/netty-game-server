@@ -1,10 +1,11 @@
 package com.lzh.game.start.model.item.bag.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.lzh.game.common.ApplicationUtils;
 import com.lzh.game.framework.grid.MarkGridTable;
 import com.lzh.game.start.model.item.model.AbstractItem;
 import com.lzh.game.start.model.item.resource.ItemResource;
-import com.lzh.game.start.util.SpringContext;
+import com.lzh.game.start.model.item.service.ItemResourceManage;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -169,7 +170,7 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
 
     @JsonIgnore
     protected ItemResource getItemResource(int itemModel) {
-        return SpringContext.singleTon().getItemResourceManage().findItemResourceById(itemModel);
+        return ApplicationUtils.getBean(ItemResourceManage.class).findItemResourceById(itemModel);
     }
 
     @Deprecated

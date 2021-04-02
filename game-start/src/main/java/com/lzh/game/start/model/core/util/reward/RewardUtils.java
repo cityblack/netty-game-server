@@ -12,11 +12,8 @@ public class RewardUtils {
     }
 
     public static AndReward createRewardByDef(RewardDef[] rewardDef) {
-
-        AndReward andReward = createEmptyReward();
-        if (Objects.isNull(rewardDef)) {
-            return andReward;
-        }
+        Objects.requireNonNull(rewardDef);
+        AndReward andReward = new AndReward();
         Stream.of(rewardDef)
                 .map(RewardUtils::createRewardByDef)
                 .forEach(andReward::addReward);

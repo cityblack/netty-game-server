@@ -1,15 +1,13 @@
 package com.lzh.game.start.model.common;
 
-import com.lzh.game.start.model.common.model.impl.SceneData;
-
 public enum CommonIdGenerator {
     /**
      * 生成的场景数据
      */
-    SCENE_DATA(1001) {
+    DEMO(1001) {
         @Override
-        public SceneData of() {
-            return SceneData.of();
+        public Object of() {
+            return null;
         }
     },
     ;

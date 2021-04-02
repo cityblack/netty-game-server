@@ -1,8 +1,8 @@
 package com.lzh.game.start.model.wallet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.lzh.game.repository.db.PersistEntity;
 import com.lzh.game.start.model.currency.model.CurrencyType;
+import com.lzh.game.repository.BaseEntity;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,10 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Data
 @Document
-public class Wallet extends PersistEntity<Long> {
+public class Wallet extends BaseEntity<Long> {
 
     @Id
-    private long player;
+    private long playerId;
     /**
      * 当前身上的资金
      * k -> {@link CurrencyType}
@@ -30,14 +30,9 @@ public class Wallet extends PersistEntity<Long> {
      */
     private ConcurrentHashMap<CurrencyType, Long> history;
 
-    @Override
-    public Long cacheKey() {
-        return player;
-    }
-
-    public static Wallet of(long player) {
+    public static Wallet of(Long playerId) {
         Wallet wallet = new Wallet();
-        wallet.player = player;
+        wallet.playerId = playerId;
         wallet.money = new ConcurrentHashMap<>(3);
         wallet.history = new ConcurrentHashMap<>(3);
         return wallet;
@@ -65,5 +60,10 @@ public class Wallet extends PersistEntity<Long> {
     @JsonIgnore
     public long getHistoryCurrency(CurrencyType type) {
         return this.history.getOrDefault(type, 0L);
+    }
+
+    @Override
+    public Long getKey() {
+        return playerId;
     }
 }

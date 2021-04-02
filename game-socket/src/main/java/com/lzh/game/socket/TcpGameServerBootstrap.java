@@ -1,27 +1,26 @@
 package com.lzh.game.socket;
 
-import com.lzh.game.common.server.BeforeServerCloseEvent;
-import com.lzh.game.common.server.BeforeServerStartEvent;
+import com.lzh.game.socket.exception.ServerStarException;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.extern.slf4j.Slf4j;
-import org.greenrobot.eventbus.EventBus;
-import org.springframework.beans.factory.DisposableBean;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
-public class TcpGameServerBootstrap implements GameServer, DisposableBean {
+public class TcpGameServerBootstrap implements GameServer {
 
     private ServerBootstrap bootstrap;
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
     private final int port;
     private final ChannelInitializer<SocketChannel> initializer;
-    private AtomicBoolean start = new AtomicBoolean(false);
     private volatile ChannelFuture channelFuture;
     private AtomicLong openTimestamp = new AtomicLong();
 
@@ -41,23 +40,37 @@ public class TcpGameServerBootstrap implements GameServer, DisposableBean {
     }
 
     private void start(int port) {
-        if (!start.get()) {
-            ChannelFuture f = null;
-            sendBeforeStartServerEvent();
+        if (Objects.isNull(this.channelFuture)) {
             try {
-                f = this.bootstrap.bind(port).sync();
-                this.start.set(true);
-                channelFuture = f;
+                channelFuture = this.bootstrap.bind(port);
                 this.openTimestamp.set(System.currentTimeMillis());
-                log.info("Netty started on port(s): {}", port);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                throw new ServerStarException("Server start error", e);
             }
+            startDaemonAwaitThread(channelFuture);
         }
     }
 
+    private void startDaemonAwaitThread(ChannelFuture future) {
+        Thread awaitThread = new Thread("server") {
+
+            @Override
+            public void run() {
+                try {
+                    future.sync().channel().closeFuture().sync();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    System.exit(-1);
+                }
+            }
+        };
+        awaitThread.setContextClassLoader(getClass().getClassLoader());
+        awaitThread.setDaemon(false);
+        awaitThread.start();
+    }
+
     public void close() {
-        sendBeforeCloseServerEvent();
+        this.channelFuture = null;
         workerGroup.shutdownGracefully();
     }
 
@@ -68,7 +81,6 @@ public class TcpGameServerBootstrap implements GameServer, DisposableBean {
     @Override
     public void stop() {
         close();
-        System.exit(-1);
     }
 
     @Override
@@ -76,27 +88,4 @@ public class TcpGameServerBootstrap implements GameServer, DisposableBean {
         return port;
     }
 
-    @Override
-    public boolean isStart() {
-        return this.start.get();
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        close();
-    }
-
-    private void sendBeforeStartServerEvent() {
-        BeforeServerStartEvent message = new BeforeServerStartEvent();
-        message.setPort(this.port);
-        message.setTimestamp(System.currentTimeMillis());
-        EventBus.getDefault().post(message);
-    }
-
-    private void sendBeforeCloseServerEvent() {
-        BeforeServerCloseEvent message = new BeforeServerCloseEvent();
-        message.setPort(this.port);
-        message.setTimestamp(System.currentTimeMillis());
-        EventBus.getDefault().post(message);
-    }
 }

@@ -1,8 +1,8 @@
 package com.lzh.game.resource.data;
 
-import com.alibaba.fastjson.JSON;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import com.lzh.game.common.serialization.JsonUtils;
 import com.lzh.game.resource.ResourceLoaded;
 import com.lzh.game.resource.reload.ResourceReloadMange;
 import com.lzh.game.resource.uitl.SortedArrayList;
@@ -26,10 +26,13 @@ public abstract class DefaultResourceManageHandler implements ResourceManageHand
 
     private Map<Class<?>, List<?>> dataContain = new HashMap<>();
 
+    private ResourceModelFactory factory;
+
     private ResourceReloadMange reloadMange;
 
-    public DefaultResourceManageHandler(ResourceReloadMange reloadMange) {
+    public DefaultResourceManageHandler(ResourceReloadMange reloadMange, ResourceModelFactory factory) {
         this.reloadMange = reloadMange;
+        this.factory = factory;
     }
 
     @Override
@@ -143,7 +146,7 @@ public abstract class DefaultResourceManageHandler implements ResourceManageHand
 
         if (Objects.isNull(value)) {
 
-            throw new RuntimeException("@" + (GetterBuild.isIdGetter(getter) ? "Id" : "Index") + " value can't null. data: [" + JSON.toJSONString(data) +"]");
+            throw new RuntimeException("@" + (GetterBuild.isIdGetter(getter) ? "Id" : "Index") + " value can't null. data: [" + JsonUtils.toJson(data) +"]");
         }
         if (getter.unique()) {
             Map<Object, Object> contain = getUniqueIndexContain(type, indexName);
@@ -185,5 +188,7 @@ public abstract class DefaultResourceManageHandler implements ResourceManageHand
         return reloadMange;
     }
 
-    public abstract ResourceModelFactory getResourceModelManage();
+    public ResourceModelFactory getResourceModelManage() {
+        return factory;
+    }
 }

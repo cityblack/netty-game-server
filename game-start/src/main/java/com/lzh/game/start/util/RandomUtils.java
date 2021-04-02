@@ -1,6 +1,6 @@
 package com.lzh.game.start.util;
 
-import com.lzh.game.common.serialization.JsonUtil;
+import com.lzh.game.common.serialization.JsonUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -69,7 +69,7 @@ public class RandomUtils {
                 return data.get(i);
             }
         }
-        throw new IllegalArgumentException("未命中任何对象." + JsonUtil.toJSON(data));
+        throw new IllegalArgumentException("未命中任何对象." + JsonUtils.toJson(data));
     }
 
     /**

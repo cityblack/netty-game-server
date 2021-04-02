@@ -1,4 +1,9 @@
 spring:
+  data:
+    mongodb:
+      host: localhost
+      database: game
+      port: 17217
   redis:
     redisson:
       config: classpath:redisson.yml

@@ -10,7 +10,7 @@ game:
 spring:
   data:
     mongodb:
-      host: 127.0.0.1
+      host: localhost
       database: game
       port: 17217
     redisson:

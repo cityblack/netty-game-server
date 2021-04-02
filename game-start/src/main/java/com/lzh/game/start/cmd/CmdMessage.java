@@ -1,6 +1,7 @@
 package com.lzh.game.start.cmd;
 
-import com.lzh.game.framework.cmd.DefaultCmdMappingManage;
+
+import com.lzh.game.socket.core.invoke.cmd.DefaultCmdMappingManage;
 
 /**
  * Start with the CM_ is mean request cmd. and start with SM_ is mean response cmd.
@@ -19,11 +20,6 @@ public interface CmdMessage {
     int CM_REGISTER = -104;
     int SM_REGISTER = -105;
 
-    // == Item begin ====
-    int CM_USE_ITEM = -170;
-
-    int CM_HELLO = -10086;
-    int SM_HELLO = -10087;
     ;
 
 }

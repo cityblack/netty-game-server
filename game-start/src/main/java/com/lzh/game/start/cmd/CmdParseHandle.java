@@ -1,12 +1,9 @@
 package com.lzh.game.start.cmd;
 
 
-import com.lzh.game.framework.cmd.ParseCmdLoad;
-
-import static com.lzh.game.socket.dispatcher.mapping.CmdMappingManage.CmdType;
-import static com.lzh.game.socket.dispatcher.mapping.CmdMappingManage.CmdModel;
-
-import org.checkerframework.checker.units.qual.C;
+import com.lzh.game.socket.core.invoke.cmd.CmdMappingManage.CmdModel;
+import com.lzh.game.socket.core.invoke.cmd.CmdMappingManage.CmdType;
+import com.lzh.game.socket.core.invoke.cmd.CmdParseFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
@@ -16,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public class CmdParseHandle implements ParseCmdLoad {
+public class CmdParseHandle implements CmdParseFactory {
 
     private CmdType parseCmdType(String name) {
         if (name.startsWith("CM_")) {
@@ -25,7 +22,7 @@ public class CmdParseHandle implements ParseCmdLoad {
             return CmdType.RESPONSE;
         }
 
-        throw new IllegalArgumentException("Protocol's name dose't comply with the contract. name:" + name);
+        throw new IllegalArgumentException("Protocol's name dosen't comply with the contract. name:" + name);
     }
 
     private int parseCmd(Field field, Class c) {
@@ -39,7 +36,6 @@ public class CmdParseHandle implements ParseCmdLoad {
                 .of(c.getFields())
                 .map(e -> CmdModel.of(parseCmd(e, c), parseCmdType(e.getName()), ""))
                 .collect(Collectors.toList());
-
     }
 
 }

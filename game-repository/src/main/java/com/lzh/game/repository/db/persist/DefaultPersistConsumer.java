@@ -3,7 +3,6 @@ package com.lzh.game.repository.db.persist;
 import com.lzh.game.repository.db.Element;
 import com.lzh.game.repository.db.PersistRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Objects;
 

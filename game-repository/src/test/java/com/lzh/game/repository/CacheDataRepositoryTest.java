@@ -1,11 +1,9 @@
 package com.lzh.game.repository;
 
-import com.alibaba.fastjson.JSON;
-import com.lzh.game.common.bean.BeanUtil;
+import com.lzh.game.common.serialization.JsonUtils;
 import com.lzh.game.repository.entity.Common;
 import com.lzh.game.repository.entity.User;
 import com.lzh.game.repository.model.AbstractItem;
-import com.lzh.game.repository.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,11 +28,11 @@ public class CacheDataRepositoryTest {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    @Autowired
-    private UserRepository userRepository;
+    @Repository
+    private DataRepository<String, User> dataRepository;
 
-    @Autowired
-    private CacheDataRepository dataRepository;
+    @Repository
+    private DataRepository<String, Common> commonDataRepository;
 
     @Autowired
     private RedissonClient redissonClient;
@@ -43,8 +41,6 @@ public class CacheDataRepositoryTest {
     public void get() {
         Map<String, Object> map = redissonClient.getMap("xx", new JsonJacksonCodec());
         User user = User.createUser();
-
-        map.putAll(BeanUtil.beanToMap(user));
         System.out.println(map);
     }
 
@@ -52,7 +48,7 @@ public class CacheDataRepositoryTest {
     public void load() {
         final String uuid = "xxxxxxx";
 
-        User user = dataRepository.loadOrCreate(uuid, User.class, (pk) -> {
+        User user = dataRepository.loadOrCreate(uuid, (pk) -> {
             User newUser = new User();
             newUser.setId(pk);
             newUser.setAge(30);
@@ -60,20 +56,21 @@ public class CacheDataRepositoryTest {
             return newUser;
         });
         user.setTel("110120130140");
-        /*PlayerItemBox box = dataRepository.enhanceLoadOrCreate(user.cacheKey(), PlayerItemBox.class
-                , itemBoxRepository, e -> {
-                    PlayerItemBox box1 = new PlayerItemBox();
-                    box1.setPlayer(e);
-                    return box1;
-                });*/
+//        PlayerItemBox box = dataRepository.enhanceLoadOrCreate(user.cacheKey(), PlayerItemBox.class
+//                , itemBoxRepository, e -> {
+//                    PlayerItemBox box1 = new PlayerItemBox();
+//                    box1.setPlayer(e);
+//                    return box1;
+//                });
 
         AbstractItem item = new AbstractItem();
         item.setName("白色金卡");
         item.setNum(10);
 //        box.addItem(item);
-        /*box.setUpdateTime(System.currentTimeMillis());
-        dataRepository.update(box);*/
+//        box.setUpdateTime(System.currentTimeMillis());
+//        dataRepository.update(box);
         dataRepository.update(user);
+        log.info("{}", user);
     }
 
     @Test
@@ -81,18 +78,18 @@ public class CacheDataRepositoryTest {
 
         final String keyValue = "102";
 
-        Common value = dataRepository.loadOrCreate(keyValue, Common.class, (key) -> {
+        Common value = commonDataRepository.loadOrCreate(keyValue, (key) -> {
             Common common = new Common();
             common.setId(key);
-            common.setData(JSON.toJSONString(new User()));
+            common.setData(JsonUtils.toJson(new User()));
             return common;
         });
         User user = new User();
         user.setAddress("福建宁德");
-        String s = JSON.toJSONString(user);
+        String s = JsonUtils.toJson(user);
         value.setData(s);
 
-        dataRepository.update(value);
+        commonDataRepository.update(value);
         log.info("{}", value);
     }
 
@@ -146,7 +143,7 @@ public class CacheDataRepositoryTest {
     @Test
     public void del() {
         final String keyValue = "1008611";
-        dataRepository.deleter(keyValue, Common.class);
+        commonDataRepository.deleter(keyValue);
     }
 
     @Test
@@ -154,6 +151,6 @@ public class CacheDataRepositoryTest {
         final String keyValue = "1008611";
         Common common = new Common();
         common.setId(keyValue);
-        dataRepository.addAndSave(keyValue, common);
+        commonDataRepository.save(common);
     }
 }

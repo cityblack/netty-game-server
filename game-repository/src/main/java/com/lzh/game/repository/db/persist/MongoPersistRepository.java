@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Update;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public class MongoPersistRepository implements PersistRepository {
@@ -44,7 +45,7 @@ public class MongoPersistRepository implements PersistRepository {
     }
 
     @Override
-    public <PK extends Serializable, T extends PersistEntity> void update(PK pk, Class<T> clazz, Map<String, Object> change) {
+    public <PK extends Serializable & Comparable<PK>, T extends PersistEntity<PK>> void update(PK pk, Class<T> clazz, Map<String, Object> change) {
         Query query = findKeyQuery(pk, clazz);
         Update update = new Update();
         change.forEach((k,v) -> update.set(k,v));
@@ -52,8 +53,7 @@ public class MongoPersistRepository implements PersistRepository {
     }
 
     @Override
-    public <PK extends Serializable, T extends PersistEntity> void deleter(PK pk, Class<T> clazz) {
-
+    public <PK extends Serializable & Comparable<PK>, T extends PersistEntity<PK>> void deleter(PK pk, Class<T> clazz) {
         mongoOperations.remove(findKeyQuery(pk, clazz), clazz);
     }
 
@@ -61,6 +61,16 @@ public class MongoPersistRepository implements PersistRepository {
     public void deleter(PersistEntity entity) {
 
         mongoOperations.remove(entity);
+    }
+
+    @Override
+    public <PK extends Serializable & Comparable<PK>, T extends PersistEntity<PK>> T findById(PK pk, Class<T> clazz) {
+        return mongoOperations.findById(pk, clazz);
+    }
+
+    @Override
+    public <T extends PersistEntity> List<T> findAll(Class<T> clazz) {
+        return mongoOperations.findAll(clazz);
     }
 
     private <PK extends Serializable, T extends PersistEntity>Query findKeyQuery(PK pk, Class<T> clazz) {

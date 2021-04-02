@@ -1,6 +1,6 @@
 package com.lzh.game.repository.db.persist;
 
-import com.alibaba.fastjson.JSON;
+import com.lzh.game.common.serialization.JsonUtils;
 import com.lzh.game.repository.db.Element;
 import com.lzh.game.repository.db.PersistRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -8,9 +8,6 @@ import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.util.CollectionUtils;
-
-import java.util.Objects;
 
 /**
  * Redis queue listen
@@ -39,7 +36,7 @@ public class RedisPersistConsumer extends DefaultPersistConsumer implements Mess
     }
 
     private Element parseMessage(Message message) {
-        return JSON.parseObject(new String(message.getBody()), Element.class);//(Element) valueSerialize.deserialize(message.getBody());
+        return JsonUtils.toObj(new String(message.getBody()), Element.class);//(Element) valueSerialize.deserialize(message.getBody());
     }
 
 }

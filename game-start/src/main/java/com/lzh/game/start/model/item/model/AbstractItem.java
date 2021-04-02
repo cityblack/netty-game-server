@@ -1,17 +1,16 @@
 package com.lzh.game.start.model.item.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.lzh.game.common.ApplicationUtils;
 import com.lzh.game.start.model.core.util.condition.Condition;
 import com.lzh.game.start.model.core.util.consume.Consume;
 import com.lzh.game.start.model.core.util.reward.Reward;
-import com.lzh.game.start.model.game.GameObject;
-import com.lzh.game.start.model.game.GameObjectType;
 import com.lzh.game.start.model.item.resource.ItemResource;
-import com.lzh.game.start.util.SpringContext;
+import com.lzh.game.start.model.item.service.ItemResourceManage;
 import lombok.Getter;
 import lombok.Setter;
 
-public abstract class AbstractItem extends GameObject {
+public abstract class AbstractItem {
 
     @Getter
     @Setter
@@ -29,14 +28,9 @@ public abstract class AbstractItem extends GameObject {
         return objectId;
     }
 
-    @Override
-    public GameObjectType objectType() {
-        return GameObjectType.ITEM;
-    }
-
     @JsonIgnore
     public ItemResource getResource() {
-        return SpringContext.singleTon().getItemResourceManage().findItemResourceById(resourceId);
+        return ApplicationUtils.getBean(ItemResourceManage.class).findItemResourceById(resourceId);
     }
 
     public Reward reward() {

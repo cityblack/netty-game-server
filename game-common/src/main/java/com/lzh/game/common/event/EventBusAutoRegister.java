@@ -12,7 +12,6 @@ import java.util.Map;
 /**
  * When class implement {@link SubscribeListener} with spring, Will be auto register to event bus
  */
-@Component
 @Slf4j
 public class EventBusAutoRegister implements ApplicationContextAware {
 

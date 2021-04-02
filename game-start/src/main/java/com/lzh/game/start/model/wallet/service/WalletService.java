@@ -1,14 +1,15 @@
 package com.lzh.game.start.model.wallet.service;
 
+import com.lzh.game.common.ApplicationUtils;
+import com.lzh.game.common.event.EventBus;
+import com.lzh.game.start.model.currency.model.CurrencyType;
+import com.lzh.game.start.model.wallet.dao.WalletManage;
 import com.lzh.game.start.log.LogFile;
 import com.lzh.game.start.log.LogReason;
 import com.lzh.game.start.log.LoggerUtils;
-import com.lzh.game.start.model.currency.model.CurrencyType;
 import com.lzh.game.start.model.i18n.RequestException;
 import com.lzh.game.start.model.player.Player;
-import com.lzh.game.start.util.SpringContext;
 import com.lzh.game.start.model.wallet.Wallet;
-import com.lzh.game.start.model.wallet.dao.WalletManage;
 import com.lzh.game.start.model.wallet.event.IncreaseMoneyEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -66,9 +67,8 @@ public class WalletService {
 
         long after = wallet.getCurrentCurrency(type);
 
-        SpringContext.singleTon()
-                .getEventBus()
-                .globalPost(IncreaseMoneyEvent.of(player, logReason, value, after, type));
+        ApplicationUtils.getBean(EventBus.class)
+                .post(IncreaseMoneyEvent.of(player, logReason, value, after, type));
         logMoneyChange(player, type, before, value, after, logReason);
     }
 

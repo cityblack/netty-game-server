@@ -1,11 +1,12 @@
 package com.lzh.game.start.gm.service;
 
+import com.lzh.game.common.ApplicationUtils;
+import com.lzh.game.socket.config.GameServerSocketProperties;
 import com.lzh.game.start.gm.GmFacade;
-import com.lzh.game.start.util.SpringContext;
-import com.lzh.game.socket.autoconfig.GameSocketProperties;
-import com.lzh.game.socket.exchange.session.Session;
-
 import com.lzh.game.start.model.player.Player;
+import com.lzh.game.socket.core.session.Session;
+
+import com.lzh.game.start.model.player.service.PlayerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -25,7 +26,7 @@ import java.util.stream.Stream;
 public class DefaultGmServiceImpl implements GmService, InitializingBean, ApplicationContextAware, DisposableBean {
 
     @Autowired
-    private GameSocketProperties properties;
+    private GameServerSocketProperties properties;
 
     private final Map<String, GmHandlerMethod> methodMap = new HashMap<>();
 
@@ -38,7 +39,7 @@ public class DefaultGmServiceImpl implements GmService, InitializingBean, Applic
             log.debug("Gm request no valid because of the convent name is null");
             return;
         }
-        Player player = SpringContext.singleTon().getPlayerService().getPlayer(session);
+        Player player = ApplicationUtils.getBean(PlayerService.class).getPlayer(session);
         String[] valueArr = value.split("\\s");
         //convent first arg must be PlayerEnt
         String key = getKey(methodName, valueArr.length + 1);

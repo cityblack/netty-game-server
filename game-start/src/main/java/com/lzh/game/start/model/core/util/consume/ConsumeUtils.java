@@ -28,11 +28,8 @@ public final class ConsumeUtils {
     }
 
     public static AbstractConsume createConsumeByDef(ConsumeDef[] consumeDef) {
-
+        Objects.requireNonNull(consumeDef);
         AndConsume andConsume = createEmptyAndConsume();
-        if (Objects.isNull(consumeDef)) {
-            return andConsume;
-        }
         Stream.of(consumeDef)
                 .map(ConsumeUtils::createConsumeByDef)
                 .forEach(andConsume::addConsume);

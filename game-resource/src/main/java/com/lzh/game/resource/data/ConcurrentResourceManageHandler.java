@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * 使用cas控制资源读取. 当调用{@link #reload()}或是{@link #reload(Class)}, 会将class对应
+ * 使用cas控制资源读取. 当调用{@link #reload()}或是{@link #reload(Class[])}}, 会将class对应
  * 的原子变量更改成写操作中{@link #WRITING}
  * 读取资源时若为写状态, 则会自旋转等待写状态完成
  */

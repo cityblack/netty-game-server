@@ -1,11 +1,13 @@
 package com.lzh.game.start.model.core.util.reward.handle;
 
+import com.lzh.game.common.ApplicationUtils;
 import com.lzh.game.start.log.LogReason;
 import com.lzh.game.start.model.core.util.VerifyResult;
 import com.lzh.game.start.model.core.util.reward.AbstractReward;
+import com.lzh.game.start.model.item.bag.service.PlayerBagService;
 import com.lzh.game.start.model.item.model.AbstractItem;
+import com.lzh.game.start.model.item.service.ItemService;
 import com.lzh.game.start.model.player.Player;
-import com.lzh.game.start.util.SpringContext;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,8 +30,8 @@ public class ItemReward extends AbstractReward<Player> {
     @Override
     protected void doParse(String value) {
         String[] strings = value.split("_");
-        itemId = Integer.valueOf(strings[0]);
-        num = Integer.valueOf(strings[1]);
+        itemId = Integer.parseInt(strings[0]);
+        num = Integer.parseInt(strings[1]);
     }
 
     @Override
@@ -49,14 +51,14 @@ public class ItemReward extends AbstractReward<Player> {
 
     private void verify(Player player, Map<Object, Object> context) {
         for (Map.Entry<Object, Object> entry: context.entrySet()) {
-            SpringContext.singleTon().getBagService().isEnoughGrid(player, (int)entry.getKey(), (int)entry.getValue());
+            ApplicationUtils.getBean(PlayerBagService.class).isEnoughGrid(player, (int)entry.getKey(), (int)entry.getValue());
         }
     }
 
     @Override
     public void reward(Player player, int multiple, LogReason logReason) {
         int count = num * multiple;
-        List<AbstractItem> items = SpringContext.singleTon().getItemService().createItem(itemId, count);
-        SpringContext.singleTon().getBagService().addItem(player, items, logReason);
+        List<AbstractItem> items = ApplicationUtils.getBean(ItemService.class).createItem(itemId, count);
+        ApplicationUtils.getBean(PlayerBagService.class).addItem(player, items, logReason);
     }
 }

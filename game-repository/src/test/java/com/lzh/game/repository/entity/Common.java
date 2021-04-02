@@ -1,5 +1,6 @@
 package com.lzh.game.repository.entity;
 
+import com.lzh.game.repository.BaseEntity;
 import com.lzh.game.repository.db.PersistEntity;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
@@ -9,17 +10,12 @@ import java.io.Serializable;
 
 @ToString
 @Document
-public class Common extends PersistEntity<String> implements Serializable {
+public class Common extends BaseEntity<String> implements Serializable {
 
     @Id
     private String id;
 
     private String data;
-
-    @Override
-    public String cacheKey() {
-        return id;
-    }
 
     public String getData() {
         return data;
@@ -34,6 +30,11 @@ public class Common extends PersistEntity<String> implements Serializable {
     }
 
     public String getId() {
+        return id;
+    }
+
+    @Override
+    public String getKey() {
         return id;
     }
 }

@@ -1,5 +1,6 @@
 package com.lzh.game.framework.scheduler;
 
+import com.lzh.game.framework.App;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.concurrent.CountDownLatch;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {com.lzh.game.framework.App.class})
+@SpringBootTest(classes = {App.class})
 @Slf4j
 public class SchedulerOptionTest {
 

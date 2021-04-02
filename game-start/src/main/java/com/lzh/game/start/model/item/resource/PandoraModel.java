@@ -10,7 +10,7 @@ public class PandoraModel {
     private int weight;
 
     @Data
-    public class PandoraModelInner {
+    public static class PandoraModelInner {
 
         private int itemId;
 

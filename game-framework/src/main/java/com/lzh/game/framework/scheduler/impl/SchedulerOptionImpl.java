@@ -1,18 +1,12 @@
 package com.lzh.game.framework.scheduler.impl;
 
+import com.lzh.game.framework.scheduler.SchedulerOption;
 import com.lzh.game.common.util.IdGenerator;
 import com.lzh.game.framework.scheduler.SchedulerJob;
-import com.lzh.game.framework.scheduler.SchedulerOption;
 import com.lzh.game.framework.scheduler.SchedulerParam;
 import com.lzh.game.framework.scheduler.SchedulerTask;
 import org.quartz.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.config.ScheduledTask;
 
-import java.time.Duration;
-import java.util.Date;
-
-import static org.quartz.CalendarIntervalScheduleBuilder.calendarIntervalSchedule;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.DateBuilder.futureDate;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;

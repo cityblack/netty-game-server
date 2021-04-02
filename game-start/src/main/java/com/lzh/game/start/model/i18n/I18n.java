@@ -15,6 +15,11 @@ public interface I18n {
     // 物品不足
     int NOT_ENOUGH_ITEMS = 1001;
 
+    // === MoveRequest 1100==
+    // 尚有步数 不可以投骰子
+    int HAS_DICE_MOVE_COUNT = 1100;
+    // 骰子不足
+    int NOT_ENOUGH_DICE = 1101;
     // ===== 资金 1200 ===
     // 资金不足
     int NOT_ENOUGH_GOLD = 1200;

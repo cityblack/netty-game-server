@@ -11,13 +11,10 @@ import java.util.List;
 @Slf4j
 public class MongoResourceManageHandler extends DefaultResourceManageHandler {
 
-    private ResourceModelFactory resourceModels;
-
     private MongoTemplate mongoTemplate;
 
     public MongoResourceManageHandler(ResourceModelFactory resourceModels, MongoTemplate mongoTemplate, ResourceReloadMange reloadMange) {
-        super(reloadMange);
-        this.resourceModels = resourceModels;
+        super(reloadMange, resourceModels);
         this.mongoTemplate = mongoTemplate;
     }
 
@@ -27,11 +24,6 @@ public class MongoResourceManageHandler extends DefaultResourceManageHandler {
             log.debug("Loading {} from mongodb..", resourceName);
         }
         return mongoTemplate.findAll(type, resourceName);
-    }
-
-    @Override
-    public ResourceModelFactory getResourceModelManage() {
-        return resourceModels;
     }
 
 }

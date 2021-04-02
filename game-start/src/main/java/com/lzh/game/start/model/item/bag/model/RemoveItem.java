@@ -3,8 +3,6 @@ package com.lzh.game.start.model.item.bag.model;
 import com.lzh.game.start.model.item.model.AbstractItem;
 import lombok.Getter;
 
-import java.util.Objects;
-
 @Getter
 public class RemoveItem {
 

@@ -1,10 +1,11 @@
 package com.lzh.game.start.model.core;
 
-import com.lzh.game.socket.dispatcher.action.convent.InnerParamDataBindHandler;
-import com.lzh.game.socket.exchange.Request;
-import com.lzh.game.socket.exchange.session.Session;
 import com.lzh.game.start.model.player.Player;
-import com.lzh.game.start.util.SpringContext;
+import com.lzh.game.common.ApplicationUtils;
+import com.lzh.game.socket.core.invoke.InnerParamDataBindHandler;
+import com.lzh.game.socket.core.Request;
+import com.lzh.game.socket.core.session.Session;
+import com.lzh.game.start.model.player.service.PlayerService;
 import org.springframework.core.MethodParameter;
 
 import java.util.*;
@@ -17,7 +18,7 @@ public class ConsumeInnerParamDataBindHandler implements InnerParamDataBindHandl
     static {
         INNER_PARAM.put(Session.class, r -> r.getSession());
         INNER_PARAM.put(Request.class, r -> r);
-        INNER_PARAM.put(Player.class, r -> SpringContext.singleTon().getPlayerService().getPlayer(r.getSession()));
+        INNER_PARAM.put(Player.class, r -> ApplicationUtils.getBean(PlayerService.class).getPlayer(r.getSession()));
     }
 
     @Override

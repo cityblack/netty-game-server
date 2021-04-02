@@ -1,6 +1,8 @@
 package com.lzh.game.resource;
 
+import com.lzh.game.resource.data.ResourceManageHandler;
 import com.lzh.game.resource.resource.*;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,10 +11,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.IntStream;
 
 @RunWith(SpringRunner.class)
@@ -39,6 +45,9 @@ public class StorageTest {
     private Storage<Integer, TestSixLockResource> sixLockResourceStorage;
     @Static
     private Storage<Integer, TestSevenLockResource> sevenLockResourceStorage;
+    @Autowired
+    private ResourceManageHandler manageHandler;
+
     @Test
     public void getAll() {
         log.info("{}", itemResourceStorage.getAll());
@@ -65,7 +74,18 @@ public class StorageTest {
 
     @Test
     public void addResource() {
-
+        TestItemResource resource = new TestItemResource();
+        resource.setKey(10001);
+        resource.setName("新产品");
+        resource.setPile(true);
+        resource.setType(1);
+        TestItemResource resource2 = new TestItemResource();
+        resource2.setKey(10002);
+        resource2.setName("测试");
+        resource2.setPile(true);
+        resource2.setType(2);
+        template.save(resource);
+        template.save(resource2);
     }
 
     @Test
@@ -127,7 +147,7 @@ public class StorageTest {
     @Test
     public void lockReadTest() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(8);
-        ExecutorService service = Executors.newFixedThreadPool(8);
+        ExecutorService service = Executors.newFixedThreadPool(11);
         service.submit(() -> {
             long time = System.currentTimeMillis();
             IntStream.range(0, 10000).forEach(itemResourceStorage::get);
@@ -180,6 +200,31 @@ public class StorageTest {
             System.out.println(System.currentTimeMillis() - time);
         });
 
+        latch.await();
+    }
+
+    @Test
+    public void readWrite() throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(2);
+        ExecutorService service = Executors.newFixedThreadPool(3);
+        service.submit(() -> {
+            long time = System.currentTimeMillis();
+            IntStream.range(0, 10000).forEach(itemResourceStorage::get);
+            System.out.println("read:" + String.valueOf(System.currentTimeMillis() - time));
+            latch.countDown();
+        });
+        service.submit(() -> {
+            long time = System.currentTimeMillis();
+            IntStream.range(0, 10000).forEach(itemResourceStorage::get);
+            System.out.println("read:" + String.valueOf(System.currentTimeMillis() - time));
+            latch.countDown();
+        });
+        service.submit(() -> {
+            long time = System.currentTimeMillis();
+            IntStream.range(0, 100).forEach(e -> manageHandler.reload(new Class[]{TestItemResource.class}));
+            System.out.println("reload: " + String.valueOf(System.currentTimeMillis() - time));
+            latch.countDown();
+        });
         latch.await();
     }
 }

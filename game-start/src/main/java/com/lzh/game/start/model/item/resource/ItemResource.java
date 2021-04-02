@@ -1,7 +1,5 @@
 package com.lzh.game.start.model.item.resource;
 
-import com.lzh.game.resource.Id;
-import com.lzh.game.resource.Resource;
 import com.lzh.game.start.model.core.util.condition.Condition;
 import com.lzh.game.start.model.core.util.condition.ConditionDef;
 import com.lzh.game.start.model.core.util.condition.ConditionUtils;
@@ -11,6 +9,8 @@ import com.lzh.game.start.model.core.util.consume.ConsumeUtils;
 import com.lzh.game.start.model.core.util.reward.Reward;
 import com.lzh.game.start.model.core.util.reward.RewardDef;
 import com.lzh.game.start.model.core.util.reward.RewardUtils;
+import com.lzh.game.resource.Id;
+import com.lzh.game.resource.Resource;
 import com.lzh.game.start.model.item.model.ItemType;
 import lombok.Data;
 
@@ -43,21 +43,21 @@ public class ItemResource {
 
     public Reward getReward() {
         if (Objects.isNull(rewardCache)) {
-            rewardCache = RewardUtils.createRewardByDef(reward);
+            rewardCache = Objects.isNull(reward) ? RewardUtils.createEmptyReward() : RewardUtils.createRewardByDef(reward);
         }
         return rewardCache;
     }
 
     public Consume getConsume() {
         if (Objects.isNull(consumeCache)) {
-            consumeCache = ConsumeUtils.createConsumeByDef(consume);
+            consumeCache = Objects.isNull(consume) ? ConsumeUtils.createEmptyAndConsume() : ConsumeUtils.createConsumeByDef(consume);
         }
         return consumeCache;
     }
 
     public Condition getCondition() {
         if (Objects.isNull(conditionCache)) {
-            conditionCache = ConditionUtils.createConditionByDef(condition);
+            conditionCache = Objects.isNull(condition) ? ConditionUtils.createEmptyAndConsume() : ConditionUtils.createConditionByDef(condition);
         }
         return conditionCache;
     }

@@ -4,8 +4,6 @@ import com.lzh.game.resource.Id;
 import com.lzh.game.resource.Resource;
 import lombok.Data;
 
-import java.util.List;
-
 @Resource
 @Data
 public class PandoraResource {
