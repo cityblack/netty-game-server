@@ -24,7 +24,7 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
         <protostuff.version>1.5.9</protostuff.version>
-        <netty.version>4.1.22.Final</netty.version>
+        <netty.version>4.1.42.Final</netty.version>
         <eventbus.version>3.1.1</eventbus.version>
         <!-- google core lib-->
         <guava.version>28.0-jre</guava.version>
