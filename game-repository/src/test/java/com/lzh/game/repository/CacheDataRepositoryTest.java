@@ -5,8 +5,7 @@ import com.lzh.game.repository.entity.Common;
 import com.lzh.game.repository.entity.User;
 import com.lzh.game.repository.model.AbstractItem;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.redisson.api.RedissonClient;
 import org.redisson.codec.JsonJacksonCodec;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = {com.lzh.game.repository.App.class})
 @Slf4j
 public class CacheDataRepositoryTest {

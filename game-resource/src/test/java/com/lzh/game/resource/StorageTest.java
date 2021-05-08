@@ -2,26 +2,18 @@ package com.lzh.game.resource;
 
 import com.lzh.game.resource.data.ResourceManageHandler;
 import com.lzh.game.resource.resource.*;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.IntStream;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = {com.lzh.game.resource.App.class})
 @Slf4j
 public class StorageTest {

@@ -1,7 +1,7 @@
 package com.lzh.game.common;
 
 import com.lzh.game.common.util.SnowFlake;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.stream.IntStream;
 

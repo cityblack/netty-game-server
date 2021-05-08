@@ -1,7 +1,7 @@
 package com.lzh.game.repository;
 
 import com.lzh.game.common.bean.BeanUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.codec.JsonJacksonCodec;

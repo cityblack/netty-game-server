@@ -26,14 +26,16 @@
         <protostuff.version>1.5.9</protostuff.version>
         <netty.version>4.1.42.Final</netty.version>
         <eventbus.version>3.1.1</eventbus.version>
-        <!-- google core lib-->
         <guava.version>28.0-jre</guava.version>
+        <lombok.version>1.18.8</lombok.version>
+        <slf4j-api.verion>1.7.25</slf4j-api.verion>
+        <reflections.version>0.9.10</reflections.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.4.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>2.4.5</version>
+        <relativePath/>
     </parent>
     <dependencies>
 
@@ -73,14 +75,14 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.8</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
+            <version>${slf4j-api.verion}</version>
         </dependency>
 
         <dependency>
@@ -105,7 +107,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.10</version>
+            <version>${reflections.version}</version>
         </dependency>
     </dependencies>
 
