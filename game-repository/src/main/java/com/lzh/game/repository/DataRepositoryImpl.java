@@ -4,7 +4,6 @@ import com.lzh.game.repository.cache.CacheEntity;
 import com.lzh.game.repository.db.Element;
 import com.lzh.game.repository.db.Persist;
 import com.lzh.game.repository.db.PersistRepository;
-import io.netty.util.internal.ConcurrentSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.cache.Cache;
@@ -13,9 +12,15 @@ import org.springframework.cache.CacheManager;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+/**
+ * Find data from cache. If can't find. find data from db
+ * @param <PK>
+ * @param <T>
+ */
 @Slf4j
 public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T extends BaseEntity<PK>>
         implements DataRepository<PK, T>, DisposableBean {
@@ -30,11 +35,7 @@ public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T exte
 
     private PersistRepository repository;
 
-    private Set<PK> loadedKeys = new ConcurrentSet<>();
-
     private boolean clearMemAfterClose;
-
-    private volatile boolean loadedAll = Boolean.FALSE;
 
     public DataRepositoryImpl(CacheManager cache, Persist persist, Class<T> cacheClass, PersistRepository repository, boolean clearMemAfterClose) {
         this.cache = cache;
@@ -73,23 +74,6 @@ public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T exte
     }
 
     @Override
-    public Stream<T> loadAll() {
-        if (this.loadedAll) {
-            return getAll();
-        }
-        this.loadedAll = true;
-        return this.repository
-                .findAll(this.cacheClass)
-                .stream()
-                .peek(this::addCache);
-    }
-
-    @Override
-    public Stream<T> getAll() {
-        return this.loadedKeys.stream().map(this::load);
-    }
-
-    @Override
     public void destroy() throws Exception {
         if (clearMemAfterClose) {
             this.clear();
@@ -98,7 +82,6 @@ public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T exte
 
     @Override
     public void clear() {
-        this.loadedKeys.clear();
         getCache().clear();
     }
 
@@ -107,6 +90,11 @@ public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T exte
         addCache(entity);
         persist.put(Element.saveOf(entity, this.cacheClass));
         return entity;
+    }
+
+    @Override
+    public void add(T entity) {
+        addCache(entity);
     }
 
     private Cache getCache() {
@@ -129,14 +117,12 @@ public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T exte
         if (Objects.nonNull(data)) {
             persist.put(Element.deleterOf(data, this.cacheClass));
             this.getCache().evict(pk);
-            this.loadedKeys.remove(pk);
         }
         return data;
     }
 
     private void addCache(CacheEntity<PK> cacheEntity) {
         PK key = cacheEntity.cacheKey();
-        this.loadedKeys.add(key);
         getCache().put(key, cacheEntity);
     }
 

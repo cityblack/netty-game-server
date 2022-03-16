@@ -1,6 +1,5 @@
 package com.lzh.game.start.model.target.handler.impl;
 
-import com.lzh.game.common.event.SubscribeListener;
 import com.lzh.game.start.model.player.Player;
 import com.lzh.game.start.model.target.Target;
 import com.lzh.game.start.model.target.TargetType;
@@ -16,7 +15,9 @@ public class LevelEtTargetHandler extends AbstractTargetHandler {
 
     @Override
     public void init(Player player, Target target) {
-        target.setCurrentValue(player.getLevel());
+        if (target.isHistory()) {
+            target.setCurrentValue(player.getLevel());
+        }
     }
 
     @Override

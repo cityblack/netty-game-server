@@ -1,14 +1,11 @@
 package com.lzh.game.start.model.player;
 
 import com.lzh.game.common.ApplicationUtils;
-import com.lzh.game.common.Forward;
 import com.lzh.game.common.util.TimeUtils;
 import com.lzh.game.repository.BaseEntity;
 import com.lzh.game.start.model.item.bag.Bag;
 import com.lzh.game.start.model.item.bag.dao.BagDataManage;
 import com.lzh.game.start.model.player.model.PlayerEnt;
-import com.lzh.game.start.model.wallet.Wallet;
-import com.lzh.game.start.model.wallet.service.WalletService;
 
 import java.util.Objects;
 
@@ -19,10 +16,6 @@ public class Player extends BaseEntity<Long> {
 
     private long objectId;
 
-    private Wallet wallet;
-
-    private Bag bag;
-
     // =====
     private PlayerEnt playerEnt;
 
@@ -31,15 +24,11 @@ public class Player extends BaseEntity<Long> {
     }
 
     public static Player of(PlayerEnt ent) {
-        if (Objects.isNull(ent.getForward())) {
-            ent.setForward(Forward.RIGHT.name());
-        }
         Player player = new Player();
         player.objectId = ent.getId();
         player.playerEnt = ent;
         return player;
     }
-
 
 
     public int currentMap() {
@@ -50,25 +39,13 @@ public class Player extends BaseEntity<Long> {
         return playerEnt.getChannel();
     }
 
-    public Wallet getWallet() {
-        if (Objects.isNull(wallet)) {
-            wallet = ApplicationUtils.getBean(WalletService.class).getWalletById(getKey());
-        }
-        return wallet;
-    }
-
     public boolean isFirstLogin() {
         return playerEnt.isFirstLogin();
     }
 
-
     public Bag getBag() {
-        if (Objects.isNull(bag)) {
-            bag = ApplicationUtils.getBean(BagDataManage.class).findBagByPlayer(this);
-        }
-        return bag;
+        return ApplicationUtils.getBean(BagDataManage.class).findBagByPlayer(this);
     }
-
 
     public int getLevel() {
         return playerEnt.getLevel();

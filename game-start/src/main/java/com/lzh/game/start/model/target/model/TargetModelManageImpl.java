@@ -19,7 +19,7 @@ public class TargetModelManageImpl implements TargetModelManage, ApplicationCont
     @Override
     public TargetModelStrategy getTargetModel(TargetModelSign sign) {
         if (!mapping.containsKey(sign)) {
-            throw new IllegalArgumentException("并未注册" + sign + "标识对应的handler");
+            throw new IllegalArgumentException("not defined " + sign + " handler");
         }
         return mapping.get(sign);
     }
@@ -43,7 +43,7 @@ public class TargetModelManageImpl implements TargetModelManage, ApplicationCont
                 throw new IllegalArgumentException("目标模块对应的标识为空。 目标模块:" + targetModelStrategy.getClass().getSimpleName());
             }
             if (mapping.containsKey(sign)) {
-                throw new IllegalArgumentException("重复注册目标模块标识. TargetModelSign:" + sign + "");
+                throw new IllegalArgumentException(sign + " .TargetModelSign isn't unique");
             }
             mapping.put(sign, targetModelStrategy);
         });

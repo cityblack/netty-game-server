@@ -2,6 +2,10 @@ package com.lzh.game.repository.db;
 
 import java.io.Serializable;
 
+/**
+ * DB Object
+ * @param <PK>
+ */
 public interface PersistEntity<PK extends Serializable & Comparable<PK>> {
 
 

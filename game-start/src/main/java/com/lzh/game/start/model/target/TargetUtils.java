@@ -19,7 +19,8 @@ import java.util.function.Function;
 @Slf4j
 public class TargetUtils {
     /**
-     * 目标入口 与resource关联
+     * Produce target with targetDef
+     *
      * @param player
      * @param id
      * @param targetDef
@@ -32,7 +33,7 @@ public class TargetUtils {
 
         TargetModelStrategy model = targetModel(modelSign);
 
-        for (TargetDef def: targetDef) {
+        for (TargetDef def : targetDef) {
             Target target = model.crateAndSaveTarget(player, id, def);
             TargetType type = target.getTargetType();
             AbstractTargetHandler handler = handler(type);
@@ -60,6 +61,7 @@ public class TargetUtils {
 
     /**
      * For each all target model
+     *
      * @param player
      * @param process -- target current progress value
      */

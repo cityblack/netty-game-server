@@ -1,9 +1,7 @@
 package com.lzh.game.start.model.player.model;
 
-import com.lzh.game.common.Forward;
-import com.lzh.game.repository.BaseEntity;
-import com.lzh.game.repository.db.PersistEntity;
 import com.lzh.game.common.util.TimeUtils;
+import com.lzh.game.repository.BaseEntity;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -46,11 +44,6 @@ public class PlayerEnt extends BaseEntity<Long> implements Serializable {
     private int level;
     // 当前经验
     private long exp;
-    /**
-     * 当前前进方向
-     * {@link com.lzh.game.common.Forward}
-     */
-    private String forward;
 
     @Override
     public Long cacheKey() {
@@ -64,7 +57,6 @@ public class PlayerEnt extends BaseEntity<Long> implements Serializable {
         ent.setFirstLogin(true);
         ent.setLogoutTime(TimeUtils.now());
         ent.setCreateTime(TimeUtils.now());
-        ent.setForward(Forward.RIGHT.name());
         return ent;
     }
 

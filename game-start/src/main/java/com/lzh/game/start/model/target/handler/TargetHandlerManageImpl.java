@@ -18,7 +18,7 @@ public class TargetHandlerManageImpl implements TargetHandlerManage, Application
     @Override
     public AbstractTargetHandler handler(TargetType targetType) {
         if (!map.containsKey(targetType)) {
-            throw new IllegalArgumentException("找不到对应的AbstractTargetHandler");
+            throw new IllegalArgumentException("Can't find AbstractTargetHandler:" + targetType);
         }
         return map.get(targetType);
     }

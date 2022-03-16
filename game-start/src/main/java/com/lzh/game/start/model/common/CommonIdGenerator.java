@@ -2,7 +2,7 @@ package com.lzh.game.start.model.common;
 
 public enum CommonIdGenerator {
     /**
-     * 生成的场景数据
+     * demo data
      */
     DEMO(1001) {
         @Override

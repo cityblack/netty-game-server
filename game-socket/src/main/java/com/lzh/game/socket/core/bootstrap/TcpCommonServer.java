@@ -46,7 +46,7 @@ public class TcpCommonServer extends AbstractServerBootstrap
             @Override
             protected void initChannel(Channel ch) throws Exception {
                 ch.pipeline()
-                        .addLast(new LoggingHandler(LogLevel.DEBUG))
+                        .addLast(new LoggingHandler(properties.getNettyLogLevel()))
                         .addLast(new IdleStateHandler(0,0,180, TimeUnit.SECONDS))
                         .addLast(new ProtobufVarint32FrameDecoder())
                         .addLast(new ProtobufVarint32LengthFieldPrepender())

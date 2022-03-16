@@ -9,17 +9,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Target system, It's used for Player Achievement
+ * A target may consist of multiple target.
+ * exp: [{"key":1,"type":"LevelEt","value":10},{}]
+ */
 @ToString
 public class Target {
-    // 关联对应的id
+    // unique id
     @Getter
     private int id;
-    // 区分一条同时有多个Target
+
+    @Getter
     private int key;
-    // 目标值
+    // target value
     @Getter
     private long targetValue;
-    // 当前值
+    // the target current value
     @Getter
     @Setter
     private long currentValue;
