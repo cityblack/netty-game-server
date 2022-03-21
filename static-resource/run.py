@@ -45,16 +45,19 @@ def loadFile(path):
     return df.to_dict(orient='records')
 
 if __name__ == '__main__':
-    
-    opts, args = getopt.getopt(sys.argv[1:],"h:p:",["host:","port:"])
+
+    opts, args = getopt.getopt(sys.argv[1:],"h:p:db",["host:","port:"])
     host = "127.0.0.1"
     port = 27017
+    db = "game"
     for op, value in opts:
         if "-h" == op or op == "--host":
             host = value
         elif "-p" == op or op == "--port":
             port = value
-    print("connect to {0}:{1}".format(host, port))
+        elif "-db" == op:
+            db = value
+    print("connect to {0}:{1}:{2}".format(host, port, db))
     client = pymongo.MongoClient(host, int(port))
-    
-    walkFile("./", client["game"])
+
+    walkFile("./", client[db])
