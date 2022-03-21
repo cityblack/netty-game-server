@@ -58,7 +58,9 @@ public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T exte
             return cache;
         }
         T entity = repository.findById(pk, this.cacheClass);
-        addCache(entity);
+        if (Objects.nonNull(entity)) {
+            addCache(entity);
+        }
         return entity;
     }
 
