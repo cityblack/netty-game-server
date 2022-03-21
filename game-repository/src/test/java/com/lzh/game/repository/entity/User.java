@@ -60,7 +60,7 @@ public class User extends BaseEntity<String> implements Serializable {
         User.Equipment equipment = new User.Equipment();
         equipment.setEffect(true);
         equipment.setId(100862211);
-        equipment.setName("黄金");
+        equipment.setName("gold");
         equipment.setUpdateTime(System.nanoTime());
         return equipment;
     }
@@ -69,22 +69,22 @@ public class User extends BaseEntity<String> implements Serializable {
         User.Item item = new User.Item();
         item.setI18n(10086);
         item.setId(100223111);
-        item.setName("白色镜子");
+        item.setName("white");
         item.setModel(1903311);
         item.setSign("Guard_Item");
         item.setType("UserAble");
         return item;
     }
 
-    public static User createUser() {
+    public static User createUser(String key) {
         User user = new User();
-
+        user.setId(key);
         user.setAddress("福建省宁德市，寿宁县");
-        user.setName("刘泽弘");
-        user.setAge(26);
+        user.setName("lzh");
+        user.setAge(28);
         user.setMoney(10.23f);
         user.setWork("37互娱");
-        user.setTel("18928907870");
+        user.setTel("1008611");
         Map<String, Equipment> equipmentMap = new HashMap<>();
         equipmentMap.put("A", equipment());
         equipmentMap.put("B", equipment());

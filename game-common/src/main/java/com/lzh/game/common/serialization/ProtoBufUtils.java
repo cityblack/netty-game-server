@@ -4,8 +4,8 @@ import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
 import io.protostuff.runtime.RuntimeSchema;
-import org.objenesis.Objenesis;
-import org.objenesis.ObjenesisStd;
+import org.springframework.objenesis.Objenesis;
+import org.springframework.objenesis.ObjenesisStd;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,7 +32,7 @@ public class ProtoBufUtils {
 
     public static <T>T deSerialize(byte[] bytes, Class<T> clazz) {
         try {
-            T message = (T) OBJENESIS.newInstance(clazz);
+            T message = OBJENESIS.newInstance(clazz);
             Schema<T> schema = getSchema(clazz);
             ProtostuffIOUtil.mergeFrom(bytes, message, schema);
             return message;

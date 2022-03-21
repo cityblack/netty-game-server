@@ -3,7 +3,7 @@ package com.lzh.game.framework;
 import com.lzh.game.common.CommonConfig;
 import com.lzh.game.framework.scheduler.SchedulerOption;
 import com.lzh.game.framework.scheduler.impl.SchedulerOptionImpl;
-import com.lzh.game.repository.GameRepositoryBean;
+import com.lzh.game.repository.config.GameRepositoryBean;
 import com.lzh.game.resource.GameResourceBean;
 import com.lzh.game.socket.config.GameSocketConfiguration;
 import org.quartz.Scheduler;

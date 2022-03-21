@@ -1,27 +1,24 @@
 package com.lzh.game.repository;
 
-import com.lzh.game.common.serialization.JsonUtils;
 import com.lzh.game.repository.entity.Common;
 import com.lzh.game.repository.entity.User;
-import com.lzh.game.repository.model.AbstractItem;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.redisson.api.RedissonClient;
-import org.redisson.codec.JsonJacksonCodec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 @SpringBootTest(classes = {com.lzh.game.repository.App.class})
 @Slf4j
 public class CacheDataRepositoryTest {
+
+    private static final String USER_ID = "netty.game.user";
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -32,106 +29,33 @@ public class CacheDataRepositoryTest {
     @Repository
     private DataRepository<String, Common> commonDataRepository;
 
-    @Autowired
-    private RedissonClient redissonClient;
-
     @Test
     public void get() {
-        Map<String, Object> map = redissonClient.getMap("xx", new JsonJacksonCodec());
-        User user = User.createUser();
-        System.out.println(map);
+        User user = dataRepository.get(USER_ID);
+        Assert.notNull(user, "can't find user");
     }
 
     @Test
     public void load() {
-        final String uuid = "xxxxxxx";
-
-        User user = dataRepository.loadOrCreate(uuid, (pk) -> {
-            User newUser = new User();
-            newUser.setId(pk);
-            newUser.setAge(30);
-            newUser.setAddress("广东省广州市");
-            return newUser;
-        });
-        user.setTel("110120130140");
-//        PlayerItemBox box = dataRepository.enhanceLoadOrCreate(user.cacheKey(), PlayerItemBox.class
-//                , itemBoxRepository, e -> {
-//                    PlayerItemBox box1 = new PlayerItemBox();
-//                    box1.setPlayer(e);
-//                    return box1;
-//                });
-
-        AbstractItem item = new AbstractItem();
-        item.setName("白色金卡");
-        item.setNum(10);
-//        box.addItem(item);
-//        box.setUpdateTime(System.currentTimeMillis());
-//        dataRepository.update(box);
-        dataRepository.update(user);
-        log.info("{}", user);
+        User user = dataRepository.load(USER_ID);
+        Assert.notNull(user, "can't find user");
     }
 
     @Test
     public void loadOrCreate() {
-
-        final String keyValue = "102";
-
-        Common value = commonDataRepository.loadOrCreate(keyValue, (key) -> {
-            Common common = new Common();
-            common.setId(key);
-            common.setData(JsonUtils.toJson(new User()));
-            return common;
-        });
-        User user = new User();
-        user.setAddress("福建宁德");
-        String s = JsonUtils.toJson(user);
-        value.setData(s);
-
-        commonDataRepository.update(value);
-        log.info("{}", value);
+        User user = getUser(USER_ID);
+        Assert.notNull(user, "can't find user");
     }
 
     @Test
     public void update() {
-        User users = User.createUser();
-        String key = "lzh";
-        addUser(key, users);
-        long time = System.currentTimeMillis();
-
-//        redisTemplate.getConnectionFactory().getConnection()
-        IntStream.range(0, 10000).forEach(e -> {
-            User user = getUser(key);
-            if (user.getItems().size() < 500) {
-                user.getItems().add(new User.Item());
-            }
-            addUser(key, user);
-        });
-        System.out.println(System.currentTimeMillis() - time);
+        User user = getUser(USER_ID);
+        user.setAge(22);
+        dataRepository.update(user);
     }
 
     private User getUser(String key) {
-        //return (User) redisTemplate.opsForValue().get(key);
-        //return BeanUtil.mapToBean(redissonClient.getMap(key), User.class);
-        return null;
-    }
-
-    private void addUser(String key, User user) {
-        //redisTemplate.opsForValue().set(key, user);
-//        redissonClient.getMap(key, new JsonJacksonCodec()).putAll(BeanUtil.beanToMap(user));
-    }
-
-    private Map<String, Object> change(User user) {
-        Class<?> c = user.getClass();
-        Map<String, Object> change = new HashMap<>(1);
-        ReflectionUtils.doWithFields(c, e -> {
-            ReflectionUtils.makeAccessible(e);
-            change.put(e.getName(), ReflectionUtils.getField(e, user));
-        }, e -> Collection.class.isAssignableFrom(e.getType()));
-        return change;
-    }
-
-    @Test
-    public void update1() {
+        return dataRepository.loadOrCreate(key, User::createUser);
     }
 
     @Test

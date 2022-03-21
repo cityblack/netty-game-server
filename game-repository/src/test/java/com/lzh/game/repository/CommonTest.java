@@ -1,6 +1,5 @@
 package com.lzh.game.repository;
 
-import com.lzh.game.common.bean.BeanUtil;
 import org.junit.jupiter.api.Test;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -47,10 +46,6 @@ public class CommonTest {
         System.out.println(user);*/
         Map<String, Object> objectMap = client.getMap("xx", new JsonJacksonCodec());
         objectMap.clear();
-    }
-
-    private Map<String, Object> transfer(Object o) {
-        return BeanUtil.beanToMap(o);
     }
 
     @Test
