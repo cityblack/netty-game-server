@@ -1,6 +1,5 @@
 package com.lzh.game.repository;
 
-import com.lzh.game.repository.config.GameRepositoryConfig;
 import com.lzh.game.repository.db.Persist;
 import com.lzh.game.repository.db.PersistEntity;
 import com.lzh.game.repository.db.PersistRepository;

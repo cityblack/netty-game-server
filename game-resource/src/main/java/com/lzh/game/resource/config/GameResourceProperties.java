@@ -1,4 +1,4 @@
-package com.lzh.game.resource;
+package com.lzh.game.resource.config;
 
 import com.lzh.game.resource.data.DefaultNameStrategyStandard;
 import com.lzh.game.resource.data.ResourceNameStrategyStandard;

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * 使用cas控制资源读取. 当调用{@link #reload()}或是{@link #reload(Class[])}}, 会将class对应
@@ -15,7 +16,7 @@ public class ConcurrentResourceManageHandler implements ResourceManageHandler {
     // Fact option handler
     private ResourceManageHandler handler;
     /**
-     * 使用Atomic减小锁颗粒度
+     * Use AtomicBoolean to reduce the force of the lock
      */
     private Map<Class<?>, AtomicBoolean> status;
 
@@ -84,7 +85,7 @@ public class ConcurrentResourceManageHandler implements ResourceManageHandler {
      * @return
      */
     private AtomicBoolean getStatus(Class<?> clazz) {
-        return this.status.get(clazz);
+        return this.status.computeIfAbsent(clazz, c -> new AtomicBoolean(false));
     }
 
     private void setStatus(AtomicBoolean status, boolean value) {
@@ -99,6 +100,8 @@ public class ConcurrentResourceManageHandler implements ResourceManageHandler {
 
     private void writingWait(Class<?> clazz) {
         AtomicBoolean status = getStatus(clazz);
-        while (!status.compareAndSet(!WRITING, !WRITING)) {}
+        while (!status.compareAndSet(!WRITING, !WRITING)) {
+            LockSupport.parkNanos(100L);
+        }
     }
 }

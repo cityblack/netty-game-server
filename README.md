@@ -12,7 +12,7 @@ At present. The framework integrate redis. mongodb. protocolBuffer. eventBus. an
 ## Getting Started
 
 ```
-mvn install pack
+mvn clean package
 java -jar game-start/target/*.jar
 ```
 
@@ -20,11 +20,11 @@ java -jar game-start/target/*.jar
 
 1. Installing redis 
 2. Installing mongodb
-3. Using the python execute the script `static-resource/run.py` to add some data
+3. Using the python execute the script `static-resource/run.py`. Add some data to mongodb
 4. Executing game-start module App
 
 ```
-python static-resource/run.py
+python static-resource/run.py -h mongodb_host -p mongodb_port
 ```
 
 ## Feature 

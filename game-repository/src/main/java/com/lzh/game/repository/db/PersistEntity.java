@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 /**
  * DB Object
+ * The object of persisting to db must be implements the interface
  * @param <PK>
  */
 public interface PersistEntity<PK extends Serializable & Comparable<PK>> {

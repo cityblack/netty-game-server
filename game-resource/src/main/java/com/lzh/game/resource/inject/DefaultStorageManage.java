@@ -4,6 +4,7 @@ package com.lzh.game.resource.inject;
 import com.lzh.game.resource.Storage;
 import com.lzh.game.resource.data.ResourceManageHandler;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;

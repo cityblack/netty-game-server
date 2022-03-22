@@ -1,6 +1,6 @@
 package com.lzh.game.resource.data;
 
-import com.lzh.game.resource.GameResourceProperties;
+import com.lzh.game.resource.config.GameResourceProperties;
 import com.lzh.game.resource.Id;
 import com.lzh.game.resource.Index;
 import com.lzh.game.resource.Resource;

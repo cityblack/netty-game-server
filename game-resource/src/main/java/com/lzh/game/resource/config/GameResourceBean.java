@@ -1,4 +1,4 @@
-package com.lzh.game.resource;
+package com.lzh.game.resource.config;
 
 import com.lzh.game.resource.data.ConcurrentResourceManageHandler;
 import com.lzh.game.resource.data.DefaultResourceModelFactory;
@@ -7,11 +7,14 @@ import com.lzh.game.resource.data.ResourceModelFactory;
 import com.lzh.game.resource.data.mongo.MongoResourceManageHandler;
 import com.lzh.game.resource.reload.ResourceReloadMange;
 import com.lzh.game.resource.reload.ResourceReloadMangeImpl;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.format.support.FormattingConversionService;
 
 @Configuration
 @EnableConfigurationProperties(GameResourceProperties.class)
@@ -34,5 +37,11 @@ public class GameResourceBean {
     @Bean
     public ResourceReloadMange reloadMange() {
         return new ResourceReloadMangeImpl();
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public ConversionService conversionService() {
+        return new FormattingConversionService();
     }
 }
