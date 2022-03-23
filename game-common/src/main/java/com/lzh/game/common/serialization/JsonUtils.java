@@ -9,7 +9,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.type.ArrayType;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.TypeBindings;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import java.io.InputStream;
@@ -136,8 +138,10 @@ public final class JsonUtils {
      * @return
      */
     public static <T>T[] toArray(String json, Class<T> clazz) {
+
+        ArrayType type = ArrayType.construct(typeFactory.constructType(clazz), TypeBindings.emptyBindings());
         try {
-            return (T[]) mapper.readValue(json, clazz);
+            return mapper.readValue(json, type);
         } catch (IOException e) {
             throw new DeserializationException(e);
         }

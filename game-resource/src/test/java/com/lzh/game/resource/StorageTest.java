@@ -2,14 +2,12 @@ package com.lzh.game.resource;
 
 import com.lzh.game.resource.data.ResourceManageHandler;
 import com.lzh.game.resource.resource.*;
-import javassist.util.proxy.ProxyFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -224,11 +222,5 @@ public class StorageTest {
             latch.countDown();
         });
         latch.await();
-    }
-
-    public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        ProxyFactory proxyFactory = new ProxyFactory();
-
-
     }
 }
