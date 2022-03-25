@@ -18,6 +18,13 @@ import java.util.stream.Stream;
 @Slf4j
 public abstract class DefaultResourceManageHandler implements ResourceManageHandler {
 
+    /**
+     * Load all data
+     * @param type
+     * @param resourceName
+     * @param <T>
+     * @return
+     */
     public abstract <T>List<T> getData(Class<T> type, String resourceName);
 
     private Table<Class<?> ,String, Map<Object, List<?>>> indexDataContain = HashBasedTable.create();
@@ -105,7 +112,7 @@ public abstract class DefaultResourceManageHandler implements ResourceManageHand
     }
 
     protected <V>void put(V data, ResourceModel resourceModel) {
-        resourceModel.forEachIndex((k,v) ->  buildIndex(data, v));
+        resourceModel.forEachIndex((k,v) -> buildIndex(data, v));
         List<V> contain = getDataContain(resourceModel.getDataType(), resourceModel.getComparator());
         contain.add(data);
         afterPutData(data);

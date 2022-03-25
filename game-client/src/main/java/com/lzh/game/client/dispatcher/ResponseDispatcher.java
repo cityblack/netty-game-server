@@ -46,7 +46,7 @@ public class ResponseDispatcher {
         if (parameters.length > 0) {
             MethodParameter defaultValue = parameters[0];
 
-            return new Object[]{SerializationUtil.deSerialize(data, defaultValue.getParameterType())};
+            return new Object[]{ProtoBufUtils.deSerialize(data, defaultValue.getParameterType())};
         }
         return null;
     }

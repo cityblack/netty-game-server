@@ -1,6 +1,7 @@
 package com.lzh.game.socket.core.invoke;
 
 import com.lzh.game.common.ProcessListener;
+import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.common.bean.HandlerMethod;
 
 import com.lzh.game.socket.annotation.ControllerAdvice;
@@ -49,9 +50,9 @@ public class ActionRequestHandler implements RequestHandler, ApplicationContextA
 
     private InvokeMethodArgumentValues<Request> transfer;
 
-    private ActionMethodSupport support;
+    private ActionMethodSupport<EnhanceHandlerMethod> support;
 
-    public ActionRequestHandler(ActionMethodSupport support, InvokeMethodArgumentValues<Request> transfer) {
+    public ActionRequestHandler(ActionMethodSupport<EnhanceHandlerMethod> support, InvokeMethodArgumentValues<Request> transfer) {
         this.support = support;
         this.transfer = transfer;
     }
@@ -67,16 +68,18 @@ public class ActionRequestHandler implements RequestHandler, ApplicationContextA
             return;
         }
 
-        RequestMethodMapping method = support.getActionHandler(cmd);
+        EnhanceHandlerMethod method = support.getActionHandler(cmd);
 
         try {
-            Object o = invokeForRequest(request, method.getHandlerMethod());
+            Object o = invokeForRequest(request, method);
+            // If return value isn't null. Check response cmd.
             if (Objects.nonNull(o)) {
-                if (method.getResponse() == ERROR_PROTOCOL_CODER) {
+                int responseCMD = support.getRequestRelation(cmd);
+                if (responseCMD == ERROR_PROTOCOL_CODER) {
                     listener.error(new NotDefinedResponseProtocolException(cmd));
                     return;
                 }
-                response.setCmd(method.getResponse());
+                response.setCmd(responseCMD);
                 response.setData(o);
             }
             listener.success(exchange);

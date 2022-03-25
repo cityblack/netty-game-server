@@ -31,7 +31,6 @@ public class HandlerMethod {
         this.beanType = ClassUtils.getUserClass(bean);
         this.bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
         this.parameters = this.initMethodParameters();
-
     }
 
     private MethodParameter[] initMethodParameters() {

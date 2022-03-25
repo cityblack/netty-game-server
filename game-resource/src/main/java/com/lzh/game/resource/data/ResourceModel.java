@@ -6,6 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+/**
+ * {@link com.lzh.game.resource.Resource}
+ * {@link com.lzh.game.resource.Id}
+ * {@link com.lzh.game.resource.Index}
+ * Resource entity model
+ */
 public class ResourceModel {
 
     private Getter id;

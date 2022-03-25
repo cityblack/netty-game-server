@@ -1,10 +1,12 @@
 package com.lzh.game.socket.core.invoke;
 
+import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.socket.annotation.Action;
 import com.lzh.game.socket.annotation.RequestMapping;
 import com.lzh.game.socket.annotation.ResponseMapping;
 import com.lzh.game.socket.core.invoke.cmd.CmdMappingManage;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -18,14 +20,17 @@ import java.util.stream.Stream;
 import static com.lzh.game.socket.core.invoke.cmd.CmdMappingManage.*;
 
 @Slf4j
-public class DefaultActionMethodSupport implements ActionMethodSupport, ApplicationContextAware {
+public class DefaultActionMethodSupport implements ActionMethodSupport<EnhanceHandlerMethod>, ApplicationContextAware {
 
-    private final Map<Integer, RequestMethodMapping> protocolMap = new HashMap<>();
+    private final Map<Integer, EnhanceHandlerMethod> protocolMap = new HashMap<>();
+    private final Map<Integer, Integer> requestAndResponseMapping = new HashMap<>();
+
     private CmdMappingManage cmdMappingManage;
     private InnerParamDataBindHandler innerParamDataBindHandler;
 
+
     @Override
-    public RequestMethodMapping getActionHandler(int cmd) {
+    public EnhanceHandlerMethod getActionHandler(int cmd) {
         return protocolMap.get(cmd);
     }
 
@@ -35,20 +40,29 @@ public class DefaultActionMethodSupport implements ActionMethodSupport, Applicat
     }
 
     @Override
-    public void registerCmd(int cmd, RequestMethodMapping methodMapping) {
+    public void registerCmd(int cmd, EnhanceHandlerMethod methodMapping) {
 
-        if (protocolMap.containsKey(methodMapping.getValue())) {
-            throw new IllegalArgumentException("Repeated registration " + methodMapping.getValue() + " proto.");
+        if (protocolMap.containsKey(cmd)) {
+            throw new IllegalArgumentException("Repeated registration " + cmd + " proto.");
         }
-
-        protocolMap.put(methodMapping.getValue(), methodMapping);
+        protocolMap.put(cmd, methodMapping);
 
         if (log.isInfoEnabled()) {
-            log.info("Request [{}] into {}.{}", methodMapping.getValue(), methodMapping.getHandlerMethod().getBean().getClass().getName(), methodMapping.getHandlerMethod().getMethod().getName());
-            if (methodMapping.getResponse() != 0) {
-                log.info("[{}] protocol response [{}]", methodMapping.getValue(), methodMapping.getResponse());
-            }
+            log.info("Request [{}] into {}.{}", cmd, methodMapping.getBean().getClass().getName(), methodMapping.getMethod().getName());
         }
+    }
+
+    @Override
+    public void registerRequestRelation(int requestCmd, int responseCmd) {
+        if (requestAndResponseMapping.containsKey(requestCmd)) {
+            throw new IllegalArgumentException("Repeated request registration: " + requestCmd);
+        }
+        this.requestAndResponseMapping.put(requestCmd, responseCmd);
+    }
+
+    @Override
+    public int getRequestRelation(int requestCmd) {
+        return this.requestAndResponseMapping.getOrDefault(requestCmd, 0);
     }
 
     @Override
@@ -66,12 +80,15 @@ public class DefaultActionMethodSupport implements ActionMethodSupport, Applicat
                         throw new IllegalArgumentException("@Action can't use to interface.");
                     }
                     ReflectionUtils.doWithMethods(clazz, e -> {
-                        HandlerMethod method = new HandlerMethod(v, e);
+                        EnhanceHandlerMethod method = new EnhanceHandlerMethod(v, e);
                         RequestMapping mapping = method.getMethodAnnotation(RequestMapping.class);
 
                         RequestMethodMapping methodMapping = parseTargetMethod(mapping, method);
 
-                        registerCmd(methodMapping.getValue(), methodMapping);
+                        registerCmd(methodMapping.getValue(), method);
+                        if (methodMapping.getResponse() != 0) {
+                            registerRequestRelation(methodMapping.getValue(), methodMapping.getResponse());
+                        }
                     }, m -> m.isAnnotationPresent(RequestMapping.class));
                 });
             }
@@ -137,5 +154,42 @@ public class DefaultActionMethodSupport implements ActionMethodSupport, Applicat
         if (!cmdMappingManage.contain(cmd)) {
             throw new IllegalArgumentException("Not register [" + cmd + "] protocol");
         }
+    }
+
+    @Data
+    public class RequestMethodMapping {
+        /**
+         * cmd id
+         */
+        private int value;
+
+        private int response;
+
+        private HandlerMethod handlerMethod;
+
+        @Override
+        public boolean equals(Object obj) {
+
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof RequestMethodMapping)) {
+                return false;
+            }
+            if (((RequestMethodMapping) obj).getValue() == this.getValue()) {
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(this.value);
+        }
+
+        public boolean hasResponse() {
+            return this.getResponse() != 0;
+        }
+
     }
 }
