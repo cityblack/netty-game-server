@@ -23,7 +23,7 @@ public class PackUtils {
         ExchangeProtocol.Request.Builder request = ExchangeProtocol.Request.newBuilder();
         request.setHead(head);
         if (Objects.nonNull(data)) {
-            request.setBody(ByteString.copyFrom(SerializationUtil.serialize(data)));
+            request.setBody(ByteString.copyFrom(ProtoBufUtils.serialize(data)));
         }
         return request.build();
     }
