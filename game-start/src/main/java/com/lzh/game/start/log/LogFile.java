@@ -6,7 +6,8 @@ public enum LogFile {
     LOGIN,
     // 物品通用日志
     ITEM,
-    // 玩家经验变动
+    // player exp
     EXP,
 
+    CURRENCY,
 }

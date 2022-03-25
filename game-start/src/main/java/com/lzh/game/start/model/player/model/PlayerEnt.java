@@ -2,6 +2,7 @@ package com.lzh.game.start.model.player.model;
 
 import com.lzh.game.common.util.TimeUtils;
 import com.lzh.game.repository.BaseEntity;
+import com.lzh.game.start.model.wallet.Wallet;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -44,6 +45,8 @@ public class PlayerEnt extends BaseEntity<Long> implements Serializable {
     private int level;
     // 当前经验
     private long exp;
+
+    private Wallet wallet;
 
     @Override
     public Long cacheKey() {

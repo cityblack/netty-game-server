@@ -11,5 +11,5 @@ public class GameSocketProperties {
     private int port = 8099;
     private Integer protocolVersion = 10000;
     private boolean openGm = false;
-    private LogLevel nettyLogLevel = LogLevel.INFO;
+    private LogLevel nettyLogLevel = LogLevel.ERROR;
 }

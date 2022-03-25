@@ -1,3 +1,4 @@
+/*
 package com.lzh.game.start.util.lock;
 
 import org.redisson.api.RLock;
@@ -14,10 +15,12 @@ public class LockUtils {
     @Autowired
     private RedissonClient client;
 
-    /**
+    */
+/**
      * @return
-     */
-    public <T>LockGet<T> getLock(String key, Supplier<T> supplier) {
+     *//*
+
+    public <T> LockGet<T> getLock(String key, Supplier<T> supplier) {
         return new RedisLockGet(key, supplier, client);
     }
 
@@ -31,3 +34,4 @@ public class LockUtils {
     }
 
 }
+*/

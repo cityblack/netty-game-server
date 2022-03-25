@@ -8,7 +8,7 @@
 
         <logger name="org.springframework" level="INFO"></logger>
         <logger name="com.mongodb" level="INFO"></logger>
-        <logger name="io.netty" level="DEBUG"></logger>
+        <logger name="io.netty" level="INFO"></logger>
         <logger name="com.lzh.game" level="DEBUG"></logger>
 
         <root level="INFO">

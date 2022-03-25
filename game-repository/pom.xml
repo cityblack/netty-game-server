@@ -14,7 +14,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <caffeine.version>2.8.8</caffeine.version>
+        <redission-starter.version>3.11.4</redission-starter.version>
     </properties>
 
     <dependencies>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson-spring-boot-starter</artifactId>
-            <version>3.11.4</version>
+            <version>${redission-starter.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -39,6 +39,7 @@
                     <artifactId>spring-boot-starter-actuator</artifactId>
                 </exclusion>
             </exclusions>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

@@ -8,8 +8,9 @@ import java.util.stream.Stream;
 
 public enum LogReason {
 
-    CONSOLE(1001, "控制台"),
+    CONSOLE(1001, "console"),
 
+    USE_ITEM(2001, "use item"),
     ;
 
     @Getter

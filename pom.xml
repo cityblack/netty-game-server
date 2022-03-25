@@ -28,7 +28,8 @@
         <eventbus.version>3.1.1</eventbus.version>
         <guava.version>31.0.1-jre</guava.version>
         <lombok.version>1.18.8</lombok.version>
-        <slf4j-api.verion>1.7.25</slf4j-api.verion>
+        <slf4j-api.verion>1.7.36</slf4j-api.verion>
+        <log4j-slf4j-impl.version>2.17.1</log4j-slf4j-impl.version>
         <reflections.version>0.9.10</reflections.version>
     </properties>
     <parent>
@@ -48,18 +49,18 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <!--<exclusions>
+            <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
-            </exclusions>-->
+            </exclusions>
         </dependency>
 
-        <!--<dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
-        </dependency>-->
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -86,17 +87,17 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j-slf4j-impl.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.greenrobot</groupId>
             <artifactId>eventbus</artifactId>
             <version>${eventbus.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.javassist/javassist -->
-        <!--<dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-            <version>3.25.0-GA</version>
-        </dependency>-->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -110,6 +111,5 @@
             <version>${reflections.version}</version>
         </dependency>
     </dependencies>
-
 
 </project>

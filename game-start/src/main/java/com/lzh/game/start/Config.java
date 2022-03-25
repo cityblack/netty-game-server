@@ -40,6 +40,10 @@ public class Config {
         return pool;
     }
 
+    /**
+     * Use caffeine cache
+     * @return
+     */
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();

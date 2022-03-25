@@ -17,13 +17,16 @@ import java.util.stream.IntStream;
 
 /**
  * It's a demo for RequestBusinessPool.
+ * If the request is about the player, the player's request should be forwarded to the player's game scene
  */
 @Slf4j
 public class DefaultBusinessThreadPool implements RequestBusinessPool, GameExecutorService {
 
     private static DefaultBusinessThreadPool instance = new DefaultBusinessThreadPool();
-
+    // Use disruptor?
     private static ExecutorService[] executors;
+
+    private final static ExecutorService COMMON = Executors.newSingleThreadScheduledExecutor();
 
     private static int available;
 
@@ -37,6 +40,7 @@ public class DefaultBusinessThreadPool implements RequestBusinessPool, GameExecu
         specialCmd = new HashSet<>();
         specialCmd.add(CmdMessage.CM_LOGIN);
         specialCmd.add(CmdMessage.CM_REGISTER);
+        specialCmd.add(CmdMessage.CM_LOGOUT);
         init();
     }
 
@@ -45,8 +49,9 @@ public class DefaultBusinessThreadPool implements RequestBusinessPool, GameExecu
     }
 
     private int index(ServerExchange exchange) {
-
-        return 0;
+        Session session = exchange.getSession();
+        // todo. Game scene
+        return session.hashCode() % available;
     }
 
     private int index(Session session) {
@@ -58,7 +63,7 @@ public class DefaultBusinessThreadPool implements RequestBusinessPool, GameExecu
         executors = IntStream.range(0, available)
                 .mapToObj(e -> Executors.newSingleThreadScheduledExecutor())
                 .toArray(ExecutorService[]::new);
-        log.info("Opens the {} core threads..", available);
+        log.info("Opens {} core threads..", available);
     }
 
     @Override
@@ -70,7 +75,7 @@ public class DefaultBusinessThreadPool implements RequestBusinessPool, GameExecu
     @Override
     public void submit(ServerExchange exchange, Runnable runnable) {
         if (specialRequest(exchange.getRequest().getCmd())) {
-            CompletableFuture.runAsync(runnable, executors[1]);
+            CompletableFuture.runAsync(runnable, COMMON);
         } else {
             CompletableFuture.runAsync(runnable, executors[index(exchange)]);
         }
@@ -81,5 +86,6 @@ public class DefaultBusinessThreadPool implements RequestBusinessPool, GameExecu
         CompletableFuture.runAsync(runnable, executors[index(session)]);
     }
 
-    private DefaultBusinessThreadPool() {}
+    private DefaultBusinessThreadPool() {
+    }
 }

@@ -1,3 +1,4 @@
+/*
 package com.lzh.game.start.util.lock;
 
 import org.redisson.api.RedissonClient;
@@ -40,3 +41,4 @@ public class RedisLockGet<T> implements LockGet<T> {
         client.getLock(key).lock(time, TimeUnit.MILLISECONDS);
     }
 }
+*/

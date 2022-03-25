@@ -6,4 +6,6 @@ import com.lzh.game.start.model.player.Player;
 public interface PlayerService {
 
     Player getPlayer(Session session);
+
+    void save(Player player);
 }
