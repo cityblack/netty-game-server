@@ -1,7 +1,7 @@
-package com.lzh.game.socket.core;
+package com.lzh.game.common.scoket;
 
-import com.lzh.game.socket.core.session.Session;
-import com.lzh.game.socket.core.session.SessionManage;
+import com.lzh.game.common.scoket.session.Session;
+import com.lzh.game.common.scoket.session.SessionManage;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,20 +10,20 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ChannelHandler.Sharable
-public class GameServerIoHandler extends SimpleChannelInboundHandler<Object> {
+public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandler<Object> {
 
     private MessageHandler messageHandler;
 
-    private SessionManage<Session> sessionManage;
+    private SessionManage<S> sessionManage;
 
-    public GameServerIoHandler(MessageHandler messageHandler, SessionManage<Session> sessionManage) {
+    public GameIoHandler(MessageHandler messageHandler, SessionManage<S> sessionManage) {
         this.messageHandler = messageHandler;
         this.sessionManage = sessionManage;
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        Session session = sessionManage.createSession(ctx.channel());
+        S session = sessionManage.createSession(ctx.channel());
         if (log.isInfoEnabled()) {
             log.info("{} connected!", session.getId());
         }
@@ -39,7 +39,9 @@ public class GameServerIoHandler extends SimpleChannelInboundHandler<Object> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        messageHandler.close(getSession(ctx.channel()));
+        S s = getSession(ctx.channel());
+        messageHandler.close(s);
+        sessionManage.removeSession(s.getId());
     }
 
     @Override
@@ -48,7 +50,7 @@ public class GameServerIoHandler extends SimpleChannelInboundHandler<Object> {
         super.exceptionCaught(ctx, cause);
     }
 
-    public Session getSession(Channel channel) {
+    public S getSession(Channel channel) {
         return sessionManage.getSession(channel);
     }
 }

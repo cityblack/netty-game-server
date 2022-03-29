@@ -1,16 +1,14 @@
-package com.lzh.game.socket.core.session;
+package com.lzh.game.common.scoket.session;
 
 import io.netty.channel.Channel;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class DefaultGameSession implements Session, Serializable {
+public abstract class AbstractSession implements Session {
 
-    private static final long serialVersionUID = 8359226998972303381L;
     private transient Channel channel;
     private String id;
     private String remoteAddress;
@@ -20,24 +18,17 @@ public class DefaultGameSession implements Session, Serializable {
     private transient Instant creationTime;
     private Integer port;
 
-    public DefaultGameSession(Channel channel) {
+    protected AbstractSession(Channel channel) {
         this.channel = channel;
         this.init(channel);
     }
 
-    /**
-     * 可能在序列化的时候使用
-     */
-    public DefaultGameSession() {
-    }
-
-    private void init(Channel channel) {
+    protected void init(Channel channel) {
         String[] split = channel.remoteAddress().toString().split(":");
         if (split.length > 1) {
             this.remoteAddress = split[0];
             this.port = Integer.valueOf(split[1]);
         }
-
         this.id = channel.id().asLongText();
     }
 
@@ -53,7 +44,6 @@ public class DefaultGameSession implements Session, Serializable {
 
     @Override
     public Channel getChannel() {
-
         return this.channel;
     }
 
@@ -84,9 +74,9 @@ public class DefaultGameSession implements Session, Serializable {
 
     @Override
     public void close() {
+        this.opened.set(false);
         this.channel.close();
         this.attribute.clear();
-        this.opened.set(false);
     }
 
     @Override
@@ -106,6 +96,4 @@ public class DefaultGameSession implements Session, Serializable {
     public void setLastAccessTime() {
         this.lastAccessTime = Instant.now();
     }
-
-
 }

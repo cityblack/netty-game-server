@@ -1,7 +1,7 @@
 package com.lzh.game.socket.core.exchange;
 
 import com.lzh.game.socket.core.Request;
-import com.lzh.game.socket.core.session.Session;
+import com.lzh.game.common.scoket.session.Session;
 
 public class GameRequest implements Request<byte[]> {
 

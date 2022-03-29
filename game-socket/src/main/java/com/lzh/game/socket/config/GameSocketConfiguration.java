@@ -1,16 +1,17 @@
 package com.lzh.game.socket.config;
 
+import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.core.RequestHandler;
 import com.lzh.game.socket.core.invoke.*;
 import com.lzh.game.socket.core.invoke.cmd.CmdMappingManage;
 import com.lzh.game.socket.core.invoke.cmd.CmdParseFactory;
 import com.lzh.game.socket.core.invoke.cmd.DefaultCmdMappingManage;
-import com.lzh.game.socket.core.session.DefaultGameSession;
-import com.lzh.game.socket.core.session.GameSessionManage;
-import com.lzh.game.socket.core.session.SessionFactory;
-import com.lzh.game.socket.core.session.SessionManage;
-import com.lzh.game.socket.core.session.cache.GameSessionMemoryCacheManage;
-import com.lzh.game.socket.core.session.cache.SessionMemoryCacheManage;
+import com.lzh.game.socket.core.session.ServerGameSession;
+import com.lzh.game.common.scoket.session.GameSessionManage;
+import com.lzh.game.common.scoket.session.SessionFactory;
+import com.lzh.game.common.scoket.session.SessionManage;
+import com.lzh.game.common.scoket.session.cache.GameSessionMemoryCacheManage;
+import com.lzh.game.common.scoket.session.cache.SessionMemoryCacheManage;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -28,7 +29,7 @@ public class GameSocketConfiguration {
     private GameServerSocketProperties serverSocketProperties;
 
     @Bean
-    public ActionMethodSupport actionSupport(CmdMappingManage cmdMappingManage, InnerParamDataBindHandler innerParamDataBindHandler) {
+    public RequestActionSupport<EnhanceHandlerMethod> actionSupport(CmdMappingManage cmdMappingManage, InnerParamDataBindHandler innerParamDataBindHandler) {
         DefaultActionMethodSupport support = new DefaultActionMethodSupport();
         support.setCmdMappingManage(cmdMappingManage);
         support.setInnerParamDataBindHandler(innerParamDataBindHandler);
@@ -36,7 +37,7 @@ public class GameSocketConfiguration {
     }
 
     @Bean("requestHandler")
-    public RequestHandler requestHandler(ActionMethodSupport actionMethodSupport, InvokeMethodArgumentValues invokeMethodArgumentValues) {
+    public RequestHandler requestHandler(RequestActionSupport<EnhanceHandlerMethod> actionMethodSupport, InvokeMethodArgumentValues invokeMethodArgumentValues) {
         return new ActionRequestHandler(actionMethodSupport, invokeMethodArgumentValues);
     }
 
@@ -54,13 +55,13 @@ public class GameSocketConfiguration {
     class SessionConfig {
 
         @Bean
-        protected SessionManage sessionManage(SessionMemoryCacheManage<String, DefaultGameSession> sessionMemoryCacheManage) {
-            SessionFactory<DefaultGameSession> sessionFactory = channel -> new DefaultGameSession(channel);
+        protected SessionManage sessionManage(SessionMemoryCacheManage<String, ServerGameSession> sessionMemoryCacheManage) {
+            SessionFactory<ServerGameSession> sessionFactory = ServerGameSession::of;
             return new GameSessionManage(sessionMemoryCacheManage, sessionFactory);
         }
 
         @Bean
-        public SessionMemoryCacheManage<String, DefaultGameSession> sessionMemoryCacheManage() {
+        public SessionMemoryCacheManage<String, ServerGameSession> sessionMemoryCacheManage() {
             return new GameSessionMemoryCacheManage();
         }
     }

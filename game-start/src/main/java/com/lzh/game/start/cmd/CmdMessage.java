@@ -20,6 +20,8 @@ public interface CmdMessage {
     int CM_REGISTER = -104;
     int SM_REGISTER = -105;
     int CM_LOGOUT = -106;
-    ;
+
+    int CM_HELLO = -10086;
+    int SM_HELLO = -10087;
 
 }

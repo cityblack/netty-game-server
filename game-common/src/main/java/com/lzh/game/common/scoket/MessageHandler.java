@@ -1,7 +1,6 @@
-package com.lzh.game.socket.core;
+package com.lzh.game.common.scoket;
 
-
-import com.lzh.game.socket.core.session.Session;
+import com.lzh.game.common.scoket.session.Session;
 
 public interface MessageHandler {
 

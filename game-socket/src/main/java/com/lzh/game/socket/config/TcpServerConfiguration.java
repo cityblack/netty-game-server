@@ -2,7 +2,7 @@ package com.lzh.game.socket.config;
 
 import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.core.bootstrap.TcpCommonServer;
-import com.lzh.game.socket.core.session.SessionManage;
+import com.lzh.game.common.scoket.session.SessionManage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

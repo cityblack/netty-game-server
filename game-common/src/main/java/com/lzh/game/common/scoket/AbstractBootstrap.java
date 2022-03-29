@@ -1,15 +1,12 @@
-package com.lzh.game.socket.core.bootstrap;
+package com.lzh.game.common.scoket;
 
-import com.lzh.game.socket.GameServer;
-import com.lzh.game.socket.config.GameSocketProperties;
-import com.lzh.game.socket.core.MessageHandler;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 public abstract class AbstractBootstrap<T extends GameSocketProperties>
-        implements ApplicationContextAware, SmartInitializingSingleton, GameServer {
+        implements ApplicationContextAware, SmartInitializingSingleton {
 
     protected T properties;
 
@@ -23,7 +20,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     @Override
     public void afterSingletonsInstantiated() {
-        this.start();
+        this.doStart();
     }
 
     protected ApplicationContext getContext() {
@@ -36,10 +33,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         this.init(applicationContext);
     }
 
-    @Override
-    public int getPort() {
-        return properties.getPort();
-    }
-
     protected abstract void init(ApplicationContext context);
+
+    protected abstract void doStart();
 }

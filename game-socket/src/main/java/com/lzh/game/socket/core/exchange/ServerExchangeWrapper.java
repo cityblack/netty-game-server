@@ -3,7 +3,7 @@ package com.lzh.game.socket.core.exchange;
 import com.lzh.game.socket.core.Request;
 import com.lzh.game.socket.core.Response;
 import com.lzh.game.socket.core.ServerExchange;
-import com.lzh.game.socket.core.session.Session;
+import com.lzh.game.common.scoket.session.Session;
 
 public class ServerExchangeWrapper implements ServerExchange {
 

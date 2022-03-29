@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 import static com.lzh.game.socket.core.invoke.cmd.CmdMappingManage.*;
 
 @Slf4j
-public class DefaultActionMethodSupport implements ActionMethodSupport<EnhanceHandlerMethod>, ApplicationContextAware {
+public class DefaultActionMethodSupport implements RequestActionSupport<EnhanceHandlerMethod>, ApplicationContextAware {
 
     private final Map<Integer, EnhanceHandlerMethod> protocolMap = new HashMap<>();
     private final Map<Integer, Integer> requestAndResponseMapping = new HashMap<>();
@@ -40,7 +40,7 @@ public class DefaultActionMethodSupport implements ActionMethodSupport<EnhanceHa
     }
 
     @Override
-    public void registerCmd(int cmd, EnhanceHandlerMethod methodMapping) {
+    public void register(int cmd, EnhanceHandlerMethod methodMapping) {
 
         if (protocolMap.containsKey(cmd)) {
             throw new IllegalArgumentException("Repeated registration " + cmd + " proto.");
@@ -85,7 +85,7 @@ public class DefaultActionMethodSupport implements ActionMethodSupport<EnhanceHa
 
                         RequestMethodMapping methodMapping = parseTargetMethod(mapping, method);
 
-                        registerCmd(methodMapping.getValue(), method);
+                        register(methodMapping.getValue(), method);
                         if (methodMapping.getResponse() != 0) {
                             registerRequestRelation(methodMapping.getValue(), methodMapping.getResponse());
                         }

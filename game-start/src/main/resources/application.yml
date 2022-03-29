@@ -1,8 +1,9 @@
 game:
   socket:
-    port: 8089
-    protocol-version: 100101
-    open-gm: true
+    server:
+      port: 8089
+      protocol-version: 100101
+      open-gm: true
   resource:
     resource-scanner-path: com.lzh.game
   repository:

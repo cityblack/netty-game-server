@@ -1,8 +1,10 @@
 package com.lzh.game.client.model;
 
 import com.lzh.game.client.PackUtils;
+import com.lzh.game.client.bootstrap.TcpClient;
 import com.lzh.game.client.event.ClientStart;
 import com.lzh.game.client.model.hello.RequestHello;
+import com.lzh.game.common.scoket.session.Session;
 import lombok.extern.slf4j.Slf4j;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -22,6 +24,8 @@ public class ClientGlobalService implements InitializingBean {
     public void clientStart(ClientStart clientStart) {
         log.info("Client started..");
         log.info("Send hello world");
-        PackUtils.sendMessage(clientStart.getChannel(), -10086, new RequestHello("hello world"));
+        TcpClient client = clientStart.getClient();
+        Session session = client.conn("localhost", 8089);
+        PackUtils.sendMessage(session.getChannel(), -10086, new RequestHello("hello world"));
     }
 }

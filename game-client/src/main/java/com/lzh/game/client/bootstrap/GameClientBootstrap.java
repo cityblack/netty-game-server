@@ -1,7 +1,12 @@
 package com.lzh.game.client.bootstrap;
 
-import com.lzh.game.client.dispatcher.ResponseDispatcher;
 import com.lzh.game.client.support.ExchangeProtocol;
+import com.lzh.game.common.scoket.AbstractBootstrap;
+import com.lzh.game.common.scoket.GameIoHandler;
+import com.lzh.game.common.scoket.GameSocketProperties;
+import com.lzh.game.common.scoket.MessageHandler;
+import com.lzh.game.common.scoket.session.Session;
+import com.lzh.game.common.scoket.session.SessionManage;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -13,32 +18,39 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GameClientBootstrap implements TcpClient {
+public class GameClientBootstrap extends AbstractBootstrap<GameSocketProperties>
+        implements TcpClient {
 
     private EventLoopGroup group = new NioEventLoopGroup();
 
-    private Channel clientChannel;
+    private MessageHandler handler;
 
-    private ResponseDispatcher dispatcher;
+    private SessionManage<ClientGameSession> sessionManage;
 
-    public GameClientBootstrap(ResponseDispatcher dispatcher) {
-        this.dispatcher = dispatcher;
+    public GameClientBootstrap(MessageHandler handler, SessionManage<ClientGameSession> sessionManage, GameSocketProperties properties) {
+        super(properties);
+        this.handler = handler;
+        this.sessionManage = sessionManage;
     }
 
     @Override
-    public void conn(String host, int port) {
+    public Session conn(String host, int port) {
         Bootstrap bootstrap = createBootstrap();
-
         try {
-            Channel ch = bootstrap.connect(host, port).sync().channel();
-            clientChannel = ch;
+            Channel channel = bootstrap.connect(host, port).sync().channel();
+            return sessionManage.getSession(channel);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+    }
 
+    @Override
+    public SessionManage<ClientGameSession> sessionManage() {
+        return sessionManage;
     }
 
     private Bootstrap createBootstrap() {
@@ -59,12 +71,22 @@ public class GameClientBootstrap implements TcpClient {
         return bootstrap;
     }
 
-    @Override
-    public Channel getChannel() {
-        return clientChannel;
+    private GameIoHandler<ClientGameSession> clientHandler() {
+        return new GameIoHandler<>(handler, sessionManage);
     }
 
-    private GameClientHandler clientHandler() {
-        return new GameClientHandler(dispatcher);
+    @Override
+    public MessageHandler messageHandler() {
+        return null;
+    }
+
+    @Override
+    protected void init(ApplicationContext context) {
+
+    }
+
+    @Override
+    protected void doStart() {
+
     }
 }

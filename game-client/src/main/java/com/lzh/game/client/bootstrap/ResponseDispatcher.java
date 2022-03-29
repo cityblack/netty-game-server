@@ -1,9 +1,9 @@
-package com.lzh.game.client.dispatcher;
+package com.lzh.game.client.bootstrap;
 
 import com.lzh.game.client.support.ExchangeProtocol;
 import com.lzh.game.common.bean.HandlerMethod;
+import com.lzh.game.common.scoket.ActionMethodSupport;
 import com.lzh.game.common.serialization.ProtoBufUtils;
-import com.lzh.game.client.support.ActionMethodSupport;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -13,16 +13,16 @@ import java.util.Objects;
 @Slf4j
 public class ResponseDispatcher {
 
-    private ActionMethodSupport methodSupport;
+    private ActionMethodSupport<HandlerMethod> methodSupport;
 
-    public ResponseDispatcher(ActionMethodSupport methodSupport) {
+    public ResponseDispatcher(ActionMethodSupport<HandlerMethod> methodSupport) {
         this.methodSupport = methodSupport;
     }
 
     public void doResponse(Channel channel, ExchangeProtocol.Response response) {
         //SerializationUtil.deSerialize()
         int cmd = response.getHead().getCmd();
-        HandlerMethod method = methodSupport.getMethod(cmd);
+        HandlerMethod method = methodSupport.getActionHandler(cmd);
         if (Objects.isNull(method)) {
             throw new IllegalArgumentException("Not register the " + cmd + " protocol !!");
         }

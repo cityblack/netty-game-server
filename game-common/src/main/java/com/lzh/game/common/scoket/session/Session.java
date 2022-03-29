@@ -1,5 +1,4 @@
-package com.lzh.game.socket.core.session;
-
+package com.lzh.game.common.scoket.session;
 
 import io.netty.channel.Channel;
 import org.springframework.lang.Nullable;

@@ -6,7 +6,7 @@ import com.lzh.game.common.ApplicationUtils;
 import com.lzh.game.common.serialization.ProtoBufUtils;
 import com.lzh.game.socket.core.coder.ExchangeProtocol;
 import com.lzh.game.socket.core.invoke.cmd.CmdMappingManage;
-import com.lzh.game.socket.core.session.Session;
+import com.lzh.game.common.scoket.session.Session;
 import com.lzh.game.start.model.player.Player;
 import com.lzh.game.start.model.player.service.SessionPlayerManage;
 

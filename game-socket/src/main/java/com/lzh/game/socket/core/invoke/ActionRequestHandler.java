@@ -50,9 +50,9 @@ public class ActionRequestHandler implements RequestHandler, ApplicationContextA
 
     private InvokeMethodArgumentValues<Request> transfer;
 
-    private ActionMethodSupport<EnhanceHandlerMethod> support;
+    private RequestActionSupport<EnhanceHandlerMethod> support;
 
-    public ActionRequestHandler(ActionMethodSupport<EnhanceHandlerMethod> support, InvokeMethodArgumentValues<Request> transfer) {
+    public ActionRequestHandler(RequestActionSupport<EnhanceHandlerMethod> support, InvokeMethodArgumentValues<Request> transfer) {
         this.support = support;
         this.transfer = transfer;
     }

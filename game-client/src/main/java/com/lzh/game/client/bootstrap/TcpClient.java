@@ -1,10 +1,14 @@
 package com.lzh.game.client.bootstrap;
 
-import io.netty.channel.Channel;
+import com.lzh.game.common.scoket.session.Session;
+import com.lzh.game.common.scoket.session.SessionManage;
 
+/**
+ * One to many server
+ */
 public interface TcpClient {
 
-    void conn(String host, int port);
+    Session conn(String host, int port);
 
-    Channel getChannel();
+    SessionManage<ClientGameSession> sessionManage();
 }

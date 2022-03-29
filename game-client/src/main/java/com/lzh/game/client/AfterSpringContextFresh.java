@@ -13,15 +13,12 @@ import org.springframework.stereotype.Component;
 public class AfterSpringContextFresh implements ApplicationListener<ContextRefreshedEvent> {
 
     @Autowired
-    private ClientProperties properties;
-
-    @Autowired
     private TcpClient tcpClient;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        tcpClient.conn(properties.getHost(), properties.getPort());
-        EventBus.getDefault().post(ClientStart.of(tcpClient.getChannel()));
+
+        EventBus.getDefault().post(ClientStart.of(tcpClient));
     }
 
 }

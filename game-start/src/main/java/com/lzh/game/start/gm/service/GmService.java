@@ -1,7 +1,7 @@
 package com.lzh.game.start.gm.service;
 
 
-import com.lzh.game.socket.core.session.Session;
+import com.lzh.game.common.scoket.session.Session;
 
 public interface GmService {
 

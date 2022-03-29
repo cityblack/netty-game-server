@@ -1,7 +1,7 @@
-package com.lzh.game.socket.core.session.cache;
+package com.lzh.game.common.scoket.session.cache;
 
 
-import com.lzh.game.socket.core.session.Session;
+import com.lzh.game.common.scoket.session.Session;
 
 public interface SessionMemoryCacheManage<k, S extends Session> {
 
