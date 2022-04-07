@@ -8,7 +8,13 @@ import com.lzh.game.common.scoket.session.SessionManage;
  */
 public interface TcpClient {
 
-    Session conn(String host, int port);
+    /**
+     * @param host
+     * @param port
+     * @param connectTimeout
+     * @return
+     */
+    Session conn(String host, int port, long connectTimeout);
 
     SessionManage<ClientGameSession> sessionManage();
 }

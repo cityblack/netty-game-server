@@ -1,7 +1,7 @@
 package com.lzh.game.framework.config;
 
 import com.lzh.game.framework.FrameworkConfiguration;
-import com.lzh.game.socket.config.TcpServerConfiguration;
+import com.lzh.socket.starter.TcpServerConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;

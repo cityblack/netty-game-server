@@ -1,7 +1,4 @@
-package com.lzh.game.socket.core.exchange;
-
-import com.lzh.game.socket.core.Request;
-import com.lzh.game.socket.core.Response;
+package com.lzh.game.common.scoket;
 
 import java.io.Serializable;
 
@@ -17,11 +14,18 @@ public class GameResponse implements Response, Serializable {
 
     private int status;
 
+    private byte[] bytes;
+
     private Throwable error;
 
     @Override
     public Object data() {
         return data;
+    }
+
+    @Override
+    public byte[] byteData() {
+        return this.bytes;
     }
 
     @Override
@@ -57,6 +61,10 @@ public class GameResponse implements Response, Serializable {
     public void setError(Throwable error) {
         this.status = FAIL;
         this.error = error;
+    }
+
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
     }
 
     public static GameResponse of(Request request) {

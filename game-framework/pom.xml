@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>com.lzh.game</groupId>
-            <artifactId>game-socket</artifactId>
+            <artifactId>game-socket-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
 

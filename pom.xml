@@ -16,6 +16,7 @@
         <module>game-start</module>
         <module>game-repository</module>
         <module>game-client</module>
+        <module>game-socket-starter</module>
     </modules>
 
     <properties>

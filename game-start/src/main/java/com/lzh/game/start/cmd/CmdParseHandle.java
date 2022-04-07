@@ -1,9 +1,9 @@
 package com.lzh.game.start.cmd;
 
 
-import com.lzh.game.socket.core.invoke.cmd.CmdMappingManage.CmdModel;
-import com.lzh.game.socket.core.invoke.cmd.CmdMappingManage.CmdType;
-import com.lzh.game.socket.core.invoke.cmd.CmdParseFactory;
+import com.lzh.game.framework.cmd.CmdMappingManage.CmdModel;
+import com.lzh.game.framework.cmd.CmdMappingManage.CmdType;
+import com.lzh.game.framework.cmd.CmdParseFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 

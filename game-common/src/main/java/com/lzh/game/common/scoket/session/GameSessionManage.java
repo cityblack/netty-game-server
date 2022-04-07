@@ -11,7 +11,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 @Slf4j
-public class GameSessionManage<S extends AbstractSession> implements SessionManage<S> {
+public class GameSessionManage<S extends Session> implements SessionManage<S> {
 
     private List<Consumer<S>> closeListener = new CopyOnWriteArrayList<>();
 
@@ -52,7 +52,7 @@ public class GameSessionManage<S extends AbstractSession> implements SessionMana
 
     @Override
     public void updateLastAccessTime(S session) {
-        session.setLastAccessTime();
+        session.updateLastAccessTime();
     }
 
     @Override

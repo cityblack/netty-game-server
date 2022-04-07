@@ -2,7 +2,7 @@ package com.lzh.game.socket.core.invoke;
 
 import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.common.serialization.ProtoBufUtils;
-import com.lzh.game.socket.core.Request;
+import com.lzh.game.common.scoket.Request;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -23,7 +23,7 @@ public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValue
         return ProtoBufUtils.deSerialize(data, target);
     }
 
-    private Object[] getMethodArgumentValues(Request<byte[]> request, HandlerMethod handlerMethod) throws Exception {
+    private Object[] getMethodArgumentValues(Request request, HandlerMethod handlerMethod) throws Exception {
 
         MethodParameter[] parameters = handlerMethod.getMethodParameters();
         Object[] args = new Object[parameters.length];
@@ -41,7 +41,7 @@ public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValue
                 args[i] = innerParamDataBindHandler.conventData(request, parameter);
 
             } else if (!targetChange) {
-                args[i] = dataToObject(request.data(), parameter.getParameterType());
+                args[i] = dataToObject(request.byteData(), parameter.getParameterType());
 
                 targetChange = true;
 

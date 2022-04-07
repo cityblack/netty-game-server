@@ -1,9 +1,10 @@
-package com.lzh.game.socket.core.exchange;
+package com.lzh.game.common.scoket;
 
-import com.lzh.game.socket.core.Request;
 import com.lzh.game.common.scoket.session.Session;
 
-public class GameRequest implements Request<byte[]> {
+import java.io.Serializable;
+
+public class GameRequest implements Request, Serializable {
 
     private static final long serialVersionUID = 1550620526955432911L;
 
@@ -11,7 +12,9 @@ public class GameRequest implements Request<byte[]> {
 
     private int version;
 
-    private byte[] data;
+    private Object data;
+
+    private byte[] bytes;
 
     private transient Session session;
 
@@ -21,12 +24,17 @@ public class GameRequest implements Request<byte[]> {
     }
 
     @Override
-    public byte[] data() {
+    public Object data() {
         return this.data;
     }
 
     @Override
-    public int getCmd() {
+    public byte[] byteData() {
+        return this.bytes;
+    }
+
+    @Override
+    public int cmd() {
         return cmd;
     }
 
@@ -61,12 +69,7 @@ public class GameRequest implements Request<byte[]> {
         this.version = version;
     }
 
-    public static GameRequest of(int cmd, int version, byte[] data, Session session) {
-        GameRequest request = new GameRequest();
-        request.cmd = cmd;
-        request.version = version;
-        request.data = data;
-        request.session = session;
-        return request;
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
     }
 }

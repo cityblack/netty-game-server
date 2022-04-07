@@ -18,11 +18,11 @@
             <artifactId>game-common</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
             <version>3.5.1</version>
-        </dependency>
+        </dependency>-->
 
     </dependencies>
 </project>

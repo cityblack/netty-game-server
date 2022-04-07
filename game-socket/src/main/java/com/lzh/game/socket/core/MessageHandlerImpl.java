@@ -1,9 +1,7 @@
 package com.lzh.game.socket.core;
 
+import com.lzh.game.common.scoket.GameRequest;
 import com.lzh.game.common.scoket.MessageHandler;
-import com.lzh.game.socket.core.coder.ExchangeProtocol;
-import com.lzh.game.socket.core.exchange.GameRequest;
-import com.lzh.game.socket.core.exchange.ServerExchangeWrapper;
 import com.lzh.game.common.scoket.session.Session;
 import lombok.extern.slf4j.Slf4j;
 
@@ -82,20 +80,15 @@ public class MessageHandlerImpl implements MessageHandler {
     }
 
     private ServerExchange createExchange(Session session, Object data) {
-        if (!(data instanceof ExchangeProtocol.Request)) {
+        if (!(data instanceof GameRequest)) {
             if (log.isWarnEnabled()) {
                 log.warn("Invalid core request..{}, ip:{}", data, session.getChannel().remoteAddress());
             }
             return null;
         } else {
-            ExchangeProtocol.Request request = (ExchangeProtocol.Request) data;
-            GameRequest gameRequest = GameRequest
-                    .of(request.getHead().getCmd()
-                            , request.getHead().getVersion()
-                            , request.getBody().toByteArray()
-                            , session);
-
-            return new ServerExchangeWrapper(gameRequest);
+            GameRequest request = (GameRequest) data;
+            request.setSession(session);
+            return new ServerExchangeWrapper(request);
         }
     }
 }

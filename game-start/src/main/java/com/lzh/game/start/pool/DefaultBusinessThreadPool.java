@@ -74,7 +74,7 @@ public class DefaultBusinessThreadPool implements RequestBusinessPool, GameExecu
 
     @Override
     public void submit(ServerExchange exchange, Runnable runnable) {
-        if (specialRequest(exchange.getRequest().getCmd())) {
+        if (specialRequest(exchange.getRequest().cmd())) {
             CompletableFuture.runAsync(runnable, COMMON);
         } else {
             CompletableFuture.runAsync(runnable, executors[index(exchange)]);

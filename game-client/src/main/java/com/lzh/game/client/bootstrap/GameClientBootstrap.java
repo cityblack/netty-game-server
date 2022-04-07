@@ -1,49 +1,52 @@
 package com.lzh.game.client.bootstrap;
 
-import com.lzh.game.client.support.ExchangeProtocol;
 import com.lzh.game.common.scoket.AbstractBootstrap;
 import com.lzh.game.common.scoket.GameIoHandler;
 import com.lzh.game.common.scoket.GameSocketProperties;
 import com.lzh.game.common.scoket.MessageHandler;
+import com.lzh.game.common.scoket.coder.GameByteToMessageDecoder;
+import com.lzh.game.common.scoket.coder.GameMessageToMessageDecoder;
 import com.lzh.game.common.scoket.session.Session;
 import com.lzh.game.common.scoket.session.SessionManage;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.protobuf.ProtobufDecoder;
-import io.netty.handler.codec.protobuf.ProtobufEncoder;
-import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
-import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
+import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.AttributeKey;
 
-@Component
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 public class GameClientBootstrap extends AbstractBootstrap<GameSocketProperties>
         implements TcpClient {
 
-    private EventLoopGroup group = new NioEventLoopGroup();
+    public final static AttributeKey<CompletableFuture<Session>> SESSION_FUTURE = AttributeKey.newInstance("session.future");
 
-    private MessageHandler handler;
+    private EventLoopGroup group;
 
     private SessionManage<ClientGameSession> sessionManage;
 
     public GameClientBootstrap(MessageHandler handler, SessionManage<ClientGameSession> sessionManage, GameSocketProperties properties) {
-        super(properties);
-        this.handler = handler;
+        super(properties, handler);
         this.sessionManage = sessionManage;
     }
 
     @Override
-    public Session conn(String host, int port) {
+    public Session conn(String host, int port, long connectTimeout) {
         Bootstrap bootstrap = createBootstrap();
         try {
             Channel channel = bootstrap.connect(host, port).sync().channel();
-            return sessionManage.getSession(channel);
-        } catch (InterruptedException e) {
+            CompletableFuture<Session> future = new CompletableFuture<>();
+            if (channel.attr(SESSION_FUTURE).compareAndSet(null, future)) {
+                return future.get(connectTimeout, TimeUnit.MILLISECONDS);
+            } else {
+                return channel.attr(SESSION_FUTURE).get().get();
+            }
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException(e);
         }
     }
@@ -61,10 +64,9 @@ public class GameClientBootstrap extends AbstractBootstrap<GameSocketProperties>
                 .handler(new ChannelInitializer<SocketChannel>() {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
-                                .addLast(new ProtobufVarint32FrameDecoder())
-                                .addLast(new ProtobufDecoder(ExchangeProtocol.Response.getDefaultInstance()))
-                                .addLast(new ProtobufVarint32LengthFieldPrepender())
-                                .addLast(new ProtobufEncoder())
+                                .addLast(new IdleStateHandler(0, 0, 180, TimeUnit.SECONDS))
+                                .addLast("encoder", new GameByteToMessageDecoder())
+                                .addLast("decoder",new GameMessageToMessageDecoder())
                                 .addLast(clientHandler());
                     }
                 });
@@ -76,17 +78,7 @@ public class GameClientBootstrap extends AbstractBootstrap<GameSocketProperties>
     }
 
     @Override
-    public MessageHandler messageHandler() {
-        return null;
-    }
-
-    @Override
-    protected void init(ApplicationContext context) {
-
-    }
-
-    @Override
-    protected void doStart() {
-
+    protected void init(GameSocketProperties properties) {
+        group = new NioEventLoopGroup();
     }
 }

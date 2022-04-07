@@ -58,6 +58,11 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
+    public void updateLastAccessTime() {
+        this.lastAccessTime = Instant.now();
+    }
+
+    @Override
     public Map<String, Object> getAttributes() {
         return attribute;
     }
@@ -91,9 +96,5 @@ public abstract class AbstractSession implements Session {
 
     public void setCreationTime() {
         this.creationTime = Instant.now();
-    }
-
-    public void setLastAccessTime() {
-        this.lastAccessTime = Instant.now();
     }
 }

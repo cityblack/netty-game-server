@@ -5,12 +5,12 @@ import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.common.bean.HandlerMethod;
 
 import com.lzh.game.socket.annotation.ControllerAdvice;
-import com.lzh.game.socket.core.Request;
+import com.lzh.game.common.scoket.Request;
 import com.lzh.game.socket.core.RequestHandler;
-import com.lzh.game.socket.core.Response;
+import com.lzh.game.common.scoket.Response;
 import com.lzh.game.socket.core.ServerExchange;
-import com.lzh.game.socket.core.exchange.GameRequest;
-import com.lzh.game.socket.core.exchange.GameResponse;
+import com.lzh.game.common.scoket.GameRequest;
+import com.lzh.game.common.scoket.GameResponse;
 import com.lzh.game.socket.exception.NotDefinedResponseProtocolException;
 import com.lzh.game.socket.exception.NotFondProtocolException;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +61,7 @@ public class ActionRequestHandler implements RequestHandler, ApplicationContextA
 
         GameResponse response = (GameResponse) exchange.getResponse();
         GameRequest request = (GameRequest) exchange.getRequest();
-        int cmd = request.getCmd();
+        int cmd = request.cmd();
 
         if (!support.containMapping(cmd)) {
             listener.error(new NotFondProtocolException(cmd));
@@ -194,9 +194,9 @@ public class ActionRequestHandler implements RequestHandler, ApplicationContextA
             @Override
             public void error(Throwable throwable) {
                 if (throwable instanceof NotDefinedResponseProtocolException) {
-                    log.error("Not register response cmd:{}", exchange.getRequest().getCmd());
+                    log.error("Not register response cmd:{}", exchange.getRequest().cmd());
                 } else if (throwable instanceof NotFondProtocolException) {
-                    log.error("Not register request cmd:{}", exchange.getRequest().getCmd());
+                    log.error("Not register request cmd:{}", exchange.getRequest().cmd());
                 }
             }
         });

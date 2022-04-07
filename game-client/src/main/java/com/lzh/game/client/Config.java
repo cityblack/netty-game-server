@@ -45,7 +45,7 @@ public class Config {
     }
 
     @Bean
-    public TcpClient tcpClient(MessageHandler clientMessage, SessionManage<ClientGameSession> sessionManage, ResponseDispatcher responseDispatcher) {
+    public TcpClient tcpClient(MessageHandler clientMessage, SessionManage<ClientGameSession> sessionManage) {
         return new GameClientBootstrap(clientMessage, sessionManage, properties);
     }
 

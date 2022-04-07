@@ -1,8 +1,9 @@
-package com.lzh.game.socket.core;
+package com.lzh.game.common.scoket;
 
+import com.lzh.game.common.scoket.coder.Cmd;
 import com.lzh.game.common.scoket.session.Session;
 
-public interface Request<T> {
+public interface Request extends Cmd {
 
     Session getSession();
 
@@ -10,9 +11,7 @@ public interface Request<T> {
 
     String getRemoteAddress();
 
-    T data();
-
-    int getCmd();
+    Object data();
 
     int getVersion();
 }

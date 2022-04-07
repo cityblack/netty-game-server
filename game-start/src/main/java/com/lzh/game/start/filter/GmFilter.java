@@ -19,7 +19,7 @@ public class GmFilter implements Filter {
     @Override
     public void doFilter(ServerExchange exchange, FilterChain chain) {
 
-        if (DEFAULT_GM_PROTOCOL == exchange.getRequest().getCmd()) {
+        if (DEFAULT_GM_PROTOCOL == exchange.getRequest().cmd()) {
             if (!properties.isOpenGm()) {
                 if (log.isInfoEnabled()) {
                     log.info("Gm server is not open, please check the request is valid [{}]"

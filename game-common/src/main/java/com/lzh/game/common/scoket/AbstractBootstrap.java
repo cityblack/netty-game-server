@@ -1,39 +1,25 @@
 package com.lzh.game.common.scoket;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.SmartInitializingSingleton;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import com.lzh.game.common.scoket.session.Session;
+import com.lzh.game.common.scoket.session.SessionManage;
 
-public abstract class AbstractBootstrap<T extends GameSocketProperties>
-        implements ApplicationContextAware, SmartInitializingSingleton {
+public abstract class AbstractBootstrap<T extends GameSocketProperties> {
 
     protected T properties;
 
-    public AbstractBootstrap(T properties) {
+    protected MessageHandler handler;
+
+    protected SessionManage<Session> sessionManage;
+
+    public AbstractBootstrap(T properties, MessageHandler handler) {
         this.properties = properties;
+        this.handler = handler;
+        this.init(properties);
     }
 
-    protected ApplicationContext context;
-
-    public abstract MessageHandler messageHandler();
-
-    @Override
-    public void afterSingletonsInstantiated() {
-        this.doStart();
+    public MessageHandler getHandler() {
+        return handler;
     }
 
-    protected ApplicationContext getContext() {
-        return context;
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.context = applicationContext;
-        this.init(applicationContext);
-    }
-
-    protected abstract void init(ApplicationContext context);
-
-    protected abstract void doStart();
+    protected abstract void init(T properties);
 }

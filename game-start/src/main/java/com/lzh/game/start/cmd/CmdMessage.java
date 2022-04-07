@@ -1,7 +1,7 @@
 package com.lzh.game.start.cmd;
 
 
-import com.lzh.game.socket.core.invoke.cmd.DefaultCmdMappingManage;
+import com.lzh.game.framework.cmd.DefaultCmdMappingManage;
 
 /**
  * Start with the CM_ is mean request cmd. and start with SM_ is mean response cmd.

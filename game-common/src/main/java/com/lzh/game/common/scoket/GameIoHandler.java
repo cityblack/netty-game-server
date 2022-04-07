@@ -50,7 +50,7 @@ public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandle
         super.exceptionCaught(ctx, cause);
     }
 
-    public S getSession(Channel channel) {
+    protected S getSession(Channel channel) {
         return sessionManage.getSession(channel);
     }
 }

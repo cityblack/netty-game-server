@@ -1,8 +1,8 @@
-package com.lzh.game.socket.core.exchange;
+package com.lzh.game.socket.core;
 
-import com.lzh.game.socket.core.Request;
-import com.lzh.game.socket.core.Response;
-import com.lzh.game.socket.core.ServerExchange;
+import com.lzh.game.common.scoket.Request;
+import com.lzh.game.common.scoket.Response;
+import com.lzh.game.common.scoket.GameResponse;
 import com.lzh.game.common.scoket.session.Session;
 
 public class ServerExchangeWrapper implements ServerExchange {

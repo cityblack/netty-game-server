@@ -1,4 +1,4 @@
-package com.lzh.game.socket.annotation;
+package com.lzh.socket.starter;
 
 import org.springframework.stereotype.Component;
 

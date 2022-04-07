@@ -5,7 +5,7 @@ import com.lzh.game.common.scoket.ActionMethodSupport;
 
 public interface RequestActionSupport<E extends HandlerMethod> extends ActionMethodSupport<E> {
 
-    void registerRequestRelation(int requestCmd, int responseCmd);
-
     int getRequestRelation(int requestCmd);
+
+    void register(int requestCmd, E method, int responseCmd);
 }

@@ -2,7 +2,7 @@ package com.lzh.game.start.filter;
 
 import com.lzh.game.common.serialization.JsonUtils;
 import com.lzh.game.socket.core.invoke.ActionInterceptor;
-import com.lzh.game.socket.core.Request;
+import com.lzh.game.common.scoket.Request;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ public class LogInterceptor implements ActionInterceptor {
     @Override
     public boolean intercept(Request request, Method method, Object[] param) {
         if (log.isDebugEnabled()) {
-            log.debug("Request:{} param:{}", request.getCmd(), JsonUtils.toJson(param));
+            log.debug("Request:{} param:{}", request.cmd(), JsonUtils.toJson(param));
         }
         return false;
     }

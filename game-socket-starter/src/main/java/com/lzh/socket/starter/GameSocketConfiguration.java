@@ -1,26 +1,26 @@
-package com.lzh.game.socket.config;
+package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
-import com.lzh.game.socket.core.RequestHandler;
-import com.lzh.game.socket.core.invoke.*;
-import com.lzh.game.socket.core.invoke.cmd.CmdMappingManage;
-import com.lzh.game.socket.core.invoke.cmd.CmdParseFactory;
-import com.lzh.game.socket.core.invoke.cmd.DefaultCmdMappingManage;
-import com.lzh.game.socket.core.session.ServerGameSession;
+import com.lzh.game.common.scoket.MessageHandler;
 import com.lzh.game.common.scoket.session.GameSessionManage;
 import com.lzh.game.common.scoket.session.SessionFactory;
 import com.lzh.game.common.scoket.session.SessionManage;
 import com.lzh.game.common.scoket.session.cache.GameSessionMemoryCacheManage;
 import com.lzh.game.common.scoket.session.cache.SessionMemoryCacheManage;
+import com.lzh.game.socket.GameServerSocketProperties;
+import com.lzh.game.socket.core.RequestHandler;
+import com.lzh.game.socket.core.invoke.*;
+import com.lzh.game.socket.core.session.ServerGameSession;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Resource;
-import java.util.Collections;
 
+/**
+ * Default config
+ */
 @Configuration
 @EnableConfigurationProperties(GameServerSocketProperties.class)
 public class GameSocketConfiguration {
@@ -29,11 +29,9 @@ public class GameSocketConfiguration {
     private GameServerSocketProperties serverSocketProperties;
 
     @Bean
-    public RequestActionSupport<EnhanceHandlerMethod> actionSupport(CmdMappingManage cmdMappingManage, InnerParamDataBindHandler innerParamDataBindHandler) {
+    public RequestActionSupport<EnhanceHandlerMethod> actionSupport(InnerParamDataBindHandler innerParamDataBindHandler) {
         DefaultActionMethodSupport support = new DefaultActionMethodSupport();
-        support.setCmdMappingManage(cmdMappingManage);
-        support.setInnerParamDataBindHandler(innerParamDataBindHandler);
-        return support;
+        return new SpringActionSupport(support, innerParamDataBindHandler);
     }
 
     @Bean("requestHandler")
@@ -55,26 +53,20 @@ public class GameSocketConfiguration {
     class SessionConfig {
 
         @Bean
-        protected SessionManage sessionManage(SessionMemoryCacheManage<String, ServerGameSession> sessionMemoryCacheManage) {
+        protected SessionManage<ServerGameSession> sessionManage(SessionMemoryCacheManage<String, ServerGameSession> sessionMemoryCacheManage) {
             SessionFactory<ServerGameSession> sessionFactory = ServerGameSession::of;
-            return new GameSessionManage(sessionMemoryCacheManage, sessionFactory);
+            return new GameSessionManage<>(sessionMemoryCacheManage, sessionFactory);
         }
 
         @Bean
         public SessionMemoryCacheManage<String, ServerGameSession> sessionMemoryCacheManage() {
-            return new GameSessionMemoryCacheManage();
+            return new GameSessionMemoryCacheManage<>();
         }
     }
 
     @Bean
-    public CmdMappingManage cmdMappingManage(CmdParseFactory cmdParseFactory) {
-        return new DefaultCmdMappingManage(cmdParseFactory);
-    }
-
-    @Bean
-    @ConditionalOnMissingClass
-    @ConditionalOnMissingBean
-    public CmdParseFactory parseCmdLoad() {
-        return () -> Collections.EMPTY_LIST;
+    @ConditionalOnMissingBean(value = MessageHandler.class)
+    public SocketHandlerBuilder builder() {
+        return new SocketHandlerBuilder();
     }
 }

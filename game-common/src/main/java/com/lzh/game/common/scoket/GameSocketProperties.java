@@ -8,7 +8,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "game.socket")
 public class GameSocketProperties {
 
     private LogLevel nettyLogLevel = LogLevel.ERROR;

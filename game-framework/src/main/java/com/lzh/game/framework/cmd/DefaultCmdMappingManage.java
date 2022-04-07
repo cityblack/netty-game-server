@@ -1,4 +1,4 @@
-package com.lzh.game.socket.core.invoke.cmd;
+package com.lzh.game.framework.cmd;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

@@ -35,13 +35,26 @@ public class NetServer implements GameServer {
     }
 
     @Override
-    public void start() {
+    public void asyncStart() {
         try {
             sendBeforeStartEvent(port);
             ChannelFuture future = this.bootstrap.bind(port);
             this.channel = future.channel();
             this.openTimestamp.set(System.currentTimeMillis());
             startDaemonAwaitThread(future);
+            log.info("Start server on {}", this.port);
+        } catch (Exception e) {
+            throw new ServerStarException("Server start error", e);
+        }
+    }
+
+    @Override
+    public void start() {
+        try {
+            sendBeforeStartEvent(port);
+            ChannelFuture future = this.bootstrap.bind(port).sync().channel().closeFuture().sync();
+            this.channel = future.channel();
+            this.openTimestamp.set(System.currentTimeMillis());
             log.info("Start server on {}", this.port);
         } catch (Exception e) {
             throw new ServerStarException("Server start error", e);
@@ -61,7 +74,7 @@ public class NetServer implements GameServer {
                 try {
                     future.sync().channel().closeFuture().sync();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    log.error("", e);
                     System.exit(-1);
                 }
             }

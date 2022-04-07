@@ -22,6 +22,7 @@ public interface Session {
 
     Instant getLastAccessTime();
 
+    void updateLastAccessTime();
     /**
      * Return a map that holds session attributes.
      */
