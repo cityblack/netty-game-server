@@ -1,6 +1,6 @@
 package com.lzh.game.socket.core.invoke;
 
-import com.lzh.game.common.scoket.Request;
+import com.lzh.game.socket.Request;
 
 import java.lang.reflect.Method;
 

@@ -1,7 +1,7 @@
 package com.lzh.game.socket.core.invoke;
 
 import com.lzh.game.common.bean.HandlerMethod;
-import com.lzh.game.common.scoket.ActionMethodSupport;
+import com.lzh.game.socket.ActionMethodSupport;
 
 public interface RequestActionSupport<E extends HandlerMethod> extends ActionMethodSupport<E> {
 

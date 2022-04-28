@@ -2,7 +2,7 @@ package com.lzh.game.start;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.lzh.game.socket.core.filter.Filter;
-import com.lzh.game.socket.core.invoke.InnerParamDataBindHandler;
+import com.lzh.game.socket.core.invoke.InnerParamBindHandler;
 import com.lzh.game.start.filter.GmFilter;
 import com.lzh.game.start.filter.ProtocolVersionFilter;
 import com.lzh.game.start.model.core.ConsumeInnerParamDataBindHandler;
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class Config {
 
     @Bean
-    public InnerParamDataBindHandler innerParamDataBindHandler() {
+    public InnerParamBindHandler innerParamDataBindHandler() {
         return new ConsumeInnerParamDataBindHandler();
     }
 

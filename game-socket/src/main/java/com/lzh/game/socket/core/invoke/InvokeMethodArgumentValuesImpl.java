@@ -2,7 +2,7 @@ package com.lzh.game.socket.core.invoke;
 
 import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.common.serialization.ProtoBufUtils;
-import com.lzh.game.common.scoket.Request;
+import com.lzh.game.socket.Request;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -15,7 +15,7 @@ import java.util.Objects;
 public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValues<Request>
         , ApplicationContextAware {
 
-    private InnerParamDataBindHandler innerParamDataBindHandler;
+    private InnerParamBindHandler innerParamBindHandler;
 
     private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
@@ -36,9 +36,9 @@ public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValue
 
             parameter.initParameterNameDiscovery(getParameterNameDiscoverer());
 
-            if (innerParamDataBindHandler.isInnerParam(parameter)) {
+            if (innerParamBindHandler.isInnerParam(parameter)) {
 
-                args[i] = innerParamDataBindHandler.conventData(request, parameter);
+                args[i] = innerParamBindHandler.conventData(request, parameter);
 
             } else if (!targetChange) {
                 args[i] = dataToObject(request.byteData(), parameter.getParameterType());
@@ -72,15 +72,15 @@ public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValue
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        Object o = applicationContext.getBean(InnerParamDataBindHandler.class);
+        Object o = applicationContext.getBean(InnerParamBindHandler.class);
         if (Objects.isNull(o)) {
-            this.innerParamDataBindHandler = new DefaultInnerParam();
+            this.innerParamBindHandler = new DefaultInnerParam();
         } else {
-            this.innerParamDataBindHandler = (InnerParamDataBindHandler) o;
+            this.innerParamBindHandler = (InnerParamBindHandler) o;
         }
     }
 
-    class DefaultInnerParam implements InnerParamDataBindHandler {
+    class DefaultInnerParam implements InnerParamBindHandler {
 
         @Override
         public Object conventData(Request request, MethodParameter parameter) {

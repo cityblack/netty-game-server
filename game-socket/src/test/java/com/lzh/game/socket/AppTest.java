@@ -1,15 +1,12 @@
 package com.lzh.game.socket;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
-import com.lzh.game.common.scoket.MessageHandler;
-import com.lzh.game.common.scoket.session.GameSessionManage;
-import com.lzh.game.common.scoket.session.Session;
-import com.lzh.game.common.scoket.session.SessionFactory;
-import com.lzh.game.common.scoket.session.SessionManage;
-import com.lzh.game.common.scoket.session.cache.GameSessionMemoryCacheManage;
-import com.lzh.game.common.scoket.session.cache.SessionMemoryCacheManage;
+import com.lzh.game.socket.core.session.GameSessionManage;
+import com.lzh.game.socket.core.session.Session;
+import com.lzh.game.socket.core.session.SessionFactory;
+import com.lzh.game.socket.core.session.SessionManage;
 import com.lzh.game.socket.core.MessageHandlerImpl;
-import com.lzh.game.socket.core.RequestBusinessPool;
+import com.lzh.game.socket.core.RequestProcessPool;
 import com.lzh.game.socket.core.RequestHandler;
 import com.lzh.game.socket.core.ServerExchange;
 import com.lzh.game.socket.core.bootstrap.TcpCommonServer;
@@ -64,9 +61,9 @@ public class AppTest {
         return messageHandler;
     }
 
-    private RequestBusinessPool pool() {
+    private RequestProcessPool pool() {
 
-        return new RequestBusinessPool() {
+        return new RequestProcessPool() {
             @Override
             public void submit(ServerExchange exchange, Runnable runnable) {
                 runnable.run();

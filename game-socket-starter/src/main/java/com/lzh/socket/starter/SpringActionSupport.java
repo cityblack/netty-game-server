@@ -5,7 +5,7 @@ import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.socket.annotation.RequestMapping;
 import com.lzh.game.socket.annotation.ResponseMapping;
 import com.lzh.game.socket.core.invoke.DefaultActionMethodSupport;
-import com.lzh.game.socket.core.invoke.InnerParamDataBindHandler;
+import com.lzh.game.socket.core.invoke.InnerParamBindHandler;
 import com.lzh.game.socket.core.invoke.RequestActionSupport;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +26,11 @@ public class SpringActionSupport implements RequestActionSupport<EnhanceHandlerM
 
     private RequestActionSupport<EnhanceHandlerMethod> support;
 
-    private InnerParamDataBindHandler innerParamDataBindHandler;
+    private InnerParamBindHandler innerParamBindHandler;
 
-    public SpringActionSupport(RequestActionSupport<EnhanceHandlerMethod> support, InnerParamDataBindHandler innerParamDataBindHandler) {
+    public SpringActionSupport(RequestActionSupport<EnhanceHandlerMethod> support, InnerParamBindHandler innerParamBindHandler) {
         this.support = support;
-        this.innerParamDataBindHandler = innerParamDataBindHandler;
+        this.innerParamBindHandler = innerParamBindHandler;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class SpringActionSupport implements RequestActionSupport<EnhanceHandlerM
         int cmd = mapping.value();
 
         long protoParam = Stream.of(method.getMethodParameters())
-                .filter(e -> !innerParamDataBindHandler.isInnerParam(e))
+                .filter(e -> !innerParamBindHandler.isInnerParam(e))
                 .count();
         // Just allow one mapping proto class
         if (protoParam > 1) {

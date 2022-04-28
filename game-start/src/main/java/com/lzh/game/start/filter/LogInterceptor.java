@@ -2,7 +2,7 @@ package com.lzh.game.start.filter;
 
 import com.lzh.game.common.serialization.JsonUtils;
 import com.lzh.game.socket.core.invoke.ActionInterceptor;
-import com.lzh.game.common.scoket.Request;
+import com.lzh.game.socket.Request;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

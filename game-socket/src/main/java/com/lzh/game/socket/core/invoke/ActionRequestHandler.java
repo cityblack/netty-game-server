@@ -5,12 +5,12 @@ import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.common.bean.HandlerMethod;
 
 import com.lzh.game.socket.annotation.ControllerAdvice;
-import com.lzh.game.common.scoket.Request;
+import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.RequestHandler;
-import com.lzh.game.common.scoket.Response;
+import com.lzh.game.socket.Response;
 import com.lzh.game.socket.core.ServerExchange;
-import com.lzh.game.common.scoket.GameRequest;
-import com.lzh.game.common.scoket.GameResponse;
+import com.lzh.game.socket.GameRequest;
+import com.lzh.game.socket.GameResponse;
 import com.lzh.game.socket.exception.NotDefinedResponseProtocolException;
 import com.lzh.game.socket.exception.NotFondProtocolException;
 import lombok.extern.slf4j.Slf4j;

@@ -1,12 +1,9 @@
 package com.lzh.game.socket.core.bootstrap;
 
-import com.lzh.game.common.scoket.MessageHandler;
-import com.lzh.game.common.scoket.coder.GameByteToMessageDecoder;
-import com.lzh.game.common.scoket.coder.GameMessageToMessageDecoder;
-import com.lzh.game.common.scoket.session.Session;
-import com.lzh.game.common.scoket.session.SessionManage;
 import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.GameServerSocketProperties;
+import com.lzh.game.socket.core.session.Session;
+import com.lzh.game.socket.core.session.SessionManage;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -18,8 +15,8 @@ import java.util.concurrent.TimeUnit;
 public class TcpCommonServer extends AbstractServerBootstrap
         implements GameServer {
 
-    public TcpCommonServer(GameServerSocketProperties properties, SessionManage<Session> sessionManage, MessageHandler handler) {
-        super(properties, sessionManage, handler);
+    public TcpCommonServer(GameServerSocketProperties properties, SessionManage<Session> sessionManage) {
+        super(properties, sessionManage);
     }
 
     @Override
@@ -45,7 +42,7 @@ public class TcpCommonServer extends AbstractServerBootstrap
 //                        .addLast(new LoggingHandler(properties.getNettyLogLevel()))
                         .addLast(new IdleStateHandler(0, 0, 180, TimeUnit.SECONDS))
                         .addLast("encoder", new GameByteToMessageDecoder())
-                        .addLast("decoder",new GameMessageToMessageDecoder())
+                        .addLast("decoder", new GameMessageToMessageDecoder())
                         .addLast(getServerIoHandler())
                 ;
             }

@@ -1,8 +1,8 @@
 package com.lzh.game.start.pool;
 
-import com.lzh.game.socket.core.RequestBusinessPool;
+import com.lzh.game.socket.core.RequestProcessPool;
 import com.lzh.game.socket.core.ServerExchange;
-import com.lzh.game.common.scoket.session.Session;
+import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.start.cmd.CmdMessage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
  * If the request is about the player, the player's request should be forwarded to the player's game scene
  */
 @Slf4j
-public class DefaultBusinessThreadPool implements RequestBusinessPool, GameExecutorService {
+public class DefaultBusinessThreadPool implements RequestProcessPool, GameExecutorService {
 
     private static DefaultBusinessThreadPool instance = new DefaultBusinessThreadPool();
     // Use disruptor?

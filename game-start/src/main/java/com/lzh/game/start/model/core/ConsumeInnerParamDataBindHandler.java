@@ -2,18 +2,18 @@ package com.lzh.game.start.model.core;
 
 import com.lzh.game.start.model.player.Player;
 import com.lzh.game.common.ApplicationUtils;
-import com.lzh.game.socket.core.invoke.InnerParamDataBindHandler;
-import com.lzh.game.common.scoket.Request;
-import com.lzh.game.common.scoket.session.Session;
+import com.lzh.game.socket.core.invoke.InnerParamBindHandler;
+import com.lzh.game.socket.Request;
+import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.start.model.player.service.PlayerService;
 import org.springframework.core.MethodParameter;
 
 import java.util.*;
 import java.util.function.Function;
 
-public class ConsumeInnerParamDataBindHandler implements InnerParamDataBindHandler {
+public class ConsumeInnerParamDataBindHandler implements InnerParamBindHandler {
 
-    private static final Map<Class<?>, Function<Request, Object>> INNER_PARAM = new HashMap<>(3);
+    private static final Map<Class<?>, Function<Request, Object>> INNER_PARAM = new HashMap<>(8);
 
     static {
         INNER_PARAM.put(Session.class, r -> r.getSession());

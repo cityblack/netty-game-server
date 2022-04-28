@@ -6,7 +6,7 @@ import com.lzh.game.start.model.i18n.Notify;
 import com.lzh.game.start.model.i18n.RequestException;
 import com.lzh.game.socket.annotation.ControllerAdvice;
 import com.lzh.game.socket.annotation.ExceptionHandler;
-import com.lzh.game.common.scoket.GameResponse;
+import com.lzh.game.socket.GameResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @ControllerAdvice

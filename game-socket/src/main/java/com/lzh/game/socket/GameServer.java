@@ -1,13 +1,10 @@
 package com.lzh.game.socket;
 
-public interface GameServer {
+import com.lzh.game.socket.core.LifeCycle;
+
+public interface GameServer extends LifeCycle {
 
     void asyncStart();
 
-    void start();
-
-    void stop();
-
     int getPort();
-
 }

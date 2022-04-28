@@ -4,7 +4,7 @@ import com.lzh.game.common.ApplicationUtils;
 import com.lzh.game.socket.config.GameServerSocketProperties;
 import com.lzh.game.start.gm.GmFacade;
 import com.lzh.game.start.model.player.Player;
-import com.lzh.game.common.scoket.session.Session;
+import com.lzh.game.socket.core.session.Session;
 
 import com.lzh.game.start.model.player.service.PlayerService;
 import lombok.extern.slf4j.Slf4j;

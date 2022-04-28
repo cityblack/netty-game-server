@@ -10,7 +10,6 @@ public class FilterHandler implements RequestHandler {
     private final DefaultFilterChain chain;
 
     public FilterHandler(List<Filter> filters, RequestHandler handler) {
-
         this.chain = new DefaultFilterChain(filters, handler);
     }
 

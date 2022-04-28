@@ -62,7 +62,12 @@ public class NetServer implements GameServer {
     }
 
     @Override
-    public void stop() {
+    public boolean isStared() {
+        return true;
+    }
+
+    @Override
+    public void shutDown() {
         sendCloseEvent();
         this.eventLoopGroup.shutdownGracefully();
     }

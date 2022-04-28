@@ -1,11 +1,9 @@
 package com.lzh.game.socket.core;
 
-import com.lzh.game.common.scoket.GameRequest;
-import com.lzh.game.common.scoket.MessageHandler;
-import com.lzh.game.common.scoket.session.Session;
+import com.lzh.game.socket.MessageHandler;
+import com.lzh.game.socket.RemotingCmd;
+import com.lzh.game.socket.core.session.Session;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Objects;
 
 /**
  * 消息事件处理
@@ -13,23 +11,20 @@ import java.util.Objects;
 @Slf4j
 public class MessageHandlerImpl implements MessageHandler {
 
-    private RequestHandler requestHandler;
+    private ProcessManager processManager;
 
-    private RequestBusinessPool pool;
-
-    public MessageHandlerImpl(RequestHandler requestHandler, RequestBusinessPool pool) {
-        this.requestHandler = requestHandler;
-        this.pool = pool;
+    public MessageHandlerImpl(ProcessManager processManager) {
+        this.processManager = processManager;
     }
 
     @Override
     public void opened(Session session) {
-        pool.submit(session, new IoOpenTask());
+
     }
 
     @Override
     public void close(Session session) {
-        pool.submit(session, new IoCloseTask());
+
     }
 
     @Override
@@ -39,56 +34,10 @@ public class MessageHandlerImpl implements MessageHandler {
 
     @Override
     public void messageReceived(Session session, Object data) {
-        ServerExchange exchange = createExchange(session, data);
-        if (Objects.isNull(exchange)) {
-            return;
-        }
-        pool.submit(exchange, new IoReceivedTask(requestHandler, exchange));
-    }
-
-    public static class IoCloseTask implements Runnable {
-
-        @Override
-        public void run() {
-
-        }
-    }
-
-    public static class IoOpenTask implements Runnable {
-
-        @Override
-        public void run() {
-
-        }
-    }
-
-    public static class IoReceivedTask implements Runnable {
-
-        private RequestHandler handler;
-
-        private ServerExchange exchange;
-
-        public IoReceivedTask(RequestHandler handler, ServerExchange exchange) {
-            this.handler = handler;
-            this.exchange = exchange;
-        }
-
-        @Override
-        public void run() {
-            handler.handler(exchange);
-        }
-    }
-
-    private ServerExchange createExchange(Session session, Object data) {
-        if (!(data instanceof GameRequest)) {
-            if (log.isWarnEnabled()) {
-                log.warn("Invalid core request..{}, ip:{}", data, session.getChannel().remoteAddress());
-            }
-            return null;
-        } else {
-            GameRequest request = (GameRequest) data;
-            request.setSession(session);
-            return new ServerExchangeWrapper(request);
+        if (data instanceof RemotingCmd) {
+            RemotingCmd command = (RemotingCmd) data;
+            Process<RemotingCmd> process = processManager.getProcess(command.commandKey());
+            process.process(command);
         }
     }
 }

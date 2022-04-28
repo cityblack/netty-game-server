@@ -1,7 +1,5 @@
 package com.lzh.game.socket.core.session;
 
-import com.lzh.game.common.scoket.session.AbstractSession;
-import com.lzh.game.common.scoket.session.Session;
 import io.netty.channel.Channel;
 
 import java.io.Serializable;
