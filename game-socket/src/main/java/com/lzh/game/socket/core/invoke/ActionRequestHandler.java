@@ -30,10 +30,10 @@ public class ActionRequestHandler implements RequestHandler {
     private RequestActionSupport<EnhanceHandlerMethod> support;
 
     public ActionRequestHandler(RequestActionSupport<EnhanceHandlerMethod> support, InvokeMethodArgumentValues<Request> transfer) {
-        this(transfer, support, new NoneErrorHandler(), new NoneInterceptorHandler());
+        this(support, transfer, new NoneErrorHandler(), new NoneInterceptorHandler());
     }
 
-    public ActionRequestHandler(InvokeMethodArgumentValues<Request> transfer, RequestActionSupport<EnhanceHandlerMethod> support, ErrorHandler errorHandler, InterceptorHandler interceptorHandler) {
+    public ActionRequestHandler(RequestActionSupport<EnhanceHandlerMethod> support, InvokeMethodArgumentValues<Request> transfer, ErrorHandler errorHandler, InterceptorHandler interceptorHandler) {
         this.errorHandler = errorHandler;
         this.interceptorHandler = interceptorHandler;
         this.transfer = transfer;

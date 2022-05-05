@@ -81,7 +81,7 @@ public abstract class AbstractServerBootstrap
     }
 
     @Override
-    public void asyncStart() {
+    protected void asyncStartup() {
         this.netServer.asyncStart();
     }
 

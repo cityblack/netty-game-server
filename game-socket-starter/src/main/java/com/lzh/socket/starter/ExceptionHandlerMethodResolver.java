@@ -1,6 +1,5 @@
-package com.lzh.game.socket.core.invoke;
+package com.lzh.socket.starter;
 
-import com.lzh.game.socket.annotation.ExceptionHandler;
 import org.springframework.core.ExceptionDepthComparator;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotationUtils;

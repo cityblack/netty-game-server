@@ -14,7 +14,7 @@ public class ShutdownSampleHook extends Thread {
     @Override
     public void run() {
         // 先关闭网关
-        event.getApplicationContext().getBean(GameServer.class).stop();
+        event.getApplicationContext().getBean(GameServer.class).shutDown();
         this.sendBeforeCloseServerEvent();
     }
 

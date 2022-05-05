@@ -58,6 +58,8 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     protected abstract void startup();
 
+    protected abstract void asyncStartup();
+
     @Override
     public void start() {
         if (!STATUS.compareAndSet(NO_STARED, RUNNING)) {
@@ -82,5 +84,15 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         if (STATUS.compareAndSet(STARED, RUNNING)) {
             return;
         }
+    }
+
+    @Override
+    public void asyncStart() {
+        if (!STATUS.compareAndSet(NO_STARED, RUNNING)) {
+            return;
+        }
+        doInit(this.properties);
+        asyncStartup();
+        STATUS.incrementAndGet();
     }
 }

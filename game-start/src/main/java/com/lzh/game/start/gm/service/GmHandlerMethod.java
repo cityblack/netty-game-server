@@ -19,7 +19,8 @@ public class GmHandlerMethod extends HandlerMethod {
     }
 
     private Object[] getMethodArgumentValues(Player player, String[] values) throws Exception {
-        MethodParameter[] parameters = this.getMethodParameters();
+//        MethodParameter[] parameters = this.getMethodParameters();
+        Class<?>[] parameters = this.getParamsType();
         Object[] args = new Object[parameters.length];
 
         if (values.length + 1 != parameters.length) {
@@ -31,8 +32,7 @@ public class GmHandlerMethod extends HandlerMethod {
             if (i == 0) {
                 args[i] = player; //the first argument must be Player
             } else {
-                MethodParameter parameter = parameters[i];
-                Class<?> type = parameter.getParameterType();
+                Class<?> type = parameters[i];
                 if (isArray(type)) {
                     String[] array = new String[parameters.length - i];
                     System.arraycopy(values, i, array, 0, parameters.length - i);

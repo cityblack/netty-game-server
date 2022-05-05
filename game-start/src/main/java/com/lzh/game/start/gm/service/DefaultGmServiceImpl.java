@@ -1,7 +1,7 @@
 package com.lzh.game.start.gm.service;
 
 import com.lzh.game.common.ApplicationUtils;
-import com.lzh.game.socket.config.GameServerSocketProperties;
+import com.lzh.game.socket.GameServerSocketProperties;
 import com.lzh.game.start.gm.GmFacade;
 import com.lzh.game.start.model.player.Player;
 import com.lzh.game.socket.core.session.Session;
@@ -108,7 +108,7 @@ public class DefaultGmServiceImpl implements GmService, InitializingBean, Applic
         Stream.of(bean.getClass().getDeclaredMethods())
                 .forEach(m -> {
                     GmHandlerMethod method = new GmHandlerMethod(bean,m);
-                    String key = getKey(method.getMethod().getName(), method.getMethodParameters().length);
+                    String key = getKey(method.getMethod().getName(), method.getParamsType().length);
                     if (methodMap.containsKey(key)) {
                         throw new RuntimeException("Gm convent " + method.getMethod().getName() +" not unique, please check the convent name and convent args");
                     } else {

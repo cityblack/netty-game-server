@@ -1,9 +1,8 @@
-package com.lzh.game.socket.core.invoke.support;
+package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.socket.GameRequest;
 import com.lzh.game.socket.GameResponse;
-import com.lzh.game.socket.core.invoke.ExceptionHandlerMethodResolver;
 import com.lzh.game.socket.core.invoke.support.ErrorHandler;
 import org.springframework.core.BridgeMethodResolver;
 
@@ -24,6 +23,11 @@ public class DefaultErrorHandler implements ErrorHandler {
      *
      */
     private Object adviceInvokeBean;
+
+    public DefaultErrorHandler(ExceptionHandlerMethodResolver methodResolver, Object adviceInvokeBean) {
+        this.methodResolver = methodResolver;
+        this.adviceInvokeBean = adviceInvokeBean;
+    }
 
     @Override
     public boolean resolveException(Exception ex, GameRequest request, GameResponse response) {

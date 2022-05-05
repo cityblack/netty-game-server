@@ -1,6 +1,6 @@
 package com.lzh.game.start.filter;
 
-import com.lzh.game.socket.config.GameServerSocketProperties;
+import com.lzh.game.socket.GameServerSocketProperties;
 import com.lzh.game.socket.core.ServerExchange;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterChain;

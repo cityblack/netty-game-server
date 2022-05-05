@@ -1,1 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.lzh.socket.starter.GameSocketConfiguration
 

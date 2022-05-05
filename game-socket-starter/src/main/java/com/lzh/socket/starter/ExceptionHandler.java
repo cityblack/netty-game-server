@@ -1,9 +1,9 @@
-package com.lzh.game.socket.annotation;
+package com.lzh.socket.starter;
 
 import java.lang.annotation.*;
 
 /**
- * Exception type handler{@link ControllerAdvice}
+ * Exception type handler{@link ActionAdvice}
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

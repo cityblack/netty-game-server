@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConfigurationProperties("game.socket.server")
-@EnableConfigurationProperties(GameServerSocketProperties.class)
-public class GameServerStartProperties extends GameServerSocketProperties {
+public class SpringGameServerProperties extends GameServerSocketProperties {
 
 }

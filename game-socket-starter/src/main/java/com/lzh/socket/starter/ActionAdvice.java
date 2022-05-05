@@ -1,4 +1,4 @@
-package com.lzh.game.socket.annotation;
+package com.lzh.socket.starter;
 
 import org.springframework.stereotype.Component;
 
@@ -11,6 +11,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
-public @interface ControllerAdvice {
+public @interface ActionAdvice {
 
 }

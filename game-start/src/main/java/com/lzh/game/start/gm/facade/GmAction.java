@@ -1,11 +1,11 @@
 package com.lzh.game.start.gm.facade;
 
-import com.lzh.game.socket.annotation.Action;
 import com.lzh.game.socket.annotation.RequestMapping;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.start.cmd.CmdMessage;
 import com.lzh.game.start.gm.packet.GmParam;
 import com.lzh.game.start.gm.service.GmService;
+import com.lzh.socket.starter.Action;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Action

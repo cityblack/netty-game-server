@@ -30,8 +30,8 @@ public class DefaultActionMethodSupport implements RequestActionSupport<EnhanceH
         }
         protocolMap.put(cmd, methodMapping);
 
-        if (log.isInfoEnabled()) {
-            log.info("Request [{}] into {}.{}", cmd, methodMapping.getBean().getClass().getName(), methodMapping.getMethod().getName());
+        if (log.isDebugEnabled()) {
+            log.debug("Request [{}] into {}.{}", cmd, methodMapping.getBean().getClass().getName(), methodMapping.getMethod().getName());
         }
     }
 
@@ -47,6 +47,9 @@ public class DefaultActionMethodSupport implements RequestActionSupport<EnhanceH
         }
         this.requestAndResponseMapping.put(requestCmd, responseCmd);
         this.protocolMap.put(requestCmd, method);
+        if (log.isDebugEnabled()) {
+            log.debug("Request [{}] into {}.{}. Response:[{}]", requestCmd, method.getBean().getClass().getName(), method.getMethod().getName(), responseCmd);
+        }
     }
 
 }

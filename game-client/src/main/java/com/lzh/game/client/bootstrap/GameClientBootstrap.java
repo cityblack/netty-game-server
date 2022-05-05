@@ -92,4 +92,10 @@ public class GameClientBootstrap extends AbstractBootstrap<GameSocketProperties>
         this.bootstrap = createBootstrap();
         this.addConnectedFuture();
     }
+
+    @Override
+    protected void asyncStartup() {
+        this.bootstrap = createBootstrap();
+        this.addConnectedFuture();
+    }
 }

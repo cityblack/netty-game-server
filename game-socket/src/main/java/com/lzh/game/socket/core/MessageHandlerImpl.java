@@ -21,12 +21,12 @@ public class MessageHandlerImpl implements MessageHandler {
 
     @Override
     public void opened(Session session) {
-
+        log.info("session [{}:{}:{}] is connected.", session.getId(), session.getRemoteAddress(), session.getPort());
     }
 
     @Override
     public void close(Session session) {
-
+        log.info("session [{}:{}:{}] is close.", session.getId(), session.getRemoteAddress(), session.getPort());
     }
 
     @Override
