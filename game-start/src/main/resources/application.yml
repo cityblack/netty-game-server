@@ -11,9 +11,9 @@ game:
 spring:
   data:
     mongodb:
-      host: 42.193.253.72
+      host: localhost
       database: game
-      port: 17017
+      port: 17217
   redis:
 #    host: localhost
 #    port: 16379
