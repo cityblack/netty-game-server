@@ -2,8 +2,10 @@ package com.lzh.game.socket.core.bootstrap;
 
 import com.lzh.game.socket.GameIoHandler;
 import com.lzh.game.socket.GameSocketProperties;
+import com.lzh.game.socket.RemotingCommand;
 import com.lzh.game.socket.core.LifeCycle;
 import com.lzh.game.socket.core.MessageHandlerImpl;
+import com.lzh.game.socket.core.Process;
 import com.lzh.game.socket.core.ProcessManager;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
@@ -23,12 +25,12 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     protected ProcessManager processManager;
 
-    protected SessionManage<Session> sessionManage;
+    protected SessionManage<? extends Session> sessionManage;
 
-    protected GameIoHandler<Session> ioHandler;
+    protected GameIoHandler<? extends Session> ioHandler;
 
-    public AbstractBootstrap(T properties
-            , SessionManage<Session> sessionManage) {
+    protected AbstractBootstrap(T properties
+            , SessionManage<? extends Session> sessionManage) {
         this.properties = properties;
         this.sessionManage = sessionManage;
 
@@ -40,11 +42,11 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         return properties;
     }
 
-    public SessionManage<Session> getSessionManage() {
-        return sessionManage;
+    public <S extends Session>SessionManage<S> getSessionManage() {
+        return (SessionManage<S>) sessionManage;
     }
 
-    public GameIoHandler<Session> getIoHandler() {
+    public GameIoHandler<? extends Session> getIoHandler() {
         return ioHandler;
     }
 
@@ -52,18 +54,22 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         return processManager;
     }
 
-    protected abstract void init(T properties);
+    protected abstract void doInit(T properties);
 
     protected abstract void startup();
 
     @Override
     public void start() {
-        if (STATUS.compareAndSet(NO_STARED, RUNNING)) {
+        if (!STATUS.compareAndSet(NO_STARED, RUNNING)) {
             return;
         }
-        init(this.properties);
-        startup();
+        doInit(this.properties);
         STATUS.incrementAndGet();
+        startup();
+    }
+
+    public <E extends RemotingCommand>void addProcess(int key, Process<E> process) {
+        this.processManager.registerProcess(key, process);
     }
 
     @Override

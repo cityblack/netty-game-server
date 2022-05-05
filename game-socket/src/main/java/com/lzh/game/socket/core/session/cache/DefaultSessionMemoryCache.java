@@ -1,18 +1,16 @@
 package com.lzh.game.socket.core.session.cache;
 
 import com.lzh.game.socket.core.session.Session;
-import org.springframework.beans.factory.DisposableBean;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultSessionMemoryCache<T extends Session> implements SessionMemoryCache<String, T>, DisposableBean {
+public class DefaultSessionMemoryCache<T extends Session> implements SessionMemoryCache<String, T> {
 
     private Map<String, T> cache = new ConcurrentHashMap<>();
 
     @Override
     public void put(String key, T value) {
-
         cache.put(getKey(key), value);
     }
 
@@ -42,8 +40,4 @@ public class DefaultSessionMemoryCache<T extends Session> implements SessionMemo
         this.cache = null;
     }
 
-    @Override
-    public void destroy() throws Exception {
-        clean();
-    }
 }

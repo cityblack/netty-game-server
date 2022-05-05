@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Configuration;
 public class TcpServerConfiguration extends GameSocketConfiguration {
 
     @Bean
-    public GameServer gameServer(SessionManage<Session> sessionManage, SocketHandlerBuilder builder) {
-        GameServer server = new TcpCommonServer(getServerSocketProperties(), sessionManage, builder.getHandler());
+    public GameServer gameServer(SessionManage<Session> sessionManage) {
+        GameServer server = new TcpCommonServer(getServerSocketProperties(), sessionManage);
         server.asyncStart();
         return server;
     }

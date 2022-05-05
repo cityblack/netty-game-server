@@ -1,5 +1,6 @@
 package com.lzh.game.socket.core;
 
+import com.lzh.game.common.util.Constant;
 import com.lzh.game.socket.Request;
 import com.lzh.game.socket.Response;
 import com.lzh.game.socket.GameResponse;
@@ -12,7 +13,7 @@ public class ServerExchangeWrapper implements ServerExchange {
 
     public ServerExchangeWrapper(Request request) {
         this.request = request;
-        this.response = GameResponse.of(request);
+        this.response = GameResponse.of(request, Constant.RESPONSE_COMMAND_KEY);
     }
 
     @Override

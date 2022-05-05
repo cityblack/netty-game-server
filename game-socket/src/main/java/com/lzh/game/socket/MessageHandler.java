@@ -8,7 +8,7 @@ public interface MessageHandler {
 
     void close(Session session);
 
-    void exceptionCaught(Session session);
+    void exceptionCaught(Session session, Throwable throwable);
 
     void messageReceived(Session session, Object data);
 }

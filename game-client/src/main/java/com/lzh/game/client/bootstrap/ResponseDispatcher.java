@@ -1,9 +1,9 @@
 package com.lzh.game.client.bootstrap;
 
 import com.lzh.game.common.bean.HandlerMethod;
-import com.lzh.game.common.scoket.ActionMethodSupport;
-import com.lzh.game.common.scoket.Response;
 import com.lzh.game.common.serialization.ProtoBufUtils;
+import com.lzh.game.socket.ActionMethodSupport;
+import com.lzh.game.socket.Response;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -19,7 +19,7 @@ public class ResponseDispatcher {
         this.methodSupport = methodSupport;
     }
 
-    public void doResponse(Channel channel, Response response) {
+    public void doResponse(Response response) {
         //SerializationUtil.deSerialize()
         int cmd = response.cmd();
         HandlerMethod method = methodSupport.getActionHandler(cmd);
@@ -38,15 +38,15 @@ public class ResponseDispatcher {
     }
 
     private Object[] getArgumentValues(byte[] data, HandlerMethod method) {
-        MethodParameter[] parameters = method.getMethodParameters();
+        Class<?>[] parameters = method.getParamsType();
         if (parameters.length <= 0 && data.length > 0 || parameters.length > 0 && data.length <= 0) {
             throw new IllegalArgumentException("Not have response data");
         }
         // Default use the first param to parse the response data
         if (parameters.length > 0) {
-            MethodParameter defaultValue = parameters[0];
+            Class<?> parameter = parameters[0];
 
-            return new Object[]{ProtoBufUtils.deSerialize(data, defaultValue.getParameterType())};
+            return new Object[]{ProtoBufUtils.deSerialize(data, parameter)};
         }
         return null;
     }

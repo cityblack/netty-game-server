@@ -1,6 +1,6 @@
 package com.lzh.game.client.bootstrap;
 
-import com.lzh.game.common.scoket.session.Session;
+import com.lzh.game.socket.core.session.Session;
 
 public interface ClientSessionListener {
 

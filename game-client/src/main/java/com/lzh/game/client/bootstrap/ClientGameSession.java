@@ -1,7 +1,7 @@
 package com.lzh.game.client.bootstrap;
 
-import com.lzh.game.common.scoket.session.AbstractSession;
-import com.lzh.game.common.scoket.session.Session;
+import com.lzh.game.socket.core.session.AbstractSession;
+import com.lzh.game.socket.core.session.Session;
 import io.netty.channel.Channel;
 
 public class ClientGameSession extends AbstractSession implements Session {

@@ -1,18 +1,14 @@
 package com.lzh.game.client;
 
-import com.lzh.game.client.bootstrap.ClientGameSession;
-import com.lzh.game.client.bootstrap.ClientMessageHandler;
-import com.lzh.game.client.bootstrap.ResponseDispatcher;
-import com.lzh.game.client.bootstrap.GameClientBootstrap;
-import com.lzh.game.client.bootstrap.TcpClient;
+import com.lzh.game.client.bootstrap.*;
 import com.lzh.game.client.support.ActionMethodSupportImpl;
 import com.lzh.game.common.bean.HandlerMethod;
-import com.lzh.game.common.scoket.ActionMethodSupport;
-import com.lzh.game.common.scoket.GameSocketProperties;
-import com.lzh.game.common.scoket.MessageHandler;
-import com.lzh.game.common.scoket.session.GameSessionManage;
-import com.lzh.game.common.scoket.session.SessionFactory;
-import com.lzh.game.common.scoket.session.SessionManage;
+import com.lzh.game.common.util.Constant;
+import com.lzh.game.socket.ActionMethodSupport;
+import com.lzh.game.socket.GameSocketProperties;
+import com.lzh.game.socket.core.session.GameSessionManage;
+import com.lzh.game.socket.core.session.SessionFactory;
+import com.lzh.game.socket.core.session.SessionManage;
 import com.lzh.game.socket.core.session.cache.GameSessionMemoryCacheManage;
 import com.lzh.game.socket.core.session.cache.SessionMemoryCacheManage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +35,18 @@ public class Config {
         return dispatcher;
     }
 
+
     @Bean
-    public MessageHandler clientMessage(ResponseDispatcher dispatcher) {
-        return new ClientMessageHandler(dispatcher);
+    public TcpClient tcpClient(SessionManage<ClientGameSession> sessionManage, ResponseProcess responseProcess) {
+        GameClientBootstrap client = new GameClientBootstrap(sessionManage, properties);
+        client.addProcess(Constant.RESPONSE_COMMAND_KEY, responseProcess);
+        client.start();
+        return client;
     }
 
     @Bean
-    public TcpClient tcpClient(MessageHandler clientMessage, SessionManage<ClientGameSession> sessionManage) {
-        return new GameClientBootstrap(clientMessage, sessionManage, properties);
+    public ResponseProcess responseProcess(ResponseDispatcher dispatcher) {
+        return new ResponseProcess(dispatcher);
     }
 
     @Configuration

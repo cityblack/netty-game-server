@@ -2,48 +2,20 @@ package com.lzh.game.socket;
 
 import java.io.Serializable;
 
-public class GameResponse implements Response, Serializable {
+public class GameResponse extends AbstractRemotingCommand
+        implements Response, Serializable {
 
     private static final long serialVersionUID = 802660945444591938L;
 
     private Request request;
 
-    private int protocolId;
-
-    private Object data;
-
     private int status;
-
-    private byte[] bytes;
 
     private Throwable error;
 
     @Override
-    public Object data() {
-        return data;
-    }
-
-    @Override
-    public byte[] byteData() {
-        return this.bytes;
-    }
-
-    @Override
-    public int cmd() {
-        return protocolId;
-    }
-
-    @Override
     public int status() {
         return status;
-    }
-
-    public void setData(Object data) {
-        this.data = data;
-    }
-
-    public void setCmd(int protocolId) {
-        this.protocolId = protocolId;
     }
 
     public Request getRequest() {
@@ -63,14 +35,13 @@ public class GameResponse implements Response, Serializable {
         this.error = error;
     }
 
-    public void setBytes(byte[] bytes) {
-        this.bytes = bytes;
-    }
-
-    public static GameResponse of(Request request) {
+    public static GameResponse of(Request request, int commandKey) {
         GameResponse response = new GameResponse();
         response.request = request;
         response.setStatus(OK);
+        response.setCommonKey(commandKey);
+        response.setRemoteId(request.remoteId());
+        response.setSession(request.getSession());
         return response;
     }
 }

@@ -3,7 +3,7 @@ package com.lzh.game.client.support;
 import com.lzh.game.client.Action;
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.common.bean.HandlerMethod;
-import com.lzh.game.common.scoket.ActionMethodSupport;
+import com.lzh.game.socket.ActionMethodSupport;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

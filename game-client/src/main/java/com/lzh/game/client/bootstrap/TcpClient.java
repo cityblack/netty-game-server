@@ -1,7 +1,6 @@
 package com.lzh.game.client.bootstrap;
 
-import com.lzh.game.common.scoket.session.Session;
-import com.lzh.game.common.scoket.session.SessionManage;
+import com.lzh.game.socket.core.session.Session;
 
 /**
  * One to many server
@@ -15,6 +14,4 @@ public interface TcpClient {
      * @return
      */
     Session conn(String host, int port, long connectTimeout);
-
-    SessionManage<ClientGameSession> sessionManage();
 }

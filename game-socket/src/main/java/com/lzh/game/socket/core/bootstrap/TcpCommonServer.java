@@ -2,6 +2,8 @@ package com.lzh.game.socket.core.bootstrap;
 
 import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.GameServerSocketProperties;
+import com.lzh.game.socket.core.coder.GameByteToMessageDecoder;
+import com.lzh.game.socket.core.coder.GameMessageToMessageDecoder;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
 import io.netty.bootstrap.ServerBootstrap;
@@ -14,6 +16,10 @@ import java.util.concurrent.TimeUnit;
 
 public class TcpCommonServer extends AbstractServerBootstrap
         implements GameServer {
+
+    public TcpCommonServer(GameServerSocketProperties properties) {
+        super(properties);
+    }
 
     public TcpCommonServer(GameServerSocketProperties properties, SessionManage<Session> sessionManage) {
         super(properties, sessionManage);
@@ -43,7 +49,7 @@ public class TcpCommonServer extends AbstractServerBootstrap
                         .addLast(new IdleStateHandler(0, 0, 180, TimeUnit.SECONDS))
                         .addLast("encoder", new GameByteToMessageDecoder())
                         .addLast("decoder", new GameMessageToMessageDecoder())
-                        .addLast(getServerIoHandler())
+                        .addLast(getIoHandler())
                 ;
             }
         };

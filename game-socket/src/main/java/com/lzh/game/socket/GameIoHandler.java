@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ChannelHandler.Sharable
-public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandler<RemotingCmd> {
+public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandler<RemotingCommand> {
 
     private MessageHandler messageHandler;
 
@@ -41,7 +41,7 @@ public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandle
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        messageHandler.exceptionCaught(getSession(ctx.channel()));
+        messageHandler.exceptionCaught(getSession(ctx.channel()), cause);
         super.exceptionCaught(ctx, cause);
     }
 
@@ -50,7 +50,7 @@ public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandle
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RemotingCmd msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, RemotingCommand msg) throws Exception {
         messageHandler.messageReceived(getSession(ctx.channel()), msg);
     }
 }

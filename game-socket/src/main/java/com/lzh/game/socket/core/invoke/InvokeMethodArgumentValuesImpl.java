@@ -10,86 +10,57 @@ import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValues<Request>
-        , ApplicationContextAware {
+public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValues<Request> {
 
-    private InnerParamBindHandler innerParamBindHandler;
+    private ConvertManager convertManager;
 
-    private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
+    private Map<Integer, ParamConvert<?>[]> convert = new ConcurrentHashMap<>();
 
-    private Object dataToObject(byte[] data, Class<?> target) {
-        return ProtoBufUtils.deSerialize(data, target);
+    public InvokeMethodArgumentValuesImpl(ConvertManager convertManager) {
+        this.convertManager = convertManager;
+    }
+
+    private Object[] convert(Request request, ParamConvert[] converts) {
+        Object[] values = new Object[]{converts.length};
+        for (int i = 0; i < converts.length; i++) {
+            values[i] = converts[i].convert(request);
+        }
+        return values;
     }
 
     private Object[] getMethodArgumentValues(Request request, HandlerMethod handlerMethod) throws Exception {
 
-        MethodParameter[] parameters = handlerMethod.getMethodParameters();
-        Object[] args = new Object[parameters.length];
+        int cmd = request.cmd();
+        ParamConvert[] converts = this.convert.get(cmd);
+        if (Objects.isNull(converts)) {
+            synchronized (handlerMethod) {
+                if (Objects.isNull(this.convert.get(handlerMethod))) {
+                    Class<?>[] parameters = handlerMethod.getParamsType();
+                    ParamConvert<?>[] params = new ParamConvert[parameters.length];
+                    for (int i = 0; i < parameters.length; ++i) {
 
-        boolean targetChange = false;
-
-        for(int i = 0; i < parameters.length; ++i) {
-
-            MethodParameter parameter = parameters[i];
-
-            parameter.initParameterNameDiscovery(getParameterNameDiscoverer());
-
-            if (innerParamBindHandler.isInnerParam(parameter)) {
-
-                args[i] = innerParamBindHandler.conventData(request, parameter);
-
-            } else if (!targetChange) {
-                args[i] = dataToObject(request.byteData(), parameter.getParameterType());
-
-                targetChange = true;
-
-            } else if (args[i] == null) {
-                throw new IllegalStateException("Could not resolve convent parameter at index "
-                        + parameter.getParameterIndex() +
-                        " in " + parameter.getExecutable().toGenericString() + ": "
-                        + this.getArgumentResolutionErrorMessage("No suitable resolver for", i, handlerMethod));
+                        Class<?> target = parameters[i];
+                        ParamConvert<?> convert = convertManager.getConvert(target);
+                        if (Objects.isNull(convert)) {
+                            throw new IllegalStateException(handlerMethod.getMethod().getName() + " param type not has convert");
+                        }
+                        params[i] = convert;
+                    }
+                    this.convert.put(cmd, params);
+                    converts = params;
+                }
             }
         }
 
-        return args;
+        return convert(request, converts);
     }
 
     @Override
     public Object[] transfer(Request value, HandlerMethod handlerMethod) throws Exception {
         return this.getMethodArgumentValues(value, handlerMethod);
-    }
-
-    public ParameterNameDiscoverer getParameterNameDiscoverer() {
-        return parameterNameDiscoverer;
-    }
-
-    protected String getArgumentResolutionErrorMessage(String text, int index, HandlerMethod handlerMethod) {
-        Class<?> paramType = handlerMethod.getMethodParameters()[index].getParameterType();
-        return text + " argument " + index + " of type '" + paramType.getName() + "'";
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        Object o = applicationContext.getBean(InnerParamBindHandler.class);
-        if (Objects.isNull(o)) {
-            this.innerParamBindHandler = new DefaultInnerParam();
-        } else {
-            this.innerParamBindHandler = (InnerParamBindHandler) o;
-        }
-    }
-
-    class DefaultInnerParam implements InnerParamBindHandler {
-
-        @Override
-        public Object conventData(Request request, MethodParameter parameter) {
-            return null;
-        }
-
-        @Override
-        public boolean isInnerParam(MethodParameter parameter) {
-            return false;
-        }
     }
 }

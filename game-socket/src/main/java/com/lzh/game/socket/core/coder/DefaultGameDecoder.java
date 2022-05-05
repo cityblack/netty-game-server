@@ -1,22 +1,28 @@
 package com.lzh.game.socket.core.coder;
 
+import com.lzh.game.socket.AbstractRemotingCommand;
 import com.lzh.game.socket.GameRequest;
 import com.lzh.game.socket.GameResponse;
 import com.lzh.game.common.util.Constant;
+import com.lzh.game.socket.core.Decoder;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.util.List;
+import java.util.Objects;
 
 public class DefaultGameDecoder implements Decoder {
 
-    @Override
     public void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+        if (!in.isReadable()) {
+            return;
+        }
         /**
-         * cmd: Request target
-         * type: request / response
-         * long: requestId 8b
-         * len: Object byte data length
+         * cmd: cmd int 4b
+         * type: request / response byte 1b
+         * request: int 4b
+         * commandKey: process key / byte 1b
+         * len: Object byte data length 4b
          * data: Object Serializable data
          */
         if (in.readableBytes() < Constant.DEFAULT_HEAD_LEN) {
@@ -24,23 +30,32 @@ public class DefaultGameDecoder implements Decoder {
         }
         int cmd = in.readInt();
         byte type = in.readByte();
-        long requestId = in.readLong();
+        int requestId = in.readInt();
+        byte commandKey = in.readByte();
         int length = in.readInt();
         if (in.readableBytes() < length) {
             in.resetReaderIndex();
             return;
         }
+        AbstractRemotingCommand remotingCmd = null;
         if (type == Constant.REQUEST_SIGN) {
-            GameRequest request = new GameRequest();
-            request.setCmd(cmd);
-            request.setRequestId(requestId);
-            request.setBytes(length > 0 ? in.readBytes(length).array() : new byte[0]);
-            out.add(request);
+            remotingCmd = new GameRequest();
         } else if (type == Constant.RESPONSE_SIGN) {
-            GameResponse response = new GameResponse();
-            response.setCmd(cmd);
-            response.setBytes(length > 0 ? in.readBytes(length).array() : new byte[0]);
-            out.add(response);
+            remotingCmd = new GameResponse();
         }
+        if (Objects.isNull(remotingCmd)) {
+            in.resetReaderIndex();
+            throw new IllegalArgumentException("Not defined cmd type:" + type);
+        }
+        remotingCmd.setCmd(cmd);
+        remotingCmd.setRemoteId(requestId);
+        remotingCmd.setCommonKey(commandKey);
+        if (length > 0) {
+            byte[] bytes = new byte[length];
+            in.readBytes(bytes);
+            remotingCmd.setBytes(bytes);
+        }
+        in.markReaderIndex();
+        out.add(remotingCmd);
     }
 }

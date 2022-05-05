@@ -1,11 +1,8 @@
 package com.lzh.socket.starter;
 
 import com.lzh.game.socket.MessageHandler;
+import com.lzh.game.socket.core.*;
 import com.lzh.game.socket.core.session.Session;
-import com.lzh.game.socket.core.MessageHandlerImpl;
-import com.lzh.game.socket.core.RequestProcessPool;
-import com.lzh.game.socket.core.RequestHandler;
-import com.lzh.game.socket.core.ServerExchange;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterHandler;
 import org.springframework.beans.BeansException;
@@ -38,8 +35,7 @@ public class SocketHandlerBuilder implements ApplicationContextAware {
                 .collect(Collectors.toList());
         RequestProcessPool pool = loadPool(context);
         FilterHandler wrapper = new FilterHandler(filters, handler);
-        MessageHandler messageHandler = new MessageHandlerImpl(wrapper, pool);
-        return messageHandler;
+        return null;
     }
 
     private static RequestProcessPool loadPool(ApplicationContext context) {

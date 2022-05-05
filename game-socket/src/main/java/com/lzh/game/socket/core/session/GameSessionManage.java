@@ -15,6 +15,8 @@ public class GameSessionManage<S extends Session> implements SessionManage<S> {
 
     private List<Consumer<S>> closeListener = new CopyOnWriteArrayList<>();
 
+    private List<Consumer<S>> connectListener = new CopyOnWriteArrayList<>();
+
     private SessionMemoryCacheManage<String, S> cacheManage;
 
     private SessionFactory<S> sessionFactory;
@@ -51,6 +53,11 @@ public class GameSessionManage<S extends Session> implements SessionManage<S> {
     }
 
     @Override
+    public void addConnectListener(Consumer<S> connected) {
+        connectListener.add(connected);
+    }
+
+    @Override
     public void updateLastAccessTime(S session) {
         session.updateLastAccessTime();
     }
@@ -58,6 +65,13 @@ public class GameSessionManage<S extends Session> implements SessionManage<S> {
     @Override
     public void pushSession(String sessionId, S session) {
         getCache().put(sessionId, session);
+        doConnect(session);
+    }
+
+    private void doConnect(S session) {
+        for (Consumer<S> consumer : this.connectListener) {
+            consumer.accept(session);
+        }
     }
 
     public SessionMemoryCacheManage<String, S> getCacheManage() {

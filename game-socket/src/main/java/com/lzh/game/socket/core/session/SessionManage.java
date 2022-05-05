@@ -23,4 +23,10 @@ public interface SessionManage<T extends Session> extends SessionFactory<T> {
     T getSession(Channel channel);
 
     boolean removeSession(String sessionId);
+
+    /**
+     * Session connect event
+     * @param connected
+     */
+    void addConnectListener(Consumer<T> connected);
 }
