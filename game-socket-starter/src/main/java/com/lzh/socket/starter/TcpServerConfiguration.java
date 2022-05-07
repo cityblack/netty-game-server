@@ -1,9 +1,9 @@
 package com.lzh.socket.starter;
 
-import com.lzh.game.common.util.Constant;
+import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.GameServer;
+import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.RequestHandler;
-import com.lzh.game.socket.core.RequestProcess;
 import com.lzh.game.socket.core.bootstrap.TcpCommonServer;
 import com.lzh.game.socket.core.invoke.ConvertManager;
 import com.lzh.game.socket.core.invoke.InvokeMethodArgumentValues;
@@ -26,17 +26,15 @@ public class TcpServerConfiguration {
     @Bean
     public GameServer gameServer(SpringGameServerProperties serverSocketProperties
             , RequestHandler requestHandler
-            , RequestActionSupport actionSupport
+            , RequestActionSupport<EnhanceHandlerMethod> actionSupport
             , ConvertManager convertManager
-            , InvokeMethodArgumentValues argumentValues
-            , RequestProcess requestProcess) {
+            , InvokeMethodArgumentValues<Request> argumentValues) {
 
         TcpCommonServer server = new TcpCommonServer(serverSocketProperties, sessionManage);
         server.setHandler(requestHandler)
                 .setMethodSupport(actionSupport)
                 .setConvertManager(convertManager)
                 .setArgumentValues(argumentValues);
-        server.addProcess(Constant.REQUEST_COMMAND_KEY, requestProcess);
         server.asyncStart();
         return server;
     }

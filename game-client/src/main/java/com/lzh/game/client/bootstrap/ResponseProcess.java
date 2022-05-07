@@ -1,8 +1,7 @@
 package com.lzh.game.client.bootstrap;
 
 import com.lzh.game.socket.GameResponse;
-import com.lzh.game.socket.Response;
-import com.lzh.game.socket.core.Process;
+import com.lzh.game.socket.core.process.Process;
 import com.lzh.game.socket.core.RemoteContext;
 
 public class ResponseProcess implements Process<GameResponse> {

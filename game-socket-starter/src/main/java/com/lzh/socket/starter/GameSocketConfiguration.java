@@ -1,9 +1,8 @@
 package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
-import com.lzh.game.socket.MessageHandler;
 import com.lzh.game.socket.Request;
-import com.lzh.game.socket.core.RequestProcess;
+import com.lzh.game.socket.core.process.RequestProcess;
 import com.lzh.game.socket.core.RequestProcessPool;
 import com.lzh.game.socket.core.ServerExchange;
 import com.lzh.game.socket.core.session.*;
@@ -13,7 +12,6 @@ import com.lzh.game.socket.core.invoke.*;
 import com.lzh.game.socket.core.session.cache.GameSessionMemoryCacheManage;
 import com.lzh.game.socket.core.session.cache.SessionMemoryCacheManage;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,30 +66,6 @@ public class GameSocketConfiguration {
 
     protected GameServerSocketProperties getServerSocketProperties() {
         return this.serverSocketProperties;
-    }
-
-    @Bean
-    public RequestProcess requestProcess(RequestHandler handler, RequestProcessPool requestProcessPool) {
-        return new RequestProcess(handler, requestProcessPool);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public RequestProcessPool requestProcessPool() {
-        return new RequestProcessPool() {
-
-            private final ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
-            @Override
-            public void submit(ServerExchange exchange, Runnable runnable) {
-                service.submit(runnable);
-            }
-
-            @Override
-            public void submit(Session session, Runnable runnable) {
-                service.submit(runnable);
-            }
-        };
     }
 
     @Configuration

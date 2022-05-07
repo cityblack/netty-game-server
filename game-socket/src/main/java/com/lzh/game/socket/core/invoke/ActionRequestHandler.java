@@ -45,14 +45,11 @@ public class ActionRequestHandler implements RequestHandler {
         GameResponse response = (GameResponse) exchange.getResponse();
         GameRequest request = (GameRequest) exchange.getRequest();
         int cmd = request.cmd();
-
-        if (!support.containMapping(cmd)) {
+        EnhanceHandlerMethod method = support.getActionHandler(cmd);
+        if (Objects.isNull(method)) {
             this.onError(exchange, new NotFondProtocolException(cmd));
             return;
         }
-
-        EnhanceHandlerMethod method = support.getActionHandler(cmd);
-
         try {
             Object o = invokeForRequest(request, method);
             // If return value isn't null. Check response cmd.
@@ -86,27 +83,6 @@ public class ActionRequestHandler implements RequestHandler {
     private boolean isIntercept(Request request, HandlerMethod handlerMethod, Object[] args) {
         return this.interceptorHandler.isIntercept(request, handlerMethod, args);
     }
-
-    /*private void loadActionIntercept(ApplicationContext context) {
-        Map<String, ActionInterceptor> beans = context.getBeansOfType(ActionInterceptor.class);
-        actionInterceptors = beans.values().stream().collect(Collectors.toList());
-    }*/
-
-    /*private void loadAdvice(ApplicationContext context) {
-        Map<String, Object> map = context.getBeansWithAnnotation(ControllerAdvice.class);
-        if (map.size() > 1) {
-            throw new IllegalArgumentException("@ControllerAdvice has multiple instance. " + map);
-        }
-        if (!map.isEmpty()) {
-            map.forEach((k, v) -> {
-                Class<?> clazz = v.getClass();
-                methodResolver = new ExceptionHandlerMethodResolver(clazz);
-                //resolver.resolveMethodByThrowable()
-                adviceInvokeBean = v;
-            });
-        }
-
-    }*/
 
     private boolean resolveException(Exception ex, GameRequest request, GameResponse response) {
         return this.errorHandler.resolveException(ex, request, response);

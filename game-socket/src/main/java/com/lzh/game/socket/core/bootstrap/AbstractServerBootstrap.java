@@ -6,12 +6,10 @@ import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.GameServerSocketProperties;
 import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.RequestHandler;
-import com.lzh.game.socket.core.RequestProcess;
-import com.lzh.game.socket.core.RequestProcessPool;
-import com.lzh.game.socket.core.ServerExchange;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterHandler;
 import com.lzh.game.socket.core.invoke.*;
+import com.lzh.game.socket.core.process.RequestProcess2;
 import com.lzh.game.socket.core.session.*;
 import com.lzh.game.socket.core.session.cache.GameSessionMemoryCacheManage;
 import com.lzh.game.socket.core.session.cache.SessionMemoryCacheManage;
@@ -19,8 +17,6 @@ import com.lzh.game.socket.core.session.cache.SessionMemoryCacheManage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public abstract class AbstractServerBootstrap
         extends AbstractBootstrap<GameServerSocketProperties> implements GameServer {
@@ -69,7 +65,7 @@ public abstract class AbstractServerBootstrap
             handler = new FilterHandler(this.filters, new ActionRequestHandler(methodSupport, argumentValues));
         }
         if (Objects.isNull(getProcessManager().getProcess(Constant.REQUEST_COMMAND_KEY))) {
-            addProcess(Constant.REQUEST_COMMAND_KEY, new RequestProcess(handler, createPool()));
+            addProcess(Constant.REQUEST_COMMAND_KEY, new RequestProcess2(handler, convertManager, methodSupport));
         }
         this.netServer = createServer(getPort());
     }
@@ -147,22 +143,4 @@ public abstract class AbstractServerBootstrap
         this.handler = handler;
         return this;
     }
-
-    private RequestProcessPool createPool() {
-        return new RequestProcessPool() {
-
-            private ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
-            @Override
-            public void submit(ServerExchange exchange, Runnable runnable) {
-                service.submit(runnable);
-            }
-
-            @Override
-            public void submit(Session session, Runnable runnable) {
-                service.submit(runnable);
-            }
-        };
-    }
-
 }

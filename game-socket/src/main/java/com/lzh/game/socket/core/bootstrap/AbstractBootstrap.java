@@ -5,8 +5,8 @@ import com.lzh.game.socket.GameSocketProperties;
 import com.lzh.game.socket.RemotingCommand;
 import com.lzh.game.socket.core.LifeCycle;
 import com.lzh.game.socket.core.MessageHandlerImpl;
-import com.lzh.game.socket.core.Process;
-import com.lzh.game.socket.core.ProcessManager;
+import com.lzh.game.socket.core.process.Process;
+import com.lzh.game.socket.core.process.ProcessManager;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
 
