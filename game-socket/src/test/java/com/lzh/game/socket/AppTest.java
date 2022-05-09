@@ -3,6 +3,7 @@ package com.lzh.game.socket;
 import com.lzh.game.common.util.Constant;
 import com.lzh.game.socket.annotation.RequestMapping;
 import com.lzh.game.socket.annotation.ResponseMapping;
+import com.lzh.game.socket.core.AsyncResponse;
 import com.lzh.game.socket.core.bootstrap.GameTcpClient;
 import com.lzh.game.socket.core.bootstrap.TcpCommonServer;
 import com.lzh.game.socket.core.process.FutureResponseProcess;
@@ -42,14 +43,14 @@ public class AppTest {
     }
 
     @Test
-    public void startClient() throws InterruptedException, ExecutionException {
+    public void startClient() throws InterruptedException {
         GameSocketProperties properties = new GameSocketProperties();
         properties.setRequestTimeout(5000);
         GameTcpClient client = new GameTcpClient(properties);
         client.addProcess(Constant.RESPONSE_COMMAND_KEY, new FutureResponseProcess());
         client.start();
         Session session = client.conn("localhost", 8081, 2000);
-        CompletableFuture<String> future = client.request(session, -10086, "hello world", String.class);
+        AsyncResponse<String> future = client.request(session, -10086, "hello world", String.class);
         System.out.println(future.get());
         client.oneWay(session, -10089, "request");
         Thread.sleep(2000);

@@ -14,9 +14,9 @@ import java.util.Objects;
 import java.util.concurrent.*;
 
 @Slf4j
-public class RequestFuture<T> extends CompletableFuture<T> {
+public class RequestFuture extends CompletableFuture<Response> {
 
-    private static final Map<Integer, RequestFuture<?>> FUTURES = new ConcurrentHashMap<>();
+    private static final Map<Integer, RequestFuture> FUTURES = new ConcurrentHashMap<>();
 
     private static final Timer TIME_OUT_TIMER = new HashedWheelTimer(new NameThreadFactory("remote-future-timeout", true), 30, TimeUnit.MILLISECONDS);
 
@@ -32,19 +32,12 @@ public class RequestFuture<T> extends CompletableFuture<T> {
 
     private final ExecutorService service;
 
-    private final Class<T> responseType;
-
-    private RequestFuture(Request request, long timeout, ExecutorService service, Class<T> responseType) {
+    private RequestFuture(Request request, long timeout, ExecutorService service) {
         this.id = request.remoteId();
 //        this.request = request;
         this.timeout = timeout;
         this.service = service;
-        this.responseType = responseType;
         FUTURES.put(id, this);
-    }
-
-    public Class<T> getResponseType() {
-        return responseType;
     }
 
     /**
@@ -54,8 +47,8 @@ public class RequestFuture<T> extends CompletableFuture<T> {
      * @param executorService
      * @return
      */
-    public static <T>RequestFuture<T> newFuture(Request request, long timeout, ExecutorService executorService, Class<T> clazz) {
-        final RequestFuture<T> future = new RequestFuture(request, timeout, executorService, clazz);
+    public static RequestFuture newFuture(Request request, long timeout, ExecutorService executorService) {
+        final RequestFuture future = new RequestFuture(request, timeout, executorService);
         timeoutTask(future);
         return future;
     }
@@ -94,7 +87,7 @@ public class RequestFuture<T> extends CompletableFuture<T> {
             throw new IllegalArgumentException("Response is null");
         }
         if (response.status() == Response.OK) {
-            this.complete((T) response.data());
+            this.complete(response);
         } else {
             this.completeExceptionally(new IllegalArgumentException());
         }

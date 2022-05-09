@@ -2,6 +2,13 @@ package com.lzh.game.socket;
 
 import com.lzh.game.socket.core.session.Session;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ * Thread Unsafe
+ */
 public abstract class AbstractRemotingCommand
         implements RemotingCommand {
 
@@ -14,6 +21,10 @@ public abstract class AbstractRemotingCommand
     private int commonKey;
 
     private int remoteId;
+
+    private byte type;
+
+    private Map<String, Object> temp;
 
     private transient Session session;
 
@@ -35,6 +46,27 @@ public abstract class AbstractRemotingCommand
     @Override
     public Session getSession() {
         return session;
+    }
+
+    @Override
+    public byte type() {
+        return type;
+    }
+
+    @Override
+    public void putTemp(String key, Object value) {
+        if (Objects.isNull(temp)) {
+            temp = new HashMap<>();
+        }
+        temp.put(key, value);
+    }
+
+    @Override
+    public Object getTemp(String key) {
+        if (Objects.isNull(temp)) {
+            return null;
+        }
+        return temp.get(key);
     }
 
     @Override
@@ -69,5 +101,9 @@ public abstract class AbstractRemotingCommand
 
     public void setSession(Session session) {
         this.session = session;
+    }
+
+    public void setType(byte type) {
+        this.type = type;
     }
 }

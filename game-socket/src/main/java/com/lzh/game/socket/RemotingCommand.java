@@ -15,4 +15,11 @@ public interface RemotingCommand {
     int remoteId();
 
     Session getSession();
+
+    // request / response / oneway
+    byte type();
+
+    void putTemp(String key, Object value);
+
+    Object getTemp(String key);
 }

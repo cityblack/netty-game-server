@@ -38,8 +38,11 @@ public class DefaultGameEncoder implements Encoder {
                 int commandKey = cmdMsg.commandKey();
                 out.writeByte(commandKey);
                 Object data = cmdMsg.data();
-                if (Objects.nonNull(data)) {
-                    byte[] bytes = ProtoBufUtils.serialize(data);
+                byte[] bytes = cmdMsg.byteData();
+                if ((Objects.isNull(bytes) || bytes.length <= 0) && Objects.nonNull(data)) {
+                    bytes = ProtoBufUtils.serialize(data);
+                }
+                if (Objects.nonNull(bytes) && bytes.length > 0) {
                     out.writeInt(bytes.length);
                     out.writeBytes(bytes);
                 } else {

@@ -1,6 +1,9 @@
 package com.lzh.game.socket.core.bootstrap;
 
+import com.lzh.game.common.util.Constant;
 import com.lzh.game.socket.*;
+import com.lzh.game.socket.core.AsyncResponse;
+import com.lzh.game.socket.core.FutureAsyncResponse;
 import com.lzh.game.socket.core.RequestFuture;
 import com.lzh.game.socket.core.coder.GameByteToMessageDecoder;
 import com.lzh.game.socket.core.coder.GameMessageToMessageDecoder;
@@ -81,19 +84,20 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
 
     @Override
     public void oneWay(Session session, int commandKey, int cmd, Object params) {
-        session.write(SocketUtils.createRequest(commandKey, cmd, params));
+        session.write(SocketUtils.createRequest(commandKey, cmd, params, Constant.ONEWAY_SIGN));
     }
 
     @Override
-    public <T> CompletableFuture<T> request(Session session, int commandKey, int cmd, Object params, Class<T> clazz) {
+    public <T> AsyncResponse<T> request(Session session, int commandKey, int cmd, Object params, Class<T> clazz) {
         return request(session, SocketUtils.createRequest(commandKey, cmd, params), clazz);
     }
 
     @Override
-    public <T>CompletableFuture<T> request(Session session, Request request, Class<T> clazz) {
-        RequestFuture<T> future = RequestFuture.newFuture(request, getProperties().getRequestTimeout(), service, clazz);
+    public <T>AsyncResponse<T> request(Session session, Request request, Class<T> clazz) {
+        RequestFuture future = RequestFuture.newFuture(request, getProperties().getRequestTimeout(), service);
+        AsyncResponse<T> response = new FutureAsyncResponse<>(future, clazz);
         session.write(request);
-        return future;
+        return response;
     }
 
     private Bootstrap createBootstrap() {
