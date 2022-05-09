@@ -47,7 +47,7 @@ public class RequestProcess2 implements Process<GameRequest> {
 
     @Override
     public void process(RemoteContext context, GameRequest request) {
-        ServerExchange exchange = new ServerExchangeWrapper(request, Constant.REQUEST_COMMAND_KEY);
+        ServerExchange exchange = new ServerExchangeWrapper(request, Constant.RESPONSE_COMMAND_KEY);
         request.setSession(context.getSession());
         //
         int cmd = request.cmd();

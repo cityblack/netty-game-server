@@ -7,8 +7,9 @@ import com.lzh.game.socket.core.LifeCycle;
 import com.lzh.game.socket.core.MessageHandlerImpl;
 import com.lzh.game.socket.core.process.Process;
 import com.lzh.game.socket.core.process.ProcessManager;
-import com.lzh.game.socket.core.session.Session;
-import com.lzh.game.socket.core.session.SessionManage;
+import com.lzh.game.socket.core.session.*;
+import com.lzh.game.socket.core.session.cache.GameSessionMemoryCacheManage;
+import com.lzh.game.socket.core.session.cache.SessionMemoryCacheManage;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,6 +37,16 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
         this.processManager = new ProcessManager();
         this.ioHandler = new GameIoHandler<>(new MessageHandlerImpl(processManager), this.sessionManage);
+    }
+
+    protected AbstractBootstrap(T properties) {
+        this(properties, defaultSession());
+    }
+
+    protected static SessionManage<Session> defaultSession() {
+        SessionMemoryCacheManage<String, Session> cacheManage = new GameSessionMemoryCacheManage<>();
+        SessionFactory<Session> factory = GameSession::of;
+        return new GameSessionManage<>(cacheManage, factory);
     }
 
     public T getProperties() {

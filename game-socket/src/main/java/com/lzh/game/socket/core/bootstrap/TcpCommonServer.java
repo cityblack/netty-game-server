@@ -17,12 +17,12 @@ import java.util.concurrent.TimeUnit;
 public class TcpCommonServer extends AbstractServerBootstrap
         implements GameServer {
 
-    public TcpCommonServer(GameServerSocketProperties properties) {
-        super(properties);
+    public TcpCommonServer(GameServerSocketProperties properties, SessionManage<? extends Session> sessionManage) {
+        super(properties, sessionManage);
     }
 
-    public TcpCommonServer(GameServerSocketProperties properties, SessionManage<Session> sessionManage) {
-        super(properties, sessionManage);
+    public TcpCommonServer(GameServerSocketProperties properties) {
+        super(properties);
     }
 
     @Override

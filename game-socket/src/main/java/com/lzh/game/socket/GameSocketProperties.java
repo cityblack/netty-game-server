@@ -11,4 +11,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class GameSocketProperties {
 
     private LogLevel nettyLogLevel = LogLevel.ERROR;
+
+    private int requestTimeout = 2000;
 }

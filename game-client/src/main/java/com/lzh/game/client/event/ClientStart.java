@@ -1,23 +1,22 @@
 package com.lzh.game.client.event;
 
-import com.lzh.game.client.bootstrap.TcpClient;
+import com.lzh.game.socket.GameClient;
 import com.lzh.game.common.event.Event;
-import io.netty.channel.Channel;
 import lombok.Getter;
 
 public class ClientStart implements Event {
 
     @Getter
-    private TcpClient client;
+    private GameClient client;
 
-    public static ClientStart of(TcpClient client) {
+    public static ClientStart of(GameClient client) {
         ClientStart start = new ClientStart();
         start.client = client;
         return start;
     }
 
     @Override
-    public TcpClient getOwn() {
+    public GameClient getOwn() {
         return client;
     }
 }

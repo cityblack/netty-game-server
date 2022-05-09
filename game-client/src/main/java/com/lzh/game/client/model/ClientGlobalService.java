@@ -1,7 +1,7 @@
 package com.lzh.game.client.model;
 
 import com.lzh.game.client.PackUtils;
-import com.lzh.game.client.bootstrap.TcpClient;
+import com.lzh.game.socket.GameClient;
 import com.lzh.game.client.event.ClientStart;
 import com.lzh.game.client.model.hello.RequestHello;
 import com.lzh.game.socket.core.session.Session;
@@ -23,7 +23,7 @@ public class ClientGlobalService implements InitializingBean {
     @Subscribe
     public void clientStart(ClientStart clientStart) {
         log.info("Client started..");
-        TcpClient client = clientStart.getClient();
+        GameClient client = clientStart.getClient();
         Session session = client.conn("localhost", 8089, 2000L);
         log.info("Send hello world");
         PackUtils.sendMessage(session.getChannel(), -10086, new RequestHello("hello world"));

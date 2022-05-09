@@ -2,9 +2,6 @@ package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.Request;
-import com.lzh.game.socket.core.process.RequestProcess;
-import com.lzh.game.socket.core.RequestProcessPool;
-import com.lzh.game.socket.core.ServerExchange;
 import com.lzh.game.socket.core.session.*;
 import com.lzh.game.socket.GameServerSocketProperties;
 import com.lzh.game.socket.core.RequestHandler;
@@ -17,8 +14,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Resource;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Default config
@@ -73,13 +68,13 @@ public class GameSocketConfiguration {
     class SessionConfig {
 
         @Bean
-        protected SessionManage<ServerGameSession> sessionManage(SessionMemoryCacheManage<String, ServerGameSession> sessionMemoryCacheManage) {
-            SessionFactory<ServerGameSession> sessionFactory = ServerGameSession::of;
+        protected SessionManage<GameSession> sessionManage(SessionMemoryCacheManage<String, GameSession> sessionMemoryCacheManage) {
+            SessionFactory<GameSession> sessionFactory = GameSession::of;
             return new GameSessionManage<>(sessionMemoryCacheManage, sessionFactory);
         }
 
         @Bean
-        public SessionMemoryCacheManage<String, ServerGameSession> sessionMemoryCacheManage() {
+        public SessionMemoryCacheManage<String, GameSession> sessionMemoryCacheManage() {
             return new GameSessionMemoryCacheManage<>();
         }
     }

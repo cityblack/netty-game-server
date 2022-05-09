@@ -10,9 +10,8 @@ import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterHandler;
 import com.lzh.game.socket.core.invoke.*;
 import com.lzh.game.socket.core.process.RequestProcess2;
-import com.lzh.game.socket.core.session.*;
-import com.lzh.game.socket.core.session.cache.GameSessionMemoryCacheManage;
-import com.lzh.game.socket.core.session.cache.SessionMemoryCacheManage;
+import com.lzh.game.socket.core.session.Session;
+import com.lzh.game.socket.core.session.SessionManage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +34,12 @@ public abstract class AbstractServerBootstrap
 
     private List<Object> beans = new ArrayList<>();
 
-    public AbstractServerBootstrap(GameServerSocketProperties properties) {
-        this(properties, defaultSession());
+    protected AbstractServerBootstrap(GameServerSocketProperties properties, SessionManage<? extends Session> sessionManage) {
+        super(properties, sessionManage);
     }
 
-    public AbstractServerBootstrap(GameServerSocketProperties properties, SessionManage<Session> sessionManage) {
-        super(properties, sessionManage);
+    protected AbstractServerBootstrap(GameServerSocketProperties properties) {
+        super(properties);
     }
 
     protected abstract NetServer createServer(int port);
@@ -68,12 +67,6 @@ public abstract class AbstractServerBootstrap
             addProcess(Constant.REQUEST_COMMAND_KEY, new RequestProcess2(handler, convertManager, methodSupport));
         }
         this.netServer = createServer(getPort());
-    }
-
-    private static SessionManage<Session> defaultSession() {
-        SessionMemoryCacheManage<String, Session> cacheManage = new GameSessionMemoryCacheManage<>();
-        SessionFactory<Session> factory = ServerGameSession::of;
-        return new GameSessionManage<>(cacheManage, factory);
     }
 
     @Override

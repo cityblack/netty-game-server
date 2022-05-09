@@ -1,44 +1,58 @@
-package com.lzh.game.client.bootstrap;
+package com.lzh.game.socket.core.bootstrap;
 
-import com.lzh.game.socket.GameSocketProperties;
-import com.lzh.game.socket.core.bootstrap.AbstractBootstrap;
+import com.lzh.game.socket.*;
+import com.lzh.game.socket.core.RequestFuture;
 import com.lzh.game.socket.core.coder.GameByteToMessageDecoder;
 import com.lzh.game.socket.core.coder.GameMessageToMessageDecoder;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.AttributeKey;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
-public class GameClientBootstrap extends AbstractBootstrap<GameSocketProperties>
-        implements TcpClient {
+public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
+        implements GameClient {
 
-    public final static AttributeKey<CompletableFuture<ClientGameSession>> SESSION_FUTURE = AttributeKey.newInstance("session.future");
+    public final static AttributeKey<CompletableFuture<Session>> SESSION_FUTURE = AttributeKey.newInstance("session.future");
 
     private EventLoopGroup group;
 
     private Bootstrap bootstrap;
 
-    public GameClientBootstrap(SessionManage<ClientGameSession> sessionManage, GameSocketProperties properties) {
+    private ExecutorService service;
+
+    public GameTcpClient(GameSocketProperties properties) {
+        this(properties, defaultSession(), defaultExecutor());
+    }
+
+    public GameTcpClient(GameSocketProperties properties, SessionManage<Session> sessionManage) {
+        this(properties, sessionManage, defaultExecutor());
+    }
+
+    public GameTcpClient(GameSocketProperties properties, SessionManage<Session> sessionManage, ExecutorService service) {
         super(properties, sessionManage);
+        this.service = service;
+    }
+
+    public static ExecutorService defaultExecutor() {
+        return Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     }
 
     private void addConnectedFuture() {
-        SessionManage<ClientGameSession> manage = getSessionManage();
+        SessionManage<Session> manage = getSessionManage();
         manage.addConnectListener(clientGameSession -> bindConnectFuture(clientGameSession.getChannel(), true));
     }
 
-    private CompletableFuture<ClientGameSession> bindConnectFuture(Channel channel, boolean connected) {
-        CompletableFuture<ClientGameSession> future = new CompletableFuture<>();
+    private CompletableFuture<Session> bindConnectFuture(Channel channel, boolean connected) {
+        CompletableFuture<Session> future = new CompletableFuture<>();
         if (!channel.attr(SESSION_FUTURE).compareAndSet(null, future)) {
             future = channel.attr(SESSION_FUTURE).get();
         }
@@ -53,7 +67,7 @@ public class GameClientBootstrap extends AbstractBootstrap<GameSocketProperties>
         Bootstrap bootstrap = createBootstrap();
         try {
             Channel channel = bootstrap.connect(host, port).channel();
-            final CompletableFuture<ClientGameSession> completableFuture = bindConnectFuture(channel, false);
+            final CompletableFuture<Session> completableFuture = bindConnectFuture(channel, false);
             return completableFuture.get(connectTimeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException(e);
@@ -61,8 +75,25 @@ public class GameClientBootstrap extends AbstractBootstrap<GameSocketProperties>
     }
 
     @Override
-    public SessionManage<ClientGameSession> getSessionManage() {
-        return super.getSessionManage();
+    public void oneWay(Session session, Request request) {
+        session.write(request);
+    }
+
+    @Override
+    public void oneWay(Session session, int commandKey, int cmd, Object params) {
+        session.write(SocketUtils.createRequest(commandKey, cmd, params));
+    }
+
+    @Override
+    public <T> CompletableFuture<T> request(Session session, int commandKey, int cmd, Object params, Class<T> clazz) {
+        return request(session, SocketUtils.createRequest(commandKey, cmd, params), clazz);
+    }
+
+    @Override
+    public <T>CompletableFuture<T> request(Session session, Request request, Class<T> clazz) {
+        RequestFuture<T> future = RequestFuture.newFuture(request, getProperties().getRequestTimeout(), service, clazz);
+        session.write(request);
+        return future;
     }
 
     private Bootstrap createBootstrap() {
