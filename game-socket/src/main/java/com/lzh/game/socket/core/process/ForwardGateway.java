@@ -21,6 +21,11 @@ public class ForwardGateway implements Process<GameRequest> {
 
     private ForwardStrategy strategy;
 
+    public ForwardGateway(GameTcpClient tcpClient, ForwardStrategy strategy) {
+        this.tcpClient = tcpClient;
+        this.strategy = strategy;
+    }
+
     @Override
     public void process(RemoteContext context, GameRequest command) {
         int cmd = command.cmd();
