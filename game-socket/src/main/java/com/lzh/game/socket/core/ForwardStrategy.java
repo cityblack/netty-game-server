@@ -6,5 +6,5 @@ import com.lzh.game.socket.core.session.Session;
 
 public interface ForwardStrategy {
 
-    Session forwardSession(GameTcpClient client, GameRequest request);
+    Session selected(GameTcpClient client, GameRequest request);
 }

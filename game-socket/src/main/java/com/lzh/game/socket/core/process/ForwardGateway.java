@@ -30,6 +30,7 @@ public class ForwardGateway implements Process<GameRequest> {
     public void process(RemoteContext context, GameRequest command) {
         int cmd = command.cmd();
         byte[] bytes = command.byteData();
+        command.setSession(context.getSession());
 
         if (command.type() == Constant.REQUEST_SIGN || command.type() == Constant.ONEWAY_SIGN) {
             GameRequest request = SocketUtils.createRequest(cmd, bytes);
@@ -37,7 +38,7 @@ public class ForwardGateway implements Process<GameRequest> {
             request.setType(command.type());
             request.setBytes(bytes);
             request.setCommonKey(Constant.REQUEST_COMMAND_KEY);
-            Session forwardSession = strategy.forwardSession(tcpClient, command);
+            Session forwardSession = strategy.selected(tcpClient, command);
             if (command.type() == Constant.ONEWAY_SIGN) {
                 tcpClient.oneWay(forwardSession, request);
             } else {
