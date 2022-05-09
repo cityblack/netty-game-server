@@ -2,10 +2,6 @@ package com.lzh.game.socket;
 
 import com.lzh.game.socket.core.session.Session;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
 /**
  * Thread Unsafe
  */
