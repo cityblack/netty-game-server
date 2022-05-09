@@ -24,8 +24,6 @@ public abstract class AbstractRemotingCommand
 
     private byte type;
 
-    private Map<String, Object> temp;
-
     private transient Session session;
 
     @Override
@@ -51,22 +49,6 @@ public abstract class AbstractRemotingCommand
     @Override
     public byte type() {
         return type;
-    }
-
-    @Override
-    public void putTemp(String key, Object value) {
-        if (Objects.isNull(temp)) {
-            temp = new HashMap<>();
-        }
-        temp.put(key, value);
-    }
-
-    @Override
-    public Object getTemp(String key) {
-        if (Objects.isNull(temp)) {
-            return null;
-        }
-        return temp.get(key);
     }
 
     @Override

@@ -18,8 +18,4 @@ public interface RemotingCommand {
 
     // request / response / oneway
     byte type();
-
-    void putTemp(String key, Object value);
-
-    Object getTemp(String key);
 }
