@@ -9,6 +9,7 @@ import com.lzh.game.socket.core.RequestHandler;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterHandler;
 import com.lzh.game.socket.core.invoke.*;
+import com.lzh.game.socket.core.process.FutureResponseProcess;
 import com.lzh.game.socket.core.process.RequestProcess2;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
@@ -65,6 +66,9 @@ public abstract class AbstractServerBootstrap
         }
         if (Objects.isNull(getProcessManager().getProcess(Constant.REQUEST_COMMAND_KEY))) {
             addProcess(Constant.REQUEST_COMMAND_KEY, new RequestProcess2(handler, convertManager, methodSupport));
+        }
+        if (Objects.isNull(getProcessManager().getProcess(Constant.RESPONSE_COMMAND_KEY))) {
+            addProcess(Constant.RESPONSE_COMMAND_KEY, new FutureResponseProcess());
         }
         this.netServer = createServer(getPort());
     }
