@@ -22,6 +22,11 @@ public class AppTest {
             System.out.println(hello);
             return "server say:" + hello;
         }
+
+        @RequestMapping(-10089)
+        public void noeWay(String one) {
+            System.out.println("one way:" + one);
+        }
     }
 
     @Test
@@ -46,5 +51,7 @@ public class AppTest {
         Session session = client.conn("localhost", 8081, 2000);
         CompletableFuture<String> future = client.request(session, -10086, "hello world", String.class);
         System.out.println(future.get());
+        client.oneWay(session, -10089, "request");
+        Thread.sleep(2000);
     }
 }
