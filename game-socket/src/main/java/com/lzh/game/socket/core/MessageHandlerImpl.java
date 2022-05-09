@@ -42,7 +42,7 @@ public class MessageHandlerImpl implements MessageHandler {
             RemotingCommand command = (RemotingCommand) data;
             Process<RemotingCommand> process = processManager.getProcess(command.commandKey());
             if (Objects.isNull(process)) {
-                log.warn("Not defined command key:{}", command.commandKey());
+                log.warn("Undefined the command key:{}", command.commandKey());
                 return;
             }
             RemoteContext context = new RemoteContext();
