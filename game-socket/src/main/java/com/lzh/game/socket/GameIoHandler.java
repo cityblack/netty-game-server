@@ -2,6 +2,7 @@ package com.lzh.game.socket;
 
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
+import com.lzh.game.socket.core.session.SessionUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -27,6 +28,7 @@ public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandle
         if (log.isInfoEnabled()) {
             log.info("{} connected!", session.getId());
         }
+        SessionUtils.channelBindSession(ctx.channel(), session);
         sessionManage.pushSession(session.getId(), session);
         messageHandler.opened(session);
         super.channelActive(ctx);
@@ -34,7 +36,7 @@ public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandle
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        S s = getSession(ctx.channel());
+        Session s = getSession(ctx.channel());
         messageHandler.close(s);
         sessionManage.removeSession(s.getId());
     }
@@ -45,8 +47,8 @@ public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandle
         super.exceptionCaught(ctx, cause);
     }
 
-    protected S getSession(Channel channel) {
-        return sessionManage.getSession(channel);
+    protected Session getSession(Channel channel) {
+        return SessionUtils.channelGetSession(channel);
     }
 
     @Override

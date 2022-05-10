@@ -43,11 +43,6 @@ public class GameSessionManage<S extends Session> implements SessionManage<S> {
     }
 
     @Override
-    public S getSession(Channel channel) {
-        return getSession(channel.id().asLongText());
-    }
-
-    @Override
     public boolean removeSession(String sessionId) {
         return Objects.nonNull(getCache().remove(sessionId));
     }

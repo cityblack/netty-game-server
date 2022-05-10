@@ -1,8 +1,5 @@
 package com.lzh.game.socket.core.session;
 
-
-import io.netty.channel.Channel;
-
 import java.util.function.Consumer;
 
 /**
@@ -19,8 +16,6 @@ public interface SessionManage<T extends Session> extends SessionFactory<T> {
     void addSessionCloseListening(Consumer<T> consumer);
 
     boolean contain(String sessionId);
-
-    T getSession(Channel channel);
 
     boolean removeSession(String sessionId);
 

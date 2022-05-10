@@ -10,9 +10,6 @@ import com.lzh.game.socket.core.process.FutureResponseProcess;
 import com.lzh.game.socket.core.session.Session;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
 public class AppTest {
 
     public class ServerDemo {
@@ -49,7 +46,7 @@ public class AppTest {
         GameTcpClient client = new GameTcpClient(properties);
         client.addProcess(Constant.RESPONSE_COMMAND_KEY, new FutureResponseProcess());
         client.start();
-        Session session = client.conn("localhost", 8081, 2000);
+        Session session = client.conn("localhost", 8081, 5000);
         AsyncResponse<String> future = client.request(session, -10086, "hello world", String.class);
         System.out.println(future.get());
         client.oneWay(session, -10089, "request");
