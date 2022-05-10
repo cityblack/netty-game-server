@@ -157,6 +157,7 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
     /**
      * Use Javassist produce proxy object
      * Object extends StorageInstance
+     *
      * @param clz
      * @return
      */
@@ -261,6 +262,9 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
     private void checkStorageAndThrow(Class<?> type) {
         if (!getStorageManage().containStorage(type)) {
             throw new IllegalArgumentException("Not exist [" + type.getName() + "] type mapping resource. Please check the resource weather registered.");
+        }
+        if (type.isAssignableFrom(StorageInstance.class)) {
+            throw new IllegalArgumentException("Error defined [" + type.getName() + "]. Storage instance must extends StorageInstance interface.");
         }
     }
 
