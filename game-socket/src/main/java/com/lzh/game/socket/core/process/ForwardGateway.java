@@ -1,9 +1,7 @@
 package com.lzh.game.socket.core.process;
 
 import com.lzh.game.common.util.Constant;
-import com.lzh.game.socket.GameRequest;
-import com.lzh.game.socket.Response;
-import com.lzh.game.socket.SocketUtils;
+import com.lzh.game.socket.*;
 import com.lzh.game.socket.core.AsyncResponse;
 import com.lzh.game.socket.core.ForwardStrategy;
 import com.lzh.game.socket.core.RemoteContext;
@@ -42,15 +40,18 @@ public class ForwardGateway implements Process<GameRequest> {
             if (command.type() == Constant.ONEWAY_SIGN) {
                 tcpClient.oneWay(forwardSession, request);
             } else {
-                AsyncResponse<Response> result = tcpClient.request(forwardSession, request, Response.class);
+                AsyncResponse<byte[]> result = tcpClient.request(forwardSession, request, byte[].class);
 
                 result.getResponseFuture()
-                        .thenAccept(response -> ForwardGateway.this.doResponse(context.getSession(), response));
+                        .thenAccept(response -> ForwardGateway.this.doResponse(command, context.getSession(), response));
             }
         }
     }
 
-    private void doResponse(Session session, Response response) {
+    private void doResponse(GameRequest request, Session session, Response response) {
+        int remoteId = request.remoteId();
+        AbstractRemotingCommand command = (AbstractRemotingCommand) response;
+        command.setRemoteId(remoteId);
         session.write(response);
     }
 }

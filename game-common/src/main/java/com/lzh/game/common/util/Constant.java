@@ -10,4 +10,5 @@ public class Constant {
 
     public static final int REQUEST_COMMAND_KEY = 0;
     public static final int RESPONSE_COMMAND_KEY = 1;
+    public static final int FORWARD_COMMAND_KEY = 2;
 }

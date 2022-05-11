@@ -70,7 +70,7 @@ public class RequestFuture extends CompletableFuture<Response> {
             RequestFuture future = FUTURES.get(response.remoteId());
             if (Objects.nonNull(future)) {
                 Timeout t = future.timeoutTask;
-                if (!timeout) {
+                if (timeout) {
                     t.cancel();
                 }
                 future.doReceived(response);
@@ -88,6 +88,8 @@ public class RequestFuture extends CompletableFuture<Response> {
         }
         if (response.status() == Response.OK) {
             this.complete(response);
+        } else if (response.status() == Response.TIMEOUT) {
+            this.completeExceptionally(new TimeoutException());
         } else {
             this.completeExceptionally(new IllegalArgumentException());
         }
@@ -120,6 +122,7 @@ public class RequestFuture extends CompletableFuture<Response> {
 
         private void notifyTimeout(RequestFuture future) {
             GameResponse response = new GameResponse();
+            response.setStatus(Response.TIMEOUT);
             response.setError(new TimeoutException());
             response.setRemoteId(future.id);
             RequestFuture.received(response, true);
