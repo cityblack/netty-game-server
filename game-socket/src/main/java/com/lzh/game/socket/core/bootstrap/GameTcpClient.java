@@ -77,6 +77,7 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
 
     @Override
     public Session conn(String host, int port, long connectTimeout) {
+        checkStatus();
         FutureSession session = new FutureSession();
         session.connect(host, port, connectTimeout);
         return session;
@@ -84,21 +85,25 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
 
     @Override
     public void oneWay(Session session, Request request) {
+        checkStatus();
         session.write(request);
     }
 
     @Override
     public void oneWay(Session session, int commandKey, int cmd, Object params) {
+        checkStatus();
         session.write(SocketUtils.createRequest(commandKey, cmd, params, Constant.ONEWAY_SIGN));
     }
 
     @Override
     public <T> AsyncResponse<T> request(Session session, int commandKey, int cmd, Object params, Class<T> clazz) {
+        checkStatus();
         return request(session, SocketUtils.createRequest(commandKey, cmd, params), clazz);
     }
 
     @Override
     public <T>AsyncResponse<T> request(Session session, Request request, Class<T> clazz) {
+        checkStatus();
         RequestFuture future = RequestFuture.newFuture(request, getProperties().getRequestTimeout(), service);
         AsyncResponse<T> response = new FutureAsyncResponse<>(future, clazz);
         session.write(request);
@@ -231,6 +236,16 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    public ExecutorService getService() {
+        return service;
+    }
+
+    private void checkStatus() {
+        if (isStared()) {
+            throw new RuntimeException("Client is not started..");
         }
     }
 }

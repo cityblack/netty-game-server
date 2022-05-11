@@ -3,6 +3,7 @@ package com.lzh.game.socket.core.bootstrap;
 import com.lzh.game.socket.GameIoHandler;
 import com.lzh.game.socket.GameSocketProperties;
 import com.lzh.game.socket.RemotingCommand;
+import com.lzh.game.socket.core.AtomicLifCycle;
 import com.lzh.game.socket.core.LifeCycle;
 import com.lzh.game.socket.core.MessageHandlerImpl;
 import com.lzh.game.socket.core.process.Process;
@@ -11,16 +12,10 @@ import com.lzh.game.socket.core.session.*;
 import com.lzh.game.socket.core.session.cache.GameSessionMemoryCacheManage;
 import com.lzh.game.socket.core.session.cache.SessionMemoryCacheManage;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public abstract class AbstractBootstrap<T extends GameSocketProperties>
         implements LifeCycle {
 
-    private static final byte NO_STARED = 0x00;
-    private static final byte RUNNING = 0x01;
-    private static final byte STARED = 0x02;
-
-    protected final AtomicInteger STATUS = new AtomicInteger(NO_STARED);
+    private final AtomicLifCycle STATUS = new AtomicLifCycle();
 
     protected T properties;
 
@@ -43,7 +38,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         this(properties, defaultSession());
     }
 
-    protected static SessionManage<Session> defaultSession() {
+    public static SessionManage<Session> defaultSession() {
         SessionMemoryCacheManage<String, Session> cacheManage = new GameSessionMemoryCacheManage<>();
         SessionFactory<Session> factory = GameSession::of;
         return new GameSessionManage<>(cacheManage, factory);
@@ -73,12 +68,14 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     @Override
     public void start() {
-        if (!STATUS.compareAndSet(NO_STARED, RUNNING)) {
+        if (STATUS.isStared()) {
             return;
         }
-        doInit(this.properties);
-        STATUS.incrementAndGet();
-        startup();
+        if (STATUS.running()) {
+            doInit(this.properties);
+            STATUS.start();
+            startup();
+        }
     }
 
     public <E extends RemotingCommand>void addProcess(int key, Process<E> process) {
@@ -87,23 +84,23 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     @Override
     public boolean isStared() {
-        return STATUS.get() == STARED;
+        return STATUS.isStared();
     }
 
     @Override
     public void shutDown() {
-        if (STATUS.compareAndSet(STARED, RUNNING)) {
-            return;
-        }
+        STATUS.shutDown();
     }
 
     @Override
     public void asyncStart() {
-        if (!STATUS.compareAndSet(NO_STARED, RUNNING)) {
+        if (STATUS.isStared()) {
             return;
         }
-        doInit(this.properties);
-        asyncStartup();
-        STATUS.incrementAndGet();
+        if (STATUS.running()) {
+            doInit(this.properties);
+            asyncStartup();
+            STATUS.start();
+        }
     }
 }

@@ -30,7 +30,7 @@ public class ForwardTest {
         properties.setPort(8080);
 
         TcpCommonServer server = new TcpCommonServer(properties);
-        server.addProcess(Constant.REQUEST_COMMAND_KEY, new ForwardGateway(client, strategy));
+        server.addProcess(Constant.REQUEST_COMMAND_KEY, new ForwardGateway(client, strategy, client.getService()));
         server.start();
     }
 
