@@ -68,9 +68,6 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     @Override
     public void start() {
-        if (STATUS.isStared()) {
-            return;
-        }
         if (STATUS.running()) {
             doInit(this.properties);
             STATUS.start();
@@ -94,9 +91,6 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     @Override
     public void asyncStart() {
-        if (STATUS.isStared()) {
-            return;
-        }
         if (STATUS.running()) {
             doInit(this.properties);
             asyncStartup();
