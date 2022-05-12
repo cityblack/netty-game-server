@@ -24,7 +24,7 @@ public class ClientGlobalService implements InitializingBean {
     public void clientStart(ClientStart clientStart) {
         log.info("Client started..");
         GameClient client = clientStart.getClient();
-        Session session = client.conn("localhost", 8089, 2000L);
+        Session session = client.conn("localhost", 8089, 2000);
         log.info("Send hello world");
         PackUtils.sendMessage(session.getChannel(), -10086, new RequestHello("hello world"));
     }

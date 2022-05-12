@@ -22,17 +22,14 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.Instant;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
         implements GameClient {
-
-    public final static AttributeKey<CompletableFuture<Session>> SESSION_FUTURE = AttributeKey.newInstance("session.future");
 
     private EventLoopGroup group;
 
