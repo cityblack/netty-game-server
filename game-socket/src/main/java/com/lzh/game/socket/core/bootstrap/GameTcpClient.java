@@ -14,9 +14,7 @@ import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
 import com.lzh.game.socket.core.session.SessionUtils;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -59,28 +57,30 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
         return Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     }
 
-    private void addConnectedFuture() {
-        SessionManage<Session> manage = getSessionManage();
-        manage.addConnectListener(clientGameSession -> bindConnectFuture(clientGameSession.getChannel(), true));
-    }
-
-    private CompletableFuture<Session> bindConnectFuture(Channel channel, boolean connected) {
-        CompletableFuture<Session> future = new CompletableFuture<>();
-        if (!channel.attr(SESSION_FUTURE).compareAndSet(null, future)) {
-            future = channel.attr(SESSION_FUTURE).get();
-        }
-        if (connected) {
-            future.complete(SessionUtils.channelGetSession(channel));
-        }
-        return future;
-    }
-
     @Override
-    public Session conn(String host, int port, long connectTimeout) {
-        checkStatus();
-        FutureSession session = new FutureSession();
-        session.connect(host, port, connectTimeout);
-        return session;
+    public Session conn(String host, int port, int connectTimeout) {
+        return SessionUtils.channelGetSession(createChannel(host, port, connectTimeout));
+    }
+
+    private Channel createChannel(String host, int port, int connectTimeout) {
+        this.bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout);
+        ChannelFuture future = this.bootstrap.connect(host, port);
+        future.awaitUninterruptibly();
+        if (!future.isDone()) {
+            String errMsg = "Create connection to " + host + ":" + port + " timeout!";
+            throw new RuntimeException(errMsg);
+        }
+        if (future.isCancelled()) {
+            String errMsg = "Create connection to " + host + ":" + port + " cancelled by user!";
+            log.warn(errMsg);
+            throw new RuntimeException(errMsg);
+        }
+        if (!future.isSuccess()) {
+            String errMsg = "Create connection to " + host + ":" + port + " error!";
+            log.warn(errMsg);
+            throw new RuntimeException(errMsg);
+        }
+        return future.channel();
     }
 
     @Override
@@ -130,113 +130,17 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
     @Override
     protected void doInit(GameSocketProperties properties) {
         group = new NioEventLoopGroup();
+        this.bootstrap = createBootstrap();
     }
 
     @Override
     protected void startup() {
         this.bootstrap = createBootstrap();
-        this.addConnectedFuture();
     }
 
     @Override
     protected void asyncStartup() {
         this.bootstrap = createBootstrap();
-        this.addConnectedFuture();
-    }
-
-    class FutureSession implements Session {
-
-        private CompletableFuture<Session> future;
-
-        public void connect(String host, int port, long connectTimeout) {
-            Bootstrap bootstrap = createBootstrap();
-            Channel channel = bootstrap.connect(host, port).channel();
-            this.future = bindConnectFuture(channel, false);
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    FutureSession.this.timeout(host, port, connectTimeout);
-                }
-            }, connectTimeout);
-        }
-
-        public void timeout(String host, int port, long connectTimeout) {
-            if (future.isDone() || future.isCancelled()) {
-                return;
-            }
-            log.warn("Connect [{}:{}] timeout!! timeout:{}", host, port, connectTimeout);
-            future.cancel(true);
-            future.completeExceptionally(new TimeoutException("Client connect timeout!!"));
-        }
-
-        @Override
-        public String getRemoteAddress() {
-            return getSession().getRemoteAddress();
-        }
-
-        @Override
-        public String getId() {
-            return getSession().getId();
-        }
-
-        @Override
-        public Instant getCreationTime() {
-            return getSession().getCreationTime();
-        }
-
-        @Override
-        public Instant getLastAccessTime() {
-            return getSession().getLastAccessTime();
-        }
-
-        @Override
-        public void updateLastAccessTime() {
-            getSession().updateLastAccessTime();
-        }
-
-        @Override
-        public Map<String, Object> getAttributes() {
-            return getSession().getAttributes();
-        }
-
-        @Override
-        public void setAttribute(String attributeKey, Object attributeValue) {
-            getSession().setAttribute(attributeKey, attributeValue);
-        }
-
-        @Override
-        public boolean opened() {
-            return getSession().opened();
-        }
-
-        @Override
-        public void close() {
-            getSession().close();
-        }
-
-        @Override
-        public void write(Object data) {
-            getSession().write(data);
-        }
-
-        @Override
-        public Integer getPort() {
-            return getSession().getPort();
-        }
-
-        @Override
-        public Channel getChannel() {
-            return getSession().getChannel();
-        }
-
-        private Session getSession() {
-            try {
-                return this.future.get();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     public ExecutorService getService() {
@@ -244,7 +148,7 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
     }
 
     private void checkStatus() {
-        if (isStared()) {
+        if (!isStared()) {
             throw new RuntimeException("Client is not started..");
         }
     }

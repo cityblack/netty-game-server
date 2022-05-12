@@ -19,7 +19,7 @@ public interface GameClient extends LifeCycle {
      * @param connectTimeout
      * @return
      */
-    Session conn(String host, int port, long connectTimeout);
+    Session conn(String host, int port, int connectTimeout);
 
     void oneWay(Session session, Request request);
 
