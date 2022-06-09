@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 @Slf4j
 public class MethodInvokeUtils {
@@ -66,15 +69,18 @@ public class MethodInvokeUtils {
         return builder.toString();
     }
 
+
     private static void addBeanInvokeToBody(StringBuilder builder, Class<?>[] types, String methodName) {
-        builder.append("this.bean.").append(methodName).append("(");
+        builder.append("this.bean.")
+                .append(methodName)
+                .append("(");
         for (int i = 0; i < types.length; i++) {
             Class<?> type = types[i];
-            checkParamType(type);
-            builder.append("(")
-                    .append(type.getName())
+            builder.append("(").append("(")
+                    .append(BASE_CONVENT.getOrDefault(type, new String[]{type.getName(), ""})[0])
                     .append(")")
-                    .append("args[").append(i).append("]");
+                    .append("args[").append(i).append("]").append(")");
+            builder.append(BASE_CONVENT.getOrDefault(type, new String[]{"", ""})[1]);
             if (i != types.length - 1) {
                 builder.append(",");
             }
@@ -82,18 +88,17 @@ public class MethodInvokeUtils {
         builder.append(");");
     }
 
-    // no support base type
-    private static void checkParamType(Class<?> clz) {
-        if (clz == int.class || clz == short.class || clz == boolean.class ||
-                clz == float.class || clz == double.class || clz == char.class) {
-            throw new IllegalArgumentException("Enhance method params no support base type. Please change the base type to Object. like int convert to Integer.");
-        }
-    }
+    private static final Map<Class<?>, String[]> BASE_CONVENT;
 
     static {
         pl = ClassPool.getDefault();
         pl.appendClassPath(new ClassClassPath(HandlerMethod.class));
         pl.importPackage("java.lang");
+        BASE_CONVENT = new HashMap<>();
+        BASE_CONVENT.put(int.class, new String[]{"Integer", ".intValue()"});
+        BASE_CONVENT.put(double.class, new String[]{"Double", ".doubleValue()"});
+        BASE_CONVENT.put(float.class, new String[]{"Float", ".floatValue()"});
+        BASE_CONVENT.put(long.class, new String[]{"Long", ".longValue()"});
     }
 
     public static void main(String[] args) throws NoSuchMethodException, IOException, CannotCompileException, NotFoundException, ClassNotFoundException, IllegalAccessException, InvocationTargetException, InstantiationException {
@@ -107,6 +112,11 @@ public class MethodInvokeUtils {
                 System.out.println(i);
                 return "hello world";
             }
+
+            public String i(int i) {
+                System.out.println(i);
+                return "I'm int";
+            }
         }
 
         A a = new A();
@@ -115,7 +125,8 @@ public class MethodInvokeUtils {
 
         MethodInvoke s = MethodInvokeUtils.enhanceInvoke(a, a.getClass().getMethod("s", String.class));
         System.out.println(s.invoke("hello"));
+
+        MethodInvoke i = MethodInvokeUtils.enhanceInvoke(a, a.getClass().getMethod("i", int.class));
+        System.out.println(i.invoke(123));
     }
-
-
 }
