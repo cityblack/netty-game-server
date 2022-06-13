@@ -33,6 +33,8 @@ public class RequestProcess2 implements Process<GameRequest> {
 
     private Map<Integer, ParamConvert<?>> targetObjectConvert = new ConcurrentHashMap<>();
 
+    private static final ParamConvert<Void> NONE_CONVERT = (e) -> null;
+
     public RequestProcess2(RequestHandler requestHandler, ConvertManager convertManager, RequestActionSupport<EnhanceHandlerMethod> support) {
         this(requestHandler, new DefaultPool(), convertManager, support);
     }
@@ -74,7 +76,7 @@ public class RequestProcess2 implements Process<GameRequest> {
                 }
                 return convert;
             }
-            return new VoidParamConvert();
+            return NONE_CONVERT;
         });
     }
 
@@ -92,13 +94,6 @@ public class RequestProcess2 implements Process<GameRequest> {
         }
     }
 
-    private static class VoidParamConvert implements ParamConvert<Void> {
-
-        @Override
-        public Void convert(Request request) {
-            return null;
-        }
-    }
 
     private static class DefaultPool implements RequestProcessPool {
 
