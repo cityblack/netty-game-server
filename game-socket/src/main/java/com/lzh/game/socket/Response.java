@@ -6,7 +6,7 @@ public interface Response extends RemotingCommand {
 
     int FAIL = 1;
 
-    int TIMEOUT = 2;
-
     int status();
+
+    Throwable getError();
 }

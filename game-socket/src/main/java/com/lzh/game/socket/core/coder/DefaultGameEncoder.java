@@ -17,37 +17,40 @@ public class DefaultGameEncoder implements Encoder {
     @Override
     public void encode(ChannelHandlerContext ctx, Serializable msg, ByteBuf out) throws Exception {
         /**
-         * cmd: cmd int 4b
-         * type: request / response byte 1b
-         * request: int 4b
-         * commandKey: process key / byte 1b
-         * len: Object byte data length 4b
+         * cmd: cmd int
+         * type: request / response byte
+         * request: int
+         * commandKey: process key / byte
+         * len: Object byte data length
          * data: Object Serializable data
          */
         try {
             if (msg instanceof RemotingCommand) {
                 RemotingCommand cmdMsg = (RemotingCommand) msg;
                 int cmd = cmdMsg.cmd();
-                out.writeInt(cmd);
+                writeRawVarint32(out, cmd);
+
                 if (msg instanceof Response) {
                     out.writeByte(Constant.RESPONSE_SIGN);
                 } else if (msg instanceof Request) {
                     out.writeByte(Constant.REQUEST_SIGN);
                 }
-                out.writeInt(cmdMsg.remoteId());
+                writeRawVarint32(out, cmdMsg.remoteId());
+
                 int commandKey = cmdMsg.commandKey();
-                out.writeByte(commandKey);
+                writeRawVarint32(out, commandKey);
+
                 Object data = cmdMsg.data();
                 byte[] bytes = cmdMsg.byteData();
                 if ((Objects.isNull(bytes) || bytes.length <= 0) && Objects.nonNull(data)) {
                     bytes = ProtoBufUtils.serialize(data);
                 }
                 if (Objects.nonNull(bytes) && bytes.length > 0) {
-                    out.writeInt(bytes.length);
+                    writeRawVarint32(out, bytes.length);
                     out.writeBytes(bytes);
                 } else {
                     // len
-                    out.writeInt(0);
+                    writeRawVarint32(out, 0);
                 }
             } else if (msg instanceof ByteBuf) {
                 out.writeBytes((ByteBuf) msg);
@@ -57,6 +60,18 @@ public class DefaultGameEncoder implements Encoder {
             out.markWriterIndex();
         } catch (Exception e) {
             out.resetWriterIndex();
+        }
+    }
+
+    static void writeRawVarint32(ByteBuf out, int value) {
+        while (true) {
+            if ((value & ~0x7F) == 0) {
+                out.writeByte(value);
+                return;
+            } else {
+                out.writeByte((value & 0x7F) | 0x80);
+                value >>>= 7;
+            }
         }
     }
 }

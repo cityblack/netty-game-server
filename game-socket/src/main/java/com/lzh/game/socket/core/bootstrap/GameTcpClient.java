@@ -10,6 +10,7 @@ import com.lzh.game.socket.core.FutureAsyncResponse;
 import com.lzh.game.socket.core.RequestFuture;
 import com.lzh.game.socket.core.coder.GameByteToMessageDecoder;
 import com.lzh.game.socket.core.coder.GameMessageToMessageDecoder;
+import com.lzh.game.socket.core.session.FutureSession;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
 import com.lzh.game.socket.core.session.SessionUtils;
@@ -18,11 +19,14 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
+import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -54,7 +58,8 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
 
     @Override
     public Session conn(String host, int port, int connectTimeout) {
-        return SessionUtils.channelGetSession(createChannel(host, port, connectTimeout));
+        Future<Session> future = SessionUtils.getBindFuture(createChannel(host, port, connectTimeout));
+        return new FutureSession(future);
     }
 
     private Channel createChannel(String host, int port, int connectTimeout) {
@@ -114,8 +119,10 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
                                 .addLast(new IdleStateHandler(0, 0, 180, TimeUnit.SECONDS))
-                                .addLast("encoder", new GameByteToMessageDecoder())
-                                .addLast("decoder", new GameMessageToMessageDecoder())
+                                .addLast(new ProtobufVarint32FrameDecoder())
+                                .addLast("decoder", new GameByteToMessageDecoder())
+                                .addLast(new ProtobufVarint32LengthFieldPrepender())
+                                .addLast("encoder", new GameMessageToMessageDecoder())
                                 .addLast(getIoHandler());
                     }
                 });

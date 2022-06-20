@@ -42,6 +42,7 @@ public class RequestFuture extends CompletableFuture<Response> {
 
     /**
      * New a request future
+     *
      * @param request
      * @param timeout
      * @param executorService
@@ -66,19 +67,15 @@ public class RequestFuture extends CompletableFuture<Response> {
     }
 
     public static void received(Response response, boolean timeout) {
-        try {
-            RequestFuture future = FUTURES.get(response.remoteId());
-            if (Objects.nonNull(future)) {
-                Timeout t = future.timeoutTask;
-                if (timeout) {
-                    t.cancel();
-                }
-                future.doReceived(response);
-            } else {
-                log.warn("Could not find request future: {}", response.remoteId());
+        RequestFuture future = FUTURES.remove(response.remoteId());
+        if (Objects.nonNull(future)) {
+            Timeout t = future.timeoutTask;
+            if (timeout) {
+                t.cancel();
             }
-        } finally {
-            FUTURES.remove(response.remoteId());
+            future.doReceived(response);
+        } else {
+            log.warn("Could not find request future: {}", response.remoteId());
         }
     }
 
@@ -88,10 +85,10 @@ public class RequestFuture extends CompletableFuture<Response> {
         }
         if (response.status() == Response.OK) {
             this.complete(response);
-        } else if (response.status() == Response.TIMEOUT) {
-            this.completeExceptionally(new TimeoutException());
         } else {
-            this.completeExceptionally(new IllegalArgumentException());
+            Throwable error = Objects.isNull(response.getError()) ? new IllegalArgumentException()
+                    : response.getError();
+            this.completeExceptionally(error);
         }
     }
 
@@ -122,7 +119,6 @@ public class RequestFuture extends CompletableFuture<Response> {
 
         private void notifyTimeout(RequestFuture future) {
             GameResponse response = new GameResponse();
-            response.setStatus(Response.TIMEOUT);
             response.setError(new TimeoutException());
             response.setRemoteId(future.id);
             RequestFuture.received(response, true);

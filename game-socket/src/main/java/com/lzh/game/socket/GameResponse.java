@@ -26,6 +26,7 @@ public class GameResponse extends AbstractRemotingCommand
         this.status = status;
     }
 
+    @Override
     public Throwable getError() {
         return error;
     }
