@@ -18,7 +18,7 @@ public class DefaultGameEncoder implements Encoder {
     public void encode(ChannelHandlerContext ctx, Serializable msg, ByteBuf out) throws Exception {
         /**
          * cmd: cmd int
-         * type: request / response byte
+         * type: request / response / oneWay byte
          * request: int
          * commandKey: process key / byte
          * len: Object byte data length
@@ -29,28 +29,17 @@ public class DefaultGameEncoder implements Encoder {
                 RemotingCommand cmdMsg = (RemotingCommand) msg;
                 int cmd = cmdMsg.cmd();
                 writeRawVarint32(out, cmd);
-
-                if (msg instanceof Response) {
-                    out.writeByte(Constant.RESPONSE_SIGN);
-                } else if (msg instanceof Request) {
-                    out.writeByte(Constant.REQUEST_SIGN);
-                }
+                out.writeByte(cmdMsg.type());
                 writeRawVarint32(out, cmdMsg.remoteId());
 
                 int commandKey = cmdMsg.commandKey();
                 writeRawVarint32(out, commandKey);
 
-                Object data = cmdMsg.data();
-                byte[] bytes = cmdMsg.byteData();
-                if ((Objects.isNull(bytes) || bytes.length <= 0) && Objects.nonNull(data)) {
-                    bytes = ProtoBufUtils.serialize(data);
-                }
-                if (Objects.nonNull(bytes) && bytes.length > 0) {
-                    writeRawVarint32(out, bytes.length);
-                    out.writeBytes(bytes);
-                } else {
-                    // len
-                    writeRawVarint32(out, 0);
+                byte[] data = getDateBytes(cmdMsg);
+                int len = data.length;
+                writeRawVarint32(out, len);
+                if (data.length > 0) {
+                    out.writeBytes(data);
                 }
             } else if (msg instanceof ByteBuf) {
                 out.writeBytes((ByteBuf) msg);
@@ -74,4 +63,15 @@ public class DefaultGameEncoder implements Encoder {
             }
         }
     }
+
+    private static byte[] getDateBytes(RemotingCommand msg) {
+        Object data = msg.data();
+        byte[] bytes = msg.byteData();
+        if ((Objects.isNull(bytes) || bytes.length <= 0) && Objects.nonNull(data)) {
+            bytes = ProtoBufUtils.serialize(data);
+        }
+        return (Objects.isNull(bytes) || bytes.length <= 0) ? EMPTY_BYTES : bytes;
+    }
+
+    private static byte[] EMPTY_BYTES = new byte[0];
 }

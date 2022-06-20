@@ -1,5 +1,7 @@
 package com.lzh.game.socket;
 
+import com.lzh.game.common.util.Constant;
+
 import java.io.Serializable;
 
 public class GameResponse extends AbstractRemotingCommand
@@ -43,6 +45,7 @@ public class GameResponse extends AbstractRemotingCommand
         response.setCommonKey(commandKey);
         response.setRemoteId(request.remoteId());
         response.setSession(request.getSession());
+        response.setType(Constant.RESPONSE_SIGN);
         return response;
     }
 }

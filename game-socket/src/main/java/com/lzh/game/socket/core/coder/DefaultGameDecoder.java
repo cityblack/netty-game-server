@@ -26,9 +26,6 @@ public class DefaultGameDecoder implements Decoder {
          * len: Object byte data length
          * data: Object Serializable data
          */
-        if (in.readableBytes() < Constant.DEFAULT_HEAD_LEN) {
-            return;
-        }
         int cmd = readRawVarint32(in);
         byte type = in.readByte();
         int requestId = readRawVarint32(in);
@@ -39,7 +36,7 @@ public class DefaultGameDecoder implements Decoder {
             return;
         }
         AbstractRemotingCommand remotingCmd = null;
-        if (type == Constant.REQUEST_SIGN) {
+        if (type == Constant.REQUEST_SIGN || type == Constant.ONEWAY_SIGN) {
             remotingCmd = new GameRequest();
         } else if (type == Constant.RESPONSE_SIGN) {
             remotingCmd = new GameResponse();
@@ -51,6 +48,7 @@ public class DefaultGameDecoder implements Decoder {
         remotingCmd.setCmd(cmd);
         remotingCmd.setRemoteId(requestId);
         remotingCmd.setCommonKey(commandKey);
+        remotingCmd.setType(type);
         if (length > 0) {
             byte[] bytes = new byte[length];
             in.readBytes(bytes);
