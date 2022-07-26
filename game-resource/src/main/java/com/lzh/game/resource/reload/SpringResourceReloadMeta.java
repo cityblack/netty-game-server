@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationContextAware;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ResourceReloadMangeImpl implements ResourceReloadMange, ApplicationContextAware {
+public class SpringResourceReloadMeta implements ResourceReloadMeta, ApplicationContextAware {
 
     private Map<Class<?>, Set<ResourceReload>> contain = new HashMap<>();
 

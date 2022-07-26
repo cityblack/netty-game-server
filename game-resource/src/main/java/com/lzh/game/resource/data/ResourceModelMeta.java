@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 /**
  * @Resource manage
  */
-public interface ResourceModelFactory extends Iterable<ResourceModel> {
+public interface ResourceModelMeta extends Iterable<ResourceModel> {
 
     ResourceModel getResource(String resourceName);
 

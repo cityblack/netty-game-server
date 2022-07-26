@@ -1,8 +1,9 @@
 package com.lzh.game.resource;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface Storage<K, V> {
+public interface Storage<K extends Serializable, V> {
     /**
      * Get all data
      * @return
@@ -11,19 +12,19 @@ public interface Storage<K, V> {
 
     /**
      * Get data by uniqueIndex
-     * @param UniqueIndex
+     * @param UniqueIndexName
      * @param value
      * @return
      */
-    V getUnique(String UniqueIndex, Object value);
+    V getUnique(String UniqueIndexName, Serializable value);
 
     /**
      *
-     * @param index
+     * @param indexName
      * @param value
      * @return
      */
-    List<V> getIndex(String index, Object value);
+    List<V> getIndex(String indexName, Serializable value);
 
     /**
      * Get data by id

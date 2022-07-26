@@ -1,9 +1,9 @@
 package com.lzh.game.resource.inject;
 
 import com.lzh.game.resource.Storage;
-import com.lzh.game.resource.data.ResourceManageHandler;
+import com.lzh.game.resource.data.ResourceManageHandle;
 import com.lzh.game.resource.data.ResourceModel;
-import com.lzh.game.resource.data.ResourceModelFactory;
+import com.lzh.game.resource.data.ResourceModelMeta;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,17 +12,17 @@ import org.springframework.stereotype.Component;
 public class StorageManageFactory implements FactoryBean<DefaultStorageManage> {
 
     @Autowired
-    private ResourceManageHandler resourceManageHandler;
+    private ResourceManageHandle resourceManageHandle;
 
     @Autowired
-    private ResourceModelFactory resourceModelFactory;
+    private ResourceModelMeta resourceModelMeta;
 
     @Override
     public DefaultStorageManage getObject() throws Exception {
 
-        DefaultStorageManage manage = new DefaultStorageManage(resourceManageHandler);
+        DefaultStorageManage manage = new DefaultStorageManage(resourceManageHandle);
 
-        for (ResourceModel model: resourceModelFactory) {
+        for (ResourceModel model: resourceModelMeta) {
             Class<?> type = model.getDataType();
             if (manage.containStorage(type)) {
                continue;

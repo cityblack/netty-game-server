@@ -2,9 +2,9 @@ package com.lzh.game.resource.inject;
 
 
 import com.lzh.game.resource.Storage;
-import com.lzh.game.resource.data.ResourceManageHandler;
+import com.lzh.game.resource.data.ResourceManageHandle;
 
-import java.lang.reflect.Type;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultStorageManage implements StorageManage {
 
-    private ResourceManageHandler resourceManageHandler;
+    private ResourceManageHandle resourceManageHandle;
 
     private Map<Class<?>, Storage<?,?>> storageMap = new ConcurrentHashMap<>();
 
@@ -26,28 +26,29 @@ public class DefaultStorageManage implements StorageManage {
         return new DefaultStorage<>(clazz);
     }
 
-    private class DefaultStorage<K,V> implements Storage<K,V> {
+    private class DefaultStorage<K extends Serializable,V> implements Storage<K,V> {
 
         private Class<V> referenceClass;
 
         @Override
         public List<V> getAll() {
-            return resourceManageHandler.findAll(referenceClass);
+            return resourceManageHandle.findAll(referenceClass);
         }
 
         @Override
-        public V getUnique(String uniqueIndex, Object value) {
-            return resourceManageHandler.findOne(referenceClass, uniqueIndex, value);
+        public V getUnique(String UniqueIndexName, Serializable value) {
+            return resourceManageHandle.findOne(referenceClass, UniqueIndexName, value);
         }
 
         @Override
-        public List<V> getIndex(String index, Object value) {
-            return resourceManageHandler.findByIndex(referenceClass, index, value);
+        public List<V> getIndex(String indexName, Serializable value) {
+            return resourceManageHandle.findByIndex(referenceClass, indexName, value);
         }
+
 
         @Override
         public V get(K k) {
-            return resourceManageHandler.findById(referenceClass, k);
+            return resourceManageHandle.findById(referenceClass, k);
         }
 
         @Override
@@ -64,8 +65,8 @@ public class DefaultStorageManage implements StorageManage {
         }
     }
 
-    public DefaultStorageManage(ResourceManageHandler resourceManageHandler) {
-        this.resourceManageHandler = resourceManageHandler;
+    public DefaultStorageManage(ResourceManageHandle resourceManageHandle) {
+        this.resourceManageHandle = resourceManageHandle;
     }
 
     @Override

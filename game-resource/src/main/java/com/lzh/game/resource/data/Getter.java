@@ -1,5 +1,7 @@
 package com.lzh.game.resource.data;
 
+import java.io.Serializable;
+
 /**
  * Resource classes' field and method value
  */
@@ -9,7 +11,7 @@ public interface Getter {
      * @param bean resource instantiate
      * @return
      */
-    Object get(Object bean);
+    Serializable get(Object bean);
 
     Class<?> getType();
 

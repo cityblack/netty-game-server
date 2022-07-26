@@ -1,7 +1,7 @@
 package com.lzh.game.resource.inject;
 
 import com.lzh.game.resource.*;
-import com.lzh.game.resource.data.ResourceManageHandler;
+import com.lzh.game.resource.data.ResourceManageHandle;
 import javassist.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -57,7 +57,7 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
     private StorageManageFactory storageManageFactory;
 
     @Autowired
-    private ResourceManageHandler resourceManageHandler;
+    private ResourceManageHandle resourceManageHandle;
 
     @Autowired
     private ConversionService conversionService;
@@ -255,8 +255,8 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
         }
     }
 
-    protected ResourceManageHandler getResourceManageHandler() {
-        return resourceManageHandler;
+    protected ResourceManageHandle getResourceManageHandler() {
+        return resourceManageHandle;
     }
 
     private void checkStorageAndThrow(Class<?> type) {

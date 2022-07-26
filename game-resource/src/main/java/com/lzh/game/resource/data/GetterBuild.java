@@ -5,6 +5,7 @@ import com.lzh.game.resource.Index;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.ReflectionUtils;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Comparator;
@@ -21,9 +22,8 @@ public class GetterBuild {
         }
 
         @Override
-        public Object get(Object bean) {
-
-            return ReflectionUtils.getField(field, bean);
+        public Serializable get(Object bean) {
+            return (Serializable) ReflectionUtils.getField(field, bean);
         }
 
         @Override
@@ -49,8 +49,8 @@ public class GetterBuild {
         }
 
         @Override
-        public Object get(Object bean) {
-            return ReflectionUtils.invokeMethod(method, bean);
+        public Serializable get(Object bean) {
+            return (Serializable) ReflectionUtils.invokeMethod(method, bean);
         }
 
         @Override

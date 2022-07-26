@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 @Slf4j
-public class DefaultResourceModelFactory implements ResourceModelFactory, InitializingBean, DisposableBean {
+public class DefaultResourceModelFactory implements ResourceModelMeta, InitializingBean, DisposableBean {
 
     private final GameResourceProperties resourceProperties;
 

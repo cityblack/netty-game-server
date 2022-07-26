@@ -1,6 +1,7 @@
 package com.lzh.game.resource;
 
-import com.lzh.game.resource.data.ResourceManageHandler;
+import com.lzh.game.common.serialization.JsonUtils;
+import com.lzh.game.resource.data.ResourceManageHandle;
 import com.lzh.game.resource.resource.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,7 @@ public class StorageTest {
     @Static
     private Storage<Integer, TestSevenLockResource> sevenLockResourceStorage;
     @Autowired
-    private ResourceManageHandler manageHandler;
+    private ResourceManageHandle manageHandler;
 
     @Static("DICE_RANGE")
     private ConfigValueResource<Integer[]> dice;
@@ -62,7 +63,7 @@ public class StorageTest {
 
     @Test
     public void get() {
-        log.info("{}", dice.getValue());
+        log.info("dice:{}", JsonUtils.toJson(dice.getValue()));
     }
 
     @Autowired

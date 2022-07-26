@@ -1,6 +1,7 @@
 package com.lzh.game.resource.data;
 
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,19 +13,19 @@ import java.util.concurrent.locks.LockSupport;
  * 的原子变量更改成写操作中{@link #WRITING}
  * 读取资源时若为写状态, 则会自旋转等待写状态完成
  */
-public class ConcurrentResourceManageHandler implements ResourceManageHandler {
+public class ConcurrentResourceManageHandler implements ResourceManageHandle {
     // Fact option handler
-    private ResourceManageHandler handler;
+    private ResourceManageHandle handler;
     /**
      * Use AtomicBoolean to reduce the force of the lock
      */
     private Map<Class<?>, AtomicBoolean> status;
 
-    private ResourceModelFactory factory;
+    private ResourceModelMeta factory;
 
     private final boolean WRITING = Boolean.TRUE;
 
-    public ConcurrentResourceManageHandler(ResourceModelFactory factory, ResourceManageHandler handler) {
+    public ConcurrentResourceManageHandler(ResourceModelMeta factory, ResourceManageHandle handler) {
         this.handler = handler;
         this.factory = factory;
         this.init();
@@ -37,19 +38,19 @@ public class ConcurrentResourceManageHandler implements ResourceManageHandler {
     }
 
     @Override
-    public <T> List<T> findByIndex(Class<T> clazz, String index, Object value) {
+    public <T> List<T> findByIndex(Class<T> clazz, String index, Serializable value) {
         writingWait(clazz);
         return handler.findByIndex(clazz, index, value);
     }
 
     @Override
-    public <T> T findOne(Class<T> clazz, String uniqueIndex, Object value) {
+    public <T> T findOne(Class<T> clazz, String uniqueIndex, Serializable value) {
         writingWait(clazz);
         return handler.findOne(clazz, uniqueIndex, value);
     }
 
     @Override
-    public <T, K> T findById(Class<T> clazz, K k) {
+    public <T> T findById(Class<T> clazz, Serializable k) {
         writingWait(clazz);
         return handler.findById(clazz, k);
     }

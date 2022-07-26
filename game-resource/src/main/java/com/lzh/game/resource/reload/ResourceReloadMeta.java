@@ -4,7 +4,7 @@ import com.lzh.game.resource.ResourceReload;
 
 import java.util.Set;
 
-public interface ResourceReloadMange {
+public interface ResourceReloadMeta {
 
     Set<ResourceReload> getReload(Class<?> resource);
 

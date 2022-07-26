@@ -1,12 +1,11 @@
 package com.lzh.game.resource.config;
 
-import com.lzh.game.resource.data.ConcurrentResourceManageHandler;
-import com.lzh.game.resource.data.DefaultResourceModelFactory;
-import com.lzh.game.resource.data.ResourceManageHandler;
-import com.lzh.game.resource.data.ResourceModelFactory;
-import com.lzh.game.resource.data.mongo.MongoResourceManageHandler;
-import com.lzh.game.resource.reload.ResourceReloadMange;
-import com.lzh.game.resource.reload.ResourceReloadMangeImpl;
+import com.lzh.game.resource.data.*;
+import com.lzh.game.resource.data.cache.MemoryResourceCacheFactory;
+import com.lzh.game.resource.data.cache.ResourceCacheFactory;
+import com.lzh.game.resource.data.load.MongoLoadResourceHandler;
+import com.lzh.game.resource.reload.ResourceReloadMeta;
+import com.lzh.game.resource.reload.SpringResourceReloadMeta;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -21,22 +20,30 @@ import org.springframework.format.support.FormattingConversionService;
 public class GameResourceBean {
 
     @Bean
-    public ResourceModelFactory resourceModelManage(GameResourceProperties resourceProperties) {
+    public ResourceModelMeta resourceModelManage(GameResourceProperties resourceProperties) {
         return new DefaultResourceModelFactory(resourceProperties);
     }
 
+    /**
+     * Use mongo load and local memory cache
+     * @param resourceModelMeta
+     * @param mongoTemplate
+     * @return
+     */
     @Bean
     @ConditionalOnMissingClass
-    public ResourceManageHandler resourceManageHandler(ResourceModelFactory resourceModelFactory, MongoTemplate mongoTemplate) {
-        MongoResourceManageHandler handler = new MongoResourceManageHandler(resourceModelFactory, mongoTemplate, reloadMange());
-        ConcurrentResourceManageHandler concurrent = new ConcurrentResourceManageHandler(resourceModelFactory, handler);
+    public ResourceManageHandle resourceManageHandler(ResourceModelMeta resourceModelMeta, MongoTemplate mongoTemplate) {
+        MongoLoadResourceHandler loader = new MongoLoadResourceHandler(mongoTemplate);
+        ResourceCacheFactory factory = new MemoryResourceCacheFactory();
+        DefaultResourceManageHandle handler = new DefaultResourceManageHandle(loader, factory, reloadMeta(), resourceModelMeta);
+        ConcurrentResourceManageHandler concurrent = new ConcurrentResourceManageHandler(resourceModelMeta, handler);
         concurrent.reload();
         return concurrent;
     }
 
     @Bean
-    public ResourceReloadMange reloadMange() {
-        return new ResourceReloadMangeImpl();
+    public ResourceReloadMeta reloadMeta() {
+        return new SpringResourceReloadMeta();
     }
 
     @ConditionalOnMissingBean
