@@ -1,14 +1,11 @@
 package com.lzh.game.resource.data;
 
-import com.lzh.game.resource.Id;
 import com.lzh.game.resource.Index;
-import org.springframework.beans.BeanUtils;
 import org.springframework.util.ReflectionUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Comparator;
 
 public class GetterBuild {
 
@@ -35,8 +32,6 @@ public class GetterBuild {
         public String name() {
             return field.getName();
         }
-
-
     }
 
     private static class MethodGetter implements Getter {
@@ -64,23 +59,16 @@ public class GetterBuild {
         }
     }
 
-    private static class FieldIndexGetter<C> extends FieldGetter implements IndexGetter<C> {
+    private static class FieldIndexGetter<C> extends FieldGetter implements IndexGetter {
 
         private boolean unique;
         private String indexName;
-        private Comparator<C> comparator;
 
         protected FieldIndexGetter(Field field) {
             super(field);
             Index index = field.getAnnotation(Index.class);
             this.unique = index.unique();
             this.indexName = index.value();
-            this.comparator = newComparator(index.comparator());
-        }
-
-        @Override
-        public Comparator<C> comparator() {
-            return comparator;
         }
 
         @Override
@@ -94,23 +82,16 @@ public class GetterBuild {
         }
     }
 
-    private static class MethodIndexGetter<C> extends MethodGetter implements IndexGetter<C> {
+    private static class MethodIndexGetter extends MethodGetter implements IndexGetter {
 
         private boolean unique;
         private String indexName;
-        private Comparator<C> comparator;
 
         protected MethodIndexGetter(Method method) {
             super(method);
             Index index = method.getAnnotation(Index.class);
             this.unique = index.unique();
             this.indexName = index.value();
-            this.comparator = newComparator(index.comparator());
-        }
-
-        @Override
-        public Comparator<C> comparator() {
-            return comparator;
         }
 
         @Override
@@ -124,26 +105,12 @@ public class GetterBuild {
         }
     }
 
-    private static Comparator newComparator(Class<? extends Comparator> clazz) {
-
-        return BeanUtils.instantiateClass(clazz);
-    }
-
-    private static class IdGetter<C> extends FieldGetter implements IndexGetter<C> {
+    private static class IdGetter extends FieldGetter implements IndexGetter {
 
         private String name;
 
-        private Comparator<C> comparator;
-
         protected IdGetter(Field field) {
             super(field);
-            Id id = field.getAnnotation(Id.class);
-            this.comparator = newComparator(id.comparator());
-        }
-
-        @Override
-        public Comparator<C> comparator() {
-            return comparator;
         }
 
         @Override

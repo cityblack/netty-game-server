@@ -80,7 +80,6 @@ public class DefaultResourceModelFactory implements ResourceModelMeta, Initializ
 
         model.setResourceName(name);
         model.setDataType(type);
-        model.setComparator(resource.comparator());
         return model;
     }
 

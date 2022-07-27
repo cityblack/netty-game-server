@@ -11,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -76,7 +77,7 @@ public class MemoryResourceCacheFactory implements ResourceCacheFactory {
       @Override
       public void put(T data, ResourceModel model) {
          if (Objects.isNull(dataContain)) {
-            this.dataContain = new SortedArrayList<>(BeanUtils.instantiateClass(model.getComparator()));
+            this.dataContain = new ArrayList<>();
          }
          this.dataContain.add(data);
          model.forEachIndex((indexName, index) -> this.buildIndex(data, indexName, index));
@@ -91,7 +92,7 @@ public class MemoryResourceCacheFactory implements ResourceCacheFactory {
          }
       }
 
-      private void buildIndex(T data, String indexName, IndexGetter<T> getter) {
+      private void buildIndex(T data, String indexName, IndexGetter getter) {
 
          Serializable value = getter.get(data);
          if (Objects.isNull(value)) {
@@ -104,7 +105,7 @@ public class MemoryResourceCacheFactory implements ResourceCacheFactory {
             this.uniqueIndexContain.put(indexName, value, data);
          } else {
             if (this.indexDataContain.contains(indexName, value)) {
-               this.indexDataContain.put(indexName, value, new SortedArrayList<>(getter.comparator()));
+               this.indexDataContain.put(indexName, value, new ArrayList<>());
             }
             List<T> list = this.indexDataContain.get(indexName, value);
             list.add(data);

@@ -22,8 +22,6 @@ public class ResourceModel {
 
     private Map<String, IndexGetter> index;
 
-    private Class<? extends Comparator> comparator;
-
     public ResourceModel() {
         index = new HashMap<>();
     }
@@ -64,11 +62,4 @@ public class ResourceModel {
         return index.values();
     }
 
-    public Class<? extends Comparator> getComparator() {
-        return comparator;
-    }
-
-    public void setComparator(Class<? extends Comparator> comparator) {
-        this.comparator = comparator;
-    }
 }
