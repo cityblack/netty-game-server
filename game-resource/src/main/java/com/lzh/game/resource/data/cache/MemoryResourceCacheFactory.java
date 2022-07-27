@@ -83,7 +83,7 @@ public class MemoryResourceCacheFactory implements ResourceCacheFactory {
       public void put(List<T> data, ResourceModel resourceModel, Consumer<T> beforePut) {
          Table<String, Serializable, List<T>> index = HashBasedTable.create();
          Table<String, Serializable, T> uniqueIndex = HashBasedTable.create();
-         List<T> contain = new ArrayList<>();
+         List<T> contain = new ArrayList<>(data.size());
          for (T d : data) {
             if (Objects.nonNull(beforePut)) {
                beforePut.accept(d);

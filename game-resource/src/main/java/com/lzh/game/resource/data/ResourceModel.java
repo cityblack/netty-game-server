@@ -1,9 +1,10 @@
 package com.lzh.game.resource.data;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import com.lzh.game.resource.Id;
+import com.lzh.game.resource.Index;
+import org.springframework.util.ReflectionUtils;
+
+import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
@@ -62,4 +63,31 @@ public class ResourceModel {
         return index.values();
     }
 
+    public static ResourceModel of(Class<?> type, String resourceName) {
+        ResourceModel model = new ResourceModel();
+        model.setDataType(type);
+        model.setResourceName(resourceName);
+        ReflectionUtils.doWithFields(type, field -> {
+            if (field.isAnnotationPresent(Id.class)) {
+                if (Objects.nonNull(model.getId())) {
+                    throw new RuntimeException("[" + type.getName() + "] has multiple primaryKey");
+                }
+                String name = field.getName();
+                IndexGetter idGetter = GetterBuild.createKeyIndex(field, name);
+                model.setId(idGetter);
+                model.addIndex(idGetter);
+
+            } else if (field.isAnnotationPresent(Index.class)) {
+                model.addIndex(GetterBuild.createFieldIndex(field));
+            }
+        });
+
+        ReflectionUtils.doWithMethods(type, method -> {
+            if (method.isAnnotationPresent(Index.class)) {
+                model.addIndex(GetterBuild.createMethodIndex(method));
+            }
+        });
+
+        return model;
+    }
 }

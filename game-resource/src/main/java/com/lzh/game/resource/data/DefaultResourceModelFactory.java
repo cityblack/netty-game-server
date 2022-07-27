@@ -76,45 +76,10 @@ public class DefaultResourceModelFactory implements ResourceModelMeta, Initializ
             throw new IllegalArgumentException("Already exist [" +  name +"] the resource name.");
         }
         // nameCache.put(name, type);
-        ResourceModel model = parseType(type);
-
-        model.setResourceName(name);
-        model.setDataType(type);
-        return model;
-    }
-
-    private ResourceModel parseType(Class<?> type) {
-
-        ResourceModel model = new ResourceModel();
-
-        ReflectionUtils.doWithFields(type, field -> {
-
-            if (field.isAnnotationPresent(Id.class)) {
-
-                if (Objects.nonNull(model.getId())) {
-                    throw new RuntimeException("[" + type.getName() + "] has multiple primaryKey");
-                }
-                String name = field.getName();
-                IndexGetter idGetter = GetterBuild.createKeyIndex(field, name);
-                model.setId(idGetter);
-                model.addIndex(idGetter);
-
-            } else if (field.isAnnotationPresent(Index.class)) {
-
-                model.addIndex(GetterBuild.createFieldIndex(field));
-            }
-
-        });
-
+        ResourceModel model = ResourceModel.of(type, name);
         if (Objects.isNull(model.getId())) {
             throw new IllegalArgumentException("[" + type.getName() + "] not defined @Id.");
         }
-
-        ReflectionUtils.doWithMethods(type, method -> {
-            if (method.isAnnotationPresent(Index.class)) {
-                model.addIndex(GetterBuild.createMethodIndex(method));
-            }
-        });
         return model;
     }
 

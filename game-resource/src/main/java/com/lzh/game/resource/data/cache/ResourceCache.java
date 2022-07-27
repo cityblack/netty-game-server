@@ -25,4 +25,8 @@ public interface ResourceCache<K extends Serializable, T> {
     void put(List<T> data, ResourceModel resourceModel, Consumer<T> beforePut);
 
     void clear();
+
+    default void put(List<T> data, ResourceModel resourceModel) {
+        this.put(data, resourceModel, null);
+    }
 }
