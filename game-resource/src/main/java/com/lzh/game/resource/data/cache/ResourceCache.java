@@ -4,6 +4,7 @@ import com.lzh.game.resource.data.ResourceModel;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Resource cache
@@ -21,7 +22,9 @@ public interface ResourceCache<K extends Serializable, T> {
 
     T findOne(String indexName, Serializable value);
 
-    void put(T data, ResourceModel resourceModel);
+//    void put(T data, ResourceModel resourceModel);
+
+    void put(List<T> data, ResourceModel resourceModel, Consumer<T> beforePut);
 
     void clear();
 }

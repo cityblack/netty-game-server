@@ -6,8 +6,6 @@ import com.lzh.game.common.serialization.JsonUtils;
 import com.lzh.game.resource.data.GetterBuild;
 import com.lzh.game.resource.data.IndexGetter;
 import com.lzh.game.resource.data.ResourceModel;
-import com.lzh.game.resource.uitl.SortedArrayList;
-import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
@@ -15,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * In local memory cache
@@ -75,39 +74,47 @@ public class MemoryResourceCacheFactory implements ResourceCacheFactory {
       }
 
       @Override
-      public void put(T data, ResourceModel model) {
-         if (Objects.isNull(dataContain)) {
-            this.dataContain = new ArrayList<>();
+      public void put(List<T> data, ResourceModel resourceModel, Consumer<T> beforePut) {
+         Table<String, Serializable, List<T>> index = HashBasedTable.create();
+         Table<String, Serializable, T> uniqueIndex = HashBasedTable.create();
+         List<T> contain = new ArrayList<>();
+         for (T d : data) {
+            if (Objects.nonNull(beforePut)) {
+               beforePut.accept(d);
+            }
+            contain.add(d);
+            resourceModel.forEachIndex((indexName, i) -> this.buildIndex(d, indexName, i, uniqueIndex, index));
          }
-         this.dataContain.add(data);
-         model.forEachIndex((indexName, index) -> this.buildIndex(data, indexName, index));
+         this.indexDataContain = index;
+         this.uniqueIndexContain = uniqueIndex;
+         this.dataContain = contain;
       }
 
       @Override
       public void clear() {
-         this.indexDataContain.clear();
+         /*this.indexDataContain.clear();
          this.uniqueIndexContain.clear();
          if (Objects.nonNull(this.dataContain)) {
             this.dataContain.clear();
-         }
+         }*/
       }
 
-      private void buildIndex(T data, String indexName, IndexGetter getter) {
+      private void buildIndex(T data, String indexName, IndexGetter getter, Table<String, Serializable, T> uniqueIndexContain, Table<String, Serializable, List<T>> indexContain) {
 
          Serializable value = getter.get(data);
          if (Objects.isNull(value)) {
             throw new RuntimeException("@" + (GetterBuild.isIdGetter(getter) ? "Id" : "Index") + " value can't null. data: [" + JsonUtils.toJson(data) +"]");
          }
          if (getter.unique()) {
-            if (this.uniqueIndexContain.contains(indexName, value)) {
+            if (uniqueIndexContain.contains(indexName, value)) {
                throw new IllegalArgumentException(MessageFormat.format("[{0} {1}] is not unique.",type.getName(), indexName));
             }
-            this.uniqueIndexContain.put(indexName, value, data);
+            uniqueIndexContain.put(indexName, value, data);
          } else {
-            if (this.indexDataContain.contains(indexName, value)) {
-               this.indexDataContain.put(indexName, value, new ArrayList<>());
+            if (indexContain.contains(indexName, value)) {
+               indexContain.put(indexName, value, new ArrayList<>());
             }
-            List<T> list = this.indexDataContain.get(indexName, value);
+            List<T> list = indexContain.get(indexName, value);
             list.add(data);
          }
       }

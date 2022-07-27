@@ -16,7 +16,7 @@ public class MongoLoadResourceHandler implements LoadResourceHandle {
     }
 
     @Override
-    public List<?> loadList(Class<?> type, String resourceName) {
+    public <T>List<T> loadList(Class<T> type, String resourceName) {
         if (log.isDebugEnabled()) {
             log.debug("Loading {} from mongodb..", resourceName);
         }

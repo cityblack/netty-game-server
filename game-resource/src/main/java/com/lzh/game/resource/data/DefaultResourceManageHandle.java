@@ -81,19 +81,13 @@ public class DefaultResourceManageHandle implements ResourceManageHandle {
 
     private void flashData(Class<?> type) {
         ResourceModel model = modelManage.getResource(type);
-        List<?> list = loadResourceHandle.loadList(type, model.getResourceName());
-        list.forEach(e -> put(e, model));
+        List list = loadResourceHandle.loadList(type, model.getResourceName());
+        ResourceCache<Serializable, ?> cache = this.caches.computeIfAbsent(type,
+                (k) -> cacheFactory.newCache(k, model));
+        cache.put(list, model, this::putData);
     }
 
-    protected <V>void put(V data, ResourceModel resourceModel) {
-        Class<?> type = data.getClass();
-        ResourceCache<Serializable, V> cache = (ResourceCache<Serializable, V>) this.caches.computeIfAbsent(type,
-                (k) -> cacheFactory.newCache(k, resourceModel));
-        cache.put(data, resourceModel);
-        afterPutData(data);
-    }
-
-    protected void afterPutData(Object data) {
+    protected void putData(Object data) {
         if (data instanceof ResourceLoaded) {
             ((ResourceLoaded) data).loaded();
         }

@@ -8,5 +8,5 @@ import java.util.List;
  */
 public interface LoadResourceHandle {
 
-    List<?> loadList(Class<?> type, String resourceName);
+    <T>List<T> loadList(Class<T> type, String resourceName);
 }
