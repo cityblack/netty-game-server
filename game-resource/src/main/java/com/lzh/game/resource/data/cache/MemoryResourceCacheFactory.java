@@ -90,15 +90,6 @@ public class MemoryResourceCacheFactory implements ResourceCacheFactory {
          this.dataContain = contain;
       }
 
-      @Override
-      public void clear() {
-         /*this.indexDataContain.clear();
-         this.uniqueIndexContain.clear();
-         if (Objects.nonNull(this.dataContain)) {
-            this.dataContain.clear();
-         }*/
-      }
-
       private void buildIndex(T data, String indexName, IndexGetter getter, Table<String, Serializable, T> uniqueIndexContain, Table<String, Serializable, List<T>> indexContain) {
 
          Serializable value = getter.get(data);

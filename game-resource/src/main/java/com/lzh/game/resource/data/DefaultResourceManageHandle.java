@@ -59,7 +59,6 @@ public class DefaultResourceManageHandle implements ResourceManageHandle {
 
     @Override
     public void reload() {
-        clear();
         modelManage.forEach(e -> flashData(e.getDataType()));
         Class<?>[] clazz = modelManage.getAllResourceType().toArray(Class<?>[]::new);
         reloadMeta.getAllReload().forEach(e -> e.reload(clazz));
@@ -75,7 +74,6 @@ public class DefaultResourceManageHandle implements ResourceManageHandle {
     }
 
     protected void reload(Class<?> clazz) {
-        clear(clazz);
         flashData(clazz);
     }
 
@@ -90,19 +88,6 @@ public class DefaultResourceManageHandle implements ResourceManageHandle {
     protected void putData(Object data) {
         if (data instanceof ResourceLoaded) {
             ((ResourceLoaded) data).loaded();
-        }
-    }
-
-    protected void clear() {
-        for (Map.Entry<Class<?>, ResourceCache<Serializable, ?>> entry : this.caches.entrySet()) {
-            entry.getValue().clear();
-        }
-    }
-
-    protected void clear(Class<?> key) {
-        ResourceCache<?, ?> cache = this.caches.get(key);
-        if (Objects.nonNull(cache)) {
-            cache.clear();
         }
     }
 }
