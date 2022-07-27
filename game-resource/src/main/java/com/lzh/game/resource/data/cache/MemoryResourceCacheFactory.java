@@ -40,9 +40,9 @@ public class MemoryResourceCacheFactory implements ResourceCacheFactory {
        * Index contain
        * <indexName, key, data>
        */
-      private Table<String, Serializable, List<T>> indexDataContain = HashBasedTable.create();
+      private Table<String, Serializable, List<T>> indexDataContain;
 
-      private Table<String, Serializable, T> uniqueIndexContain = HashBasedTable.create();
+      private Table<String, Serializable, T> uniqueIndexContain;
 
       private List<T> dataContain;
 
@@ -56,6 +56,9 @@ public class MemoryResourceCacheFactory implements ResourceCacheFactory {
 
       @Override
       public List<T> findByIndex(String indexName, Serializable value) {
+         if (Objects.isNull(indexDataContain)) {
+            return Collections.emptyList();
+         }
          List<T> list = indexDataContain.get(indexName, value);
          if (Objects.isNull(list)) {
             return Collections.emptyList();
@@ -70,6 +73,9 @@ public class MemoryResourceCacheFactory implements ResourceCacheFactory {
 
       @Override
       public T findOne(String indexName, Serializable value) {
+         if (Objects.isNull(uniqueIndexContain)) {
+            return null;
+         }
          return uniqueIndexContain.get(indexName, value);
       }
 
@@ -88,6 +94,13 @@ public class MemoryResourceCacheFactory implements ResourceCacheFactory {
          this.indexDataContain = index;
          this.uniqueIndexContain = uniqueIndex;
          this.dataContain = contain;
+      }
+
+      @Override
+      public void clear() {
+         this.indexDataContain = null;
+         this.uniqueIndexContain = null;
+         this.dataContain = null;
       }
 
       private void buildIndex(T data, String indexName, IndexGetter getter, Table<String, Serializable, T> uniqueIndexContain, Table<String, Serializable, List<T>> indexContain) {
