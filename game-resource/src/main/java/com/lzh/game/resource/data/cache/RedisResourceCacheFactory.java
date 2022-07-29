@@ -26,7 +26,8 @@ public class RedisResourceCacheFactory implements ResourceCacheFactory {
         return new RedisCache<>(model.getResourceName());
     }
 
-    protected class RedisCache<K extends Serializable, T> implements ResourceCache<K, T> {
+    protected class RedisCache<K extends Serializable, T> extends AbstractResourceCache<K, T>
+            implements ResourceCache<K, T> {
 
         private String resourceName;
         // IndexName map. reduce string malloc
@@ -34,13 +35,13 @@ public class RedisResourceCacheFactory implements ResourceCacheFactory {
 
         private String resourceKey;
 
-        private String unionIndexKeyName;
+        private String uniqueIndexKeyName;
 
         public RedisCache(String resourceName) {
             this.resourceName = resourceName;
             this.indexMapping = new HashMap<>();
-            this.resourceKey = resourceName + ":resource:key";
-            this.unionIndexKeyName = resourceName + ":union:index:name";
+            this.resourceKey = resourceName + ":resource:$key";
+            this.uniqueIndexKeyName = resourceName + ":unique:$index:$name";
         }
 
         @Override
@@ -60,24 +61,25 @@ public class RedisResourceCacheFactory implements ResourceCacheFactory {
 
         @Override
         public T findOne(String indexName, Serializable value) {
-            return (T) redisson.getMap(this.unionIndexKeyName).get(value);
+            return (T) redisson.getMap(this.uniqueIndexKeyName).get(value);
         }
 
         @Override
         public void put(List<T> data, ResourceModel resourceModel, Consumer<T> beforePut) {
             Table<String, Serializable, List<T>> index = HashBasedTable.create();
             Table<String, Serializable, T> uniqueIndex = HashBasedTable.create();
-            List<T> contain = new ArrayList<>(data.size());
+//            List<T> contain = new ArrayList<>(data.size());
+//            Map<Serializable, T> contain = new HashMap<>();
             for (T d : data) {
                 if (Objects.nonNull(beforePut)) {
                     beforePut.accept(d);
                 }
-                contain.add(d);
+//                contain.add(d);
                 resourceModel.forEachIndex((indexName, i) -> this.buildIndex(d, indexName, i, uniqueIndex, index));
             }
 
             clear();
-            redisson.getList(resourceName).addAll(contain);
+//            redisson.getList(resourceName).addAll(contain);
             for (String indexName : index.rowKeySet()) {
                 Map<Serializable, List<T>> map = index.row(indexName);
                 for (Map.Entry<Serializable, List<T>> entry : map.entrySet()) {
@@ -109,26 +111,6 @@ public class RedisResourceCacheFactory implements ResourceCacheFactory {
                 }
             }
             return index;
-        }
-
-        private void buildIndex(T data, String indexName, IndexGetter getter, Table<String, Serializable, T> uniqueIndexContain, Table<String, Serializable, List<T>> indexContain) {
-
-            Serializable value = getter.get(data);
-            if (Objects.isNull(value)) {
-                throw new RuntimeException("@" + (GetterBuild.isIdGetter(getter) ? "Id" : "Index") + " value can't null. data: [" + JsonUtils.toJson(data) +"]");
-            }
-            if (getter.unique()) {
-                if (uniqueIndexContain.contains(indexName, value)) {
-                    throw new IllegalArgumentException(MessageFormat.format("[{0} {1}] is not unique.", data.getClass().getName(), indexName));
-                }
-                uniqueIndexContain.put(indexName, value, data);
-            } else {
-                if (!indexContain.contains(indexName, value)) {
-                    indexContain.put(indexName, value, new ArrayList<>());
-                }
-                List<T> list = indexContain.get(indexName, value);
-                list.add(data);
-            }
         }
     }
 }

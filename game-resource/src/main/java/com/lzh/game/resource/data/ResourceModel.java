@@ -15,7 +15,7 @@ import java.util.function.BiConsumer;
  */
 public class ResourceModel {
 
-    private Getter id;
+    private IndexGetter id;
 
     private String resourceName;
 
@@ -35,11 +35,11 @@ public class ResourceModel {
         index.forEach(consumer);
     }
 
-    public Getter getId() {
+    public IndexGetter getId() {
         return id;
     }
 
-    public void setId(Getter id) {
+    public void setId(IndexGetter id) {
         this.id = id;
     }
 
