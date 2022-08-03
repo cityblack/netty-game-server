@@ -20,7 +20,7 @@ public class ResourceModel {
     private String resourceName;
 
     private Class<?> dataType;
-
+    // All index. include id index
     private Map<String, IndexGetter> index;
 
     public ResourceModel() {
@@ -33,6 +33,15 @@ public class ResourceModel {
 
     public void forEachIndex(BiConsumer<String, IndexGetter> consumer) {
         index.forEach(consumer);
+    }
+
+    public void forEachIndexFilterId(BiConsumer<String, IndexGetter> consumer) {
+        for (Map.Entry<String, IndexGetter> entry : index.entrySet()) {
+            if (entry.getValue().equals(this.index)) {
+                continue;
+            }
+            consumer.accept(entry.getKey(), entry.getValue());
+        }
     }
 
     public IndexGetter getId() {

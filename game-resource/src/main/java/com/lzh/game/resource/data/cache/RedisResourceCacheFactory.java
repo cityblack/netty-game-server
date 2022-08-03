@@ -2,14 +2,10 @@ package com.lzh.game.resource.data.cache;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import com.lzh.game.common.serialization.JsonUtils;
-import com.lzh.game.resource.data.GetterBuild;
-import com.lzh.game.resource.data.IndexGetter;
 import com.lzh.game.resource.data.ResourceModel;
 import org.redisson.Redisson;
 
 import java.io.Serializable;
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -23,9 +19,14 @@ public class RedisResourceCacheFactory implements ResourceCacheFactory {
 
     @Override
     public <K extends Serializable, T> ResourceCache<K, T> newCache(Class<T> type, ResourceModel model) {
-        return new RedisCache<>(model.getResourceName());
+        return new RedisCache<>(model.getResourceName(), model.getId().name());
     }
 
+    /**
+     * Use map contain
+     * @param <K>
+     * @param <T>
+     */
     protected class RedisCache<K extends Serializable, T> extends AbstractResourceCache<K, T>
             implements ResourceCache<K, T> {
 
@@ -33,22 +34,30 @@ public class RedisResourceCacheFactory implements ResourceCacheFactory {
         // IndexName map. reduce string malloc
         private Map<String, String> indexMapping;
 
-        private String resourceKey;
+        private String keyIndex;
 
-        private String uniqueIndexKeyName;
-
-        public RedisCache(String resourceName) {
+        public RedisCache(String resourceName, String keyIndexName) {
             this.resourceName = resourceName;
             this.indexMapping = new HashMap<>();
-            this.resourceKey = resourceName + ":resource:$key";
-            this.uniqueIndexKeyName = resourceName + ":unique:$index:$name";
+            this.keyIndex = keyIndexName;
         }
 
+        /**
+         * Use map collection so that performance is a big problem.
+         * Not used unless necessary
+         * @return
+         */
         @Override
         public List<T> findAll() {
-            return redisson.getList(resourceName);
+            Collection<Object> contain = redisson.getMap(getOrPutIndex(this.keyIndex)).values();
+            List<T> list = new ArrayList<>(contain.size());
+            for (Object o : contain) {
+                list.add((T) o);
+            }
+            return list;
         }
 
+        // Map<indexName, Map<K, List<T>>
         @Override
         public List<T> findByIndex(String indexName, Serializable value) {
             return (List<T>) redisson.getMap(getOrPutIndex(indexName)).get(value);
@@ -56,37 +65,35 @@ public class RedisResourceCacheFactory implements ResourceCacheFactory {
 
         @Override
         public T findById(K k) {
-            return findOne(this.resourceKey, k);
+            return findOne(this.keyIndex, k);
         }
 
+        // Map<indexName, Map<K, T>>
         @Override
         public T findOne(String indexName, Serializable value) {
-            return (T) redisson.getMap(this.uniqueIndexKeyName).get(value);
+            return (T) redisson.getMap(getOrPutIndex(indexName)).get(value);
         }
 
         @Override
         public void put(List<T> data, ResourceModel resourceModel, Consumer<T> beforePut) {
             Table<String, Serializable, List<T>> index = HashBasedTable.create();
             Table<String, Serializable, T> uniqueIndex = HashBasedTable.create();
-//            List<T> contain = new ArrayList<>(data.size());
-//            Map<Serializable, T> contain = new HashMap<>();
             for (T d : data) {
                 if (Objects.nonNull(beforePut)) {
                     beforePut.accept(d);
                 }
-//                contain.add(d);
                 resourceModel.forEachIndex((indexName, i) -> this.buildIndex(d, indexName, i, uniqueIndex, index));
             }
 
             clear();
-//            redisson.getList(resourceName).addAll(contain);
+            // index data to redis
             for (String indexName : index.rowKeySet()) {
                 Map<Serializable, List<T>> map = index.row(indexName);
                 for (Map.Entry<Serializable, List<T>> entry : map.entrySet()) {
                     redisson.getMap(getOrPutIndex(indexName)).put(entry.getKey(), entry.getValue());
                 }
             }
-
+            // unique index data to redis
             for (String indexName : uniqueIndex.rowKeySet()) {
                 Map<Serializable, T> map = uniqueIndex.row(indexName);
                 for (Map.Entry<Serializable, T> entry : map.entrySet()) {

@@ -22,19 +22,25 @@ public class RedisCacheTest {
 
     private RedissonClient client;
 
+    private ResourceCache<Integer, TestItemResource> cache;
+
+    private ResourceModel model;
+
     {
         Config config = new Config();
-
+        config.useSingleServer()
+                .setAddress("redis://127.0.0.1:6379")
+                .setDatabase(0);
         config.setCodec(new JsonJacksonCodec());
         client = Redisson.create(config);
+        RedisResourceCacheFactory factory = new RedisResourceCacheFactory((Redisson) client);
+        model = ResourceModel.of(TestItemResource.class, TestItemResource.class.getName());
+        cache = factory.newCache(TestItemResource.class, model);
     }
 
     @Test
     public void insert() {
 
-        RedisResourceCacheFactory factory = new RedisResourceCacheFactory((Redisson) client);
-        ResourceModel model = ResourceModel.of(TestItemResource.class, TestItemResource.class.getName());
-        ResourceCache<Integer, TestItemResource> cache = factory.newCache(TestItemResource.class, model);
         List<TestItemResource> list = new ArrayList<>();
         TestItemResource resource = new TestItemResource();
         resource.setKey(10001);
@@ -52,5 +58,14 @@ public class RedisCacheTest {
 
         log.info("first item:{}", cache.findById(10001));
         log.info("index item:{}", JsonUtils.toJson(cache.findByIndex(TestItemResource.INDEX, "新产品1")));
+    }
+
+    @Test
+    public void findAll() {
+        log.info("find all =========");
+        for (TestItemResource resource : cache.findAll()) {
+            log.info("{}", resource.toString());
+        }
+        log.info("find all end =========");
     }
 }

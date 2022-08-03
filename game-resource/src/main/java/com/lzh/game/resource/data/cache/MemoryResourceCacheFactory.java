@@ -2,14 +2,9 @@ package com.lzh.game.resource.data.cache;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import com.lzh.game.common.serialization.JsonUtils;
-import com.lzh.game.resource.data.Getter;
-import com.lzh.game.resource.data.GetterBuild;
-import com.lzh.game.resource.data.IndexGetter;
 import com.lzh.game.resource.data.ResourceModel;
 
 import java.io.Serializable;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -91,9 +86,7 @@ public class MemoryResourceCacheFactory implements ResourceCacheFactory {
                     beforePut.accept(d);
                 }
                 contain.add(d);
-                IndexGetter id = resourceModel.getId();
 
-                this.buildIndex(d, id.name(), id, uniqueIndex, index);
                 resourceModel.forEachIndex((indexName, i) -> this.buildIndex(d, indexName, i, uniqueIndex, index));
             }
             this.indexDataContain = index;
