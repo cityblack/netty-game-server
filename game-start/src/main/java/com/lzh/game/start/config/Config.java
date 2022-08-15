@@ -4,11 +4,9 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.invoke.ConvertManager;
 import com.lzh.game.socket.core.invoke.DefaultConvertManager;
-import com.lzh.game.socket.core.invoke.InnerParamBindHandler;
 import com.lzh.game.start.StartProperties;
 import com.lzh.game.start.filter.GmFilter;
 import com.lzh.game.start.filter.ProtocolVersionFilter;
-import com.lzh.game.start.model.core.ConsumeInnerParamDataBindHandler;
 import com.lzh.game.start.pool.DefaultBusinessThreadPool;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
@@ -21,11 +19,6 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 @EnableConfigurationProperties(StartProperties.class)
 public class Config {
-
-    @Bean
-    public InnerParamBindHandler innerParamDataBindHandler() {
-        return new ConsumeInnerParamDataBindHandler();
-    }
 
     @Bean
     public Filter protocolVersionFilter() {

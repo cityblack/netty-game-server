@@ -29,8 +29,8 @@ public class RedisCacheTest {
     {
         Config config = new Config();
         config.useSingleServer()
-                .setAddress("redis://127.0.0.1:6379")
-                .setDatabase(0);
+                .setAddress("redis://120.78.234.195:16379")
+                .setPassword("as123456..").setDatabase(0);
         config.setCodec(new JsonJacksonCodec());
         client = Redisson.create(config);
         RedisResourceCacheFactory factory = new RedisResourceCacheFactory((Redisson) client);
