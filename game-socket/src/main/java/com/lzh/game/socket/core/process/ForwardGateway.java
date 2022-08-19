@@ -46,11 +46,11 @@ public class ForwardGateway implements Process<GameRequest> {
                 command.setSession(context.getSession());
 
                 if (command.type() == Constant.REQUEST_SIGN || command.type() == Constant.ONEWAY_SIGN) {
-                    GameRequest request = SocketUtils.createRequest(cmd, bytes);
+                    GameRequest request = SocketUtils.createRequest(cmd, bytes, command.type());
                     request.setSession(command.getSession());
                     request.setType(command.type());
                     request.setBytes(bytes);
-                    request.setCommonKey(Constant.REQUEST_COMMAND_KEY);
+//                    request.setCommonKey(Constant.REQUEST_COMMAND_KEY);
                     Session forwardSession = strategy.selected(tcpClient, command);
                     if (command.type() == Constant.ONEWAY_SIGN) {
                         tcpClient.oneWay(forwardSession, request);

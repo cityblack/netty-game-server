@@ -2,7 +2,6 @@ package com.lzh.game.socket.core.invoke;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.annotation.RequestMapping;
-import com.lzh.game.socket.annotation.ResponseMapping;
 import lombok.Data;
 
 import java.lang.reflect.Method;
@@ -48,14 +47,6 @@ public class InvokeUtils {
         if (!protoParamType.isEmpty()) {
             methodMapping.setParamClass(protoParamType.get(0));
         }
-        if (!method.isVoid()) {
-            ResponseMapping responseMapping = method.getMethod().getAnnotation(ResponseMapping.class);
-            if (Objects.isNull(responseMapping)) {
-                throw new IllegalArgumentException(cmd + " protocol return value is not null. so that must use @Response to map the method ");
-            }
-            int response = responseMapping.value();
-            methodMapping.setResponse(response);
-        }
 
         return methodMapping;
     }
@@ -73,8 +64,6 @@ public class InvokeUtils {
          * cmd id
          */
         private int value;
-
-        private int response;
 
         private EnhanceHandlerMethod handlerMethod;
 
@@ -100,12 +89,13 @@ public class InvokeUtils {
             return Objects.hashCode(this.value);
         }
 
-        public boolean hasResponse() {
-            return response != 0;
-        }
-
         public boolean hasParam() {
             return Objects.nonNull(paramClass);
+        }
+
+        public boolean isReturnValue() {
+            return false;
+//            return this.handlerMethod.getReturnType() instanceof Void
         }
     }
 }

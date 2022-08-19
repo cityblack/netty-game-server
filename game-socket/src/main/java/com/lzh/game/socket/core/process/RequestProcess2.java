@@ -1,13 +1,11 @@
 package com.lzh.game.socket.core.process;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
-import com.lzh.game.common.util.Constant;
+import com.lzh.game.socket.ActionMethodSupport;
 import com.lzh.game.socket.GameRequest;
-import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.*;
 import com.lzh.game.socket.core.invoke.ConvertManager;
 import com.lzh.game.socket.core.invoke.ParamConvert;
-import com.lzh.game.socket.core.invoke.RequestActionSupport;
 import com.lzh.game.socket.core.session.Session;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,18 +27,18 @@ public class RequestProcess2 implements Process<GameRequest> {
 
     private ConvertManager convertManager;
 
-    private RequestActionSupport<EnhanceHandlerMethod> support;
+    private ActionMethodSupport<EnhanceHandlerMethod> support;
 
     private Map<Integer, ParamConvert<?>> targetObjectConvert = new ConcurrentHashMap<>();
 
     private static final ParamConvert<Void> NONE_CONVERT = (e) -> null;
 
-    public RequestProcess2(RequestHandler requestHandler, ConvertManager convertManager, RequestActionSupport<EnhanceHandlerMethod> support) {
+    public RequestProcess2(RequestHandler requestHandler, ConvertManager convertManager, ActionMethodSupport<EnhanceHandlerMethod> support) {
         this(requestHandler, new DefaultPool(), convertManager, support);
     }
 
     public RequestProcess2(RequestHandler requestHandler, RequestProcessPool pool
-            , ConvertManager convertManager, RequestActionSupport<EnhanceHandlerMethod> support) {
+            , ConvertManager convertManager, ActionMethodSupport<EnhanceHandlerMethod> support) {
         this.requestHandler = requestHandler;
         this.pool = pool;
         this.convertManager = convertManager;
@@ -49,7 +47,7 @@ public class RequestProcess2 implements Process<GameRequest> {
 
     @Override
     public void process(RemoteContext context, GameRequest request) {
-        ServerExchange exchange = new ServerExchangeWrapper(request, Constant.RESPONSE_COMMAND_KEY);
+        ServerExchange exchange = new ServerExchangeWrapper(request);
         request.setSession(context.getSession());
         //
         int cmd = request.cmd();

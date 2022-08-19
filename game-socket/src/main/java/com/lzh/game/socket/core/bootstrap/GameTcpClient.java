@@ -90,15 +90,9 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
     }
 
     @Override
-    public void oneWay(Session session, int commandKey, int cmd, Object params) {
+    public void oneWay(Session session, int cmd, Object params) {
         checkStatus();
-        session.write(SocketUtils.createRequest(commandKey, cmd, params, Constant.ONEWAY_SIGN));
-    }
-
-    @Override
-    public <T> AsyncResponse<T> request(Session session, int commandKey, int cmd, Object params, Class<T> clazz) {
-        checkStatus();
-        return request(session, SocketUtils.createRequest(commandKey, cmd, params), clazz);
+        oneWay(session, SocketUtils.createRequest(cmd, params, Constant.ONEWAY_SIGN));
     }
 
     @Override
@@ -108,6 +102,11 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
         AsyncResponse<T> response = new FutureAsyncResponse<>(future, clazz);
         session.write(request);
         return response;
+    }
+
+    @Override
+    public <T> AsyncResponse<T> request(Session session, int cmd, Object params, Class<T> returnType) {
+        return request(session, SocketUtils.createRequest(cmd, params, Constant.REQUEST_SIGN), returnType);
     }
 
     private Bootstrap createBootstrap() {

@@ -40,9 +40,9 @@ public class MessageHandlerImpl implements MessageHandler {
     public void messageReceived(Session session, Object data) {
         if (data instanceof RemotingCommand) {
             RemotingCommand command = (RemotingCommand) data;
-            Process<RemotingCommand> process = processManager.getProcess(command.commandKey());
+            Process<RemotingCommand> process = processManager.getProcess(command.type());
             if (Objects.isNull(process)) {
-                log.warn("Undefined the command key:{}", command.commandKey());
+                log.warn("Undefined the command key:{}", command.type());
                 return;
             }
             RemoteContext context = new RemoteContext();

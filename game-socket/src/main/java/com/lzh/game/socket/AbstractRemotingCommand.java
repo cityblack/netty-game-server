@@ -14,8 +14,6 @@ public abstract class AbstractRemotingCommand
 
     private byte[] bytes;
 
-    private int commonKey;
-
     private int remoteId;
 
     private byte type;
@@ -48,11 +46,6 @@ public abstract class AbstractRemotingCommand
     }
 
     @Override
-    public int commandKey() {
-        return commonKey;
-    }
-
-    @Override
     public int remoteId() {
         return remoteId;
     }
@@ -67,10 +60,6 @@ public abstract class AbstractRemotingCommand
 
     public void setBytes(byte[] bytes) {
         this.bytes = bytes;
-    }
-
-    public void setCommonKey(int commonKey) {
-        this.commonKey = commonKey;
     }
 
     public void setRemoteId(int remoteId) {

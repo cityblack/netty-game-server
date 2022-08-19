@@ -22,14 +22,12 @@ public class DefaultGameDecoder implements Decoder {
          * cmd: cmd int
          * type: request / response byte
          * request: int
-         * commandKey: process key / byte
          * len: Object byte data length
          * data: Object Serializable data
          */
         int cmd = readRawVarint32(in);
         byte type = in.readByte();
         int requestId = readRawVarint32(in);
-        byte commandKey = in.readByte();
         int length = readRawVarint32(in);
         if (in.readableBytes() < length) {
             in.resetReaderIndex();
@@ -47,7 +45,6 @@ public class DefaultGameDecoder implements Decoder {
         }
         remotingCmd.setCmd(cmd);
         remotingCmd.setRemoteId(requestId);
-        remotingCmd.setCommonKey(commandKey);
         remotingCmd.setType(type);
         if (length > 0) {
             byte[] bytes = new byte[length];

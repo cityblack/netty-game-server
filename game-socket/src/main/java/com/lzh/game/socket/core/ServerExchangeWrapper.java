@@ -10,9 +10,9 @@ public class ServerExchangeWrapper implements ServerExchange {
     private Request request;
     private Response response;
 
-    public ServerExchangeWrapper(Request request, int responseCommandKey) {
+    public ServerExchangeWrapper(Request request) {
         this.request = request;
-        this.response = GameResponse.of(request, responseCommandKey);
+        this.response = GameResponse.of(request);
     }
 
     @Override

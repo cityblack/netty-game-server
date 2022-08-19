@@ -1,6 +1,7 @@
 package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
+import com.lzh.game.socket.ActionMethodSupport;
 import com.lzh.game.socket.core.invoke.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -16,13 +17,13 @@ import java.util.Set;
  * @Action parse
  */
 @Slf4j
-public class SpringActionSupport implements RequestActionSupport<EnhanceHandlerMethod>, ApplicationContextAware {
+public class SpringActionSupport implements ActionMethodSupport<EnhanceHandlerMethod>, ApplicationContextAware {
 
-    private RequestActionSupport<EnhanceHandlerMethod> support;
+    private ActionMethodSupport<EnhanceHandlerMethod> support;
 
     private ConvertManager convertManager;
 
-    public SpringActionSupport(RequestActionSupport<EnhanceHandlerMethod> support, ConvertManager convertManager) {
+    public SpringActionSupport(ActionMethodSupport<EnhanceHandlerMethod> support, ConvertManager convertManager) {
         this.support = support;
         this.convertManager = convertManager;
     }
@@ -55,17 +56,6 @@ public class SpringActionSupport implements RequestActionSupport<EnhanceHandlerM
     }
 
     @Override
-    public int getRequestRelation(int requestCmd) {
-        return support.getRequestRelation(requestCmd);
-    }
-
-    @Override
-    public void register(int requestCmd, EnhanceHandlerMethod method, int responseCmd) {
-        support.register(requestCmd, method, responseCmd);
-        registerConvert(method);
-    }
-
-    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.parseActionHandler(applicationContext);
     }
@@ -85,13 +75,9 @@ public class SpringActionSupport implements RequestActionSupport<EnhanceHandlerM
                         int requestCmd = model.getValue();
                         EnhanceHandlerMethod method = model.getHandlerMethod();
                         if (containMapping(requestCmd)) {
-                            throw new IllegalArgumentException("The cmd not unique." + model.getResponse());
+                            throw new IllegalArgumentException("The cmd not unique." + requestCmd);
                         }
-                        if (model.hasResponse()) {
-                            register(requestCmd, method, model.getResponse());
-                        } else {
-                            register(requestCmd, method);
-                        }
+                        register(requestCmd, method);
                     }
                 });
             }

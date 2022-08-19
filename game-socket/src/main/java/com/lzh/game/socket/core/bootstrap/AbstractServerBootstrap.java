@@ -2,6 +2,7 @@ package com.lzh.game.socket.core.bootstrap;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.common.util.Constant;
+import com.lzh.game.socket.ActionMethodSupport;
 import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.GameServerSocketProperties;
 import com.lzh.game.socket.Request;
@@ -23,7 +24,7 @@ public abstract class AbstractServerBootstrap
 
     private NetServer netServer;
 
-    private RequestActionSupport<EnhanceHandlerMethod> methodSupport;
+    private ActionMethodSupport<EnhanceHandlerMethod> methodSupport;
 
     private InvokeMethodArgumentValues<Request> argumentValues;
 
@@ -64,11 +65,11 @@ public abstract class AbstractServerBootstrap
         if (Objects.isNull(handler)) {
             handler = new FilterHandler(this.filters, new ActionRequestHandler(methodSupport, argumentValues));
         }
-        if (Objects.isNull(getProcessManager().getProcess(Constant.REQUEST_COMMAND_KEY))) {
-            addProcess(Constant.REQUEST_COMMAND_KEY, new RequestProcess2(handler, convertManager, methodSupport));
+        if (Objects.isNull(getProcessManager().getProcess(Constant.REQUEST_SIGN))) {
+            addProcess(Constant.REQUEST_SIGN, new RequestProcess2(handler, convertManager, methodSupport));
         }
-        if (Objects.isNull(getProcessManager().getProcess(Constant.RESPONSE_COMMAND_KEY))) {
-            addProcess(Constant.RESPONSE_COMMAND_KEY, new FutureResponseProcess());
+        if (Objects.isNull(getProcessManager().getProcess(Constant.ONEWAY_SIGN))) {
+            addProcess(Constant.ONEWAY_SIGN, new RequestProcess2(handler, convertManager, methodSupport));
         }
         this.netServer = createServer(getPort());
     }
@@ -105,11 +106,7 @@ public abstract class AbstractServerBootstrap
     private void addInvokeBean0(Object bean) {
         List<InvokeUtils.InvokeModel> list = InvokeUtils.parseBean(bean, convertManager.inner());
         for (InvokeUtils.InvokeModel model : list) {
-            if (model.hasResponse()) {
-                methodSupport.register(model.getValue(), model.getHandlerMethod(), model.getResponse());
-            } else {
-                methodSupport.register(model.getValue(), model.getHandlerMethod());
-            }
+            methodSupport.register(model.getValue(), model.getHandlerMethod());
             if (model.hasParam()) {
                 convertManager.registerConvert(model.getParamClass(), new ProtoBufferConvert<>(model.getParamClass()));
             }
@@ -121,7 +118,7 @@ public abstract class AbstractServerBootstrap
     }
 
     // === set ====
-    public AbstractServerBootstrap setMethodSupport(RequestActionSupport<EnhanceHandlerMethod> methodSupport) {
+    public AbstractServerBootstrap setMethodSupport(ActionMethodSupport<EnhanceHandlerMethod> methodSupport) {
         this.methodSupport = methodSupport;
         return this;
     }

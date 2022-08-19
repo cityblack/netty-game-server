@@ -24,7 +24,7 @@ public class PacketUtils {
 
     public static void send(Session session, int cmd, Object pack) {
         checkCmd(cmd);
-        session.write(SocketUtils.createRequest(Constant.REQUEST_COMMAND_KEY, cmd, pack));
+        session.write(SocketUtils.createOneWayRequest(cmd, pack));
     }
 
     private static CmdMappingManage cmdMappingManage;

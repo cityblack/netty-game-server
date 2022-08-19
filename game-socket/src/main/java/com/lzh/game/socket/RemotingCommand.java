@@ -10,8 +10,6 @@ public interface RemotingCommand {
 
     Object data();
 
-    int commandKey();
-
     int remoteId();
 
     Session getSession();

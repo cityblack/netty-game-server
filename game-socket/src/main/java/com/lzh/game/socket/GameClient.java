@@ -23,25 +23,17 @@ public interface GameClient extends LifeCycle {
 
     void oneWay(Session session, Request request);
 
-    default void oneWay(Session session, int cmd, Object params) {
-        oneWay(session, Constant.REQUEST_COMMAND_KEY, cmd, params);
-    }
-
     default void oneWay(Session session, int cmd) {
-        oneWay(session, Constant.REQUEST_COMMAND_KEY, cmd, null);
+        oneWay(session, cmd, null);
     }
 
-    void oneWay(Session session, int commandKey, int cmd, Object params);
+    void oneWay(Session session, int cmd, Object params);
 
-    <T> AsyncResponse<T> request(Session session, Request request, Class<T> clazz);
+    <T> AsyncResponse<T> request(Session session, Request request, Class<T> returnType);
 
-    default <T>AsyncResponse<T> request(Session session, int cmd, Class<T> clazz) {
-        return request(session, cmd, null, clazz);
+    default <T>AsyncResponse<T> request(Session session, int cmd, Class<T> returnType) {
+        return request(session, cmd, null, returnType);
     }
 
-    default <T> AsyncResponse<T> request(Session session, int cmd, Object params, Class<T> clazz) {
-        return request(session, Constant.REQUEST_COMMAND_KEY, cmd, params, clazz);
-    }
-
-    <T>AsyncResponse<T> request(Session session, int commandKey, int cmd, Object params, Class<T> clazz);
+    <T>AsyncResponse<T> request(Session session, int cmd, Object params, Class<T> returnType);
 }

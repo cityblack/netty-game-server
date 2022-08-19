@@ -1,5 +1,6 @@
 package com.lzh.game.socket.core.process;
 
+import com.lzh.game.socket.AbstractRemotingCommand;
 import com.lzh.game.socket.RemotingCommand;
 import com.lzh.game.socket.core.process.Process;
 
@@ -14,6 +15,11 @@ public class ProcessManager {
         PROCESS_CONTAIN.put(type, process);
     }
 
+    /**
+     * Get process
+     * @param type -- {@link AbstractRemotingCommand#type()}
+     * @return
+     */
     public Process<RemotingCommand> getProcess(int type) {
         return (Process<RemotingCommand>) PROCESS_CONTAIN.get(type);
     }

@@ -19,18 +19,17 @@ public class ForwardTest {
     public void startForward() {
         GameSocketProperties clientProperties = new GameServerSocketProperties();
         GameTcpClient client = new GameTcpClient(clientProperties);
-        client.addProcess(Constant.RESPONSE_COMMAND_KEY, new FutureResponseProcess());
+        FutureResponseProcess process = new FutureResponseProcess();
+        client.addProcess(Constant.RESPONSE_SIGN, process);
         client.start();
         Session session = client.conn("127.0.0.1", 8081, 2000);
         client.oneWay(session, -10089, "xx");
-
         ForwardStrategy strategy = (c, request) -> session;
-
         GameServerSocketProperties properties = new GameServerSocketProperties();
         properties.setPort(8080);
 
         TcpCommonServer server = new TcpCommonServer(properties);
-        server.addProcess(Constant.REQUEST_COMMAND_KEY, new ForwardGateway(client, strategy, client.getService()));
+        server.addProcess(Constant.RESPONSE_SIGN, new ForwardGateway(client, strategy, client.getService()));
         server.start();
     }
 
@@ -39,7 +38,7 @@ public class ForwardTest {
         GameSocketProperties properties = new GameSocketProperties();
         properties.setRequestTimeout(5000);
         GameTcpClient client = new GameTcpClient(properties);
-        client.addProcess(Constant.RESPONSE_COMMAND_KEY, new FutureResponseProcess());
+        client.addProcess(Constant.RESPONSE_SIGN, new FutureResponseProcess());
         client.start();
         Session session = client.conn("localhost", 8080, 5000);
         AsyncResponse<String> future = client.request(session, -10086, "hello world", String.class);

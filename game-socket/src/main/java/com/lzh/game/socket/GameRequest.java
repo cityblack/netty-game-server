@@ -1,5 +1,7 @@
 package com.lzh.game.socket;
 
+import com.lzh.game.common.util.Constant;
+
 import java.io.Serializable;
 
 public class GameRequest extends AbstractRemotingCommand
@@ -26,5 +28,9 @@ public class GameRequest extends AbstractRemotingCommand
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public boolean isOneWay() {
+        return this.type() == Constant.ONEWAY_SIGN;
     }
 }

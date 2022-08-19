@@ -38,11 +38,11 @@ public class GameResponse extends AbstractRemotingCommand
         this.error = error;
     }
 
-    public static GameResponse of(Request request, int commandKey) {
+    public static GameResponse of(Request request) {
         GameResponse response = new GameResponse();
         response.request = request;
         response.setStatus(OK);
-        response.setCommonKey(commandKey);
+        response.setCmd(request.cmd());
         response.setRemoteId(request.remoteId());
         response.setSession(request.getSession());
         response.setType(Constant.RESPONSE_SIGN);

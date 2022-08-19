@@ -7,6 +7,7 @@ import com.lzh.game.common.serialization.ProtoBufUtils;
 import com.lzh.game.common.util.Constant;
 import com.lzh.game.socket.core.Encoder;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.io.Serializable;
@@ -20,7 +21,6 @@ public class DefaultGameEncoder implements Encoder {
          * cmd: cmd int
          * type: request / response / oneWay byte
          * request: int
-         * commandKey: process key / byte
          * len: Object byte data length
          * data: Object Serializable data
          */
@@ -31,9 +31,6 @@ public class DefaultGameEncoder implements Encoder {
                 writeRawVarint32(out, cmd);
                 out.writeByte(cmdMsg.type());
                 writeRawVarint32(out, cmdMsg.remoteId());
-
-                int commandKey = cmdMsg.commandKey();
-                writeRawVarint32(out, commandKey);
 
                 byte[] data = getDateBytes(cmdMsg);
                 int len = data.length;
@@ -73,5 +70,23 @@ public class DefaultGameEncoder implements Encoder {
         return (Objects.isNull(bytes) || bytes.length <= 0) ? EMPTY_BYTES : bytes;
     }
 
-    private static byte[] EMPTY_BYTES = new byte[0];
+    private final static byte[] EMPTY_BYTES = new byte[0];
+
+    public static void main(String[] args) {
+        ByteBuf byteBuf = ByteBufAllocator.DEFAULT.heapBuffer();
+        writeRawVarint64(byteBuf, 34L);
+        System.out.println(byteBuf.array());
+    }
+
+    static void writeRawVarint64(ByteBuf out, long value) {
+        while (true) {
+            if ((value & ~0x7F) == 0) {
+                out.writeByte((int) value);
+                return;
+            } else {
+                out.writeByte((int) ((value & 0x7F) | 0x80));
+                value >>>= 7;
+            }
+        }
+    }
 }

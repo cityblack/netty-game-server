@@ -1,6 +1,5 @@
 package com.lzh.game.socket.core.process;
 
-import com.lzh.game.common.util.Constant;
 import com.lzh.game.socket.GameRequest;
 import com.lzh.game.socket.core.*;
 
@@ -17,7 +16,7 @@ public class RequestProcess implements Process<GameRequest> {
 
     @Override
     public void process(RemoteContext context, GameRequest request) {
-        ServerExchange exchange = new ServerExchangeWrapper(request, Constant.RESPONSE_COMMAND_KEY);
+        ServerExchange exchange = new ServerExchangeWrapper(request);
         request.setSession(context.getSession());
         pool.submit(exchange, new ProcessTask(exchange));
     }

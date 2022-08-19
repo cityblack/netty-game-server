@@ -1,13 +1,13 @@
 package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
+import com.lzh.game.socket.ActionMethodSupport;
 import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.RequestHandler;
 import com.lzh.game.socket.core.bootstrap.TcpCommonServer;
 import com.lzh.game.socket.core.invoke.ConvertManager;
 import com.lzh.game.socket.core.invoke.InvokeMethodArgumentValues;
-import com.lzh.game.socket.core.invoke.RequestActionSupport;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +26,7 @@ public class TcpServerConfiguration {
     @Bean
     public GameServer gameServer(SpringGameServerProperties serverSocketProperties
             , RequestHandler requestHandler
-            , RequestActionSupport<EnhanceHandlerMethod> actionSupport
+            , ActionMethodSupport<EnhanceHandlerMethod> actionSupport
             , ConvertManager convertManager
             , InvokeMethodArgumentValues<Request> argumentValues) {
 
