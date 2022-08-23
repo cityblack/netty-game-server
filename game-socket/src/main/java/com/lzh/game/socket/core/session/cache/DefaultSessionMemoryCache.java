@@ -2,6 +2,9 @@ package com.lzh.game.socket.core.session.cache;
 
 import com.lzh.game.socket.core.session.Session;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,6 +41,11 @@ public class DefaultSessionMemoryCache<T extends Session> implements SessionMemo
     public void clean() {
         cache.forEach((k, v) -> v.close());
         this.cache = null;
+    }
+
+    @Override
+    public List<T> getAll() {
+        return Collections.unmodifiableList(new ArrayList<>(cache.values()));
     }
 
 }

@@ -24,9 +24,9 @@ public abstract class AbstractSession implements Session {
     }
 
     protected void init(Channel channel) {
-        String[] split = channel.remoteAddress().toString().split(":");
+        this.remoteAddress = channel.remoteAddress().toString().replace("/","");
+        String[] split = this.remoteAddress.split(":");
         if (split.length > 1) {
-            this.remoteAddress = split[0];
             this.port = Integer.valueOf(split[1]);
         }
         this.id = channel.id().asLongText();

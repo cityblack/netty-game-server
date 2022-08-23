@@ -2,10 +2,10 @@ package com.lzh.game.socket;
 
 import com.lzh.game.common.util.Constant;
 import com.lzh.game.socket.core.AsyncResponse;
-import com.lzh.game.socket.core.ForwardStrategy;
+import com.lzh.game.socket.core.ForwardSessionSelect;
 import com.lzh.game.socket.core.bootstrap.GameTcpClient;
 import com.lzh.game.socket.core.bootstrap.TcpCommonServer;
-import com.lzh.game.socket.core.process.ForwardGateway;
+import com.lzh.game.socket.core.process.ForwardGatewayProcess;
 import com.lzh.game.socket.core.process.FutureResponseProcess;
 import com.lzh.game.socket.core.session.Session;
 import org.junit.jupiter.api.Test;
@@ -24,12 +24,13 @@ public class ForwardTest {
         client.start();
         Session session = client.conn("127.0.0.1", 8081, 2000);
         client.oneWay(session, -10089, "xx");
-        ForwardStrategy strategy = (c, request) -> session;
+        ForwardSessionSelect strategy = (c, request) -> session;
         GameServerSocketProperties properties = new GameServerSocketProperties();
         properties.setPort(8080);
 
         TcpCommonServer server = new TcpCommonServer(properties);
-        server.addProcess(Constant.RESPONSE_SIGN, new ForwardGateway(client, strategy, client.getService()));
+        server.addProcess(Constant.REQUEST_SIGN, new ForwardGatewayProcess(client, strategy, client.getService()));
+        server.addProcess(Constant.ONEWAY_SIGN, new ForwardGatewayProcess(client, strategy));
         server.start();
     }
 

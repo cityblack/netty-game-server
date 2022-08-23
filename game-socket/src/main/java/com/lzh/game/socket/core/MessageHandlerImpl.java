@@ -23,17 +23,17 @@ public class MessageHandlerImpl implements MessageHandler {
 
     @Override
     public void opened(Session session) {
-        log.info("session [{}:{}:{}] is connected.", session.getId(), session.getRemoteAddress(), session.getPort());
+        log.info("session [{}/{}] is connected.", session.getId(), session.getRemoteAddress());
     }
 
     @Override
     public void close(Session session) {
-        log.info("session [{}:{}:{}] is close.", session.getId(), session.getRemoteAddress(), session.getPort());
+        log.info("session [{}/{}] is close.", session.getId(), session.getRemoteAddress());
     }
 
     @Override
     public void exceptionCaught(Session session, Throwable throwable) {
-        log.error("session:[{}] error", session.getId(), throwable);
+        log.error("session:[{}] error", session.getRemoteAddress(), throwable);
     }
 
     @Override

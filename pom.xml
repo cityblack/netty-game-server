@@ -17,6 +17,7 @@
         <module>game-repository</module>
         <module>game-client</module>
         <module>game-socket-starter</module>
+        <module>game-gateway</module>
     </modules>
 
     <properties>

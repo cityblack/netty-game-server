@@ -1,5 +1,6 @@
 package com.lzh.game.socket.core.session;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -24,4 +25,6 @@ public interface SessionManage<T extends Session> extends SessionFactory<T> {
      * @param connected
      */
     void addConnectListener(Consumer<T> connected);
+
+    List<T> getAllSession();
 }

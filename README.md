@@ -40,10 +40,14 @@ python static-resource/run.py -h mongodb_host -p mongodb_port
 public class HelloAction {
 
     @RequestMapping(-10086)
-    @ResponseMapping(-10087)
     public ResponseHello hello(Session session, RequestHello hello) {
         System.out.println("Get session: " + session.getId() + " info:" + hello);      
         return new ResponseHello("I am server.", 10001);
+    }
+    
+    @RequestMapping(-10087)
+    public void request(Session session,  RequestHello hello) {
+         System.out.println("Get session: " + session.getId() + " info:" + hello); 
     }
 }
 

@@ -9,6 +9,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
+
 @Slf4j
 @ChannelHandler.Sharable
 public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandler<RemotingCommand> {
@@ -25,9 +27,6 @@ public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandle
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         S session = sessionManage.createSession(ctx.channel());
-        if (log.isInfoEnabled()) {
-            log.info("{} connected!", session.getId());
-        }
         SessionUtils.channelBindSession(ctx.channel(), session);
         sessionManage.pushSession(session.getId(), session);
         messageHandler.opened(session);
@@ -37,8 +36,12 @@ public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandle
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         Session s = getSession(ctx.channel());
+        if (Objects.isNull(s)) {
+            return;
+        }
         messageHandler.close(s);
         sessionManage.removeSession(s.getId());
+        SessionUtils.channelUnbindSession(ctx.channel());
     }
 
     @Override

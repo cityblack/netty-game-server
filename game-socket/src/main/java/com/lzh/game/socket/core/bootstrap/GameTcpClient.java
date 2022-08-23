@@ -1,10 +1,7 @@
 package com.lzh.game.socket.core.bootstrap;
 
 import com.lzh.game.common.util.Constant;
-import com.lzh.game.socket.GameClient;
-import com.lzh.game.socket.GameSocketProperties;
-import com.lzh.game.socket.Request;
-import com.lzh.game.socket.SocketUtils;
+import com.lzh.game.socket.*;
 import com.lzh.game.socket.core.AsyncResponse;
 import com.lzh.game.socket.core.FutureAsyncResponse;
 import com.lzh.game.socket.core.RequestFuture;
@@ -24,6 +21,7 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.ConnectException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -38,6 +36,10 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
     private Bootstrap bootstrap;
 
     private ExecutorService service;
+
+    public GameTcpClient() {
+        this(new GameServerSocketProperties());
+    }
 
     public GameTcpClient(GameSocketProperties properties) {
         this(properties, defaultSession(), defaultExecutor());
@@ -65,7 +67,17 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
     private Channel createChannel(String host, int port, int connectTimeout) {
         this.bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout);
         ChannelFuture future = this.bootstrap.connect(host, port);
-        future.awaitUninterruptibly();
+        future.addListeners(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                if (future.isSuccess()) {
+                    log.info("connect to [{}:{}]", host, port);
+                } else {
+                    log.error("connect to [{}:{}] fail!!!", host, port);
+                }
+            }
+        });
+        /*future.awaitUninterruptibly();
         if (!future.isDone()) {
             String errMsg = "Create connection to " + host + ":" + port + " timeout!";
             throw new RuntimeException(errMsg);
@@ -78,8 +90,8 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
         if (!future.isSuccess()) {
             String errMsg = "Create connection to " + host + ":" + port + " error!";
             log.warn(errMsg);
-            throw new RuntimeException(errMsg);
-        }
+            throw new ConnectException(errMsg);
+        }*/
         return future.channel();
     }
 

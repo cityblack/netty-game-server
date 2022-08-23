@@ -41,7 +41,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
     public static SessionManage<Session> defaultSession() {
         SessionMemoryCacheManage<String, Session> cacheManage = new GameSessionMemoryCacheManage<>();
         SessionFactory<Session> factory = GameSession::of;
-        return new GameSessionManage<>(cacheManage, factory);
+        return new GameSessionManage<>(factory, cacheManage);
     }
 
     public T getProperties() {

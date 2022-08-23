@@ -2,11 +2,14 @@ package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.ActionMethodSupport;
-import com.lzh.game.socket.Request;
-import com.lzh.game.socket.core.session.*;
 import com.lzh.game.socket.GameServerSocketProperties;
+import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.RequestHandler;
 import com.lzh.game.socket.core.invoke.*;
+import com.lzh.game.socket.core.session.GameSession;
+import com.lzh.game.socket.core.session.GameSessionManage;
+import com.lzh.game.socket.core.session.SessionFactory;
+import com.lzh.game.socket.core.session.SessionManage;
 import com.lzh.game.socket.core.session.cache.GameSessionMemoryCacheManage;
 import com.lzh.game.socket.core.session.cache.SessionMemoryCacheManage;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -62,21 +65,5 @@ public class GameSocketConfiguration {
 
     protected GameServerSocketProperties getServerSocketProperties() {
         return this.serverSocketProperties;
-    }
-
-    @Configuration
-    @ConditionalOnMissingBean(value = SessionManage.class)
-    class SessionConfig {
-
-        @Bean
-        protected SessionManage<GameSession> sessionManage(SessionMemoryCacheManage<String, GameSession> sessionMemoryCacheManage) {
-            SessionFactory<GameSession> sessionFactory = GameSession::of;
-            return new GameSessionManage<>(sessionMemoryCacheManage, sessionFactory);
-        }
-
-        @Bean
-        public SessionMemoryCacheManage<String, GameSession> sessionMemoryCacheManage() {
-            return new GameSessionMemoryCacheManage<>();
-        }
     }
 }

@@ -1,12 +1,8 @@
 package com.lzh.game.socket;
 
-import com.lzh.game.common.util.Constant;
 import com.lzh.game.socket.core.AsyncResponse;
 import com.lzh.game.socket.core.LifeCycle;
-import com.lzh.game.socket.core.RequestFuture;
 import com.lzh.game.socket.core.session.Session;
-
-import java.util.concurrent.CompletableFuture;
 
 /**
  * One to many server

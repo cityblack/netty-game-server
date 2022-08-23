@@ -2,6 +2,7 @@ package com.lzh.game.socket.core.session.cache;
 
 import com.lzh.game.socket.core.session.Session;
 
+import java.util.List;
 import java.util.Objects;
 
 public interface SessionMemoryCache<K, V extends Session> {
@@ -31,4 +32,6 @@ public interface SessionMemoryCache<K, V extends Session> {
     String getKey(K key);
 
     void clean();
+
+    List<V> getAll();
 }
