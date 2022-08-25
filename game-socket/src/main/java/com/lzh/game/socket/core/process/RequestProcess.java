@@ -5,12 +5,12 @@ import com.lzh.game.socket.core.*;
 
 public class RequestProcess implements Process<GameRequest> {
 
-    private RequestHandler requestHandler;
+    private RequestHandle requestHandle;
 
     private RequestProcessPool pool;
 
-    public RequestProcess(RequestHandler requestHandler, RequestProcessPool pool) {
-        this.requestHandler = requestHandler;
+    public RequestProcess(RequestHandle requestHandle, RequestProcessPool pool) {
+        this.requestHandle = requestHandle;
         this.pool = pool;
     }
 
@@ -31,7 +31,7 @@ public class RequestProcess implements Process<GameRequest> {
 
         @Override
         public void run() {
-            requestHandler.handler(exchange);
+            requestHandle.handle(exchange);
         }
     }
 }

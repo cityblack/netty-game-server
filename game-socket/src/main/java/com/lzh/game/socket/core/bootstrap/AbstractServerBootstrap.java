@@ -6,11 +6,10 @@ import com.lzh.game.socket.ActionMethodSupport;
 import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.GameServerSocketProperties;
 import com.lzh.game.socket.Request;
-import com.lzh.game.socket.core.RequestHandler;
+import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterHandler;
 import com.lzh.game.socket.core.invoke.*;
-import com.lzh.game.socket.core.process.FutureResponseProcess;
 import com.lzh.game.socket.core.process.RequestProcess2;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
@@ -28,7 +27,7 @@ public abstract class AbstractServerBootstrap
 
     private InvokeMethodArgumentValues<Request> argumentValues;
 
-    private RequestHandler handler;
+    private RequestHandle handler;
 
     private ConvertManager convertManager;
 
@@ -133,7 +132,7 @@ public abstract class AbstractServerBootstrap
         return this;
     }
 
-    public AbstractServerBootstrap setHandler(RequestHandler handler) {
+    public AbstractServerBootstrap setHandler(RequestHandle handler) {
         this.handler = handler;
         return this;
     }

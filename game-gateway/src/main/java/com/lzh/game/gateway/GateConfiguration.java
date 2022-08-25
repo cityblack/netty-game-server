@@ -7,7 +7,7 @@ import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.GameSocketProperties;
 import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.ForwardSessionSelect;
-import com.lzh.game.socket.core.RequestHandler;
+import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.bootstrap.GameTcpClient;
 import com.lzh.game.socket.core.bootstrap.TcpCommonServer;
 import com.lzh.game.socket.core.invoke.ConvertManager;
@@ -35,13 +35,13 @@ public class GateConfiguration {
 
     @Bean
     public GameServer gameServer(SpringGameServerProperties serverSocketProperties
-            , RequestHandler requestHandler
+            , RequestHandle requestHandle
             , ActionMethodSupport<EnhanceHandlerMethod> actionSupport
             , ConvertManager convertManager
             , InvokeMethodArgumentValues<Request> argumentValues, ForwardGatewayProcess gatewayProcess) {
 
         TcpCommonServer server = new TcpCommonServer(serverSocketProperties, serverSessionManage());
-        server.setHandler(requestHandler)
+        server.setHandler(requestHandle)
                 .setMethodSupport(actionSupport)
                 .setConvertManager(convertManager)
                 .setArgumentValues(argumentValues);

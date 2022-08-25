@@ -1,7 +1,7 @@
 package com.lzh.game.socket.core.filter;
 
 
-import com.lzh.game.socket.core.RequestHandler;
+import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.ServerExchange;
 
 import java.util.List;
@@ -10,11 +10,11 @@ public class DefaultFilterChain implements FilterChain {
 
     private List<Filter> filters;
 
-    private RequestHandler handler;
+    private RequestHandle handler;
 
     private final int index;
 
-    public DefaultFilterChain(List<Filter> filters, RequestHandler handler) {
+    public DefaultFilterChain(List<Filter> filters, RequestHandle handler) {
         this.filters = filters;
         this.handler = handler;
         this.index = 0;
@@ -32,7 +32,7 @@ public class DefaultFilterChain implements FilterChain {
             Filter filter = this.filters.get(index);
             filter.doFilter(exchange, new DefaultFilterChain(this,index + 1));
         } else {
-            handler.handler(exchange);
+            handler.handle(exchange);
         }
     }
 }

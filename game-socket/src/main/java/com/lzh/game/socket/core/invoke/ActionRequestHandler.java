@@ -3,7 +3,7 @@ package com.lzh.game.socket.core.invoke;
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.socket.*;
-import com.lzh.game.socket.core.RequestHandler;
+import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.ServerExchange;
 import com.lzh.game.socket.core.invoke.support.ErrorHandler;
 import com.lzh.game.socket.core.invoke.support.InterceptorHandler;
@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 
 @Slf4j
-public class ActionRequestHandler implements RequestHandler {
+public class ActionRequestHandler implements RequestHandle {
 
     private ErrorHandler errorHandler;
 
@@ -92,7 +92,7 @@ public class ActionRequestHandler implements RequestHandler {
     }
 
     @Override
-    public void handler(ServerExchange exchange) {
+    public void handle(ServerExchange exchange) {
         executeAction(exchange);
     }
 

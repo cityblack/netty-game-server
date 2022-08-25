@@ -1,20 +1,20 @@
 package com.lzh.game.socket.core.filter;
 
-import com.lzh.game.socket.core.RequestHandler;
+import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.ServerExchange;
 
 import java.util.List;
 
-public class FilterHandler implements RequestHandler {
+public class FilterHandler implements RequestHandle {
 
     private final DefaultFilterChain chain;
 
-    public FilterHandler(List<Filter> filters, RequestHandler handler) {
+    public FilterHandler(List<Filter> filters, RequestHandle handler) {
         this.chain = new DefaultFilterChain(filters, handler);
     }
 
     @Override
-    public void handler(ServerExchange exchange) {
+    public void handle(ServerExchange exchange) {
         this.chain.filter(exchange);
     }
 }

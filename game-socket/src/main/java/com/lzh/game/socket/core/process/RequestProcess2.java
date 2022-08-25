@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class RequestProcess2 implements Process<GameRequest> {
 
-    private RequestHandler requestHandler;
+    private RequestHandle requestHandle;
 
     private RequestProcessPool pool;
 
@@ -33,13 +33,13 @@ public class RequestProcess2 implements Process<GameRequest> {
 
     private static final ParamConvert<Void> NONE_CONVERT = (e) -> null;
 
-    public RequestProcess2(RequestHandler requestHandler, ConvertManager convertManager, ActionMethodSupport<EnhanceHandlerMethod> support) {
-        this(requestHandler, new DefaultPool(), convertManager, support);
+    public RequestProcess2(RequestHandle requestHandle, ConvertManager convertManager, ActionMethodSupport<EnhanceHandlerMethod> support) {
+        this(requestHandle, new DefaultPool(), convertManager, support);
     }
 
-    public RequestProcess2(RequestHandler requestHandler, RequestProcessPool pool
+    public RequestProcess2(RequestHandle requestHandle, RequestProcessPool pool
             , ConvertManager convertManager, ActionMethodSupport<EnhanceHandlerMethod> support) {
-        this.requestHandler = requestHandler;
+        this.requestHandle = requestHandle;
         this.pool = pool;
         this.convertManager = convertManager;
         this.support = support;
@@ -88,7 +88,7 @@ public class RequestProcess2 implements Process<GameRequest> {
 
         @Override
         public void run() {
-            requestHandler.handler(exchange);
+            requestHandle.handle(exchange);
         }
     }
 

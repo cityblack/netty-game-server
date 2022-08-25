@@ -4,14 +4,8 @@ import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.ActionMethodSupport;
 import com.lzh.game.socket.GameServerSocketProperties;
 import com.lzh.game.socket.Request;
-import com.lzh.game.socket.core.RequestHandler;
+import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.invoke.*;
-import com.lzh.game.socket.core.session.GameSession;
-import com.lzh.game.socket.core.session.GameSessionManage;
-import com.lzh.game.socket.core.session.SessionFactory;
-import com.lzh.game.socket.core.session.SessionManage;
-import com.lzh.game.socket.core.session.cache.GameSessionMemoryCacheManage;
-import com.lzh.game.socket.core.session.cache.SessionMemoryCacheManage;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -52,7 +46,7 @@ public class GameSocketConfiguration {
     }
 
     @Bean
-    public RequestHandler requestHandler(ActionMethodSupport<EnhanceHandlerMethod> actionMethodSupport
+    public RequestHandle requestHandler(ActionMethodSupport<EnhanceHandlerMethod> actionMethodSupport
             , InvokeMethodArgumentValues<Request> invokeMethodArgumentValues
             , SpringExceptionHandler errorHandler, SpringInterceptorHandler interceptorHandler) {
         return new SpringRequestHandler(actionMethodSupport, invokeMethodArgumentValues, errorHandler, interceptorHandler);

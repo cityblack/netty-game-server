@@ -3,7 +3,7 @@ package com.lzh.socket.starter;
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.ActionMethodSupport;
 import com.lzh.game.socket.Request;
-import com.lzh.game.socket.core.RequestHandler;
+import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.ServerExchange;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterHandler;
@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class SpringRequestHandler implements RequestHandler, ApplicationContextAware {
+public class SpringRequestHandler implements RequestHandle, ApplicationContextAware {
 
-    private RequestHandler handler;
+    private RequestHandle handler;
 
     private FilterHandler filterHandler;
 
@@ -30,11 +30,11 @@ public class SpringRequestHandler implements RequestHandler, ApplicationContextA
     }
 
     @Override
-    public void handler(ServerExchange exchange) {
+    public void handle(ServerExchange exchange) {
         if (Objects.nonNull(filterHandler)) {
-            filterHandler.handler(exchange);
+            filterHandler.handle(exchange);
         } else {
-            handler.handler(exchange);
+            handler.handle(exchange);
         }
     }
 
