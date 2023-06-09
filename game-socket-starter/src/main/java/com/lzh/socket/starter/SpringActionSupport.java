@@ -44,6 +44,11 @@ public class SpringActionSupport implements ActionMethodSupport<EnhanceHandlerMe
         registerConvert(method);
     }
 
+    @Override
+    public List<EnhanceHandlerMethod> getAllActionHandler() {
+        return support.getAllActionHandler();
+    }
+
     private void registerConvert(EnhanceHandlerMethod method) {
         Class<?>[] paramsType = method.getParamsType();
         for (Class<?> target : paramsType) {

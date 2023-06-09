@@ -4,7 +4,9 @@ import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.ActionMethodSupport;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -33,5 +35,10 @@ public class DefaultActionMethodSupport implements ActionMethodSupport<EnhanceHa
         if (log.isDebugEnabled()) {
             log.debug("Request [{}] into {}.{}", cmd, methodMapping.getBean().getClass().getName(), methodMapping.getMethod().getName());
         }
+    }
+
+    @Override
+    public List<EnhanceHandlerMethod> getAllActionHandler() {
+        return new ArrayList<>(protocolMap.values());
     }
 }

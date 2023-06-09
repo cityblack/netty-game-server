@@ -1,14 +1,7 @@
 package com.lzh.game.socket.core.invoke;
 
 import com.lzh.game.common.bean.HandlerMethod;
-import com.lzh.game.common.serialization.ProtoBufUtils;
 import com.lzh.game.socket.Request;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.DefaultParameterNameDiscoverer;
-import org.springframework.core.MethodParameter;
-import org.springframework.core.ParameterNameDiscoverer;
 
 import java.util.Map;
 import java.util.Objects;
@@ -18,10 +11,20 @@ public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValue
 
     private ConvertManager convertManager;
 
-    private Map<Integer, ParamConvert<?>[]> convert = new ConcurrentHashMap<>();
+    private Map<Integer, ParamConvert<?>[]> convert;
 
     public InvokeMethodArgumentValuesImpl(ConvertManager convertManager) {
         this.convertManager = convertManager;
+        this.convert = new ConcurrentHashMap<>();
+    }
+
+    public void setConvert(Map<Integer, ParamConvert<?>[]> convert) {
+        this.convert = convert;
+    }
+
+    public InvokeMethodArgumentValuesImpl(ConvertManager convertManager, Map<Integer, ParamConvert<?>[]> convert) {
+        this.convertManager = convertManager;
+        this.convert = convert;
     }
 
     private Object[] convert(Request request, ParamConvert[] converts) {
@@ -35,28 +38,32 @@ public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValue
     private Object[] getMethodArgumentValues(Request request, HandlerMethod handlerMethod) throws Exception {
 
         int cmd = request.cmd();
-        ParamConvert[] converts = this.convert.get(cmd);
+        ParamConvert<?>[] converts = this.convert.get(cmd);
         if (Objects.isNull(converts)) {
-            synchronized (handlerMethod) {
-                if (Objects.isNull(this.convert.get(handlerMethod))) {
-                    Class<?>[] parameters = handlerMethod.getParamsType();
-                    ParamConvert<?>[] params = new ParamConvert[parameters.length];
-                    for (int i = 0; i < parameters.length; ++i) {
-
-                        Class<?> target = parameters[i];
-                        ParamConvert<?> convert = convertManager.getConvert(target);
-                        if (Objects.isNull(convert)) {
-                            throw new IllegalStateException(handlerMethod.getMethod().getName() + " param type not has convert");
-                        }
-                        params[i] = convert;
-                    }
+            synchronized (convert) {
+                if (Objects.isNull(this.convert.get(convert))) {
+                    ParamConvert<?>[] params = buildArgumentValues(handlerMethod);
                     this.convert.put(cmd, params);
                     converts = params;
                 }
             }
         }
-
         return convert(request, converts);
+    }
+
+    public ParamConvert<?>[] buildArgumentValues(HandlerMethod handlerMethod) {
+        Class<?>[] parameters = handlerMethod.getParamsType();
+        ParamConvert<?>[] params = new ParamConvert[parameters.length];
+        for (int i = 0; i < parameters.length; ++i) {
+
+            Class<?> target = parameters[i];
+            ParamConvert<?> convert = convertManager.getConvert(target);
+            if (Objects.isNull(convert)) {
+                throw new IllegalStateException(handlerMethod.getMethod().getName() + " param type not has convert");
+            }
+            params[i] = convert;
+        }
+        return params;
     }
 
     @Override

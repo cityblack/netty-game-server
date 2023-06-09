@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.ReflectionUtils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,6 +20,11 @@ public class ActionMethodSupportImpl implements ActionMethodSupport<HandlerMetho
     @Override
     public void register(int cmd, HandlerMethod method) {
         methodMap.put(cmd, method);
+    }
+
+    @Override
+    public List<HandlerMethod> getAllActionHandler() {
+        return null;
     }
 
     @Override

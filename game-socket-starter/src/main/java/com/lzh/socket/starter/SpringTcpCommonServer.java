@@ -21,7 +21,7 @@ public class SpringTcpCommonServer extends TcpCommonServer implements Applicatio
         super(properties);
     }
 
-    public SpringTcpCommonServer(GameServerSocketProperties properties, SessionManage<Session> sessionManage) {
+    public SpringTcpCommonServer(GameServerSocketProperties properties, SessionManage<? extends Session> sessionManage) {
         super(properties, sessionManage);
     }
 

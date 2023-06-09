@@ -53,8 +53,13 @@ public class GameSocketConfiguration {
     }
 
     @Bean
-    public InvokeMethodArgumentValues invokeMethodArgumentValues(ConvertManager convertManager) {
-        return new InvokeMethodArgumentValuesImpl(convertManager);
+    @ConditionalOnMissingBean
+    public InvokeMethodArgumentValues<?> invokeMethodArgumentValues(ConvertManager convertManager, ActionMethodSupport<EnhanceHandlerMethod> support) {
+        InvokeMethodArgumentValuesImpl bean = new InvokeMethodArgumentValuesImpl(convertManager);
+        for (EnhanceHandlerMethod handlerMethod : support.getAllActionHandler()) {
+            bean.buildArgumentValues(handlerMethod);
+        }
+        return bean;
     }
 
     protected GameServerSocketProperties getServerSocketProperties() {
