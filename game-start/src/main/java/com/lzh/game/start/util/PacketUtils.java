@@ -23,24 +23,7 @@ public class PacketUtils {
     }
 
     public static void send(Session session, int cmd, Object pack) {
-        checkCmd(cmd);
         session.write(SocketUtils.createOneWayRequest(cmd, pack));
-    }
-
-    private static CmdMappingManage cmdMappingManage;
-
-    private static void checkCmd(int cmd) {
-        if (Objects.isNull(cmdMappingManage)) {
-            synchronized (PacketUtils.class) {
-                if (Objects.isNull(cmdMappingManage)) {
-                    // Spring find bean maybe slow
-                    cmdMappingManage = ApplicationUtils.getBean(CmdMappingManage.class);
-                }
-            }
-        }
-        if (!cmdMappingManage.contain(cmd)) {
-            throw new IllegalArgumentException("Not register [" + cmd + "] proto");
-        }
     }
 
     private PacketUtils() {

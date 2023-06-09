@@ -17,10 +17,10 @@ public class RandomUtils {
     // 默认的单位(万)
     private static final int DEFAULT_DENOMINATOR = 10000;
 
-    private static ThreadLocal<Random> random = new ThreadLocal<>();
+    private static ThreadLocal<Random> RANDOM = new ThreadLocal<>();
 
     static {
-        random.set(new Random());
+        RANDOM.set(new Random());
     }
 
     /**
@@ -31,11 +31,11 @@ public class RandomUtils {
      */
     public static int randList(final List<Integer> probabilityList) {
         if (CollectionUtils.isEmpty(probabilityList)) {
-            throw new IllegalArgumentException("概率集合为空");
+            throw new IllegalArgumentException("probability array is empty");
         }
         int sum = probabilityList.stream().reduce(0, Integer::sum);
         if (sum <= 0) {
-            throw new IllegalArgumentException("概率总和小于或则等于0");
+            throw new IllegalArgumentException("probability is <= 0");
         }
         int value = randomValue(1, sum);
         int lastProb = 0;
@@ -45,7 +45,7 @@ public class RandomUtils {
                 return i;
             }
         }
-        throw new IllegalArgumentException("未命中任何随机数." + probabilityList);
+        throw new IllegalArgumentException("not hit any element." + probabilityList);
     }
 
     /**
@@ -58,7 +58,7 @@ public class RandomUtils {
     public static <T>T enhanceRandList(final List<T> data, ToIntFunction<T> probabilityTransfer) {
         int sum = data.stream().mapToInt(probabilityTransfer).sum();
         if (sum <= 0) {
-            throw new IllegalArgumentException("概率总和小于或则等于0");
+            throw new IllegalArgumentException("probability is <= 0");
         }
         int value = randomValue(1, sum);
         int lastProb = 0;
@@ -69,7 +69,7 @@ public class RandomUtils {
                 return data.get(i);
             }
         }
-        throw new IllegalArgumentException("未命中任何对象." + JsonUtils.toJson(data));
+        throw new IllegalArgumentException("not hit any element." + JsonUtils.toJson(data));
     }
 
     /**
@@ -80,7 +80,7 @@ public class RandomUtils {
      */
     public static <T>T enhanceRandList(final List<T> data) {
         if (CollectionUtils.isEmpty(data)) {
-            throw new IllegalArgumentException("概率集合为空");
+            throw new IllegalArgumentException("array is empty.");
         }
         int value = randomValue(1, data.size()) - 1;
         return data.get(value);
@@ -109,7 +109,7 @@ public class RandomUtils {
         if (min > max) {
             throw new IllegalArgumentException(min + ">" + max);
         }
-        return min + getRandom().nextLong() * (max - min + 1);
+        return min + getRANDOM().nextLong() * (max - min + 1);
     }
 
     public static int randomValue(int min, int max) {
@@ -118,11 +118,11 @@ public class RandomUtils {
         }
         int temp = max - min;
 
-        return getRandom().nextInt(temp) + 1;
+        return getRANDOM().nextInt(temp) + 1;
     }
 
-    protected static Random getRandom() {
-        return random.get();
+    protected static Random getRANDOM() {
+        return RANDOM.get();
     }
 
     private RandomUtils() {}
