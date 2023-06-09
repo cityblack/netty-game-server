@@ -30,6 +30,6 @@ public class LevelEtTargetHandler extends AbstractTargetHandler {
     }
 
     private void doLevelUp(Player player) {
-        TargetUtils.foreachTargetModel(player, target -> Long.valueOf(player.getLevel()), type());
+        TargetUtils.foreachTargetModel(player, target -> (long) player.getLevel(), type());
     }
 }

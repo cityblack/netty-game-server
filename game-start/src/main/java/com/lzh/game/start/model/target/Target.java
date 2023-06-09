@@ -12,25 +12,19 @@ import java.util.Objects;
 /**
  * Target system, It's used for Player Achievement
  * A target may consist of multiple target.
- * exp: [{"key":1,"type":"LevelEt","value":10},{}]
+ * exp: {"key":1,"type":"LevelEt","value":10}
  */
-@ToString
+@Getter
+@Setter
 public class Target {
-    // unique id
-    @Getter
-    private int id;
 
-    @Getter
+    // Multi target sign
     private int key;
     // target value
-    @Getter
     private long targetValue;
     // the target current value
-    @Getter
-    @Setter
     private long currentValue;
 
-    @Getter
     private TargetType targetType;
 
     private Map<String, String> params = new HashMap<>(4);
@@ -38,9 +32,16 @@ public class Target {
     // 是否统计历史 0 -> 不统计， 1 -> 统计
     private int history;
 
+    private int status;
+
     @JsonIgnore
     public boolean isComplete() {
         return currentValue >= targetValue;
+    }
+
+    @JsonIgnore
+    public boolean isCompleted() {
+        return this.status >= TargetStatus.COMPLETED.getStatus();
     }
 
     public void addProcessValue(int value) {
@@ -55,11 +56,11 @@ public class Target {
         return history == 1;
     }
 
+
     public Target() {
     }
 
-    public Target(int id, TargetDef targetDef) {
-        this.id = id;
+    public Target(TargetDef targetDef) {
         this.key = targetDef.getKey();
         this.targetType = targetDef.getType();
         this.history = targetDef.getHistory();

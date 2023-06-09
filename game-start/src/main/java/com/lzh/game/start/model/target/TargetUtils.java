@@ -1,58 +1,75 @@
 package com.lzh.game.start.model.target;
 
 import com.lzh.game.common.ApplicationUtils;
+import com.lzh.game.start.model.player.Player;
 import com.lzh.game.start.model.target.handler.AbstractTargetHandler;
 import com.lzh.game.start.model.target.handler.TargetHandlerManage;
-import com.lzh.game.start.model.target.model.TargetModelManage;
-import com.lzh.game.start.model.target.model.TargetModelSign;
-import com.lzh.game.start.model.target.model.TargetModelStrategy;
-import com.lzh.game.start.model.player.Player;
+import com.lzh.game.start.model.target.model.TargetCombination;
+import com.lzh.game.start.model.target.model.TargetCombinationEnum;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * Target Tools,Used in achievement goal and so on
  */
 @Slf4j
 public class TargetUtils {
+
+    private static final BiFunction<Player, TargetDef, ? extends Target> DEFAULT_CREATE_TARGET
+            = (player, targetDef) -> new Target(targetDef);
     /**
      * Produce target with targetDef
      *
      * @param player
      * @param id
-     * @param targetDef
-     * @param modelSign
      */
-    public static void produceTarget(Player player, int id, TargetDef[] targetDef, TargetModelSign modelSign) {
+    public static MultiTarget produceTarget(Player player, int id, MultiTargetDef def) {
+        return produceTarget(player, id, def, DEFAULT_CREATE_TARGET);
+    }
 
-        Set<Target> targets = new HashSet<>(targetDef.length);
-        Set<Target> changes = new HashSet<>(targetDef.length);
-
-        TargetModelStrategy model = targetModel(modelSign);
-
-        for (TargetDef def : targetDef) {
-            Target target = model.crateAndSaveTarget(player, id, def);
+    public static <T extends Target>MultiTarget produceTarget(Player player, int id, MultiTargetDef def, BiFunction<Player, TargetDef, T> createTarget) {
+        Target[] targets = new Target[def.getTargets().length];
+        for (int i = 0; i < def.getTargets().length; i++) {
+            TargetDef targetDef = def.getTargets()[i];
+            Target target = createTarget.apply(player, targetDef);
             TargetType type = target.getTargetType();
             AbstractTargetHandler handler = handler(type);
             handler.init(player, target);
-            changes.add(target);
-            if (target.isComplete()) {
-                targets.add(target);
-            }
         }
-        if (!changes.isEmpty()) {
-            model.onTargetProcessChange(player, changes);
-        }
-        if (!targets.isEmpty()) {
-            model.onTargetComplete(player, targets);
-        }
+        return MultiTarget.of(id, targets, def.isUseOr());
     }
 
-    private static TargetModelStrategy targetModel(TargetModelSign sign) {
-        return ApplicationUtils.getBean(TargetModelManage.class).getTargetModel(sign);
+    /**
+     * Use history
+     */
+    public static void tryMultiTargetComplete(Player player, TargetCombination combination) {
+        Set<MultiTarget> targets = combination.getTarget(player);
+        if (Objects.isNull(targets) || targets.isEmpty()) {
+            return;
+        }
+        Set<MultiTarget> completed = new HashSet<>(targets.size());
+
+        for (MultiTarget target : targets) {
+            if (target.isCompleted()) {
+                continue;
+            }
+            boolean complete = target.isOrCompose()
+                    ? Stream.of(target.getTargets()).anyMatch(Target::isComplete)
+                    : Stream.of(target.getTargets()).allMatch(Target::isCompleted);
+            if (complete) {
+                target.setStatus(TargetStatus.COMPLETED.getStatus());
+                completed.add(target);
+            }
+        }
+        if (!completed.isEmpty()) {
+            combination.onTargetComplete(player, completed);
+        }
     }
 
     private static AbstractTargetHandler handler(TargetType type) {
@@ -66,41 +83,61 @@ public class TargetUtils {
      * @param process -- target current progress value
      */
     public static void foreachTargetModel(Player player, Function<Target, Long> process, TargetType type) {
+        for (TargetCombination value : TargetCombinationEnum.values()) {
+            if (value.isFinish(player)) {
+                continue;
+            }
+            Set<MultiTarget> targets = value.getTarget(player);
+            if (targets.isEmpty()) {
+                continue;
+            }
+            Set<MultiTarget> change = new HashSet<>(targets.size());
+            Set<MultiTarget> completed = new HashSet<>(targets.size());
 
-        ApplicationUtils.getBean(TargetModelManage.class)
-                .stream()
-                .filter(targetModel -> !targetModel.isCompleted(player))
-                .forEach(targetModel -> {
-                    Set<Target> targets = targetModel.getTarget(player, type);
-                    if (targets.isEmpty()) {
-                        return;
-                    }
-                    Set<Target> change = new HashSet<>(targets.size());
-                    Set<Target> completed = new HashSet<>(targets.size());
+            for (MultiTarget target : targets) {
+                if (target.isCompleted()) {
+                    continue;
+                }
+                if (!target.hasTypeTarget(type)) {
+                    continue;
+                }
+                doForEachTarget(target, change, completed, process);
+            }
 
-                    targets.stream()
-                            .filter(target -> !target.isComplete())
-                            .forEach(target -> doForEachTarget(target, change, completed, process));
-                    if (!change.isEmpty()) {
-                        targetModel.onTargetProcessChange(player, change);
-                    }
-                    if (!completed.isEmpty()) {
-                        targetModel.onTargetComplete(player, completed);
-                    }
-                });
+            if (!change.isEmpty()) {
+                value.onTargetProcessChange(player, change);
+            }
+            if (!completed.isEmpty()) {
+                value.onTargetComplete(player, completed);
+            }
+        }
     }
 
-    protected static void doForEachTarget(Target target, Set<Target> change, Set<Target> completed, Function<Target, Long> process) {
+
+    protected static void doForEachTarget(MultiTarget multiTarget, Set<MultiTarget> change, Set<MultiTarget> completed, Function<Target, Long> process) {
         try {
-            long value = process.apply(target);
-            if (value > target.getCurrentValue()) {
-                target.setCurrentValue(value);
-                change.add(target);
-            }
-            if (target.isComplete()) {
-                completed.add(target);
+            for (Target target : multiTarget.getTargets()) {
+                if (target.isCompleted()) {
+                    continue;
+                }
+                long value = process.apply(target);
+                if (value > target.getCurrentValue()) {
+                    target.setCurrentValue(value);
+                    change.add(multiTarget);
+                }
+                if (target.isComplete()) {
+                    target.setStatus(TargetStatus.COMPLETED.getStatus());
+                }
             }
 
+            Stream<Target> stream = Stream.of(multiTarget.getTargets());
+            boolean complete = multiTarget.isOrCompose()
+                    ? stream.anyMatch(Target::isComplete)
+                    : stream.allMatch(Target::isCompleted);
+            if (complete) {
+                multiTarget.setStatus(TargetStatus.COMPLETED.getStatus());
+                completed.add(multiTarget);
+            }
         } catch (Exception e) {
             log.error("Target处理异常: ", e);
         }

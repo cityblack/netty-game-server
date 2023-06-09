@@ -16,6 +16,4 @@ public class TargetDef {
     private int value;
 
     private int history;
-
-
 }
