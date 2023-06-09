@@ -29,7 +29,7 @@ echo "maven build"
 mvn clean package -DskipTests
 check_process
 
-pid=`ps -ef | grep game-starter-1.0-SNAPSHOT.jar | grep -v grep | awk '{print $2}'`
+pid=`ps -ef | grep game-starter-*.jar | grep -v grep | awk '{print $2}'`
 echo "pid：$pid"
 if [ -n "$pid" ]
 then
