@@ -1,4 +1,4 @@
-package com.lzh.game.client.model.hello;
+package com.lzh.game.start.demo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

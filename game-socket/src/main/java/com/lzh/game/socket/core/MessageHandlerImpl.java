@@ -47,6 +47,7 @@ public class MessageHandlerImpl implements MessageHandler {
             }
             RemoteContext context = new RemoteContext();
             context.setSession(session);
+
             process.process(context, command);
         }
     }

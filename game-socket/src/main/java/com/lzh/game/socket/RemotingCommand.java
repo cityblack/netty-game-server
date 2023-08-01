@@ -14,6 +14,6 @@ public interface RemotingCommand {
 
     Session getSession();
 
-    // request / response / oneway
+    // request / response
     byte type();
 }

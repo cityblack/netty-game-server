@@ -1,7 +1,7 @@
 package com.lzh.game.socket.core.filter;
 
+import com.lzh.game.socket.core.RemoteContext;
 import com.lzh.game.socket.core.RequestHandle;
-import com.lzh.game.socket.core.ServerExchange;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public class FilterHandler implements RequestHandle {
     }
 
     @Override
-    public void handle(ServerExchange exchange) {
-        this.chain.filter(exchange);
+    public void handle(RemoteContext context) {
+        this.chain.filter(context);
     }
 }

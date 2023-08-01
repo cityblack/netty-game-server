@@ -1,7 +1,7 @@
 package com.lzh.game.start.filter;
 
 import com.lzh.game.socket.GameServerSocketProperties;
-import com.lzh.game.socket.core.ServerExchange;
+import com.lzh.game.socket.core.RemoteContext;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterChain;
 import com.lzh.game.start.cmd.CmdMessage;
@@ -17,18 +17,18 @@ public class GmFilter implements Filter {
     private static final int DEFAULT_GM_PROTOCOL = CmdMessage.CM_GM;
 
     @Override
-    public void doFilter(ServerExchange exchange, FilterChain chain) {
+    public void doFilter(RemoteContext context, FilterChain chain) {
 
-        if (DEFAULT_GM_PROTOCOL == exchange.getRequest().cmd()) {
+        if (DEFAULT_GM_PROTOCOL == context.getRequest().cmd()) {
             if (!properties.isOpenGm()) {
                 if (log.isInfoEnabled()) {
                     log.info("Gm server is not open, please check the request is valid [{}]"
-                            , exchange.getSession().getRemoteAddress());
+                            , context.getSession().getRemoteAddress());
                 }
                 return;
             }
         }
 
-        chain.filter(exchange);
+        chain.filter(context);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.objenesis.Objenesis;
 import org.springframework.objenesis.ObjenesisStd;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ProtoBufUtils {
@@ -43,9 +44,9 @@ public class ProtoBufUtils {
 
     private static <T> Schema<T> getSchema(Class<T> cls) {
         Schema<T> schema = (Schema<T>) cachedSchema.get(cls);
-        if (schema == null) {
+        if (Objects.isNull(schema)) {
             schema = RuntimeSchema.createFrom(cls);
-            if (schema != null) {
+            if (Objects.isNull(schema)) {
                 cachedSchema.put(cls, schema);
             }
         }

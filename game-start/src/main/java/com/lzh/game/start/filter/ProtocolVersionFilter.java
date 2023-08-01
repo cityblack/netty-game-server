@@ -1,7 +1,7 @@
 package com.lzh.game.start.filter;
 
 import com.lzh.game.socket.GameServerSocketProperties;
-import com.lzh.game.socket.core.ServerExchange;
+import com.lzh.game.socket.core.RemoteContext;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterChain;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +14,8 @@ public class ProtocolVersionFilter implements Filter {
     private GameServerSocketProperties gameSocketProperties;
 
     @Override
-    public void doFilter(ServerExchange exchange, FilterChain chain) {
-        chain.filter(exchange);
+    public void doFilter(RemoteContext context, FilterChain chain) {
+        chain.filter(context);
         /*if (gameProperties.getProtocolVersion().equals(exchange.getRequest().header().getVersion())) {
             chain.filter(exchange);
         } else {

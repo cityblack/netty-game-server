@@ -7,4 +7,6 @@ public interface Request extends RemotingCommand {
     String getRemoteAddress();
 
     int getVersion();
+
+    boolean isOneway();
 }

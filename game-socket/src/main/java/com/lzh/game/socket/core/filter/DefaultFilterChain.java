@@ -1,8 +1,7 @@
 package com.lzh.game.socket.core.filter;
 
-
+import com.lzh.game.socket.core.RemoteContext;
 import com.lzh.game.socket.core.RequestHandle;
-import com.lzh.game.socket.core.ServerExchange;
 
 import java.util.List;
 
@@ -27,12 +26,12 @@ public class DefaultFilterChain implements FilterChain {
     }
 
     @Override
-    public void filter(ServerExchange exchange) {
+    public void filter(RemoteContext context) {
         if (this.index < this.filters.size()) {
             Filter filter = this.filters.get(index);
-            filter.doFilter(exchange, new DefaultFilterChain(this,index + 1));
+            filter.doFilter(context, new DefaultFilterChain(this,index + 1));
         } else {
-            handler.handle(exchange);
+            handler.handle(context);
         }
     }
 }

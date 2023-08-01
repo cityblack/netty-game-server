@@ -3,8 +3,8 @@ package com.lzh.game.socket.core.invoke;
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.socket.*;
+import com.lzh.game.socket.core.RemoteContext;
 import com.lzh.game.socket.core.RequestHandle;
-import com.lzh.game.socket.core.ServerExchange;
 import com.lzh.game.socket.core.invoke.support.ErrorHandler;
 import com.lzh.game.socket.core.invoke.support.InterceptorHandler;
 import com.lzh.game.socket.exception.NotDefinedResponseProtocolException;
@@ -35,24 +35,24 @@ public class ActionRequestHandler implements RequestHandle {
         this.support = support;
     }
 
-    protected void executeAction(ServerExchange exchange) {
+    protected void executeAction(RemoteContext context) {
 
-        GameResponse response = (GameResponse) exchange.getResponse();
-        GameRequest request = (GameRequest) exchange.getRequest();
+        Response response = context.getResponse();
+        Request request = context.getRequest();
         int cmd = request.cmd();
         EnhanceHandlerMethod method = support.getActionHandler(cmd);
         if (Objects.isNull(method)) {
-            this.onError(exchange, new NotFondProtocolException(cmd));
+            this.onError(context, new NotFondProtocolException(cmd));
             return;
         }
         try {
             Object o = invokeForRequest(request, method);
             response.setData(o);
-            onSuccess(exchange, !method.isVoid());
+            onSuccess(context, !method.isVoid());
         } catch (Exception e) {
             boolean resolved = resolveException(e, request, response);
             if (!resolved) {
-                onError(exchange, e);
+                onError(context, e);
             }
         }
     }
@@ -74,26 +74,26 @@ public class ActionRequestHandler implements RequestHandle {
         return this.errorHandler.resolveException(ex, request, response);
     }
 
-    private void onSuccess(ServerExchange serverExchange, boolean hasResult) {
+    private void onSuccess(RemoteContext context, boolean hasResult) {
         if (hasResult) {
-            Response response = serverExchange.getResponse();
-            serverExchange.getSession().write(response);
+            RemotingCommand response = context.getResponse();
+            context.getSession().write(response);
         }
     }
 
-    private void onError(ServerExchange exchange, Throwable throwable) {
+    private void onError(RemoteContext context, Throwable throwable) {
         if (throwable instanceof NotDefinedResponseProtocolException) {
-            log.error("Not register response cmd. Request cmd:{}", exchange.getRequest().cmd());
+            log.error("Not register response cmd. Request cmd:{}", context.getRequest().cmd());
         } else if (throwable instanceof NotFondProtocolException) {
-            log.error("Not register request cmd:{}", exchange.getRequest().cmd());
+            log.error("Not register request cmd:{}", context.getRequest().cmd());
         } else {
-            log.error("Request error. cmd:{}", exchange.getRequest().cmd(), throwable);
+            log.error("Request error. cmd:{}", context.getRequest().cmd(), throwable);
         }
     }
 
     @Override
-    public void handle(ServerExchange exchange) {
-        executeAction(exchange);
+    public void handle(RemoteContext context) {
+        executeAction(context);
     }
 
     private static class NoneErrorHandler implements ErrorHandler {

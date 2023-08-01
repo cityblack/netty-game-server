@@ -1,9 +1,9 @@
 package com.lzh.game.socket.core.filter;
 
-import com.lzh.game.socket.core.ServerExchange;
+import com.lzh.game.socket.core.RemoteContext;
 
 public interface FilterChain {
 
-    void filter(ServerExchange exchange);
+    void filter(RemoteContext context);
 
 }

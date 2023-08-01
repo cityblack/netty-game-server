@@ -17,6 +17,11 @@ public class GameRequest extends AbstractRemotingCommand
     }
 
     @Override
+    public boolean isOneway() {
+        return this.type() == Constant.ONEWAY_SIGN;
+    }
+
+    @Override
     public int getPort() {
         return getSession().getPort();
     }
@@ -28,9 +33,5 @@ public class GameRequest extends AbstractRemotingCommand
 
     public void setVersion(int version) {
         this.version = version;
-    }
-
-    public boolean isOneWay() {
-        return this.type() == Constant.ONEWAY_SIGN;
     }
 }

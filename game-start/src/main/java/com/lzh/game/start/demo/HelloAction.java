@@ -1,7 +1,5 @@
 package com.lzh.game.start.demo;
 
-import com.lzh.game.client.model.hello.RequestHello;
-import com.lzh.game.client.model.hello.ResponseHello;
 import com.lzh.game.socket.annotation.RequestMapping;
 import com.lzh.game.start.cmd.CmdMessage;
 import com.lzh.socket.starter.Action;
