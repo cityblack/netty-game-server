@@ -34,7 +34,7 @@ public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandle
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    public void channelInactive(ChannelHandlerContext ctx) {
         Session s = getSession(ctx.channel());
         if (Objects.isNull(s)) {
             return;
@@ -55,7 +55,7 @@ public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandle
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RemotingCommand msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, RemotingCommand msg) {
         messageHandler.messageReceived(getSession(ctx.channel()), msg);
     }
 }

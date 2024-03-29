@@ -1,11 +1,12 @@
-package com.lzh.game.socket.core.invoke;
+package com.lzh.game.socket.core.invoke.convert;
 
 import com.lzh.game.common.serialization.ProtoBufUtils;
 import com.lzh.game.socket.Request;
+import com.lzh.game.socket.core.invoke.RequestConvert;
 
 import java.util.Objects;
 
-public class ProtoBufferConvert<T> implements ParamConvert<T> {
+public class ProtoBufferConvert<T> implements RequestConvert<T> {
 
     private Class<T> targetClass;
 

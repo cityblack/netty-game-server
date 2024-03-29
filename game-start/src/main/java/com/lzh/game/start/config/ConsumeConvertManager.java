@@ -1,50 +1,40 @@
 package com.lzh.game.start.config;
 
-import com.lzh.game.socket.Request;
-import com.lzh.game.socket.core.invoke.ConvertManager;
-import com.lzh.game.socket.core.invoke.ParamConvert;
-import com.lzh.game.socket.core.session.Session;
+import com.lzh.game.socket.core.invoke.RequestConvert;
+import com.lzh.game.socket.core.invoke.RequestConvertManager;
+import com.lzh.game.start.config.convert.PlayerConvert;
 import com.lzh.game.start.model.player.Player;
 
-import java.util.Set;
+public class ConsumeConvertManager implements RequestConvertManager {
 
-public class ConsumeConvertManager implements ConvertManager {
+    private RequestConvertManager fact;
 
-    private ConvertManager fact;
-
-    public ConsumeConvertManager(ConvertManager fact) {
+    public ConsumeConvertManager(RequestConvertManager fact) {
         this.fact = fact;
         registerInner();
     }
 
     private void registerInner() {
-        this.registerConvert(Session.class, new SessionConvert());
-        this.registerConvert(Request.class, new RequestConvert());
         this.registerConvert(Player.class, new PlayerConvert());
     }
 
     @Override
-    public boolean registerConvert(Class<?> target, ParamConvert<?> convert, boolean inner) {
-        return fact.registerConvert(target, convert, inner);
+    public void registerConvert(Class<?> target, RequestConvert<?> convert) {
+        this.fact.registerConvert(target, convert);
     }
 
     @Override
-    public ParamConvert<?> getConvert(Class<?> clazz) {
+    public RequestConvert<?> getConvert(Class<?> clazz) {
         return fact.getConvert(clazz);
-    }
-
-    @Override
-    public boolean isInnerConvert(Class<?> clazz) {
-        return fact.isInnerConvert(clazz);
-    }
-
-    @Override
-    public Set<Class<?>> inner() {
-        return fact.inner();
     }
 
     @Override
     public boolean hasConvert(Class<?> target) {
         return fact.hasConvert(target);
+    }
+
+    @Override
+    public RequestConvert<?> getOrCreateDefaultConvert(Class<?> clazz) {
+        return fact.getOrCreateDefaultConvert(clazz);
     }
 }

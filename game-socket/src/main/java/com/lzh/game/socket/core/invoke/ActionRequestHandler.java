@@ -20,15 +20,15 @@ public class ActionRequestHandler implements RequestHandle {
 
     private InterceptorHandler interceptorHandler;
 
-    private InvokeMethodArgumentValues<Request> transfer;
+    private InvokeMethodArgumentValues transfer;
 
     private ActionMethodSupport<EnhanceHandlerMethod> support;
 
-    public ActionRequestHandler(ActionMethodSupport<EnhanceHandlerMethod> support, InvokeMethodArgumentValues<Request> transfer) {
+    public ActionRequestHandler(ActionMethodSupport<EnhanceHandlerMethod> support, InvokeMethodArgumentValues transfer) {
         this(support, transfer, new NoneErrorHandler(), new NoneInterceptorHandler());
     }
 
-    public ActionRequestHandler(ActionMethodSupport<EnhanceHandlerMethod> support, InvokeMethodArgumentValues<Request> transfer, ErrorHandler errorHandler, InterceptorHandler interceptorHandler) {
+    public ActionRequestHandler(ActionMethodSupport<EnhanceHandlerMethod> support, InvokeMethodArgumentValues transfer, ErrorHandler errorHandler, InterceptorHandler interceptorHandler) {
         this.errorHandler = errorHandler;
         this.interceptorHandler = interceptorHandler;
         this.transfer = transfer;
@@ -37,8 +37,8 @@ public class ActionRequestHandler implements RequestHandle {
 
     protected void executeAction(RemoteContext context) {
 
-        Response response = context.getResponse();
-        Request request = context.getRequest();
+        GameResponse response = context.getResponse();
+        GameRequest request = context.getRequest();
         int cmd = request.cmd();
         EnhanceHandlerMethod method = support.getActionHandler(cmd);
         if (Objects.isNull(method)) {
@@ -62,8 +62,7 @@ public class ActionRequestHandler implements RequestHandle {
         if (isIntercept(request, handlerMethod, args)) {
             return null;
         }
-        Object returnValue = handlerMethod.doInvoke(args);
-        return returnValue;
+        return handlerMethod.doInvoke(args);
     }
 
     private boolean isIntercept(Request request, HandlerMethod handlerMethod, Object[] args) {

@@ -2,32 +2,27 @@ package com.lzh.game.socket.core.invoke;
 
 import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.socket.Request;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValues<Request> {
+@Slf4j
+public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValues {
 
-    private ConvertManager convertManager;
+    private RequestConvertManager convertManager;
+    //
+    private Map<Integer, RequestConvert<?>[]> convert;
 
-    private Map<Integer, ParamConvert<?>[]> convert;
-
-    public InvokeMethodArgumentValuesImpl(ConvertManager convertManager) {
+    public InvokeMethodArgumentValuesImpl(RequestConvertManager convertManager) {
         this.convertManager = convertManager;
-        this.convert = new ConcurrentHashMap<>();
+        this.convert = new HashMap<>();
     }
 
-    public void setConvert(Map<Integer, ParamConvert<?>[]> convert) {
-        this.convert = convert;
-    }
-
-    public InvokeMethodArgumentValuesImpl(ConvertManager convertManager, Map<Integer, ParamConvert<?>[]> convert) {
-        this.convertManager = convertManager;
-        this.convert = convert;
-    }
-
-    private Object[] convert(Request request, ParamConvert[] converts) {
+    private Object[] convert(Request request, RequestConvert[] converts) {
         Object[] values = new Object[]{converts.length};
         for (int i = 0; i < converts.length; i++) {
             values[i] = converts[i].convert(request);
@@ -35,33 +30,31 @@ public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValue
         return values;
     }
 
-    private Object[] getMethodArgumentValues(Request request, HandlerMethod handlerMethod) throws Exception {
+    private RequestConvert<?> getTargetConvert(Class<?> targetConvert) {
+        return convertManager.getOrCreateDefaultConvert(targetConvert);
+    }
 
+    private Object[] getMethodArgumentValues(Request request, HandlerMethod handlerMethod) throws Exception {
         int cmd = request.cmd();
-        ParamConvert<?>[] converts = this.convert.get(cmd);
-        if (Objects.isNull(converts)) {
-            synchronized (convert) {
-                if (Objects.isNull(this.convert.get(convert))) {
-                    ParamConvert<?>[] params = buildArgumentValues(handlerMethod);
-                    this.convert.put(cmd, params);
-                    converts = params;
+        RequestConvert<?>[] cs = this.convert.get(cmd);
+        if (Objects.isNull(cs)) {
+            synchronized (this) {
+                if (!this.convert.containsKey(cmd)) {
+                    RequestConvert<?>[] tmp = buildArgumentValues(handlerMethod);
+                    this.convert.put(cmd, tmp);
+                    cs = tmp;
                 }
             }
         }
-        return convert(request, converts);
+        return convert(request, cs);
     }
 
-    public ParamConvert<?>[] buildArgumentValues(HandlerMethod handlerMethod) {
+    private RequestConvert<?>[] buildArgumentValues(HandlerMethod handlerMethod) {
         Class<?>[] parameters = handlerMethod.getParamsType();
-        ParamConvert<?>[] params = new ParamConvert[parameters.length];
-        for (int i = 0; i < parameters.length; ++i) {
-
+        RequestConvert<?>[] params = new RequestConvert[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
             Class<?> target = parameters[i];
-            ParamConvert<?> convert = convertManager.getConvert(target);
-            if (Objects.isNull(convert)) {
-                throw new IllegalStateException(handlerMethod.getMethod().getName() + " param type not has convert");
-            }
-            params[i] = convert;
+            params[i] = getTargetConvert(target);
         }
         return params;
     }

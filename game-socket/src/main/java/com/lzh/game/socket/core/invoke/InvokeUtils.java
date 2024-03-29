@@ -12,36 +12,31 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Parse bean to invoker.
+ * Agreement. Apart from the built-in parameters, there is only one additional parameter
+ */
 public class InvokeUtils {
 
     public static List<InvokeModel> parseBean(Object bean) {
-        return parseBean(bean, Collections.emptySet());
-    }
-
-    public static List<InvokeModel> parseBean(Object bean, Set<Class<?>> inner) {
         Class<?> clazz = bean.getClass();
         return Stream.of(clazz.getDeclaredMethods())
                 .filter(method -> method.isAnnotationPresent(RequestMapping.class))
-                .map(method -> toModel(bean, method, inner))
+                .map(method -> toModel(bean, method))
                 .collect(Collectors.toList());
     }
 
-    private static InvokeModel toModel(Object bean, Method method, Set<Class<?>> inner) {
+    private static InvokeModel toModel(Object bean, Method method) {
         EnhanceHandlerMethod invoke = new EnhanceHandlerMethod(bean, method);
         RequestMapping mapping = method.getAnnotation(RequestMapping.class);
-        return parseTargetMethod(mapping, invoke, inner);
+        return parseTargetMethod(mapping, invoke);
     }
 
-    private static InvokeModel parseTargetMethod(RequestMapping mapping, EnhanceHandlerMethod method, Set<Class<?>> inner) {
+    private static InvokeModel parseTargetMethod(RequestMapping mapping, EnhanceHandlerMethod method) {
         int cmd = mapping.value();
 
         List<Class<?>> protoParamType = Stream.of(method.getParamsType())
-                .filter(e -> !inner.contains(e))
                 .collect(Collectors.toList());
-        // Just allow one mapping proto class
-        if (protoParamType.size() > 1) {
-            throw new IllegalArgumentException(method.getBean().getClass().getSimpleName() + " " + method.getMethod().getName() + " has multi map protocol class.");
-        }
         InvokeModel methodMapping = buildMapping(method, cmd);
         // Set method proto param
         if (!protoParamType.isEmpty()) {
@@ -92,10 +87,8 @@ public class InvokeUtils {
         public boolean hasParam() {
             return Objects.nonNull(paramClass);
         }
-
-        public boolean isReturnValue() {
-            return false;
-//            return this.handlerMethod.getReturnType() instanceof Void
-        }
     }
+
+    private InvokeUtils() {}
+
 }

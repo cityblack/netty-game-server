@@ -5,11 +5,12 @@ import com.lzh.game.common.util.Constant;
 import com.lzh.game.socket.ActionMethodSupport;
 import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.GameServerSocketProperties;
-import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterHandler;
 import com.lzh.game.socket.core.invoke.*;
+import com.lzh.game.socket.core.invoke.convert.DefaultConvertManager;
+import com.lzh.game.socket.core.invoke.convert.ProtoBufferConvert;
 import com.lzh.game.socket.core.process.DefaultRequestProcess;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
@@ -25,11 +26,11 @@ public abstract class AbstractServerBootstrap
 
     private ActionMethodSupport<EnhanceHandlerMethod> methodSupport;
 
-    private InvokeMethodArgumentValues<Request> argumentValues;
+    private InvokeMethodArgumentValues argumentValues;
 
     private RequestHandle handler;
 
-    private ConvertManager convertManager;
+    private RequestConvertManager requestConvertManager;
 
     private List<Filter> filters = new ArrayList<>();
 
@@ -47,11 +48,11 @@ public abstract class AbstractServerBootstrap
 
     @Override
     protected void doInit(GameServerSocketProperties properties) {
-        if (Objects.isNull(convertManager)) {
-            convertManager = new DefaultConvertManager();
+        if (Objects.isNull(requestConvertManager)) {
+            requestConvertManager = new DefaultConvertManager();
         }
         if (Objects.isNull(argumentValues)) {
-            argumentValues = new InvokeMethodArgumentValuesImpl(convertManager);
+            argumentValues = new InvokeMethodArgumentValuesImpl(requestConvertManager);
         }
         if (Objects.isNull(methodSupport)) {
             methodSupport = new DefaultActionMethodSupport();
@@ -65,10 +66,10 @@ public abstract class AbstractServerBootstrap
             handler = new FilterHandler(this.filters, new ActionRequestHandler(methodSupport, argumentValues));
         }
         if (Objects.isNull(getProcessManager().getProcess(Constant.REQUEST_SIGN))) {
-            addProcess(Constant.REQUEST_SIGN, new DefaultRequestProcess(handler, convertManager, methodSupport));
+            addProcess(Constant.REQUEST_SIGN, new DefaultRequestProcess(handler, requestConvertManager, methodSupport));
         }
         if (Objects.isNull(getProcessManager().getProcess(Constant.ONEWAY_SIGN))) {
-            addProcess(Constant.ONEWAY_SIGN, new DefaultRequestProcess(handler, convertManager, methodSupport));
+            addProcess(Constant.ONEWAY_SIGN, new DefaultRequestProcess(handler, requestConvertManager, methodSupport));
         }
         this.netServer = createServer(getPort());
     }
@@ -103,11 +104,11 @@ public abstract class AbstractServerBootstrap
     }
 
     private void addInvokeBean0(Object bean) {
-        List<InvokeUtils.InvokeModel> list = InvokeUtils.parseBean(bean, convertManager.inner());
+        List<InvokeUtils.InvokeModel> list = InvokeUtils.parseBean(bean);
         for (InvokeUtils.InvokeModel model : list) {
             methodSupport.register(model.getValue(), model.getHandlerMethod());
             if (model.hasParam()) {
-                convertManager.registerConvert(model.getParamClass(), new ProtoBufferConvert<>(model.getParamClass()));
+                requestConvertManager.registerConvert(model.getParamClass(), new ProtoBufferConvert<>(model.getParamClass()));
             }
         }
     }
@@ -122,13 +123,13 @@ public abstract class AbstractServerBootstrap
         return this;
     }
 
-    public AbstractServerBootstrap setArgumentValues(InvokeMethodArgumentValues<Request> argumentValues) {
+    public AbstractServerBootstrap setArgumentValues(InvokeMethodArgumentValues argumentValues) {
         this.argumentValues = argumentValues;
         return this;
     }
 
-    public AbstractServerBootstrap setConvertManager(ConvertManager convertManager) {
-        this.convertManager = convertManager;
+    public AbstractServerBootstrap setConvertManager(RequestConvertManager requestConvertManager) {
+        this.requestConvertManager = requestConvertManager;
         return this;
     }
 

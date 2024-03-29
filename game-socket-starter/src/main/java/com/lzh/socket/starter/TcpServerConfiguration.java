@@ -6,7 +6,7 @@ import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.bootstrap.TcpCommonServer;
-import com.lzh.game.socket.core.invoke.ConvertManager;
+import com.lzh.game.socket.core.invoke.RequestConvertManager;
 import com.lzh.game.socket.core.invoke.InvokeMethodArgumentValues;
 import com.lzh.game.socket.core.session.*;
 import com.lzh.game.socket.core.session.cache.GameSessionMemoryCacheManage;
@@ -22,13 +22,13 @@ public class TcpServerConfiguration {
     public GameServer gameServer(SpringGameServerProperties serverSocketProperties
             , RequestHandle requestHandle
             , ActionMethodSupport<EnhanceHandlerMethod> actionSupport
-            , ConvertManager convertManager
+            , RequestConvertManager requestConvertManager
             , InvokeMethodArgumentValues<Request> argumentValues) {
 
         TcpCommonServer server = new SpringTcpCommonServer(serverSocketProperties, serverSessionManage());
         server.setHandler(requestHandle)
                 .setMethodSupport(actionSupport)
-                .setConvertManager(convertManager)
+                .setConvertManager(requestConvertManager)
                 .setArgumentValues(argumentValues);
         server.asyncStart();
         return server;

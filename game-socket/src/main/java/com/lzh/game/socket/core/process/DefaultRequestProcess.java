@@ -4,14 +4,11 @@ import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.ActionMethodSupport;
 import com.lzh.game.socket.GameRequest;
 import com.lzh.game.socket.core.*;
-import com.lzh.game.socket.core.invoke.ConvertManager;
-import com.lzh.game.socket.core.invoke.ParamConvert;
+import com.lzh.game.socket.core.invoke.RequestConvertManager;
+import com.lzh.game.socket.core.invoke.RequestConvert;
 import com.lzh.game.socket.core.session.Session;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,59 +20,32 @@ public class DefaultRequestProcess implements Process<GameRequest> {
 
     private RequestHandle requestHandle;
 
-//    private RequestProcessPool pool;
+    private ActionMethodSupport<?> support;
 
-//    private ConvertManager convertManager;
+    private RequestProcessPool pool;
 
-//    private ActionMethodSupport<EnhanceHandlerMethod> support;
-//
-//    private Map<Integer, ParamConvert<?>> targetObjectConvert = new ConcurrentHashMap<>();
-
-    private static final ParamConvert<Void> NONE_CONVERT = (e) -> null;
-
-    public DefaultRequestProcess(RequestHandle requestHandle, ConvertManager convertManager, ActionMethodSupport<EnhanceHandlerMethod> support) {
-        this(requestHandle, new DefaultPool(), convertManager, support);
+    public DefaultRequestProcess(RequestHandle requestHandle, ActionMethodSupport<EnhanceHandlerMethod> support) {
+        this(requestHandle, new DefaultPool(), support);
     }
 
     public DefaultRequestProcess(RequestHandle requestHandle, RequestProcessPool pool
-            , ConvertManager convertManager, ActionMethodSupport<EnhanceHandlerMethod> support) {
+            , ActionMethodSupport<?> support) {
         this.requestHandle = requestHandle;
-//        this.pool = pool;
-//        this.convertManager = convertManager;
-//        this.support = support;
+        this.support = support;
+        this.pool = pool;
     }
 
     @Override
     public void process(RemoteContext context, GameRequest request) {
 
-//        int cmd = request.cmd();
-//        if (!support.containMapping(cmd)) {
-//            log.warn("Not find define cmd:{}", cmd);
-//            return;
-//        }
-//        Object value = getConvert(request.cmd()).convert(request);
-//        request.setData(value);
-//        pool.submit(context, new ProcessTask(context));
+        int cmd = request.cmd();
+        if (!support.containMapping(cmd)) {
+            log.warn("Not find define cmd:{}", cmd);
+            return;
+        }
+        pool.submit(context, new ProcessTask(context));
     }
 
-    private ParamConvert<?> getConvert(int cmd) {
-//        return this.targetObjectConvert.computeIfAbsent(cmd, (i) -> {
-//            EnhanceHandlerMethod method = support.getActionHandler(i);
-//            Class<?>[] types = method.getParamsType();
-//            for (Class<?> type : types) {
-//                if (convertManager.isInnerConvert(type)) {
-//                    continue;
-//                }
-//                ParamConvert<?> convert = convertManager.getConvert(type);
-//                if (Objects.isNull(convert)) {
-//                    throw new IllegalStateException(method.getMethod().getName() + " param type not has convert");
-//                }
-//                return convert;
-//            }
-//            return NONE_CONVERT;
-//        });
-        return null;
-    }
 
     private class ProcessTask implements Runnable {
 

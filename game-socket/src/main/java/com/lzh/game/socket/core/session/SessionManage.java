@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Main class for for access to the {@link Session ,Channel}
+ * Main class for access to the {@link Session ,Channel}
  */
 public interface SessionManage<T extends Session> extends SessionFactory<T> {
 

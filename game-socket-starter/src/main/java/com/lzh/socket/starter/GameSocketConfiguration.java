@@ -3,9 +3,9 @@ package com.lzh.socket.starter;
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.ActionMethodSupport;
 import com.lzh.game.socket.GameServerSocketProperties;
-import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.invoke.*;
+import com.lzh.game.socket.core.invoke.convert.DefaultConvertManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +25,7 @@ public class GameSocketConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ConvertManager convertManager() {
+    public RequestConvertManager convertManager() {
         return new DefaultConvertManager();
     }
 
@@ -47,19 +47,15 @@ public class GameSocketConfiguration {
 
     @Bean
     public RequestHandle requestHandler(ActionMethodSupport<EnhanceHandlerMethod> actionMethodSupport
-            , InvokeMethodArgumentValues<Request> invokeMethodArgumentValues
+            , InvokeMethodArgumentValues invokeMethodArgumentValues
             , SpringExceptionHandler errorHandler, SpringInterceptorHandler interceptorHandler) {
         return new SpringRequestHandler(actionMethodSupport, invokeMethodArgumentValues, errorHandler, interceptorHandler);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public InvokeMethodArgumentValues<?> invokeMethodArgumentValues(ConvertManager convertManager, ActionMethodSupport<EnhanceHandlerMethod> support) {
-        InvokeMethodArgumentValuesImpl bean = new InvokeMethodArgumentValuesImpl(convertManager);
-        for (EnhanceHandlerMethod handlerMethod : support.getAllActionHandler()) {
-            bean.buildArgumentValues(handlerMethod);
-        }
-        return bean;
+    public InvokeMethodArgumentValues invokeMethodArgumentValues(RequestConvertManager requestConvertManager) {
+        return new InvokeMethodArgumentValuesImpl(requestConvertManager);
     }
 
     protected GameServerSocketProperties getServerSocketProperties() {

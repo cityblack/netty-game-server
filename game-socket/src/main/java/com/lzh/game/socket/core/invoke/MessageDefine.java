@@ -12,7 +12,7 @@ public class MessageDefine {
     // invoke handler
     private EnhanceHandlerMethod method;
 
-    private ParamConvert<?> convert;
+    private RequestConvert<?> convert;
 
     private int protocolType;
 //    private

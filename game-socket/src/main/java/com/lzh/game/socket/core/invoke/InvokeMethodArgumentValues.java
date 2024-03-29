@@ -2,8 +2,9 @@ package com.lzh.game.socket.core.invoke;
 
 
 import com.lzh.game.common.bean.HandlerMethod;
+import com.lzh.game.socket.Request;
 
-public interface InvokeMethodArgumentValues<T> {
+public interface InvokeMethodArgumentValues {
 
-    Object[] transfer(T value, HandlerMethod handlerMethod) throws Exception;
+    Object[] transfer(Request request, HandlerMethod handlerMethod) throws Exception;
 }

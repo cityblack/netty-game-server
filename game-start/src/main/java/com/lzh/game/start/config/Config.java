@@ -2,8 +2,8 @@ package com.lzh.game.start.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.lzh.game.socket.core.filter.Filter;
-import com.lzh.game.socket.core.invoke.ConvertManager;
-import com.lzh.game.socket.core.invoke.DefaultConvertManager;
+import com.lzh.game.socket.core.invoke.RequestConvertManager;
+import com.lzh.game.socket.core.invoke.convert.DefaultConvertManager;
 import com.lzh.game.start.StartProperties;
 import com.lzh.game.start.filter.GmFilter;
 import com.lzh.game.start.filter.ProtocolVersionFilter;
@@ -32,12 +32,11 @@ public class Config {
 
     @Bean(name = "requestBusinessPool")
     public DefaultBusinessThreadPool exchangeProcess() {
-        DefaultBusinessThreadPool pool = DefaultBusinessThreadPool.getInstance();
-        return pool;
+        return DefaultBusinessThreadPool.getInstance();
     }
 
     @Bean
-    public ConvertManager convertManager() {
+    public RequestConvertManager convertManager() {
         return new ConsumeConvertManager(new DefaultConvertManager());
     }
 

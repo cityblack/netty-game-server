@@ -3,6 +3,7 @@ package com.lzh.socket.starter;
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.ActionMethodSupport;
 import com.lzh.game.socket.core.invoke.*;
+import com.lzh.game.socket.core.invoke.convert.ProtoBufferConvert;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -10,10 +11,10 @@ import org.springframework.context.ApplicationContextAware;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Load Spring bean parse to invoker
+ *
  * @Action parse
  */
 @Slf4j
@@ -21,11 +22,11 @@ public class SpringActionSupport implements ActionMethodSupport<EnhanceHandlerMe
 
     private ActionMethodSupport<EnhanceHandlerMethod> support;
 
-    private ConvertManager convertManager;
+    private RequestConvertManager requestConvertManager;
 
-    public SpringActionSupport(ActionMethodSupport<EnhanceHandlerMethod> support, ConvertManager convertManager) {
+    public SpringActionSupport(ActionMethodSupport<EnhanceHandlerMethod> support, RequestConvertManager requestConvertManager) {
         this.support = support;
-        this.convertManager = convertManager;
+        this.requestConvertManager = requestConvertManager;
     }
 
     @Override
@@ -52,11 +53,11 @@ public class SpringActionSupport implements ActionMethodSupport<EnhanceHandlerMe
     private void registerConvert(EnhanceHandlerMethod method) {
         Class<?>[] paramsType = method.getParamsType();
         for (Class<?> target : paramsType) {
-            if (convertManager.hasConvert(target)) {
+            if (requestConvertManager.hasConvert(target)) {
                 continue;
             }
-            ParamConvert<?> convert = new ProtoBufferConvert<>(target);
-            convertManager.registerConvert(target, convert, false);
+            RequestConvert<?> convert = new ProtoBufferConvert<>(target);
+            requestConvertManager.registerConvert(target, convert);
         }
     }
 
@@ -67,7 +68,6 @@ public class SpringActionSupport implements ActionMethodSupport<EnhanceHandlerMe
 
     private void parseActionHandler(ApplicationContext applicationContext) {
         Map<String, Object> beanMap = applicationContext.getBeansWithAnnotation(Action.class);
-        Set<Class<?>> inner = convertManager.inner();
         if (!beanMap.isEmpty()) {
             synchronized (DefaultActionMethodSupport.class) {
                 beanMap.forEach((k, v) -> {
@@ -75,7 +75,7 @@ public class SpringActionSupport implements ActionMethodSupport<EnhanceHandlerMe
                     if (clazz.isInterface()) {
                         throw new IllegalArgumentException("@Action can't use to interface.");
                     }
-                    List<InvokeUtils.InvokeModel> models = InvokeUtils.parseBean(v, inner);
+                    List<InvokeUtils.InvokeModel> models = InvokeUtils.parseBean(v);
                     for (InvokeUtils.InvokeModel model : models) {
                         int requestCmd = model.getValue();
                         EnhanceHandlerMethod method = model.getHandlerMethod();
