@@ -1,7 +1,7 @@
 package com.lzh.game.start.model.item.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.lzh.game.common.ApplicationUtils;
+import com.lzh.game.start.util.ApplicationUtils;
 import com.lzh.game.start.model.core.util.condition.Condition;
 import com.lzh.game.start.model.core.util.consume.Consume;
 import com.lzh.game.start.model.core.util.reward.Reward;

@@ -2,7 +2,7 @@ package com.lzh.game.start.pool;
 
 import com.lzh.game.socket.core.RequestProcessPool;
 import com.lzh.game.socket.core.session.Session;
-import com.lzh.game.start.cmd.CmdMessage;
+import com.lzh.game.start.cmd.impl.CmdMessage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;

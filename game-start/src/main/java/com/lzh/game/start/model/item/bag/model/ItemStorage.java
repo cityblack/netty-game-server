@@ -1,7 +1,7 @@
 package com.lzh.game.start.model.item.bag.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.lzh.game.common.ApplicationUtils;
+import com.lzh.game.start.util.ApplicationUtils;
 import com.lzh.game.framework.grid.MarkGridTable;
 import com.lzh.game.start.model.item.model.AbstractItem;
 import com.lzh.game.start.model.item.resource.ItemResource;

@@ -1,6 +1,6 @@
 package com.lzh.game.start.gm;
 
-import com.lzh.game.common.ApplicationUtils;
+import com.lzh.game.start.util.ApplicationUtils;
 import com.lzh.game.start.gm.service.DefaultGmServiceImpl;
 import com.lzh.game.start.log.LogReason;
 import com.lzh.game.start.model.item.bag.service.PlayerBagService;

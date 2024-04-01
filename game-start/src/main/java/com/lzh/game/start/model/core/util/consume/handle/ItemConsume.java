@@ -1,7 +1,7 @@
 package com.lzh.game.start.model.core.util.consume.handle;
 
 
-import com.lzh.game.common.ApplicationUtils;
+import com.lzh.game.start.util.ApplicationUtils;
 import com.lzh.game.start.log.LogReason;
 import com.lzh.game.start.model.item.bag.exception.NotEnoughItemException;
 import com.lzh.game.start.model.core.util.consume.AbstractConsume;

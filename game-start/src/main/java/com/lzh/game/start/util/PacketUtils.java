@@ -1,14 +1,9 @@
 package com.lzh.game.start.util;
 
-import com.lzh.game.common.ApplicationUtils;
-import com.lzh.game.common.util.Constant;
-import com.lzh.game.framework.cmd.CmdMappingManage;
 import com.lzh.game.socket.SocketUtils;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.start.model.player.Player;
 import com.lzh.game.start.model.player.service.SessionPlayerManage;
-
-import java.util.Objects;
 
 public class PacketUtils {
 

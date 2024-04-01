@@ -4,7 +4,7 @@ import com.lzh.game.socket.GameServerSocketProperties;
 import com.lzh.game.socket.core.RemoteContext;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterChain;
-import com.lzh.game.start.cmd.CmdMessage;
+import com.lzh.game.start.cmd.impl.CmdMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 

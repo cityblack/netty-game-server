@@ -1,6 +1,6 @@
 package com.lzh.game.start.server;
 
-import com.lzh.game.common.ApplicationUtils;
+import com.lzh.game.start.util.ApplicationUtils;
 import com.lzh.game.common.event.SubscribeListener;
 import com.lzh.game.common.server.ServerCloseEvent;
 import com.lzh.game.common.server.ServerStartEvent;

@@ -3,27 +3,31 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.4</version>
+        <relativePath/>
+    </parent>
 
     <groupId>com.lzh</groupId>
     <artifactId>game</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
     <modules>
-        <module>game-resource</module>
-        <module>game-framework</module>
-        <module>game-socket</module>
+        <module>framework</module>
+        <module>game-gateway</module>
+        <module>game-client</module>
         <module>game-common</module>
         <module>game-start</module>
-        <module>game-repository</module>
-        <module>game-client</module>
         <module>game-socket-starter</module>
-        <module>game-gateway</module>
     </modules>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <java.version>1.8</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
         <protostuff.version>1.8.0</protostuff.version>
         <netty.version>4.1.42.Final</netty.version>
@@ -34,12 +38,7 @@
         <log4j-slf4j-impl.version>2.17.1</log4j-slf4j-impl.version>
         <reflections.version>0.9.10</reflections.version>
     </properties>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.7</version>
-        <relativePath/>
-    </parent>
+
     <dependencies>
 
         <dependency>

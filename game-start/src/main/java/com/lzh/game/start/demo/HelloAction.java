@@ -1,7 +1,7 @@
 package com.lzh.game.start.demo;
 
 import com.lzh.game.socket.annotation.RequestMapping;
-import com.lzh.game.start.cmd.CmdMessage;
+import com.lzh.game.start.cmd.impl.CmdMessage;
 import com.lzh.socket.starter.Action;
 import lombok.extern.slf4j.Slf4j;
 

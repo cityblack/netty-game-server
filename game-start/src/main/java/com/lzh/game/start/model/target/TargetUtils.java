@@ -1,6 +1,6 @@
 package com.lzh.game.start.model.target;
 
-import com.lzh.game.common.ApplicationUtils;
+import com.lzh.game.start.util.ApplicationUtils;
 import com.lzh.game.start.model.player.Player;
 import com.lzh.game.start.model.target.handler.AbstractTargetHandler;
 import com.lzh.game.start.model.target.handler.TargetHandlerManage;

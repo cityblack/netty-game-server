@@ -1,6 +1,6 @@
 package com.lzh.game.start.model.wallet.service;
 
-import com.lzh.game.common.ApplicationUtils;
+import com.lzh.game.start.util.ApplicationUtils;
 import com.lzh.game.common.event.EventBus;
 import com.lzh.game.start.log.LogFile;
 import com.lzh.game.start.log.LogReason;

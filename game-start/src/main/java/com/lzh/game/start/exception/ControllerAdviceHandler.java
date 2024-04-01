@@ -1,6 +1,6 @@
 package com.lzh.game.start.exception;
 
-import com.lzh.game.start.cmd.CmdMessage;
+import com.lzh.game.start.cmd.impl.CmdMessage;
 import com.lzh.game.start.model.i18n.I18n;
 import com.lzh.game.start.model.i18n.Notify;
 import com.lzh.game.start.model.i18n.RequestException;

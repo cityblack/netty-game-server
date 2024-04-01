@@ -1,6 +1,6 @@
 package com.lzh.game.start.model.core.util.reward.handle;
 
-import com.lzh.game.common.ApplicationUtils;
+import com.lzh.game.start.util.ApplicationUtils;
 import com.lzh.game.start.log.LogReason;
 import com.lzh.game.start.model.core.util.VerifyResult;
 import com.lzh.game.start.model.core.util.reward.AbstractReward;

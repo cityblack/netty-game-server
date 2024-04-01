@@ -1,6 +1,6 @@
 package com.lzh.game.start.gm.service;
 
-import com.lzh.game.common.ApplicationUtils;
+import com.lzh.game.start.util.ApplicationUtils;
 import com.lzh.game.socket.GameServerSocketProperties;
 import com.lzh.game.start.gm.GmFacade;
 import com.lzh.game.start.model.player.Player;
