@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties
 public class LogHandlerConfig implements CommandLineRunner {
 
-    @Value("${game.logs.scan.path:com.lzh.game")
+    @Value("${game.logs.scan.path:com.lzh.game}")
     private String scanPath;
 
     @Override

@@ -12,8 +12,4 @@ public class CommonConfig {
         return new EventBusAutoRegister();
     }
 
-    @Bean
-    public ApplicationUtils applicationUtils() {
-        return new ApplicationUtils();
-    }
 }

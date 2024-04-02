@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @SpringBootApplication
 @ComponentScan(basePackages = {
         "com.lzh.game.common",
-        "com.lzh.game.repository",
+        "com.lzh.game.framework.repository",
 })
 @EnableMongoRepositories
 public class App {

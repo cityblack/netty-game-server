@@ -1,0 +1,4 @@
+game:
+  logs:
+    scan:
+      path: com.lzh.game

@@ -30,33 +30,16 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
         <protostuff.version>1.8.0</protostuff.version>
-        <netty.version>4.1.42.Final</netty.version>
+        <netty.version>4.1.108.Final</netty.version>
         <eventbus.version>3.1.1</eventbus.version>
         <guava.version>31.0.1-jre</guava.version>
-        <lombok.version>1.18.8</lombok.version>
-        <slf4j-api.verion>1.7.36</slf4j-api.verion>
+        <lombok.version>1.18.30</lombok.version>
+        <slf4j-api.verion>2.0.12</slf4j-api.verion>
         <log4j-slf4j-impl.version>2.17.1</log4j-slf4j-impl.version>
         <reflections.version>0.9.10</reflections.version>
     </properties>
 
     <dependencies>
-
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>${netty.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -72,6 +55,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -81,17 +70,17 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j-api.verion}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.slf4j</groupId>-->
+<!--            <artifactId>slf4j-api</artifactId>-->
+<!--            <version>${slf4j-api.verion}</version>-->
+<!--        </dependency>-->
 
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>${log4j-slf4j-impl.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.logging.log4j</groupId>-->
+<!--            <artifactId>log4j-slf4j-impl</artifactId>-->
+<!--            <version>${log4j-slf4j-impl.version}</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.greenrobot</groupId>

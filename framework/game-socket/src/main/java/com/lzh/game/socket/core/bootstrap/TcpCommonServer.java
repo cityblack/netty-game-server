@@ -49,9 +49,9 @@ public class TcpCommonServer extends AbstractServerBootstrap
                 ch.pipeline()
 //                        .addLast(new LoggingHandler(properties.getNettyLogLevel()))
                         .addLast(new IdleStateHandler(0, 0, 180, TimeUnit.SECONDS))
-                        .addLast(new ProtobufVarint32FrameDecoder())
+//                        .addLast(new ProtobufVarint32FrameDecoder())
                         .addLast("decoder", new GameByteToMessageDecoder())
-                        .addLast(new ProtobufVarint32LengthFieldPrepender())
+//                        .addLast(new ProtobufVarint32LengthFieldPrepender())
                         .addLast("encoder", new GameMessageToMessageDecoder())
                         .addLast(getIoHandler())
                 ;

@@ -19,6 +19,9 @@ import java.util.stream.Stream;
 @Slf4j
 public class LogHandler {
 
+    private static final String LOG_PACK_NAME = LoggerUtils.class.getPackageName();
+    private static final String LOG_BUILD_CLASS = LOG_PACK_NAME + ".LoggerUtils.LogBuild";
+
     private static final Map<Class<?>, Object> INVOKE_OBJ = new HashMap<>();
 
     private static final DefaultParameterNameDiscoverer DISCOVERER = new DefaultParameterNameDiscoverer();
@@ -96,7 +99,7 @@ public class LogHandler {
             }
             methodNames.add(method.getName());
             String[] paramNames = parseParamNames(sourceMethod);
-            String fieldName = methodName + "Param";
+            String fieldName = methodName + "$$Param_";
             String fieldBody = "private static String[] %s = new String[]{%s};".formatted(fieldName, Stream.of(paramNames).collect(Collectors.joining("\",\"", "\"", "\"")));
             CtField field = CtField.make(fieldBody, ctClass);
             ctClass.addField(field);
@@ -122,20 +125,13 @@ public class LogHandler {
             }
         }
         paramBuild.append("}");
-
+//        LoggerUtils.LogBuild.class.getPackageName()
         String methodBody = """
                 {
-                 com.xunling.hire.core.log.LoggerUtils.LogBuild build =
-                 com.xunling.hire.core.log.LoggerUtils.of("%s", %d).addParam(%s, %s);
-                """.formatted(logMethod.logFile(), logMethod.logReason(), fieldName, paramBuild.toString());
+                 %s build =
+                 %s.LoggerUtils.of("%s", %d).addParam(%s, %s);
+                """.formatted(LOG_BUILD_CLASS, LOG_PACK_NAME, logMethod.logFile(), logMethod.logReason(), fieldName, paramBuild.toString());
 
-        /*if (logMethod.recordUser()) {
-            methodBody += """
-                    build.log();
-                    """;
-        } else {
-            methodBody += " build.log();";
-        }*/
         methodBody += " build.log();";
         return methodBody + "}";
     }

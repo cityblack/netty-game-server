@@ -64,10 +64,10 @@ public class DefaultGameEncoder implements Encoder {
     private static byte[] getDateBytes(RemotingCommand msg) {
         Object data = msg.data();
         byte[] bytes = msg.byteData();
-        if ((Objects.isNull(bytes) || bytes.length <= 0) && Objects.nonNull(data)) {
+        if ((Objects.isNull(bytes) || bytes.length == 0) && Objects.nonNull(data)) {
             bytes = ProtoBufUtils.serialize(data);
         }
-        return (Objects.isNull(bytes) || bytes.length <= 0) ? EMPTY_BYTES : bytes;
+        return (Objects.isNull(bytes) || bytes.length == 0) ? EMPTY_BYTES : bytes;
     }
 
     private final static byte[] EMPTY_BYTES = new byte[0];

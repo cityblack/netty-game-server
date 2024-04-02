@@ -100,7 +100,7 @@ public class Log4jLoggerFactoryAdapter extends AbstractLoggerAdapter<Logger> imp
             setConfig(properties, "name", config::setName);
             setConfig(properties, "pattern", config::setPattern);
             setConfig(properties, "fileSuffix", config::setFileSuffix);
-            setConfig(properties, "interval", e -> config.setInterval(Integer.valueOf(e)));
+            setConfig(properties, "interval", e -> config.setInterval(Integer.parseInt(e)));
             return config;
         } catch (IOException e) {
             return new LogConfig();

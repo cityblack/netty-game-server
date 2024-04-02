@@ -53,4 +53,21 @@ public class Config {
                 .maximumSize(3000));
         return cacheManager;
     }
+
+    @Bean
+    public SchedulerOption schedulerOption(Scheduler scheduler) {
+        return new SchedulerOptionImpl(scheduler);
+    }
+
+    @Bean
+    public CmdMappingManage cmdMappingManage(CmdParseFactory cmdParseFactory) {
+        return new DefaultCmdMappingManage(cmdParseFactory);
+    }
+
+    @Bean
+    @ConditionalOnMissingClass
+    @ConditionalOnMissingBean
+    public CmdParseFactory parseCmdLoad() {
+        return () -> Collections.EMPTY_LIST;
+    }
 }
