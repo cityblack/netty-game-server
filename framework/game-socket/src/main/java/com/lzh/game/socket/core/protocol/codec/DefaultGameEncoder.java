@@ -1,10 +1,7 @@
-package com.lzh.game.socket.core.coder;
+package com.lzh.game.socket.core.protocol.codec;
 
 import com.lzh.game.socket.RemotingCommand;
-import com.lzh.game.socket.Request;
-import com.lzh.game.socket.Response;
 import com.lzh.game.common.serialization.ProtoBufUtils;
-import com.lzh.game.common.util.Constant;
 import com.lzh.game.socket.core.Encoder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;

@@ -1,7 +1,6 @@
 package com.lzh.game.socket.core.invoke.convert;
 
 import com.lzh.game.common.serialization.ProtoBufUtils;
-import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.invoke.RequestConvert;
 
 import java.util.Objects;

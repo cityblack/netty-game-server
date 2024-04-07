@@ -3,7 +3,6 @@ package com.lzh.socket.starter;
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.ActionMethodSupport;
 import com.lzh.game.socket.GameServer;
-import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.bootstrap.TcpCommonServer;
 import com.lzh.game.socket.core.invoke.RequestConvertManager;

@@ -1,6 +1,5 @@
 package com.lzh.game.socket.core.filter;
 
-import com.lzh.game.socket.core.RemoteContext;
 import com.lzh.game.socket.core.RequestHandle;
 
 import java.util.List;

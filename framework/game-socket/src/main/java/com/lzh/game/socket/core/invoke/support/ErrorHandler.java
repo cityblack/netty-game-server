@@ -1,10 +1,10 @@
 package com.lzh.game.socket.core.invoke.support;
 
-import com.lzh.game.socket.GameRequest;
-import com.lzh.game.socket.GameResponse;
+import com.lzh.game.socket.Request;
+import com.lzh.game.socket.Response;
 
 @FunctionalInterface
 public interface ErrorHandler {
 
-    boolean resolveException(Exception ex, GameRequest request, GameResponse response);
+    boolean resolveException(Exception ex, Request request, Response response);
 }

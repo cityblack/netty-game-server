@@ -2,10 +2,8 @@ package com.lzh.game.socket.core.process;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.ActionMethodSupport;
-import com.lzh.game.socket.GameRequest;
+import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.*;
-import com.lzh.game.socket.core.invoke.RequestConvertManager;
-import com.lzh.game.socket.core.invoke.RequestConvert;
 import com.lzh.game.socket.core.session.Session;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,7 +14,7 @@ import java.util.concurrent.Executors;
  * Parse target Object data earlier
  */
 @Slf4j
-public class DefaultRequestProcess implements Process<GameRequest> {
+public class DefaultRequestProcess implements Process<Request> {
 
     private RequestHandle requestHandle;
 
@@ -36,7 +34,7 @@ public class DefaultRequestProcess implements Process<GameRequest> {
     }
 
     @Override
-    public void process(RemoteContext context, GameRequest request) {
+    public void process(RemoteContext context, Request request) {
 
         int cmd = request.cmd();
         if (!support.containMapping(cmd)) {

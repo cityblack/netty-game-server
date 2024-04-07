@@ -1,12 +1,55 @@
 package com.lzh.game.socket;
 
-public interface Response extends RemotingCommand {
+import com.lzh.game.socket.core.AbstractRemotingCommand;
 
-    int OK = 0;
+import java.io.Serializable;
 
-    int FAIL = 1;
+public class Response extends AbstractRemotingCommand
+        implements Serializable {
 
-    int status();
+    private static final long serialVersionUID = 802660945444591938L;
 
-    Throwable getError();
+    private Request request;
+
+    private int status;
+
+    private Throwable error;
+
+    public Throwable getError() {
+        return error;
+    }
+
+    public static Response of(Request request) {
+        Response response = new Response();
+        response.request = request;
+        return response;
+    }
+
+    public static Response of(int msgId, int requestId, Object data) {
+        Response response = new Response();
+        response.setDate(data);
+        response.setRequestId(requestId);
+        response.setMsgId(msgId);
+        return response;
+    }
+
+    public Request getRequest() {
+        return request;
+    }
+
+    public void setRequest(Request request) {
+        this.request = request;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public void setError(Throwable error) {
+        this.error = error;
+    }
 }

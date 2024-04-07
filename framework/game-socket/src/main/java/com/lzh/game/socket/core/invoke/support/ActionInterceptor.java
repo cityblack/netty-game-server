@@ -1,7 +1,5 @@
 package com.lzh.game.socket.core.invoke.support;
 
-import com.lzh.game.socket.Request;
-
 import java.lang.reflect.Method;
 
 /**

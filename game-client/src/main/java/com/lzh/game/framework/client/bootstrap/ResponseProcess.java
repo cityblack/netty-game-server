@@ -1,10 +1,9 @@
 package com.lzh.game.framework.client.bootstrap;
 
-import com.lzh.game.socket.GameResponse;
+import com.lzh.game.socket.Response;
 import com.lzh.game.socket.core.process.Process;
-import com.lzh.game.socket.core.RemoteContext;
 
-public class ResponseProcess implements Process<GameResponse> {
+public class ResponseProcess implements Process<Response> {
 
     private ResponseDispatcher dispatcher;
 
@@ -13,8 +12,8 @@ public class ResponseProcess implements Process<GameResponse> {
     }
 
     @Override
-    public void process(RemoteContext context, GameResponse gameResponse) {
-        gameResponse.setSession(context.getSession());
-        dispatcher.doResponse(gameResponse);
+    public void process(RemoteContext context, Response response) {
+        response.setSession(context.getSession());
+        dispatcher.doResponse(response);
     }
 }

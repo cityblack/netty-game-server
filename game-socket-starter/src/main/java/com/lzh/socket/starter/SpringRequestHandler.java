@@ -2,8 +2,6 @@ package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.ActionMethodSupport;
-import com.lzh.game.socket.Request;
-import com.lzh.game.socket.core.RemoteContext;
 import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterHandler;

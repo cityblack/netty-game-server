@@ -1,9 +1,9 @@
-package com.lzh.game.socket.core.coder;
+package com.lzh.game.socket.core.protocol.codec;
 
-import com.lzh.game.socket.AbstractRemotingCommand;
-import com.lzh.game.socket.GameRequest;
-import com.lzh.game.socket.GameResponse;
-import com.lzh.game.common.util.Constant;
+import com.lzh.game.socket.Constant;
+import com.lzh.game.socket.Request;
+import com.lzh.game.socket.Response;
+import com.lzh.game.socket.core.AbstractRemotingCommand;
 import com.lzh.game.socket.core.Decoder;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,50 +12,46 @@ import io.netty.handler.codec.CorruptedFrameException;
 import java.util.List;
 import java.util.Objects;
 
-public class DefaultGameDecoder implements Decoder {
+/**
+ * @author zehong.l
+ * @date 2024-04-07 16:20
+ **/
+public abstract class RemoteMessageDecoder implements Decoder {
 
-    public void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-        if (!in.isReadable()) {
-            return;
-        }
+    @Override
+    public void decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, List<Object> list) throws Exception {
         /**
-         * cmd: cmd int
-         * type: request / response byte
+         * len: int
+         * msgId: msg int
+         * type: request / response / one way byte
          * request: int
-         * len: Object byte data length
          * data: Object Serializable data
          */
-        int cmd = readRawVarint32(in);
-        byte type = in.readByte();
-        int requestId = readRawVarint32(in);
-        int length = readRawVarint32(in);
-        if (in.readableBytes() < length) {
+        if (in.readableBytes() < Constant.HEAD_MIN_LEN) {
+            return;
+        }
+        in.markReaderIndex();
+        int len = readRawVarint32(in);
+        if (in.readableBytes() < len) {
             in.resetReaderIndex();
             return;
         }
-        AbstractRemotingCommand remotingCmd = null;
-        if (type == Constant.REQUEST_SIGN || type == Constant.ONEWAY_SIGN) {
-            remotingCmd = new GameRequest();
-        } else if (type == Constant.RESPONSE_SIGN) {
-            remotingCmd = new GameResponse();
+        int startIndex = in.readerIndex();
+        byte type = in.readByte();
+        int msgId = readRawVarint32(in);
+        int requestId = readRawVarint32(in);
+        int dataLen = len - in.readableBytes() + startIndex;
+
+        Object o = decode(channelHandlerContext, in, msgId, dataLen);
+        if (Objects.isNull(o)) {
+            return;
         }
-        if (Objects.isNull(remotingCmd)) {
-            in.resetReaderIndex();
-            throw new IllegalArgumentException("Not defined cmd type:" + type);
-        }
-        remotingCmd.setCmd(cmd);
-        remotingCmd.setRemoteId(requestId);
-        remotingCmd.setType(type);
-        if (length > 0) {
-            byte[] bytes = new byte[length];
-            in.readBytes(bytes);
-            remotingCmd.setBytes(bytes);
-        }
-        in.markReaderIndex();
-        out.add(remotingCmd);
+        AbstractRemotingCommand command = Constant.isRequest(type) ?
+                Request.of(msgId, requestId, o) : Response.of(msgId, requestId, o);
+        list.add(command);
     }
 
-    private static int readRawVarint32(ByteBuf buffer) {
+    protected static int readRawVarint32(ByteBuf buffer) {
         if (!buffer.isReadable()) {
             return 0;
         } else {
@@ -109,4 +105,6 @@ public class DefaultGameDecoder implements Decoder {
             }
         }
     }
+
+    public abstract Object decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, int msg, int dataLen) throws Exception;
 }

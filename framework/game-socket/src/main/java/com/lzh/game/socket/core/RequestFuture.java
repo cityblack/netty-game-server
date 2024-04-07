@@ -1,7 +1,5 @@
 package com.lzh.game.socket.core;
 
-import com.lzh.game.socket.GameResponse;
-import com.lzh.game.socket.Request;
 import com.lzh.game.socket.Response;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
@@ -61,7 +59,7 @@ public class RequestFuture extends CompletableFuture<Response> {
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
-        GameResponse response = new GameResponse();
+        Response response = new Response();
         this.doReceived(response);
         return true;
     }
@@ -118,7 +116,7 @@ public class RequestFuture extends CompletableFuture<Response> {
         }
 
         private void notifyTimeout(RequestFuture future) {
-            GameResponse response = new GameResponse();
+            Response response = new Response();
             response.setError(new TimeoutException());
             response.setRemoteId(future.id);
             RequestFuture.received(response, true);

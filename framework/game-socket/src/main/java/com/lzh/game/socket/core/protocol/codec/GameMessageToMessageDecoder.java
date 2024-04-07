@@ -1,4 +1,4 @@
-package com.lzh.game.socket.core.coder;
+package com.lzh.game.socket.core.protocol.codec;
 
 import com.lzh.game.socket.core.Encoder;
 import io.netty.buffer.ByteBuf;

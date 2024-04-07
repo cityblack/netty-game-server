@@ -1,6 +1,6 @@
 package com.lzh.game.framework.gateway;
 
-import com.lzh.game.socket.GameRequest;
+import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.ForwardSessionSelect;
 import com.lzh.game.socket.core.bootstrap.GameTcpClient;
 import com.lzh.game.socket.core.session.Session;
@@ -14,7 +14,7 @@ public class RandomSessionSelect implements ForwardSessionSelect {
 
     @Override
 
-    public Session selected(GameTcpClient client, GameRequest request) {
+    public Session selected(GameTcpClient client, Request request) {
         List<Session> sessions = client.getSessionManage().getAllSession();
         if (sessions.isEmpty()) {
             return null;

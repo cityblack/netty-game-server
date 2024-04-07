@@ -1,6 +1,5 @@
 package com.lzh.game.start.filter;
 
-import com.lzh.game.socket.core.RemoteContext;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterChain;
 import lombok.extern.slf4j.Slf4j;

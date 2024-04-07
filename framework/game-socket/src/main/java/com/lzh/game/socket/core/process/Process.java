@@ -1,7 +1,6 @@
 package com.lzh.game.socket.core.process;
 
 import com.lzh.game.socket.RemotingCommand;
-import com.lzh.game.socket.core.RemoteContext;
 
 /**
  * Io read data process

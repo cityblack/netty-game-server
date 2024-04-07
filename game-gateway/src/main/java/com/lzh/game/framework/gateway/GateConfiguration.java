@@ -5,7 +5,6 @@ import com.lzh.game.common.util.Constant;
 import com.lzh.game.socket.ActionMethodSupport;
 import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.GameSocketProperties;
-import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.ForwardSessionSelect;
 import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.bootstrap.GameTcpClient;

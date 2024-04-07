@@ -3,7 +3,6 @@ package com.lzh.game.socket.core.invoke;
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.socket.*;
-import com.lzh.game.socket.core.RemoteContext;
 import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.invoke.support.ErrorHandler;
 import com.lzh.game.socket.core.invoke.support.InterceptorHandler;
@@ -37,8 +36,8 @@ public class ActionRequestHandler implements RequestHandle {
 
     protected void executeAction(RemoteContext context) {
 
-        GameResponse response = context.getResponse();
-        GameRequest request = context.getRequest();
+        Response response = context.getResponse();
+        Request request = context.getRequest();
         int cmd = request.cmd();
         EnhanceHandlerMethod method = support.getActionHandler(cmd);
         if (Objects.isNull(method)) {
@@ -69,7 +68,7 @@ public class ActionRequestHandler implements RequestHandle {
         return this.interceptorHandler.isIntercept(request, handlerMethod, args);
     }
 
-    private boolean resolveException(Exception ex, GameRequest request, GameResponse response) {
+    private boolean resolveException(Exception ex, Request request, Response response) {
         return this.errorHandler.resolveException(ex, request, response);
     }
 
@@ -97,7 +96,7 @@ public class ActionRequestHandler implements RequestHandle {
 
     private static class NoneErrorHandler implements ErrorHandler {
         @Override
-        public boolean resolveException(Exception ex, GameRequest request, GameResponse response) {
+        public boolean resolveException(Exception ex, Request request, Response response) {
             return false;
         }
     }

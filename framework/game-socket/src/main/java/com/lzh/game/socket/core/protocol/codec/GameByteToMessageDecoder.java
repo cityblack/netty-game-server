@@ -1,4 +1,4 @@
-package com.lzh.game.socket.core.coder;
+package com.lzh.game.socket.core.protocol.codec;
 
 import com.lzh.game.socket.core.Decoder;
 import io.netty.buffer.ByteBuf;
@@ -16,7 +16,7 @@ public class GameByteToMessageDecoder extends ByteToMessageDecoder {
     }
 
     public GameByteToMessageDecoder() {
-        this(new DefaultGameDecoder());
+        this(new MessageDecoder());
     }
 
     @Override

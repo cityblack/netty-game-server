@@ -1,7 +1,6 @@
 package com.lzh.game.socket.core.invoke.convert;
 
 import com.lzh.game.socket.RemotingCommand;
-import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.invoke.RequestConvert;
 import com.lzh.game.socket.core.invoke.RequestConvertManager;
 import com.lzh.game.socket.core.session.Session;

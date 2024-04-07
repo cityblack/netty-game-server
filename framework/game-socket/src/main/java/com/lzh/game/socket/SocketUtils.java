@@ -8,16 +8,16 @@ public class SocketUtils {
 
     private static final AtomicInteger REQUEST = new AtomicInteger();
 
-    public static GameRequest createCommonRequest(int cmd, Object data) {
+    public static Request createCommonRequest(int cmd, Object data) {
         return createRequest(cmd, data, Constant.REQUEST_SIGN);
     }
 
-    public static GameRequest createOneWayRequest(int cmd, Object data) {
+    public static Request createOneWayRequest(int cmd, Object data) {
         return createRequest(cmd, data, Constant.ONEWAY_SIGN);
     }
 
-    public static GameRequest createRequest(int cmd, Object data, byte type) {
-        GameRequest request = new GameRequest();
+    public static Request createRequest(int cmd, Object data, byte type) {
+        Request request = new Request();
         request.setCmd(cmd);
         request.setData(data);
         request.setRemoteId(REQUEST.incrementAndGet());

@@ -1,8 +1,8 @@
 package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.HandlerMethod;
-import com.lzh.game.socket.GameRequest;
-import com.lzh.game.socket.GameResponse;
+import com.lzh.game.socket.Request;
+import com.lzh.game.socket.Response;
 import com.lzh.game.socket.core.invoke.support.ErrorHandler;
 import org.springframework.core.BridgeMethodResolver;
 
@@ -30,7 +30,7 @@ public class DefaultErrorHandler implements ErrorHandler {
     }
 
     @Override
-    public boolean resolveException(Exception ex, GameRequest request, GameResponse response) {
+    public boolean resolveException(Exception ex, Request request, Response response) {
         Method method = methodResolver.resolveMethod(ex);
         if (Objects.isNull(method)) {
             return false;
@@ -53,7 +53,7 @@ public class DefaultErrorHandler implements ErrorHandler {
         return false;
     }
 
-    private Object[] getParam(Class<?>[] types, Exception ex, GameRequest request, GameResponse response) {
+    private Object[] getParam(Class<?>[] types, Exception ex, Request request, Response response) {
         Object[] args = new Object[types.length];
         for (int i = 0; i < types.length; i++) {
             args[i] = this.resolveProvidedArgument(types[i], ex, request, response);
@@ -61,7 +61,7 @@ public class DefaultErrorHandler implements ErrorHandler {
         return args;
     }
 
-    private Object resolveProvidedArgument(Class<?> type, Exception ex, GameRequest request, GameResponse response) {
+    private Object resolveProvidedArgument(Class<?> type, Exception ex, Request request, Response response) {
         Object[] values = new Object[]{ex, request, response};
 
         for (int i = 0; i < values.length; i++) {

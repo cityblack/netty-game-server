@@ -1,7 +1,7 @@
 package com.lzh.socket.starter;
 
-import com.lzh.game.socket.GameRequest;
-import com.lzh.game.socket.GameResponse;
+import com.lzh.game.socket.Request;
+import com.lzh.game.socket.Response;
 import com.lzh.game.socket.core.invoke.support.ErrorHandler;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -15,7 +15,7 @@ public class SpringExceptionHandler implements ErrorHandler, ApplicationContextA
     private DefaultErrorHandler errorHandler;
 
     @Override
-    public boolean resolveException(Exception ex, GameRequest request, GameResponse response) {
+    public boolean resolveException(Exception ex, Request request, Response response) {
         if (Objects.isNull(errorHandler)) {
             return false;
         }

@@ -1,7 +1,6 @@
 package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.HandlerMethod;
-import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.invoke.support.ActionInterceptor;
 import com.lzh.game.socket.core.invoke.support.InterceptorHandler;
 import org.springframework.beans.BeansException;

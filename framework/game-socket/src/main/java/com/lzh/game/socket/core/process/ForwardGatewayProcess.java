@@ -4,7 +4,6 @@ import com.lzh.game.common.util.Constant;
 import com.lzh.game.socket.*;
 import com.lzh.game.socket.core.AsyncResponse;
 import com.lzh.game.socket.core.ForwardSessionSelect;
-import com.lzh.game.socket.core.RemoteContext;
 import com.lzh.game.socket.core.bootstrap.GameTcpClient;
 import com.lzh.game.socket.core.session.Session;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,7 @@ import java.util.concurrent.Executors;
  * Use {@link com.lzh.game.socket.core.FutureAsyncResponse}
  */
 @Slf4j
-public class ForwardGatewayProcess implements Process<GameRequest> {
+public class ForwardGatewayProcess implements Process<Request> {
 
     private GameTcpClient tcpClient;
 
@@ -38,7 +37,7 @@ public class ForwardGatewayProcess implements Process<GameRequest> {
     }
 
     @Override
-    public void process(RemoteContext context, GameRequest command) {
+    public void process(RemoteContext context, Request command) {
         service.execute(new Runnable() {
             @Override
             public void run() {
@@ -47,7 +46,7 @@ public class ForwardGatewayProcess implements Process<GameRequest> {
                 command.setSession(context.getSession());
 
                 if (Constant.IS_REQUEST_SIGN(command.type())) {
-                    GameRequest request = SocketUtils.createRequest(cmd, bytes, command.type());
+                    Request request = SocketUtils.createRequest(cmd, bytes, command.type());
                     request.setSession(command.getSession());
                     request.setType(command.type());
                     request.setBytes(bytes);
@@ -71,7 +70,7 @@ public class ForwardGatewayProcess implements Process<GameRequest> {
 
     }
 
-    private void doResponse(GameRequest request, Session session, Response response) {
+    private void doResponse(Request request, Session session, Response response) {
         service.execute(new Runnable() {
             @Override
             public void run() {
