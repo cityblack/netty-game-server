@@ -1,7 +1,7 @@
 package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
-import com.lzh.game.socket.ActionMethodSupport;
+import com.lzh.game.socket.InvokeSupport;
 import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterHandler;
@@ -21,7 +21,7 @@ public class SpringRequestHandler implements RequestHandle, ApplicationContextAw
 
     private FilterHandler filterHandler;
 
-    public SpringRequestHandler(ActionMethodSupport<EnhanceHandlerMethod> actionMethodSupport
+    public SpringRequestHandler(InvokeSupport<EnhanceHandlerMethod> actionMethodSupport
             , InvokeMethodArgumentValues<Request> invokeMethodArgumentValues
             , SpringExceptionHandler errorHandler, SpringInterceptorHandler interceptorHandler) {
         this.handler = new ActionRequestHandler(actionMethodSupport, invokeMethodArgumentValues, errorHandler, interceptorHandler);

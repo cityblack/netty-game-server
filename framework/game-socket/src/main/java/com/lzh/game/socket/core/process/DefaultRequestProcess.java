@@ -1,7 +1,7 @@
 package com.lzh.game.socket.core.process;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
-import com.lzh.game.socket.ActionMethodSupport;
+import com.lzh.game.socket.InvokeSupport;
 import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.*;
 import com.lzh.game.socket.core.session.Session;
@@ -18,27 +18,26 @@ public class DefaultRequestProcess implements Process<Request> {
 
     private RequestHandle requestHandle;
 
-    private ActionMethodSupport<?> support;
+    private InvokeSupport<?> support;
 
     private RequestProcessPool pool;
 
-    public DefaultRequestProcess(RequestHandle requestHandle, ActionMethodSupport<EnhanceHandlerMethod> support) {
+    public DefaultRequestProcess(RequestHandle requestHandle, InvokeSupport<EnhanceHandlerMethod> support) {
         this(requestHandle, new DefaultPool(), support);
     }
 
     public DefaultRequestProcess(RequestHandle requestHandle, RequestProcessPool pool
-            , ActionMethodSupport<?> support) {
+            , InvokeSupport<?> support) {
         this.requestHandle = requestHandle;
         this.support = support;
         this.pool = pool;
     }
 
     @Override
-    public void process(RemoteContext context, Request request) {
-
-        int cmd = request.cmd();
-        if (!support.containMapping(cmd)) {
-            log.warn("Not find define cmd:{}", cmd);
+    public void process(Request request) {
+        int msgId = request.getMsgId();
+        if (!support.containMapping(msgId)) {
+            log.warn("Not find define cmd:{}", msgId);
             return;
         }
         pool.submit(context, new ProcessTask(context));

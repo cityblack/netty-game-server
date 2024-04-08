@@ -2,7 +2,7 @@ package com.lzh.game.socket.core.bootstrap;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.common.util.Constant;
-import com.lzh.game.socket.ActionMethodSupport;
+import com.lzh.game.socket.InvokeSupport;
 import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.GameServerSocketProperties;
 import com.lzh.game.socket.core.RequestHandle;
@@ -24,7 +24,7 @@ public abstract class AbstractServerBootstrap
 
     private NetServer netServer;
 
-    private ActionMethodSupport<EnhanceHandlerMethod> methodSupport;
+    private InvokeSupport<EnhanceHandlerMethod> methodSupport;
 
     private InvokeMethodArgumentValues argumentValues;
 
@@ -55,7 +55,7 @@ public abstract class AbstractServerBootstrap
             argumentValues = new InvokeMethodArgumentValuesImpl(requestConvertManager);
         }
         if (Objects.isNull(methodSupport)) {
-            methodSupport = new DefaultActionMethodSupport();
+            methodSupport = new DefaultActionInvokeSupport();
             if (!this.beans.isEmpty()) {
                 for (Object bean : this.beans) {
                     this.addInvokeBean0(bean);
@@ -118,7 +118,7 @@ public abstract class AbstractServerBootstrap
     }
 
     // === set ====
-    public AbstractServerBootstrap setMethodSupport(ActionMethodSupport<EnhanceHandlerMethod> methodSupport) {
+    public AbstractServerBootstrap setMethodSupport(InvokeSupport<EnhanceHandlerMethod> methodSupport) {
         this.methodSupport = methodSupport;
         return this;
     }

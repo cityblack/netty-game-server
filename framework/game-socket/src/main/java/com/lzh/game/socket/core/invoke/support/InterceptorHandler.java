@@ -1,6 +1,7 @@
 package com.lzh.game.socket.core.invoke.support;
 
 import com.lzh.game.common.bean.HandlerMethod;
+import com.lzh.game.socket.Request;
 
 /**
  * Request method intercept

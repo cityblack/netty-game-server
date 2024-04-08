@@ -26,11 +26,6 @@ public class MessageManager {
         return Objects.isNull(define) ? 0 : define.getSerializeType();
     }
 
-    public int getProtocol(int msgId) {
-        MessageDefine define = msg.get(msgId);
-        return Objects.isNull(define) ? 0 : define.getProtocolType();
-    }
-
     public boolean hasMessage(int msgId) {
         return this.msg.containsKey(msgId);
     }

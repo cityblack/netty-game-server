@@ -18,9 +18,9 @@ public class SocketUtils {
 
     public static Request createRequest(int cmd, Object data, byte type) {
         Request request = new Request();
-        request.setCmd(cmd);
+        request.setMsgId(cmd);
         request.setData(data);
-        request.setRemoteId(REQUEST.incrementAndGet());
+        request.setRequestId(REQUEST.incrementAndGet());
         request.setType(type);
         return request;
     }

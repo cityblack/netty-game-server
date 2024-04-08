@@ -2,7 +2,7 @@ package com.lzh.game.framework.gateway;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.common.util.Constant;
-import com.lzh.game.socket.ActionMethodSupport;
+import com.lzh.game.socket.InvokeSupport;
 import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.GameSocketProperties;
 import com.lzh.game.socket.core.ForwardSessionSelect;
@@ -35,7 +35,7 @@ public class GateConfiguration {
     @Bean
     public GameServer gameServer(SpringGameServerProperties serverSocketProperties
             , RequestHandle requestHandle
-            , ActionMethodSupport<EnhanceHandlerMethod> actionSupport
+            , InvokeSupport<EnhanceHandlerMethod> actionSupport
             , RequestConvertManager requestConvertManager
             , InvokeMethodArgumentValues<Request> argumentValues, ForwardGatewayProcess gatewayProcess) {
 

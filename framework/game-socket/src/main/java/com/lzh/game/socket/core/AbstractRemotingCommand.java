@@ -6,10 +6,13 @@ package com.lzh.game.socket.core;
  **/
 public class AbstractRemotingCommand {
 
+    private byte type;
+
     private int msgId;
+
     private int requestId;
 
-    private Object date;
+    private Object data;
 
     private Class<?> dataClass;
 
@@ -21,12 +24,12 @@ public class AbstractRemotingCommand {
         this.requestId = requestId;
     }
 
-    public Object getDate() {
-        return date;
+    public Object getData() {
+        return data;
     }
 
-    public void setDate(Object date) {
-        this.date = date;
+    public void setData(Object data) {
+        this.data = data;
     }
 
     public Class<?> getDataClass() {
@@ -43,5 +46,13 @@ public class AbstractRemotingCommand {
 
     public void setMsgId(int msgId) {
         this.msgId = msgId;
+    }
+
+    public byte getType() {
+        return type;
+    }
+
+    public void setType(byte type) {
+        this.type = type;
     }
 }

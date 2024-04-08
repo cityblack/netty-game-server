@@ -1,6 +1,7 @@
 package com.lzh.game.socket.core.invoke;
 
 import com.lzh.game.common.bean.HandlerMethod;
+import com.lzh.game.socket.Request;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -19,7 +20,7 @@ public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValue
         this.convert = new HashMap<>();
     }
 
-    private Object[] convert(Request request, RequestConvert[] converts) {
+    private Object[] convert(Request request, RequestConvert<?>[] converts) {
         Object[] values = new Object[]{converts.length};
         for (int i = 0; i < converts.length; i++) {
             values[i] = converts[i].convert(request);
@@ -32,13 +33,13 @@ public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValue
     }
 
     private Object[] getMethodArgumentValues(Request request, HandlerMethod handlerMethod) throws Exception {
-        int cmd = request.cmd();
-        RequestConvert<?>[] cs = this.convert.get(cmd);
+        int msgId = request.getMsgId();
+        RequestConvert<?>[] cs = this.convert.get(msgId);
         if (Objects.isNull(cs)) {
             synchronized (this) {
-                if (!this.convert.containsKey(cmd)) {
+                if (!this.convert.containsKey(msgId)) {
                     RequestConvert<?>[] tmp = buildArgumentValues(handlerMethod);
-                    this.convert.put(cmd, tmp);
+                    this.convert.put(msgId, tmp);
                     cs = tmp;
                 }
             }
@@ -57,7 +58,7 @@ public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValue
     }
 
     @Override
-    public Object[] transfer(Request value, HandlerMethod handlerMethod) throws Exception {
-        return this.getMethodArgumentValues(value, handlerMethod);
+    public Object[] transfer(Request request, HandlerMethod handlerMethod) throws Exception {
+        return this.getMethodArgumentValues(request, handlerMethod);
     }
 }

@@ -2,10 +2,10 @@ package com.lzh.game.framework.client;
 
 import com.lzh.game.framework.client.bootstrap.ResponseDispatcher;
 import com.lzh.game.framework.client.bootstrap.ResponseProcess;
-import com.lzh.game.framework.client.support.ActionMethodSupportImpl;
+import com.lzh.game.framework.client.support.ActionInvokeSupportImpl;
 import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.common.util.Constant;
-import com.lzh.game.socket.ActionMethodSupport;
+import com.lzh.game.socket.InvokeSupport;
 import com.lzh.game.socket.GameClient;
 import com.lzh.game.socket.GameSocketProperties;
 import com.lzh.game.socket.core.bootstrap.GameTcpClient;
@@ -27,12 +27,12 @@ public class Config {
     private GameSocketProperties properties;
 
     @Bean
-    public ActionMethodSupport<HandlerMethod> methodSupport() {
-        return new ActionMethodSupportImpl();
+    public InvokeSupport<HandlerMethod> methodSupport() {
+        return new ActionInvokeSupportImpl();
     }
 
     @Bean
-    public ResponseDispatcher responseDispatcher(ActionMethodSupport<HandlerMethod> methodSupport) {
+    public ResponseDispatcher responseDispatcher(InvokeSupport<HandlerMethod> methodSupport) {
         ResponseDispatcher dispatcher = new ResponseDispatcher(methodSupport);
         return dispatcher;
     }

@@ -2,6 +2,7 @@ package com.lzh.game.socket.core.process;
 
 import com.lzh.game.common.util.Constant;
 import com.lzh.game.socket.*;
+import com.lzh.game.socket.core.AbstractRemotingCommand;
 import com.lzh.game.socket.core.AsyncResponse;
 import com.lzh.game.socket.core.ForwardSessionSelect;
 import com.lzh.game.socket.core.bootstrap.GameTcpClient;
@@ -13,7 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Gate way
+ * Gateway
  * Use {@link com.lzh.game.socket.core.FutureAsyncResponse}
  */
 @Slf4j
@@ -37,32 +38,30 @@ public class ForwardGatewayProcess implements Process<Request> {
     }
 
     @Override
-    public void process(RemoteContext context, Request command) {
+    public void process(Request command) {
         service.execute(new Runnable() {
             @Override
             public void run() {
-                int cmd = command.cmd();
-                byte[] bytes = command.byteData();
-                command.setSession(context.getSession());
+                int msgId = command.getMsgId();
+                byte[] bytes = (byte[]) command.getData();
 
-                if (Constant.IS_REQUEST_SIGN(command.type())) {
-                    Request request = SocketUtils.createRequest(cmd, bytes, command.type());
+                if (Constant.IS_REQUEST_SIGN(command.getType())) {
+                    Request request = SocketUtils.createRequest(msgId, bytes, command.getType());
                     request.setSession(command.getSession());
-                    request.setType(command.type());
-                    request.setBytes(bytes);
-//                    request.setCommonKey(Constant.REQUEST_COMMAND_KEY);
+                    request.setType(command.getType());
+                    request.setData(bytes);
                     Session forwardSession = strategy.selected(tcpClient, command);
                     if (Objects.isNull(forwardSession)) {
                         log.error("select session is null");
                         return;
                     }
-                    if (command.type() == Constant.ONEWAY_SIGN) {
+                    if (command.getType() == Constant.ONEWAY_SIGN) {
                         tcpClient.oneWay(forwardSession, request);
                     } else {
                         AsyncResponse<byte[]> result = tcpClient.request(forwardSession, request, byte[].class);
 
                         result.getResponseFuture()
-                                .thenAccept(response -> ForwardGatewayProcess.this.doResponse(command, context.getSession(), response));
+                                .thenAccept(response -> ForwardGatewayProcess.this.doResponse(command, request.getSession(), response));
                     }
                 }
             }
@@ -74,9 +73,8 @@ public class ForwardGatewayProcess implements Process<Request> {
         service.execute(new Runnable() {
             @Override
             public void run() {
-                int remoteId = request.remoteId();
-                AbstractRemotingCommand command = (AbstractRemotingCommand) response;
-                command.setRemoteId(remoteId);
+                int remoteId = request.getRequestId();
+                response.setRequestId(remoteId);
                 session.write(response);
             }
         });

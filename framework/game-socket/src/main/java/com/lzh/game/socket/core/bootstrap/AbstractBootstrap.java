@@ -2,7 +2,6 @@ package com.lzh.game.socket.core.bootstrap;
 
 import com.lzh.game.socket.GameIoHandler;
 import com.lzh.game.socket.GameSocketProperties;
-import com.lzh.game.socket.RemotingCommand;
 import com.lzh.game.socket.core.AtomicLifCycle;
 import com.lzh.game.socket.core.LifeCycle;
 import com.lzh.game.socket.core.MessageHandlerImpl;

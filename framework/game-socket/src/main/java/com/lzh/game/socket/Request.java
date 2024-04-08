@@ -11,10 +11,12 @@ public class Request extends AbstractRemotingCommand implements Serializable {
 
     private Session session;
 
+    private Response response;
+
     public static Request of(int msgId, int requestId, Object data) {
         Request request = new Request();
         request.setMsgId(msgId);
-        request.setDate(data);
+        request.setData(data);
         request.setDataClass(data.getClass());
         request.setRequestId(requestId);
         return request;
@@ -26,6 +28,14 @@ public class Request extends AbstractRemotingCommand implements Serializable {
 
     public void setSession(Session session) {
         this.session = session;
+    }
+
+    public Response getResponse() {
+        return response;
+    }
+
+    public void setResponse(Response response) {
+        this.response = response;
     }
 
     //    private

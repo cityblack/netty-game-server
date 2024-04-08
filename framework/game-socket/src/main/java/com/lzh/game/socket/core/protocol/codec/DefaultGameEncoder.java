@@ -1,6 +1,5 @@
 package com.lzh.game.socket.core.protocol.codec;
 
-import com.lzh.game.socket.RemotingCommand;
 import com.lzh.game.common.serialization.ProtoBufUtils;
 import com.lzh.game.socket.core.Encoder;
 import io.netty.buffer.ByteBuf;

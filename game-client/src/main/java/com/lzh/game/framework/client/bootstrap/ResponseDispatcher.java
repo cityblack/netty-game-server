@@ -2,7 +2,7 @@ package com.lzh.game.framework.client.bootstrap;
 
 import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.common.serialization.ProtoBufUtils;
-import com.lzh.game.socket.ActionMethodSupport;
+import com.lzh.game.socket.InvokeSupport;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -10,9 +10,9 @@ import java.util.Objects;
 @Slf4j
 public class ResponseDispatcher {
 
-    private ActionMethodSupport<HandlerMethod> methodSupport;
+    private InvokeSupport<HandlerMethod> methodSupport;
 
-    public ResponseDispatcher(ActionMethodSupport<HandlerMethod> methodSupport) {
+    public ResponseDispatcher(InvokeSupport<HandlerMethod> methodSupport) {
         this.methodSupport = methodSupport;
     }
 

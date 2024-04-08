@@ -1,15 +1,16 @@
 package com.lzh.game.socket.core.process;
 
-import com.lzh.game.socket.RemotingCommand;
+import com.lzh.game.socket.core.AbstractRemotingCommand;
 
 /**
  * Io read data process
- *  Request
- *  Response
- *  forward -- gateway
+ * Request
+ * Response
+ * forward -- gateway
+ *
  * @param <E>
  */
-public interface Process<E extends RemotingCommand> {
+public interface Process<E extends AbstractRemotingCommand> {
 
-    void process(RemoteContext context, E e);
+    void process(E e);
 }

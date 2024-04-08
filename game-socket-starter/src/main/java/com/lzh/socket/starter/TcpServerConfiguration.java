@@ -1,7 +1,7 @@
 package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
-import com.lzh.game.socket.ActionMethodSupport;
+import com.lzh.game.socket.InvokeSupport;
 import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.bootstrap.TcpCommonServer;
@@ -20,7 +20,7 @@ public class TcpServerConfiguration {
     @Bean
     public GameServer gameServer(SpringGameServerProperties serverSocketProperties
             , RequestHandle requestHandle
-            , ActionMethodSupport<EnhanceHandlerMethod> actionSupport
+            , InvokeSupport<EnhanceHandlerMethod> actionSupport
             , RequestConvertManager requestConvertManager
             , InvokeMethodArgumentValues<Request> argumentValues) {
 

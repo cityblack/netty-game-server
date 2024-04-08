@@ -1,7 +1,7 @@
 package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
-import com.lzh.game.socket.ActionMethodSupport;
+import com.lzh.game.socket.InvokeSupport;
 import com.lzh.game.socket.core.invoke.*;
 import com.lzh.game.socket.core.invoke.convert.ProtoBufferConvert;
 import lombok.extern.slf4j.Slf4j;
@@ -18,13 +18,13 @@ import java.util.Map;
  * @Action parse
  */
 @Slf4j
-public class SpringActionSupport implements ActionMethodSupport<EnhanceHandlerMethod>, ApplicationContextAware {
+public class SpringActionSupport implements InvokeSupport<EnhanceHandlerMethod>, ApplicationContextAware {
 
-    private ActionMethodSupport<EnhanceHandlerMethod> support;
+    private InvokeSupport<EnhanceHandlerMethod> support;
 
     private RequestConvertManager requestConvertManager;
 
-    public SpringActionSupport(ActionMethodSupport<EnhanceHandlerMethod> support, RequestConvertManager requestConvertManager) {
+    public SpringActionSupport(InvokeSupport<EnhanceHandlerMethod> support, RequestConvertManager requestConvertManager) {
         this.support = support;
         this.requestConvertManager = requestConvertManager;
     }
@@ -69,7 +69,7 @@ public class SpringActionSupport implements ActionMethodSupport<EnhanceHandlerMe
     private void parseActionHandler(ApplicationContext applicationContext) {
         Map<String, Object> beanMap = applicationContext.getBeansWithAnnotation(Action.class);
         if (!beanMap.isEmpty()) {
-            synchronized (DefaultActionMethodSupport.class) {
+            synchronized (DefaultActionInvokeSupport.class) {
                 beanMap.forEach((k, v) -> {
                     Class<?> clazz = v.getClass();
                     if (clazz.isInterface()) {

@@ -3,7 +3,7 @@ package com.lzh.game.framework.client.support;
 import com.lzh.game.framework.client.Action;
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.common.bean.HandlerMethod;
-import com.lzh.game.socket.ActionMethodSupport;
+import com.lzh.game.socket.InvokeSupport;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ActionMethodSupportImpl implements ActionMethodSupport<HandlerMethod>, ApplicationContextAware {
+public class ActionInvokeSupportImpl implements InvokeSupport<HandlerMethod>, ApplicationContextAware {
 
     private Map<Integer, HandlerMethod> methodMap = new ConcurrentHashMap<>();
 

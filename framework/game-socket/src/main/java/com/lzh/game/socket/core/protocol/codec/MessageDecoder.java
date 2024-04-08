@@ -21,7 +21,8 @@ public class MessageDecoder extends RemoteMessageDecoder {
             return null;
         }
         int serializeType = manager.getSerializeType(msgId);
-        MessageSerialize handler = MessageSerializeManager.getInstance().getProtocolMessage(serializeType);
+        MessageSerialize handler = MessageSerializeManager.getInstance()
+                .getProtocolMessage(serializeType);
         if (Objects.isNull(handler)) {
             log.warn("Not defined msg serialize type [{}-{}]", msgId, serializeType);
             return null;

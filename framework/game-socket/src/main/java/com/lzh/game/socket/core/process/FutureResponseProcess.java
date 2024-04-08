@@ -8,8 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FutureResponseProcess implements Process<Response> {
 
     @Override
-    public void process(RemoteContext context, Response response) {
-        response.setSession(context.getSession());
+    public void process(Response response) {
         RequestFuture.received(response, false);
     }
 }

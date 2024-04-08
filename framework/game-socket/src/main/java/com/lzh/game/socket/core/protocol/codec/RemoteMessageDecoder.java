@@ -48,6 +48,7 @@ public abstract class RemoteMessageDecoder implements Decoder {
         }
         AbstractRemotingCommand command = Constant.isRequest(type) ?
                 Request.of(msgId, requestId, o) : Response.of(msgId, requestId, o);
+        command.setType(type);
         list.add(command);
     }
 

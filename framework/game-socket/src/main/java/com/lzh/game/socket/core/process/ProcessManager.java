@@ -1,7 +1,5 @@
 package com.lzh.game.socket.core.process;
 
-import com.lzh.game.socket.RemotingCommand;
-
 import java.util.HashMap;
 import java.util.Map;
 

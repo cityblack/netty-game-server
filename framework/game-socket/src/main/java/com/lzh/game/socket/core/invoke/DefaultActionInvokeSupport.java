@@ -1,7 +1,7 @@
 package com.lzh.game.socket.core.invoke;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
-import com.lzh.game.socket.ActionMethodSupport;
+import com.lzh.game.socket.InvokeSupport;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class DefaultActionMethodSupport implements ActionMethodSupport<EnhanceHandlerMethod> {
+public class DefaultActionInvokeSupport implements InvokeSupport<EnhanceHandlerMethod> {
 
     private final Map<Integer, EnhanceHandlerMethod> protocolMap = new HashMap<>();
 

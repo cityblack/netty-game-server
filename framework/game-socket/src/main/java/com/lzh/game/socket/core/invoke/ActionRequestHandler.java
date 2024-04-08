@@ -21,37 +21,34 @@ public class ActionRequestHandler implements RequestHandle {
 
     private InvokeMethodArgumentValues transfer;
 
-    private ActionMethodSupport<EnhanceHandlerMethod> support;
+    private InvokeSupport<EnhanceHandlerMethod> support;
 
-    public ActionRequestHandler(ActionMethodSupport<EnhanceHandlerMethod> support, InvokeMethodArgumentValues transfer) {
+    public ActionRequestHandler(InvokeSupport<EnhanceHandlerMethod> support, InvokeMethodArgumentValues transfer) {
         this(support, transfer, new NoneErrorHandler(), new NoneInterceptorHandler());
     }
 
-    public ActionRequestHandler(ActionMethodSupport<EnhanceHandlerMethod> support, InvokeMethodArgumentValues transfer, ErrorHandler errorHandler, InterceptorHandler interceptorHandler) {
+    public ActionRequestHandler(InvokeSupport<EnhanceHandlerMethod> support, InvokeMethodArgumentValues transfer, ErrorHandler errorHandler, InterceptorHandler interceptorHandler) {
         this.errorHandler = errorHandler;
         this.interceptorHandler = interceptorHandler;
         this.transfer = transfer;
         this.support = support;
     }
 
-    protected void executeAction(RemoteContext context) {
-
-        Response response = context.getResponse();
-        Request request = context.getRequest();
-        int cmd = request.cmd();
-        EnhanceHandlerMethod method = support.getActionHandler(cmd);
+    protected void executeAction(Request request, Response response) {
+        int msgId = request.getMsgId();
+        EnhanceHandlerMethod method = support.getActionHandler(msgId);
         if (Objects.isNull(method)) {
-            this.onError(context, new NotFondProtocolException(cmd));
+            this.onError(request, response, new NotFondProtocolException(msgId));
             return;
         }
         try {
             Object o = invokeForRequest(request, method);
             response.setData(o);
-            onSuccess(context, !method.isVoid());
+            onSuccess(request, response, !method.isVoid());
         } catch (Exception e) {
             boolean resolved = resolveException(e, request, response);
             if (!resolved) {
-                onError(context, e);
+                onError(request, response, e);
             }
         }
     }
@@ -72,26 +69,26 @@ public class ActionRequestHandler implements RequestHandle {
         return this.errorHandler.resolveException(ex, request, response);
     }
 
-    private void onSuccess(RemoteContext context, boolean hasResult) {
+    private void onSuccess(Request request, Response response, boolean hasResult) {
         if (hasResult) {
-            RemotingCommand response = context.getResponse();
-            context.getSession().write(response);
+            request.getSession().write(response);
         }
     }
 
-    private void onError(RemoteContext context, Throwable throwable) {
+    private void onError(Request request, Response response, Throwable throwable) {
         if (throwable instanceof NotDefinedResponseProtocolException) {
-            log.error("Not register response cmd. Request cmd:{}", context.getRequest().cmd());
+            log.error("Not register response cmd. Request msgId:{}", request.getMsgId());
         } else if (throwable instanceof NotFondProtocolException) {
-            log.error("Not register request cmd:{}", context.getRequest().cmd());
+            log.error("Not register request msgId:{}", request.getMsgId());
         } else {
-            log.error("Request error. cmd:{}", context.getRequest().cmd(), throwable);
+            log.error("Request error. msgId:{}", request.getMsgId(), throwable);
         }
     }
 
     @Override
-    public void handle(RemoteContext context) {
-        executeAction(context);
+    public void handle(Request request) {
+        Response response = Response.of(request);
+        executeAction(request, response);
     }
 
     private static class NoneErrorHandler implements ErrorHandler {

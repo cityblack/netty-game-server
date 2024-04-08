@@ -27,7 +27,7 @@ public class Response extends AbstractRemotingCommand
 
     public static Response of(int msgId, int requestId, Object data) {
         Response response = new Response();
-        response.setDate(data);
+        response.setData(data);
         response.setRequestId(requestId);
         response.setMsgId(msgId);
         return response;

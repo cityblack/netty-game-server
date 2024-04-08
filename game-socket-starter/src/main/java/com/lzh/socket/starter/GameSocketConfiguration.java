@@ -1,7 +1,7 @@
 package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
-import com.lzh.game.socket.ActionMethodSupport;
+import com.lzh.game.socket.InvokeSupport;
 import com.lzh.game.socket.GameServerSocketProperties;
 import com.lzh.game.socket.core.RequestHandle;
 import com.lzh.game.socket.core.invoke.*;
@@ -30,8 +30,8 @@ public class GameSocketConfiguration {
     }
 
     @Bean
-    public ActionMethodSupport<EnhanceHandlerMethod> actionSupport() {
-        DefaultActionMethodSupport support = new DefaultActionMethodSupport();
+    public InvokeSupport<EnhanceHandlerMethod> actionSupport() {
+        DefaultActionInvokeSupport support = new DefaultActionInvokeSupport();
         return new SpringActionSupport(support, convertManager());
     }
 
@@ -46,7 +46,7 @@ public class GameSocketConfiguration {
     }
 
     @Bean
-    public RequestHandle requestHandler(ActionMethodSupport<EnhanceHandlerMethod> actionMethodSupport
+    public RequestHandle requestHandler(InvokeSupport<EnhanceHandlerMethod> actionMethodSupport
             , InvokeMethodArgumentValues invokeMethodArgumentValues
             , SpringExceptionHandler errorHandler, SpringInterceptorHandler interceptorHandler) {
         return new SpringRequestHandler(actionMethodSupport, invokeMethodArgumentValues, errorHandler, interceptorHandler);

@@ -1,6 +1,8 @@
 package com.lzh.game.socket.core;
 
+import com.lzh.game.socket.Request;
+
 public interface RequestHandle {
 
-    void handle(RemoteContext context);
+    void handle(Request request);
 }

@@ -1,7 +1,6 @@
 package com.lzh.game.socket.core;
 
 import com.lzh.game.socket.MessageHandler;
-import com.lzh.game.socket.RemotingCommand;
 import com.lzh.game.socket.core.process.Process;
 import com.lzh.game.socket.core.process.ProcessManager;
 import com.lzh.game.socket.core.session.Session;
@@ -38,17 +37,17 @@ public class MessageHandlerImpl implements MessageHandler {
 
     @Override
     public void messageReceived(Session session, Object data) {
-        if (data instanceof RemotingCommand) {
-            RemotingCommand command = (RemotingCommand) data;
-            Process<RemotingCommand> process = processManager.getProcess(command.type());
-            if (Objects.isNull(process)) {
-                log.warn("Undefined the command key:{}", command.type());
-                return;
-            }
-            RemoteContext context = new RemoteContext();
-            context.setSession(session);
-
-            process.process(context, command);
+        if (data instanceof AbstractRemotingCommand) {
+            AbstractRemotingCommand command = (AbstractRemotingCommand) data;
+//            Process<RemotingCommand> process = processManager.getProcess(command.getType());
+//            if (Objects.isNull(process)) {
+//                log.warn("Undefined the command key:{}", command.type());
+//                return;
+//            }
+//            RemoteContext context = new RemoteContext();
+//            context.setSession(session);
+//
+//            process.process(context, command);
         }
     }
 }
