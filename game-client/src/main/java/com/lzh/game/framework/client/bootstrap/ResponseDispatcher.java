@@ -19,7 +19,7 @@ public class ResponseDispatcher {
     public void doResponse(Response response) {
         //SerializationUtil.deSerialize()
         int cmd = response.cmd();
-        HandlerMethod method = methodSupport.getAct                                 ionHandler(cmd);
+        HandlerMethod method = methodSupport.getActionHandler(cmd);
         if (Objects.isNull(method)) {
             throw new IllegalArgumentException("Not register the " + cmd + " protocol !!");
         }
