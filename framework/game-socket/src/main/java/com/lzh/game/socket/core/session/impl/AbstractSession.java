@@ -1,5 +1,6 @@
-package com.lzh.game.socket.core.session;
+package com.lzh.game.socket.core.session.impl;
 
+import com.lzh.game.socket.core.session.Session;
 import io.netty.channel.Channel;
 
 import java.time.Instant;

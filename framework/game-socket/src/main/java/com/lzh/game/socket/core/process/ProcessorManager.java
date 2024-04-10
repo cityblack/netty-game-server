@@ -1,30 +1,53 @@
 package com.lzh.game.socket.core.process;
 
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ProcessorManager {
 
-    private final Map<Class<?>, Processor<?>> PROCESS_CONTAIN = new HashMap<>();
+    public ProcessorManager() {
+        this(new ConcurrentHashMap<>(), new ConcurrentHashMap<>());
+    }
 
+    public ProcessorManager(Map<Class<?>, Processor<?>> processContain, Map<ProcessEventType, List<ProcessEventListen>> processEventListen) {
+        this.processContain = processContain;
+        this.processEventListen = processEventListen;
+    }
+
+    private final Map<Class<?>, Processor<?>> processContain;
+
+    private final Map<ProcessEventType, List<ProcessEventListen>> processEventListen;
 
     public void registerProcess(Class<?> command, Processor<?> process) {
-        PROCESS_CONTAIN.put(command, process);
+        processContain.put(command, process);
+    }
+
+    public void unRegisterProcessor(Class<?> command) {
+        processContain.remove(command);
     }
 
     /**
      * Get process
+     *
      * @return
      */
     public Processor<?> getProcess(Class<?> command) {
-        return PROCESS_CONTAIN.get(command);
+        return processContain.get(command);
     }
 
     public boolean hasProcessor(Class<?> command) {
-        return PROCESS_CONTAIN.containsKey(command);
+        return processContain.containsKey(command);
     }
 
-    public boolean isEmpty() {
-        return PROCESS_CONTAIN.isEmpty();
+    public void addEventListen(ProcessEventType type, ProcessEventListen event) {
+        var list = processEventListen.computeIfAbsent(type, e -> new CopyOnWriteArrayList<>());
+        list.add(event);
+    }
+
+    public List<ProcessEventListen> getEventListen(ProcessEventType type) {
+        return processEventListen.getOrDefault(type, Collections.emptyList());
     }
 }

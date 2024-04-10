@@ -1,6 +1,6 @@
 package com.lzh.game.framework.gateway;
 
-import com.lzh.game.socket.Request;
+import com.lzh.game.socket.core.protocol.Request;
 import com.lzh.game.socket.core.ForwardSessionSelect;
 import com.lzh.game.socket.core.bootstrap.GameTcpClient;
 import com.lzh.game.socket.core.session.Session;

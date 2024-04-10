@@ -1,17 +1,15 @@
 package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
-import com.lzh.game.socket.InvokeSupport;
 import com.lzh.game.socket.GameServerSocketProperties;
-import com.lzh.game.socket.core.RequestDispatch;
 import com.lzh.game.socket.core.invoke.*;
 import com.lzh.game.socket.core.invoke.convert.DefaultConvertManager;
+import com.lzh.game.socket.core.process.RequestDispatch;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import javax.annotation.Resource;
 
 /**
  * Default config
@@ -20,7 +18,7 @@ import javax.annotation.Resource;
 @EnableConfigurationProperties(SpringGameServerProperties.class)
 public class GameSocketConfiguration {
 
-    @Resource
+    @Autowired
     private SpringGameServerProperties serverSocketProperties;
 
     @Bean
@@ -54,8 +52,8 @@ public class GameSocketConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public InvokeMethodArgumentValues invokeMethodArgumentValues(RequestConvertManager requestConvertManager) {
-        return new InvokeMethodArgumentValuesImpl(requestConvertManager);
+    public InvokeMethodArgumentValues invokeMethodArgumentValues() {
+        return new InvokeMethodArgumentValuesImpl();
     }
 
     protected GameServerSocketProperties getServerSocketProperties() {

@@ -2,7 +2,6 @@ package com.lzh.game.socket.core.bootstrap;
 
 import com.lzh.game.common.server.ServerCloseEvent;
 import com.lzh.game.common.server.ServerStartEvent;
-import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.exception.ServerStarException;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;

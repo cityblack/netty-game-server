@@ -1,7 +1,7 @@
 package com.lzh.game.socket.core;
 
-import com.lzh.game.socket.Request;
-import com.lzh.game.socket.Response;
+import com.lzh.game.socket.core.protocol.Request;
+import com.lzh.game.socket.core.protocol.Response;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.Timer;

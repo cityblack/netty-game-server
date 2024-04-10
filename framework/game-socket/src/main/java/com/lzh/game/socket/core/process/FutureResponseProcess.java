@@ -1,6 +1,6 @@
 package com.lzh.game.socket.core.process;
 
-import com.lzh.game.socket.Response;
+import com.lzh.game.socket.core.protocol.Response;
 import com.lzh.game.socket.core.RequestFuture;
 import lombok.extern.slf4j.Slf4j;
 

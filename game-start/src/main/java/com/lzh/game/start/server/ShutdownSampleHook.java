@@ -1,7 +1,7 @@
 package com.lzh.game.start.server;
 
 import com.lzh.game.common.server.ServerCloseEvent;
-import com.lzh.game.socket.GameServer;
+import com.lzh.game.socket.core.bootstrap.GameServer;
 import lombok.AllArgsConstructor;
 import org.greenrobot.eventbus.EventBus;
 import org.springframework.context.event.ContextRefreshedEvent;

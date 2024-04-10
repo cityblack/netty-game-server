@@ -1,6 +1,7 @@
-package com.lzh.game.socket;
+package com.lzh.game.socket.utils;
 
 import com.lzh.game.common.util.Constant;
+import com.lzh.game.socket.core.protocol.Request;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

@@ -3,7 +3,7 @@ package com.lzh.game.framework.client.model;
 import com.lzh.game.framework.client.PackUtils;
 import com.lzh.game.framework.client.event.ClientStart;
 import com.lzh.game.framework.client.model.hello.RequestHello;
-import com.lzh.game.socket.GameClient;
+import com.lzh.game.socket.core.bootstrap.GameClient;
 import com.lzh.game.socket.core.session.Session;
 import lombok.extern.slf4j.Slf4j;
 import org.greenrobot.eventbus.EventBus;

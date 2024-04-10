@@ -2,7 +2,7 @@ package com.lzh.game.framework.client.bootstrap;
 
 import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.common.serialization.ProtoBufUtils;
-import com.lzh.game.socket.InvokeSupport;
+import com.lzh.game.socket.core.invoke.InvokeSupport;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -19,7 +19,7 @@ public class ResponseDispatcher {
     public void doResponse(Response response) {
         //SerializationUtil.deSerialize()
         int cmd = response.cmd();
-        HandlerMethod method = methodSupport.getActionHandler(cmd);
+        HandlerMethod method = methodSupport.getAct                                 ionHandler(cmd);
         if (Objects.isNull(method)) {
             throw new IllegalArgumentException("Not register the " + cmd + " protocol !!");
         }

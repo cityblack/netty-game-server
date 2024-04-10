@@ -1,7 +1,7 @@
 package com.lzh.socket.starter;
 
-import com.lzh.game.socket.Request;
-import com.lzh.game.socket.Response;
+import com.lzh.game.socket.core.protocol.Request;
+import com.lzh.game.socket.core.protocol.Response;
 import com.lzh.game.socket.core.invoke.support.ErrorHandler;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

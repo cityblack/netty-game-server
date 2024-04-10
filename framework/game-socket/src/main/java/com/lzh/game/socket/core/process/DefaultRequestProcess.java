@@ -1,7 +1,6 @@
 package com.lzh.game.socket.core.process;
 
-import com.lzh.game.socket.Request;
-import com.lzh.game.socket.core.RequestDispatch;
+import com.lzh.game.socket.core.protocol.Request;
 import com.lzh.game.socket.core.session.Session;
 import lombok.extern.slf4j.Slf4j;
 

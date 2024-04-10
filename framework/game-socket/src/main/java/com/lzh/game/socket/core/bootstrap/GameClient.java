@@ -1,5 +1,6 @@
-package com.lzh.game.socket;
+package com.lzh.game.socket.core.bootstrap;
 
+import com.lzh.game.socket.core.protocol.Request;
 import com.lzh.game.socket.core.AsyncResponse;
 import com.lzh.game.socket.core.LifeCycle;
 import com.lzh.game.socket.core.session.Session;

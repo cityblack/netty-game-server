@@ -1,6 +1,5 @@
 package com.lzh.game.socket.core.bootstrap;
 
-import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.GameServerSocketProperties;
 import com.lzh.game.socket.core.protocol.codec.ByteToMessageDecoderAdapter;
 import com.lzh.game.socket.core.protocol.codec.MessageToByteDecoderAdapter;

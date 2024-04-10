@@ -1,17 +1,15 @@
 package com.lzh.game.socket.core.bootstrap;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
-import com.lzh.game.common.util.Constant;
-import com.lzh.game.socket.InvokeSupport;
-import com.lzh.game.socket.GameServer;
+import com.lzh.game.socket.core.invoke.InvokeSupport;
 import com.lzh.game.socket.GameServerSocketProperties;
-import com.lzh.game.socket.Request;
-import com.lzh.game.socket.core.RequestDispatch;
+import com.lzh.game.socket.core.process.ActionRequestHandler;
+import com.lzh.game.socket.core.protocol.Request;
+import com.lzh.game.socket.core.process.RequestDispatch;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterHandler;
 import com.lzh.game.socket.core.invoke.*;
 import com.lzh.game.socket.core.invoke.convert.DefaultConvertManager;
-import com.lzh.game.socket.core.invoke.convert.ProtoBufferConvert;
 import com.lzh.game.socket.core.process.DefaultRequestProcess;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
@@ -31,8 +29,6 @@ public abstract class AbstractServerBootstrap
 
     private RequestDispatch handler;
 
-    private RequestConvertManager requestConvertManager;
-
     private List<Filter> filters = new ArrayList<>();
 
     private List<Object> beans = new ArrayList<>();
@@ -49,11 +45,8 @@ public abstract class AbstractServerBootstrap
 
     @Override
     protected void doInit(GameServerSocketProperties properties) {
-        if (Objects.isNull(requestConvertManager)) {
-            requestConvertManager = new DefaultConvertManager();
-        }
         if (Objects.isNull(argumentValues)) {
-            argumentValues = new InvokeMethodArgumentValuesImpl(requestConvertManager);
+            argumentValues = new InvokeMethodArgumentValuesImpl();
         }
         if (Objects.isNull(methodSupport)) {
             methodSupport = new DefaultActionInvokeSupport();

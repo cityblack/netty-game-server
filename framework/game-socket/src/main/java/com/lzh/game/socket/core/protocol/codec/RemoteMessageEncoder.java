@@ -1,7 +1,7 @@
 package com.lzh.game.socket.core.protocol.codec;
 
 import com.lzh.game.common.serialization.ProtoBufUtils;
-import com.lzh.game.socket.core.AbstractCommand;
+import com.lzh.game.socket.core.protocol.AbstractCommand;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 

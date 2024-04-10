@@ -1,7 +1,7 @@
 package com.lzh.game.socket.core.invoke.support;
 
-import com.lzh.game.socket.Request;
-import com.lzh.game.socket.Response;
+import com.lzh.game.socket.core.protocol.Request;
+import com.lzh.game.socket.core.protocol.Response;
 
 @FunctionalInterface
 public interface ErrorHandler {

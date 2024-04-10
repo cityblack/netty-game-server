@@ -1,6 +1,6 @@
 package com.lzh.game.framework.client.bootstrap;
 
-import com.lzh.game.socket.Response;
+import com.lzh.game.socket.core.protocol.Response;
 import com.lzh.game.socket.core.process.Processor;
 
 public class ResponseProcess implements Processor<Response> {

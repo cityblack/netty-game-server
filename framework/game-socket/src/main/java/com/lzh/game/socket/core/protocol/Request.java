@@ -1,6 +1,6 @@
-package com.lzh.game.socket;
+package com.lzh.game.socket.core.protocol;
 
-import com.lzh.game.socket.core.AbstractCommand;
+import com.lzh.game.socket.Constant;
 import com.lzh.game.socket.core.session.Session;
 
 import java.io.Serializable;

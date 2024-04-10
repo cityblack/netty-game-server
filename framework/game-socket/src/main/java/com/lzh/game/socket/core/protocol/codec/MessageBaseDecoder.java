@@ -1,9 +1,9 @@
 package com.lzh.game.socket.core.protocol.codec;
 
 import com.lzh.game.socket.Constant;
-import com.lzh.game.socket.Request;
-import com.lzh.game.socket.Response;
-import com.lzh.game.socket.core.AbstractCommand;
+import com.lzh.game.socket.core.protocol.Request;
+import com.lzh.game.socket.core.protocol.Response;
+import com.lzh.game.socket.core.protocol.AbstractCommand;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.CorruptedFrameException;

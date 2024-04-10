@@ -1,4 +1,4 @@
-package com.lzh.game.socket.core;
+package com.lzh.game.socket.core.protocol;
 
 /**
  * @author zehong.l
