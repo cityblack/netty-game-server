@@ -105,9 +105,6 @@ public abstract class AbstractServerBootstrap
         List<InvokeUtils.InvokeModel> list = InvokeUtils.parseBean(bean);
         for (InvokeUtils.InvokeModel model : list) {
             methodSupport.register(model.getValue(), model.getHandlerMethod());
-            if (model.hasParam()) {
-                requestConvertManager.registerConvert(model.getParamClass(), new ProtoBufferConvert<>(model.getParamClass()));
-            }
         }
     }
 

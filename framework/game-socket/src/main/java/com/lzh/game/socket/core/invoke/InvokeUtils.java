@@ -84,9 +84,6 @@ public class InvokeUtils {
             return Objects.hashCode(this.value);
         }
 
-        public boolean hasParam() {
-            return Objects.nonNull(paramClass);
-        }
     }
 
     private InvokeUtils() {}

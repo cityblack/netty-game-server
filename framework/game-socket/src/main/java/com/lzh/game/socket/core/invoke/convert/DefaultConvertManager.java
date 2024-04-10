@@ -1,7 +1,9 @@
 package com.lzh.game.socket.core.invoke.convert;
 
+import com.lzh.game.socket.Request;
 import com.lzh.game.socket.core.invoke.RequestConvert;
 import com.lzh.game.socket.core.invoke.RequestConvertManager;
+import com.lzh.game.socket.core.message.NetMessage;
 import com.lzh.game.socket.core.session.Session;
 
 import java.util.*;
@@ -14,17 +16,9 @@ public class DefaultConvertManager implements RequestConvertManager {
     private final Map<Class<?>, RequestConvert<?>> convertContain = new HashMap<>();
 
     {
-        registerConvert(Session.class, RemotingCommand::getSession);
+        registerConvert(Session.class, Request::getSession);
         registerConvert(Request.class, (r) -> r);
-        registerConvert(Integer.class, new ProtoBufferConvert<>(Integer.class));
-        registerConvert(String.class, new ProtoBufferConvert<>(String.class));
-        registerConvert(Float.class, new ProtoBufferConvert<>(Float.class));
-        registerConvert(Double.class, new ProtoBufferConvert<>(Double.class));
-        registerConvert(Long.class, new ProtoBufferConvert<>(Long.class));
-        registerConvert(int.class, new ProtoBufferConvert<>(Integer.class));
-        registerConvert(double.class, new ProtoBufferConvert<>(Double.class));
-        registerConvert(float.class, new ProtoBufferConvert<>(Float.class));
-        registerConvert(long.class, new ProtoBufferConvert<>(Long.class));
+        registerConvert(NetMessage.class, r -> r.getData());
     }
 
     @Override
