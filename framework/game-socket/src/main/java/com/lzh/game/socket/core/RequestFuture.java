@@ -1,5 +1,6 @@
 package com.lzh.game.socket.core;
 
+import com.lzh.game.socket.Request;
 import com.lzh.game.socket.Response;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
@@ -31,8 +32,7 @@ public class RequestFuture extends CompletableFuture<Response> {
     private final ExecutorService service;
 
     private RequestFuture(Request request, long timeout, ExecutorService service) {
-        this.id = request.remoteId();
-//        this.request = request;
+        this.id = request.getRequestId();
         this.timeout = timeout;
         this.service = service;
         FUTURES.put(id, this);
@@ -65,7 +65,7 @@ public class RequestFuture extends CompletableFuture<Response> {
     }
 
     public static void received(Response response, boolean timeout) {
-        RequestFuture future = FUTURES.remove(response.remoteId());
+        RequestFuture future = FUTURES.remove(response.getRequestId());
         if (Objects.nonNull(future)) {
             Timeout t = future.timeoutTask;
             if (timeout) {
@@ -73,7 +73,7 @@ public class RequestFuture extends CompletableFuture<Response> {
             }
             future.doReceived(response);
         } else {
-            log.warn("Could not find request future: {}", response.remoteId());
+            log.warn("Could not find request future: {}", response.getRequestId());
         }
     }
 
@@ -81,7 +81,7 @@ public class RequestFuture extends CompletableFuture<Response> {
         if (Objects.isNull(response)) {
             throw new IllegalArgumentException("Response is null");
         }
-        if (response.status() == Response.OK) {
+        if (response.getStatus() == 0) {
             this.complete(response);
         } else {
             Throwable error = Objects.isNull(response.getError()) ? new IllegalArgumentException()
@@ -118,7 +118,7 @@ public class RequestFuture extends CompletableFuture<Response> {
         private void notifyTimeout(RequestFuture future) {
             Response response = new Response();
             response.setError(new TimeoutException());
-            response.setRemoteId(future.id);
+            response.setRequestId(future.id);
             RequestFuture.received(response, true);
         }
     }

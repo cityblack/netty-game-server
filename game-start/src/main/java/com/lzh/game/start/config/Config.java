@@ -7,7 +7,7 @@ import com.lzh.game.socket.core.invoke.convert.DefaultConvertManager;
 import com.lzh.game.start.StartProperties;
 import com.lzh.game.start.filter.GmFilter;
 import com.lzh.game.start.filter.ProtocolVersionFilter;
-import com.lzh.game.start.pool.DefaultBusinessThreadPool;
+import com.lzh.game.start.pool.DefaultBusinessThreadExecutorService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
@@ -31,8 +31,8 @@ public class Config {
     }
 
     @Bean(name = "requestBusinessPool")
-    public DefaultBusinessThreadPool exchangeProcess() {
-        return DefaultBusinessThreadPool.getInstance();
+    public DefaultBusinessThreadExecutorService exchangeProcess() {
+        return DefaultBusinessThreadExecutorService.getInstance();
     }
 
     @Bean

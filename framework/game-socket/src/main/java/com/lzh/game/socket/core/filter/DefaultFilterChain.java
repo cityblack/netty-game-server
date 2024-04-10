@@ -1,6 +1,7 @@
 package com.lzh.game.socket.core.filter;
 
-import com.lzh.game.socket.core.RequestHandle;
+import com.lzh.game.socket.Request;
+import com.lzh.game.socket.core.RequestDispatch;
 
 import java.util.List;
 
@@ -8,11 +9,11 @@ public class DefaultFilterChain implements FilterChain {
 
     private List<Filter> filters;
 
-    private RequestHandle handler;
+    private RequestDispatch handler;
 
     private final int index;
 
-    public DefaultFilterChain(List<Filter> filters, RequestHandle handler) {
+    public DefaultFilterChain(List<Filter> filters, RequestDispatch handler) {
         this.filters = filters;
         this.handler = handler;
         this.index = 0;
@@ -25,12 +26,12 @@ public class DefaultFilterChain implements FilterChain {
     }
 
     @Override
-    public void filter(RemoteContext context) {
+    public void filter(Request request) {
         if (this.index < this.filters.size()) {
             Filter filter = this.filters.get(index);
-            filter.doFilter(context, new DefaultFilterChain(this,index + 1));
+            filter.doFilter(request, new DefaultFilterChain(this,index + 1));
         } else {
-            handler.handle(context);
+            handler.handle(request);
         }
     }
 }

@@ -1,10 +1,10 @@
 package com.lzh.game.socket;
 
-import com.lzh.game.socket.core.AbstractRemotingCommand;
+import com.lzh.game.socket.core.AbstractCommand;
 
 import java.io.Serializable;
 
-public class Response extends AbstractRemotingCommand
+public class Response extends AbstractCommand
         implements Serializable {
 
     private static final long serialVersionUID = 802660945444591938L;

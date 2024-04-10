@@ -1,34 +1,32 @@
 package com.lzh.game.socket.core.protocol.codec;
 
 import com.lzh.game.common.serialization.ProtoBufUtils;
-import com.lzh.game.socket.core.Encoder;
+import com.lzh.game.socket.core.AbstractCommand;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-public class DefaultGameEncoder implements Encoder {
+public abstract class RemoteMessageEncoder implements Encoder {
 
     @Override
     public void encode(ChannelHandlerContext ctx, Serializable msg, ByteBuf out) throws Exception {
         /**
-         * cmd: cmd int
-         * type: request / response / oneWay byte
+         * len: int
+         * msgId: msg int
+         * type: request / response / one way byte
          * request: int
-         * len: Object byte data length
          * data: Object Serializable data
          */
         try {
-            if (msg instanceof RemotingCommand) {
-                RemotingCommand cmdMsg = (RemotingCommand) msg;
-                int cmd = cmdMsg.cmd();
-                writeRawVarint32(out, cmd);
-                out.writeByte(cmdMsg.type());
-                writeRawVarint32(out, cmdMsg.remoteId());
 
-                byte[] data = getDateBytes(cmdMsg);
+            if (msg instanceof AbstractCommand command) {
+                int msgId = command.getMsgId();
+                writeRawVarint32(out, msgId);
+                out.writeByte(command.getType());
+                writeRawVarint32(out, command.getRequestId());
+                byte[] data = getDateBytes(command);
                 int len = data.length;
                 writeRawVarint32(out, len);
                 if (data.length > 0) {
@@ -57,9 +55,9 @@ public class DefaultGameEncoder implements Encoder {
         }
     }
 
-    private static byte[] getDateBytes(RemotingCommand msg) {
-        Object data = msg.data();
-        byte[] bytes = msg.byteData();
+    private static byte[] getDateBytes(AbstractCommand msg) {
+        Object data = msg.getData();
+//        byte[] bytes = msg.byteData();
         if ((Objects.isNull(bytes) || bytes.length == 0) && Objects.nonNull(data)) {
             bytes = ProtoBufUtils.serialize(data);
         }
@@ -67,12 +65,6 @@ public class DefaultGameEncoder implements Encoder {
     }
 
     private final static byte[] EMPTY_BYTES = new byte[0];
-
-    public static void main(String[] args) {
-        ByteBuf byteBuf = ByteBufAllocator.DEFAULT.heapBuffer();
-        writeRawVarint64(byteBuf, 34L);
-        System.out.println(byteBuf.array());
-    }
 
     static void writeRawVarint64(ByteBuf out, long value) {
         while (true) {

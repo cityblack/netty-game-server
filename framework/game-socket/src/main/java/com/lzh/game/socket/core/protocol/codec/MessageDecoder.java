@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 
 @Slf4j
-public class MessageDecoder extends RemoteMessageDecoder {
+public class MessageDecoder extends MessageBaseDecoder {
 
     private MessageManager manager;
 

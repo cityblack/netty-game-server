@@ -3,8 +3,7 @@ package com.lzh.game.socket.core.protocol.codec;
 import com.lzh.game.socket.Constant;
 import com.lzh.game.socket.Request;
 import com.lzh.game.socket.Response;
-import com.lzh.game.socket.core.AbstractRemotingCommand;
-import com.lzh.game.socket.core.Decoder;
+import com.lzh.game.socket.core.AbstractCommand;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.CorruptedFrameException;
@@ -16,7 +15,7 @@ import java.util.Objects;
  * @author zehong.l
  * @date 2024-04-07 16:20
  **/
-public abstract class RemoteMessageDecoder implements Decoder {
+public abstract class MessageBaseDecoder implements Decoder {
 
     @Override
     public void decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, List<Object> list) throws Exception {
@@ -46,7 +45,7 @@ public abstract class RemoteMessageDecoder implements Decoder {
         if (Objects.isNull(o)) {
             return;
         }
-        AbstractRemotingCommand command = Constant.isRequest(type) ?
+        AbstractCommand command = Constant.isRequest(type) ?
                 Request.of(msgId, requestId, o) : Response.of(msgId, requestId, o);
         command.setType(type);
         list.add(command);

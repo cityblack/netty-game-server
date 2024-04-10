@@ -4,7 +4,7 @@ package com.lzh.game.socket.core;
  * @author zehong.l
  * @date 2024-04-07 15:08
  **/
-public class AbstractRemotingCommand {
+public class AbstractCommand {
 
     private byte type;
 

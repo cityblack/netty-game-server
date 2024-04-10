@@ -1,6 +1,6 @@
 package com.lzh.game.start.pool;
 
-import com.lzh.game.socket.core.RequestProcessPool;
+import com.lzh.game.socket.core.process.ProcessorExecutorService;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.start.cmd.impl.CmdMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +19,9 @@ import java.util.stream.IntStream;
  * If the request is about the player, the player's request should be forwarded to the player's game scene
  */
 @Slf4j
-public class DefaultBusinessThreadPool implements RequestProcessPool, GameExecutorService {
+public class DefaultBusinessThreadExecutorService implements ProcessorExecutorService, GameExecutorService {
 
-    private static DefaultBusinessThreadPool instance = new DefaultBusinessThreadPool();
+    private static DefaultBusinessThreadExecutorService instance = new DefaultBusinessThreadExecutorService();
     // Use disruptor?
     private static ExecutorService[] executors;
 
@@ -31,7 +31,7 @@ public class DefaultBusinessThreadPool implements RequestProcessPool, GameExecut
 
     private static Set<Integer> specialCmd;
 
-    public static DefaultBusinessThreadPool getInstance() {
+    public static DefaultBusinessThreadExecutorService getInstance() {
         return instance;
     }
 
@@ -85,6 +85,6 @@ public class DefaultBusinessThreadPool implements RequestProcessPool, GameExecut
         CompletableFuture.runAsync(runnable, executors[index(session)]);
     }
 
-    private DefaultBusinessThreadPool() {
+    private DefaultBusinessThreadExecutorService() {
     }
 }

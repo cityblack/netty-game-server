@@ -5,8 +5,8 @@ import com.lzh.game.socket.GameSocketProperties;
 import com.lzh.game.socket.core.AtomicLifCycle;
 import com.lzh.game.socket.core.LifeCycle;
 import com.lzh.game.socket.core.MessageHandlerImpl;
-import com.lzh.game.socket.core.process.Process;
-import com.lzh.game.socket.core.process.ProcessManager;
+import com.lzh.game.socket.core.process.Processor;
+import com.lzh.game.socket.core.process.ProcessorManager;
 import com.lzh.game.socket.core.session.*;
 import com.lzh.game.socket.core.session.cache.GameSessionMemoryCacheManage;
 import com.lzh.game.socket.core.session.cache.SessionMemoryCacheManage;
@@ -18,7 +18,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     protected T properties;
 
-    protected ProcessManager processManager;
+    protected ProcessorManager processorManager;
 
     protected SessionManage<? extends Session> sessionManage;
 
@@ -29,8 +29,8 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         this.properties = properties;
         this.sessionManage = sessionManage;
 
-        this.processManager = new ProcessManager();
-        this.ioHandler = new GameIoHandler<>(new MessageHandlerImpl(processManager), this.sessionManage);
+        this.processorManager = new ProcessorManager();
+        this.ioHandler = new GameIoHandler<>(new MessageHandlerImpl(processorManager), this.sessionManage);
     }
 
     protected AbstractBootstrap(T properties) {
@@ -55,8 +55,8 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         return ioHandler;
     }
 
-    public ProcessManager getProcessManager() {
-        return processManager;
+    public ProcessorManager getProcessManager() {
+        return processorManager;
     }
 
     protected abstract void doInit(T properties);
@@ -74,8 +74,8 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         }
     }
 
-    public <E extends RemotingCommand>void addProcess(int key, Process<E> process) {
-        this.processManager.registerProcess(key, process);
+    public void addProcess(Class<?> command, Processor<?> process) {
+        this.processorManager.registerProcess(command, process);
     }
 
     @Override

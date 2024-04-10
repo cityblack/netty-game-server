@@ -1,12 +1,12 @@
 package com.lzh.game.socket.core;
 
 import com.lzh.game.socket.MessageHandler;
-import com.lzh.game.socket.core.process.Process;
-import com.lzh.game.socket.core.process.ProcessManager;
+import com.lzh.game.socket.core.process.Processor;
+import com.lzh.game.socket.core.process.ProcessorManager;
 import com.lzh.game.socket.core.session.Session;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Objects;
+import java.util.List;
 
 /**
  * 消息事件处理
@@ -14,11 +14,7 @@ import java.util.Objects;
 @Slf4j
 public class MessageHandlerImpl implements MessageHandler {
 
-    private ProcessManager processManager;
-
-    public MessageHandlerImpl(ProcessManager processManager) {
-        this.processManager = processManager;
-    }
+    private ProcessorManager manager;
 
     @Override
     public void opened(Session session) {
@@ -37,17 +33,17 @@ public class MessageHandlerImpl implements MessageHandler {
 
     @Override
     public void messageReceived(Session session, Object data) {
-        if (data instanceof AbstractRemotingCommand) {
-            AbstractRemotingCommand command = (AbstractRemotingCommand) data;
-//            Process<RemotingCommand> process = processManager.getProcess(command.getType());
-//            if (Objects.isNull(process)) {
-//                log.warn("Undefined the command key:{}", command.type());
-//                return;
-//            }
-//            RemoteContext context = new RemoteContext();
-//            context.setSession(session);
-//
-//            process.process(context, command);
+        if (data instanceof List<?> list) {
+            for (Object o : list) {
+                received(session, o);
+            }
+        } else {
+            received(session, data);
         }
+    }
+
+    private void received(Session session, Object data) {
+        Processor process = manager.getProcess(data.getClass());
+        process.process(session, data);
     }
 }

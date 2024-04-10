@@ -3,7 +3,7 @@ package com.lzh.socket.starter;
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.InvokeSupport;
 import com.lzh.game.socket.GameServerSocketProperties;
-import com.lzh.game.socket.core.RequestHandle;
+import com.lzh.game.socket.core.RequestDispatch;
 import com.lzh.game.socket.core.invoke.*;
 import com.lzh.game.socket.core.invoke.convert.DefaultConvertManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -46,7 +46,7 @@ public class GameSocketConfiguration {
     }
 
     @Bean
-    public RequestHandle requestHandler(InvokeSupport<EnhanceHandlerMethod> actionMethodSupport
+    public RequestDispatch requestHandler(InvokeSupport<EnhanceHandlerMethod> actionMethodSupport
             , InvokeMethodArgumentValues invokeMethodArgumentValues
             , SpringExceptionHandler errorHandler, SpringInterceptorHandler interceptorHandler) {
         return new SpringRequestHandler(actionMethodSupport, invokeMethodArgumentValues, errorHandler, interceptorHandler);

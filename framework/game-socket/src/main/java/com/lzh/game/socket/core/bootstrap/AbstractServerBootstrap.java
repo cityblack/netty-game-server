@@ -5,7 +5,8 @@ import com.lzh.game.common.util.Constant;
 import com.lzh.game.socket.InvokeSupport;
 import com.lzh.game.socket.GameServer;
 import com.lzh.game.socket.GameServerSocketProperties;
-import com.lzh.game.socket.core.RequestHandle;
+import com.lzh.game.socket.Request;
+import com.lzh.game.socket.core.RequestDispatch;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterHandler;
 import com.lzh.game.socket.core.invoke.*;
@@ -28,7 +29,7 @@ public abstract class AbstractServerBootstrap
 
     private InvokeMethodArgumentValues argumentValues;
 
-    private RequestHandle handler;
+    private RequestDispatch handler;
 
     private RequestConvertManager requestConvertManager;
 
@@ -65,11 +66,8 @@ public abstract class AbstractServerBootstrap
         if (Objects.isNull(handler)) {
             handler = new FilterHandler(this.filters, new ActionRequestHandler(methodSupport, argumentValues));
         }
-        if (Objects.isNull(getProcessManager().getProcess(Constant.REQUEST_SIGN))) {
-            addProcess(Constant.REQUEST_SIGN, new DefaultRequestProcess(handler, requestConvertManager, methodSupport));
-        }
-        if (Objects.isNull(getProcessManager().getProcess(Constant.ONEWAY_SIGN))) {
-            addProcess(Constant.ONEWAY_SIGN, new DefaultRequestProcess(handler, requestConvertManager, methodSupport));
+        if (!getProcessManager().hasProcessor(Request.class)) {
+            addProcess(Request.class, new DefaultRequestProcess(handler));
         }
         this.netServer = createServer(getPort());
     }
@@ -133,7 +131,7 @@ public abstract class AbstractServerBootstrap
         return this;
     }
 
-    public AbstractServerBootstrap setHandler(RequestHandle handler) {
+    public AbstractServerBootstrap setHandler(RequestDispatch handler) {
         this.handler = handler;
         return this;
     }

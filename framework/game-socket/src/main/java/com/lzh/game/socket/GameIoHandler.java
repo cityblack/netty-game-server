@@ -1,5 +1,6 @@
 package com.lzh.game.socket;
 
+import com.lzh.game.socket.core.AbstractCommand;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
 import com.lzh.game.socket.core.session.SessionUtils;
@@ -13,7 +14,7 @@ import java.util.Objects;
 
 @Slf4j
 @ChannelHandler.Sharable
-public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandler<RemotingCommand> {
+public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandler<AbstractCommand> {
 
     private MessageHandler messageHandler;
 
@@ -55,7 +56,7 @@ public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandle
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RemotingCommand msg) {
+    protected void channelRead0(ChannelHandlerContext ctx, AbstractCommand msg) {
         messageHandler.messageReceived(getSession(ctx.channel()), msg);
     }
 }

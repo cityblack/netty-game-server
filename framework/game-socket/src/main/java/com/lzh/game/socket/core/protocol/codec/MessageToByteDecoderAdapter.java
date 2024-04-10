@@ -1,21 +1,20 @@
 package com.lzh.game.socket.core.protocol.codec;
 
-import com.lzh.game.socket.core.Encoder;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
 import java.io.Serializable;
 
-public class GameMessageToMessageDecoder extends MessageToByteEncoder<Serializable> {
+public class MessageToByteDecoderAdapter extends MessageToByteEncoder<Serializable> {
 
     private Encoder encoder;
 
-    public GameMessageToMessageDecoder() {
+    public MessageToByteDecoderAdapter() {
         this(new DefaultGameEncoder());
     }
 
-    public GameMessageToMessageDecoder(Encoder encoder) {
+    public MessageToByteDecoderAdapter(Encoder encoder) {
         this.encoder = encoder;
     }
 

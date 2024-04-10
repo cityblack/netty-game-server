@@ -3,7 +3,7 @@ package com.lzh.game.socket.core.invoke;
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.socket.*;
-import com.lzh.game.socket.core.RequestHandle;
+import com.lzh.game.socket.core.RequestDispatch;
 import com.lzh.game.socket.core.invoke.support.ErrorHandler;
 import com.lzh.game.socket.core.invoke.support.InterceptorHandler;
 import com.lzh.game.socket.exception.NotDefinedResponseProtocolException;
@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 
 @Slf4j
-public class ActionRequestHandler implements RequestHandle {
+public class ActionRequestHandler implements RequestDispatch {
 
     private ErrorHandler errorHandler;
 

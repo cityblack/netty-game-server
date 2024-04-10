@@ -2,7 +2,6 @@ package com.lzh.game.socket.core.process;
 
 import com.lzh.game.common.util.Constant;
 import com.lzh.game.socket.*;
-import com.lzh.game.socket.core.AbstractRemotingCommand;
 import com.lzh.game.socket.core.AsyncResponse;
 import com.lzh.game.socket.core.ForwardSessionSelect;
 import com.lzh.game.socket.core.bootstrap.GameTcpClient;
@@ -18,7 +17,7 @@ import java.util.concurrent.Executors;
  * Use {@link com.lzh.game.socket.core.FutureAsyncResponse}
  */
 @Slf4j
-public class ForwardGatewayProcess implements Process<Request> {
+public class ForwardGatewayProcess implements Processor<Request> {
 
     private GameTcpClient tcpClient;
 

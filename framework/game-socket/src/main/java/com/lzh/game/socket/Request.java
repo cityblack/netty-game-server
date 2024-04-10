@@ -1,11 +1,11 @@
 package com.lzh.game.socket;
 
-import com.lzh.game.socket.core.AbstractRemotingCommand;
+import com.lzh.game.socket.core.AbstractCommand;
 import com.lzh.game.socket.core.session.Session;
 
 import java.io.Serializable;
 
-public class Request extends AbstractRemotingCommand implements Serializable {
+public class Request extends AbstractCommand implements Serializable {
 
     private static final long serialVersionUID = 1550620526955432911L;
 
@@ -38,5 +38,8 @@ public class Request extends AbstractRemotingCommand implements Serializable {
         this.response = response;
     }
 
+    public boolean isOneWay() {
+        return this.getType() == Constant.ONEWAY_SIGN;
+    }
     //    private
 }

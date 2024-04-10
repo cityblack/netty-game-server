@@ -2,7 +2,7 @@ package com.lzh.socket.starter;
 
 import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.InvokeSupport;
-import com.lzh.game.socket.core.RequestHandle;
+import com.lzh.game.socket.core.RequestDispatch;
 import com.lzh.game.socket.core.filter.Filter;
 import com.lzh.game.socket.core.filter.FilterHandler;
 import com.lzh.game.socket.core.invoke.ActionRequestHandler;
@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class SpringRequestHandler implements RequestHandle, ApplicationContextAware {
+public class SpringRequestHandler implements RequestDispatch, ApplicationContextAware {
 
-    private RequestHandle handler;
+    private RequestDispatch handler;
 
     private FilterHandler filterHandler;
 
