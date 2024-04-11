@@ -11,5 +11,5 @@ public interface MessageSerialize {
 
     Object decode(int msgId, ByteBuf in) throws Exception;
 
-    void encode(NetMessage msg, ByteBuf out) throws Exception;
+    void encode(int msgId, Object msg, ByteBuf out) throws Exception;
 }

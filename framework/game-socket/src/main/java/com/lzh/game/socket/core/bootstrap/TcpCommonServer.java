@@ -1,14 +1,15 @@
 package com.lzh.game.socket.core.bootstrap;
 
 import com.lzh.game.socket.GameServerSocketProperties;
-import com.lzh.game.socket.core.protocol.codec.ByteToMessageDecoderAdapter;
-import com.lzh.game.socket.core.protocol.codec.MessageToByteDecoderAdapter;
+import com.lzh.game.socket.core.protocol.codec.GameByteToMessageDecoder;
+import com.lzh.game.socket.core.protocol.codec.GameMessageToByteDecoder;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
 
@@ -47,10 +48,10 @@ public class TcpCommonServer extends AbstractServerBootstrap
                 ch.pipeline()
 //                        .addLast(new LoggingHandler(properties.getNettyLogLevel()))
                         .addLast(new IdleStateHandler(0, 0, 180, TimeUnit.SECONDS))
-//                        .addLast(new ProtobufVarint32FrameDecoder())
-                        .addLast("decoder", new ByteToMessageDecoderAdapter())
+                        .addLast(new ProtobufVarint32FrameDecoder())
+                        .addLast("decoder", new GameByteToMessageDecoder())
                         .addLast(new ProtobufVarint32LengthFieldPrepender())
-                        .addLast("encoder", new MessageToByteDecoderAdapter())
+                        .addLast("encoder", new GameMessageToByteDecoder())
                         .addLast(getIoHandler())
                 ;
             }

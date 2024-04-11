@@ -1,57 +1,27 @@
-package com.lzh.game.socket.core.protocol.codec;
+package com.lzh.game.socket.utils;
 
-import com.lzh.game.socket.Constant;
-import com.lzh.game.socket.core.protocol.Request;
-import com.lzh.game.socket.core.protocol.Response;
-import com.lzh.game.socket.core.protocol.AbstractCommand;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.CorruptedFrameException;
-
-import java.util.List;
-import java.util.Objects;
 
 /**
  * @author zehong.l
- * @date 2024-04-07 16:20
+ * @date 2024-04-11 14:52
  **/
-public abstract class MessageBaseDecoder implements Decoder {
+public class ByteBuffUtils {
 
-    @Override
-    public void decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, List<Object> list) throws Exception {
-        /**
-         * len: int
-         * msgId: msg int
-         * type: request / response / one way byte
-         * request: int
-         * data: Object Serializable data
-         */
-        if (in.readableBytes() < Constant.HEAD_MIN_LEN) {
-            return;
+    public static void writeRawVarint32(ByteBuf out, int value) {
+        while (true) {
+            if ((value & ~0x7F) == 0) {
+                out.writeByte(value);
+                return;
+            } else {
+                out.writeByte((value & 0x7F) | 0x80);
+                value >>>= 7;
+            }
         }
-        in.markReaderIndex();
-        int len = readRawVarint32(in);
-        if (in.readableBytes() < len) {
-            in.resetReaderIndex();
-            return;
-        }
-        int startIndex = in.readerIndex();
-        byte type = in.readByte();
-        int msgId = readRawVarint32(in);
-        int requestId = readRawVarint32(in);
-        int dataLen = len - in.readableBytes() + startIndex;
-
-        Object o = decode(channelHandlerContext, in, msgId, dataLen);
-        if (Objects.isNull(o)) {
-            return;
-        }
-        AbstractCommand command = Constant.isRequest(type) ?
-                Request.of(msgId, requestId, o) : Response.of(msgId, requestId, o);
-        command.setType(type);
-        list.add(command);
     }
 
-    protected static int readRawVarint32(ByteBuf buffer) {
+    public static int readRawVarint32(ByteBuf buffer) {
         if (!buffer.isReadable()) {
             return 0;
         } else {
@@ -105,6 +75,4 @@ public abstract class MessageBaseDecoder implements Decoder {
             }
         }
     }
-
-    public abstract Object decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, int msg, int dataLen) throws Exception;
 }

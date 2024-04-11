@@ -6,8 +6,8 @@ import com.lzh.game.socket.core.AsyncResponse;
 import com.lzh.game.socket.core.FutureAsyncResponse;
 import com.lzh.game.socket.core.RequestFuture;
 import com.lzh.game.socket.core.protocol.Request;
-import com.lzh.game.socket.core.protocol.codec.ByteToMessageDecoderAdapter;
-import com.lzh.game.socket.core.protocol.codec.MessageToByteDecoderAdapter;
+import com.lzh.game.socket.core.protocol.codec.GameByteToMessageDecoder;
+import com.lzh.game.socket.core.protocol.codec.GameMessageToByteDecoder;
 import com.lzh.game.socket.core.session.impl.FutureSession;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
@@ -132,9 +132,9 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
                         ch.pipeline()
                                 .addLast(new IdleStateHandler(0, 0, 180, TimeUnit.SECONDS))
                                 .addLast(new ProtobufVarint32FrameDecoder())
-                                .addLast("decoder", new ByteToMessageDecoderAdapter())
+                                .addLast("decoder", new GameByteToMessageDecoder())
                                 .addLast(new ProtobufVarint32LengthFieldPrepender())
-                                .addLast("encoder", new MessageToByteDecoderAdapter())
+                                .addLast("encoder", new GameMessageToByteDecoder())
                                 .addLast(getIoHandler());
                     }
                 });
