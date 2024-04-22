@@ -32,25 +32,24 @@ public class GameByteToMessageDecoder extends ByteToMessageDecoder {
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         /**
          * len: int
-         * msgId: msg int
+         * msgId: sort
          * type: request / response / one way byte
          * request: int
-         * len: int
          * data: Object Serializable data
          */
         if (in.readableBytes() < Constant.HEAD_MIN_LEN) {
             return;
         }
         in.markReaderIndex();
-        int len = ByteBuffUtils.readRawVarint32(in);
+        int len = in.readInt();
         if (in.readableBytes() < len) {
             in.resetReaderIndex();
             return;
         }
         int startIndex = in.readerIndex();
         byte type = in.readByte();
-        int msgId = ByteBuffUtils.readRawVarint32(in);
-        int requestId = ByteBuffUtils.readRawVarint32(in);
+        short msgId = in.readShort();
+        int requestId = in.readerIndex();
         int dataLen = len - in.readableBytes() + startIndex;
 
         Object o = decode(ctx, in, msgId, dataLen);

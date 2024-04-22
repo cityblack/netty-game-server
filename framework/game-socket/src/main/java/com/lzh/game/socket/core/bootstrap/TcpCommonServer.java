@@ -9,8 +9,6 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
-import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.concurrent.TimeUnit;
@@ -47,11 +45,10 @@ public class TcpCommonServer extends AbstractServerBootstrap
             protected void initChannel(Channel ch) throws Exception {
                 ch.pipeline()
 //                        .addLast(new LoggingHandler(properties.getNettyLogLevel()))
-                        .addLast(new IdleStateHandler(0, 0, 180, TimeUnit.SECONDS))
-                        .addLast(new ProtobufVarint32FrameDecoder())
-                        .addLast("decoder", new GameByteToMessageDecoder())
-                        .addLast(new ProtobufVarint32LengthFieldPrepender())
-                        .addLast("encoder", new GameMessageToByteDecoder())
+                        .addLast(new IdleStateHandler(0, 0, getProperties().getServerIdleTime(), TimeUnit.MILLISECONDS))
+                        .addLast("serverIdleHandler", new ServerIdleHandler())
+                        .addLast("decoder", new GameByteToMessageDecoder(getMessageManager()))
+                        .addLast("encoder", new GameMessageToByteDecoder(getMessageManager()))
                         .addLast(getIoHandler())
                 ;
             }

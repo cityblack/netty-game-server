@@ -41,12 +41,12 @@ public class GateConfiguration {
             , InvokeMethodArgumentValues argumentValues, ForwardGatewayProcess gatewayProcess) {
 
         TcpCommonServer server = new TcpCommonServer(serverSocketProperties, serverSessionManage());
-        server.setHandler(requestHandle)
+        server.setDispatch(requestHandle)
                 .setMethodSupport(actionSupport)
                 .setConvertManager(requestConvertManager)
                 .setArgumentValues(argumentValues);
 
-        server.addProcess(Constant.REQUEST_SIGN, gatewayProcess);
+        server.addProcessor(Constant.REQUEST_SIGN, gatewayProcess);
         server.asyncStart();
         return server;
     }
@@ -55,7 +55,7 @@ public class GateConfiguration {
     public GameTcpClient client() {
         GatewayClient client = new GatewayClient(new GameSocketProperties(), properties, clientSessionMange());
         FutureResponseProcess process = new FutureResponseProcess();
-        client.addProcess(Constant.RESPONSE_SIGN, process);
+        client.addProcessor(Constant.RESPONSE_SIGN, process);
         client.start();
         return client;
     }

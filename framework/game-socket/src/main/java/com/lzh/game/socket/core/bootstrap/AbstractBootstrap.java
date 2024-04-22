@@ -1,12 +1,18 @@
 package com.lzh.game.socket.core.bootstrap;
 
+import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.socket.GameSocketProperties;
 import com.lzh.game.socket.core.AtomicLifCycle;
 import com.lzh.game.socket.core.LifeCycle;
+import com.lzh.game.socket.core.invoke.InvokeSupport;
+import com.lzh.game.socket.core.message.MessageManager;
 import com.lzh.game.socket.core.process.MessageHandlerImpl;
 import com.lzh.game.socket.core.process.Processor;
 import com.lzh.game.socket.core.process.ProcessorManager;
-import com.lzh.game.socket.core.session.*;
+import com.lzh.game.socket.core.session.GameSessionManage;
+import com.lzh.game.socket.core.session.Session;
+import com.lzh.game.socket.core.session.SessionFactory;
+import com.lzh.game.socket.core.session.SessionManage;
 import com.lzh.game.socket.core.session.cache.GameSessionMemoryCacheManage;
 import com.lzh.game.socket.core.session.cache.SessionMemoryCacheManage;
 import com.lzh.game.socket.core.session.impl.GameSession;
@@ -23,6 +29,10 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
     protected SessionManage<? extends Session> sessionManage;
 
     protected GameIoHandler<? extends Session> ioHandler;
+
+    private MessageManager messageManager;
+
+    private InvokeSupport<EnhanceHandlerMethod> methodSupport;
 
     protected AbstractBootstrap(T properties
             , SessionManage<? extends Session> sessionManage) {
@@ -47,7 +57,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         return properties;
     }
 
-    public <S extends Session>SessionManage<S> getSessionManage() {
+    public <S extends Session> SessionManage<S> getSessionManage() {
         return (SessionManage<S>) sessionManage;
     }
 
@@ -57,6 +67,22 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     public ProcessorManager getProcessManager() {
         return processorManager;
+    }
+
+    public InvokeSupport<EnhanceHandlerMethod> getMethodSupport() {
+        return methodSupport;
+    }
+
+    public void setMethodSupport(InvokeSupport<EnhanceHandlerMethod> methodSupport) {
+        this.methodSupport = methodSupport;
+    }
+
+    public MessageManager getMessageManager() {
+        return messageManager;
+    }
+
+    public void setMessageManager(MessageManager messageManager) {
+        this.messageManager = messageManager;
     }
 
     protected abstract void doInit(T properties);
@@ -74,8 +100,8 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         }
     }
 
-    public void addProcess(Class<?> command, Processor<?> process) {
-        this.processorManager.registerProcess(command, process);
+    public void addProcessor(Class<?> command, Processor<?> process) {
+        this.processorManager.registerProcessor(command, process);
     }
 
     @Override

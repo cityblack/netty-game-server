@@ -12,9 +12,9 @@ public class Constant {
 
     public static final int HEAD_LEN = 4;
     // Request message type. min
-    public static final int MESSAGE_TYPE_MIN = 0;
+    public static final int MESSAGE_TYPE_MIN = 2;
 
-    public static final int REQUEST_ID_MIN = 1;
+    public static final int REQUEST_ID_MIN = 4;
 
     public static final int HEAD_MIN_LEN = HEAD_LEN + MESSAGE_TYPE_MIN + REQUEST_ID_MIN;
 }

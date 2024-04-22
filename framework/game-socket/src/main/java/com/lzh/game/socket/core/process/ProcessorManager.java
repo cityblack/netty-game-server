@@ -21,7 +21,7 @@ public class ProcessorManager {
 
     private final Map<ProcessEventType, List<ProcessEventListen>> processEventListen;
 
-    public void registerProcess(Class<?> command, Processor<?> process) {
+    public void registerProcessor(Class<?> command, Processor<?> process) {
         processContain.put(command, process);
     }
 

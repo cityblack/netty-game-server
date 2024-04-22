@@ -26,7 +26,7 @@ public class TcpServerConfiguration {
             , InvokeMethodArgumentValues<Request> argumentValues) {
 
         TcpCommonServer server = new SpringTcpCommonServer(serverSocketProperties, serverSessionManage());
-        server.setHandler(requestHandle)
+        server.setDispatch(requestHandle)
                 .setMethodSupport(actionSupport)
                 .setConvertManager(requestConvertManager)
                 .setArgumentValues(argumentValues);

@@ -1,6 +1,6 @@
 package com.lzh.game.socket.core.protocol.codec;
 
-import com.lzh.game.common.serialization.ProtoBufUtils;
+import com.lzh.game.socket.Constant;
 import com.lzh.game.socket.core.message.MessageManager;
 import com.lzh.game.socket.core.protocol.AbstractCommand;
 import com.lzh.game.socket.core.protocol.MessageSerialize;
@@ -18,11 +18,15 @@ public class GameMessageToByteDecoder extends MessageToByteEncoder<Object> {
 
     private MessageManager manager;
 
+    public GameMessageToByteDecoder(MessageManager manager) {
+        this.manager = manager;
+    }
+
     @Override
     public void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
         /**
          * len: int
-         * msgId: msg int
+         * msgId: msg short
          * type: request / response / one way byte
          * request: int
          * data: Object Serializable data. bytes
@@ -36,15 +40,14 @@ public class GameMessageToByteDecoder extends MessageToByteEncoder<Object> {
                 var wrapper = this.allocateBuffer(ctx, msg, isPreferDirect());
                 try {
                     int msgId = command.getMsgId();
-                    ByteBuffUtils.writeRawVarint32(wrapper, msgId);
+                    wrapper.writeShort(msgId);
                     wrapper.writeByte(command.getType());
-                    ByteBuffUtils.writeRawVarint32(wrapper, command.getRequestId());
+                    wrapper.writeInt(command.getRequestId());
                     encode(msgId, command.getData(), wrapper);
 
                     int bodyLen = wrapper.readableBytes();
-                    int headerLen = computeRawVarint32Size(bodyLen);
-                    out.ensureWritable(headerLen + bodyLen);
-                    ByteBuffUtils.writeRawVarint32(out, bodyLen);
+                    out.ensureWritable(bodyLen + 4);
+                    out.writeInt(bodyLen);
                     out.writeBytes(wrapper, wrapper.readerIndex(), bodyLen);
                 } finally {
                     wrapper.release();

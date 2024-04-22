@@ -1,6 +1,5 @@
 package com.lzh.game.socket.core.protocol;
 
-import com.lzh.game.socket.core.message.NetMessage;
 import io.netty.buffer.ByteBuf;
 
 /**
