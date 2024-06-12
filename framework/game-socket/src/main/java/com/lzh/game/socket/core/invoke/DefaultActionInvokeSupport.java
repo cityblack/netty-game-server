@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class DefaultActionInvokeSupport implements InvokeSupport<EnhanceHandlerMethod> {
+public class DefaultActionInvokeSupport implements InvokeSupport {
 
-    private final Map<Integer, EnhanceHandlerMethod> protocolMap = new HashMap<>();
+    private final Map<Integer, MethodInvoke> protocolMap = new HashMap<>();
 
     @Override
-    public EnhanceHandlerMethod getActionHandler(int cmd) {
+    public MethodInvoke getActionHandler(int cmd) {
         return protocolMap.get(cmd);
     }
 
@@ -24,20 +24,17 @@ public class DefaultActionInvokeSupport implements InvokeSupport<EnhanceHandlerM
     }
 
     @Override
-    public void register(int cmd, EnhanceHandlerMethod methodMapping) {
+    public void register(int cmd, MethodInvoke invoke) {
 
         if (protocolMap.containsKey(cmd)) {
             throw new IllegalArgumentException("Repeated registration " + cmd + " proto.");
         }
-        protocolMap.put(cmd, methodMapping);
+        protocolMap.put(cmd, invoke);
 
-        if (log.isDebugEnabled()) {
-            log.debug("Request [{}] into {}.{}", cmd, methodMapping.getBean().getClass().getName(), methodMapping.getMethod().getName());
-        }
     }
 
     @Override
-    public List<EnhanceHandlerMethod> getAllActionHandler() {
+    public List<MethodInvoke> getAllActionHandler() {
         return new ArrayList<>(protocolMap.values());
     }
 }

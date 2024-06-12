@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 public @interface Protocol {
 
     // msg id
-    int value() default 0;
+    int value();
 
     int protocolType() default 0;
 

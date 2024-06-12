@@ -9,6 +9,7 @@ import com.lzh.game.socket.core.invoke.support.InterceptorHandler;
 import com.lzh.game.socket.core.process.RequestDispatch;
 import com.lzh.game.socket.core.protocol.Request;
 import com.lzh.game.socket.core.protocol.Response;
+import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.exception.NotDefinedResponseProtocolException;
 import com.lzh.game.socket.exception.NotFondProtocolException;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 
 @Slf4j
-public class ActionRequestHandler implements RequestDispatch {
+public class ActionRequestHandler implements RequestDispatch, Processor<Request> {
 
     private ErrorHandler errorHandler;
 
@@ -92,6 +93,16 @@ public class ActionRequestHandler implements RequestDispatch {
     public void handle(Request request) {
         Response response = Response.of(request);
         executeAction(request, response);
+    }
+
+    @Override
+    public void process(Session session, Request request) {
+
+    }
+
+    @Override
+    public boolean match(Request msg) {
+        return false;
     }
 
     private static class NoneErrorHandler implements ErrorHandler {

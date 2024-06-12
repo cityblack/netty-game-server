@@ -15,19 +15,19 @@ import java.util.Map;
  * @Action parse
  */
 @Slf4j
-public class SpringActionSupport implements InvokeSupport<EnhanceHandlerMethod>, ApplicationContextAware {
+public class SpringActionSupport implements InvokeSupport, ApplicationContextAware {
 
-    private InvokeSupport<EnhanceHandlerMethod> support;
+    private InvokeSupport support;
 
     private RequestConvertManager requestConvertManager;
 
-    public SpringActionSupport(InvokeSupport<EnhanceHandlerMethod> support, RequestConvertManager requestConvertManager) {
+    public SpringActionSupport(InvokeSupport support, RequestConvertManager requestConvertManager) {
         this.support = support;
         this.requestConvertManager = requestConvertManager;
     }
 
     @Override
-    public EnhanceHandlerMethod getActionHandler(int cmd) {
+    public MethodInvoke getActionHandler(int cmd) {
         return support.getActionHandler(cmd);
     }
 
@@ -37,17 +37,17 @@ public class SpringActionSupport implements InvokeSupport<EnhanceHandlerMethod>,
     }
 
     @Override
-    public void register(int cmd, EnhanceHandlerMethod method) {
+    public void register(int cmd, MethodInvoke method) {
         support.register(cmd, method);
         registerConvert(method);
     }
 
     @Override
-    public List<EnhanceHandlerMethod> getAllActionHandler() {
+    public List<MethodInvoke> getAllActionHandler() {
         return support.getAllActionHandler();
     }
 
-    private void registerConvert(EnhanceHandlerMethod method) {
+    private void registerConvert(MethodInvoke method) {
         Class<?>[] paramsType = method.getParamsType();
         for (Class<?> target : paramsType) {
             if (requestConvertManager.hasConvert(target)) {

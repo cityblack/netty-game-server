@@ -1,20 +1,17 @@
 package com.lzh.game.socket.core.invoke;
 
-
-import com.lzh.game.common.bean.HandlerMethod;
-
 import java.util.List;
 
 /**
  * Method invoke
  */
-public interface InvokeSupport<E extends HandlerMethod> {
+public interface InvokeSupport {
 
-    E getActionHandler(int msgId);
+    MethodInvoke getActionHandler(int msgId);
 
     boolean containMapping(int msgId);
 
-    void register(int msgId, E methodMapping);
+    void register(int msgId, MethodInvoke invoke);
 
-    List<E> getAllActionHandler();
+    List<MethodInvoke> getAllActionHandler();
 }
