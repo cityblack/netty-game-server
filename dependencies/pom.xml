@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.lzh</groupId>
+        <artifactId>game</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>com.lzh.game.framework</groupId>
+    <artifactId>dependencies</artifactId>
+    <version>${revision}</version>
+    <name>dependencies</name>
+    <packaging>pom</packaging>
+    <description>dependencies</description>
+
+    <properties>
+        <protostuff.version>1.8.0</protostuff.version>
+        <netty.version>4.1.108.Final</netty.version>
+        <eventbus.version>3.1.1</eventbus.version>
+        <guava.version>31.0.1-jre</guava.version>
+        <lombok.version>1.18.30</lombok.version>
+        <slf4j-api.verion>2.0.12</slf4j-api.verion>
+        <log4j-slf4j-impl.version>2.17.1</log4j-slf4j-impl.version>
+        <reflections.version>0.9.10</reflections.version>
+        <spring-boot.version>3.2.4</spring-boot.version>
+        <redisson.version>3.16.1</redisson.version>
+        <jjwt.version>0.7.0</jjwt.version>
+        <redission-starter.version>3.11.4</redission-starter.version>
+        <caffeine.version>2.8.8</caffeine.version>
+        <javassist.version>3.30.2-GA</javassist.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.protostuff</groupId>
+                <artifactId>protostuff-core</artifactId>
+                <version>${protostuff.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.protostuff</groupId>
+                <artifactId>protostuff-runtime</artifactId>
+                <version>${protostuff.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-configuration-processor</artifactId>
+                <optional>true</optional>
+            </dependency>
+
+            <dependency>
+                <groupId>org.greenrobot</groupId>
+                <artifactId>eventbus</artifactId>
+                <version>${eventbus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
+            <dependency>
+                <groupId>org.reflections</groupId>
+                <artifactId>reflections</artifactId>
+                <version>${reflections.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redission-starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>${javassist.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+</project>

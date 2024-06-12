@@ -16,8 +16,4 @@ public class LogHandlerTest {
         LogHandler.getLog(LogTest.class).logTest(10086, "hello world");
     }
 
-    @Test
-    public void t() {
-        System.out.println(LoggerUtils.LogBuild.class.getName());
-    }
 }

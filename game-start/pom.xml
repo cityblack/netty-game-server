@@ -3,25 +3,16 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.lzh</groupId>
-        <artifactId>game</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <groupId>com.lzh.game.framework</groupId>
+        <artifactId>parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.lzh.game</groupId>
     <artifactId>game-start</artifactId>
 
-    <properties>
-        <caffeine.version>2.8.8</caffeine.version>
-    </properties>
-
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>com.lzh.game</groupId>-->
-<!--            <artifactId>framework</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
@@ -30,19 +21,24 @@
         </dependency>
 
         <dependency>
-            <groupId>com.lzh.game</groupId>
+            <groupId>com.lzh.game.framework</groupId>
             <artifactId>game-socket-starter</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.lzh.game.framework</groupId>
             <artifactId>game-repository</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.lzh.game.framework</groupId>
             <artifactId>game-resource</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.lzh.game.framework</groupId>
+            <artifactId>business</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
     <build>

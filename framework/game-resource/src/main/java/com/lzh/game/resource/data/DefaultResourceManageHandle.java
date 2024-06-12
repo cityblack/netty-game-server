@@ -5,7 +5,6 @@ import com.lzh.game.resource.data.cache.ResourceCache;
 import com.lzh.game.resource.data.cache.ResourceCacheFactory;
 import com.lzh.game.resource.reload.ResourceReloadMeta;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
 
 import java.io.Serializable;
 import java.util.*;
@@ -33,7 +32,7 @@ public class DefaultResourceManageHandle implements ResourceManageHandle {
     }
 
     @Override
-    public <T> List<T> findAll(@NonNull Class<T> clazz) {
+    public <T> List<T> findAll(Class<T> clazz) {
         ResourceCache<Serializable, ?> cache = caches.get(clazz);
         return Objects.nonNull(cache) ? (List<T>) cache.findAll() : Collections.emptyList();
     }

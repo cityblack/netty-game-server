@@ -2,14 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <groupId>com.lzh</groupId>
-        <artifactId>game</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.lzh.game</groupId>
+    <parent>
+        <groupId>com.lzh.game.framework</groupId>
+        <artifactId>parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../parent</relativePath>
+    </parent>
+
     <artifactId>framework</artifactId>
     <packaging>pom</packaging>
 
@@ -18,40 +20,8 @@
         <module>game-repository</module>
         <module>game-logs</module>
         <module>game-socket</module>
+        <module>game-socket-starter</module>
         <module>game-scheduler</module>
     </modules>
-    <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>com.lzh.game</groupId>-->
-<!--            <artifactId>game-socket-starter</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
 
-<!--        <dependency>-->
-<!--            <groupId>com.lzh.game</groupId>-->
-<!--            <artifactId>game-resource</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>com.lzh.game</groupId>-->
-<!--            <artifactId>game-repository</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
-
-        <dependency>
-            <groupId>com.lzh.game</groupId>
-            <artifactId>game-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.lmax/disruptor -->
-        <!--<dependency>
-            <groupId>com.lmax</groupId>
-            <artifactId>disruptor</artifactId>
-            <version>3.4.2</version>
-        </dependency>-->
-
-
-    </dependencies>
 </project>

@@ -1,7 +1,7 @@
 package com.lzh.game.start.model.common.service;
 
-import com.lzh.game.repository.Repository;
-import com.lzh.game.repository.DataRepository;
+import com.lzh.game.framework.repository.DataRepository;
+import com.lzh.game.framework.repository.Repository;
 import com.lzh.game.start.model.common.CommonIdGenerator;
 import com.lzh.game.start.model.common.model.CommonData;
 import com.lzh.game.start.server.AfterServerStartInit;
