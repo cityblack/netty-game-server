@@ -6,12 +6,9 @@ import com.lzh.game.socket.core.filter.FilterHandler;
 import com.lzh.game.socket.core.invoke.DefaultActionInvokeSupport;
 import com.lzh.game.socket.core.invoke.InvokeMethodArgumentValuesImpl;
 import com.lzh.game.socket.core.invoke.InvokeUtils;
-import com.lzh.game.socket.core.message.MessageManager;
 import com.lzh.game.socket.core.process.ActionRequestHandler;
 import com.lzh.game.socket.core.process.DefaultRequestProcess;
-import com.lzh.game.socket.core.process.RequestDispatch;
 import com.lzh.game.socket.core.protocol.Request;
-import com.lzh.game.socket.core.session.GameSessionManage;
 import com.lzh.game.socket.core.session.Session;
 import com.lzh.game.socket.core.session.SessionManage;
 
@@ -49,10 +46,10 @@ public abstract class AbstractServerBootstrap
                 }
             }
         }
-        if (!getProcessManager().hasProcessor(Request.class)) {
-            var dispatch = new ActionRequestHandler(getMethodSupport(), new InvokeMethodArgumentValuesImpl());
-            addProcessor(Request.class, new DefaultRequestProcess(new FilterHandler(this.filters, dispatch)));
-        }
+//        if (!getProcessManager().hasProcessor(Request.class)) {
+//            var dispatch = new ActionRequestHandler(getMethodSupport(), new InvokeMethodArgumentValuesImpl());
+//            addProcessor(Request.class, new DefaultRequestProcess(new FilterHandler(this.filters, dispatch)));
+//        }
         this.netServer = createServer(getPort());
     }
 

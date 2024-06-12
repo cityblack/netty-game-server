@@ -47,8 +47,9 @@ public class MessageHandlerImpl implements MessageHandler {
     }
 
     private void received(Session session, Object data) {
-        Processor process = manager.getProcess(data.getClass());
-        process.process(session, data);
+
+//        Processor process = manager.getProcess(data.getClass());
+//        process.process(session, data);
     }
 
 

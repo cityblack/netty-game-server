@@ -13,4 +13,6 @@ import com.lzh.game.socket.core.session.Session;
 public interface Processor<E> {
 
     void process(Session session, E e);
+
+    boolean match(E msg);
 }

@@ -1,13 +1,11 @@
-package com.lzh.game.socket.core.message;
-
-import org.springframework.core.annotation.AnnotationUtils;
+package com.lzh.game.socket.core.protocol.message;
 
 import java.util.Map;
 import java.util.Objects;
 
 /**
  * @author zehong.l
- * @date 2024-04-07 14:20
+ * @since 2024-04-07 14:20
  **/
 public class MessageManager {
 
@@ -31,11 +29,11 @@ public class MessageManager {
     }
 
     public void registerMessage(MessageDefine define) {
-
+        this.msg.put(define.getMsgId(), define);
     }
 
     public static MessageDefine classToDefine(Class<?> msg) {
-        Protocol protocol = AnnotationUtils.getAnnotation(msg, Protocol.class);
+        Protocol protocol = msg.getAnnotation(Protocol.class);
         if (Objects.isNull(protocol)) {
             throw new IllegalArgumentException("register message " + msg.getSimpleName() + "@Protocol is null");
         }

@@ -22,6 +22,7 @@
         <module>game-socket</module>
         <module>game-socket-starter</module>
         <module>game-scheduler</module>
+        <module>game-event</module>
     </modules>
 
 </project>

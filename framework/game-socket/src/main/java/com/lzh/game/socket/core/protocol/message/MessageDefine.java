@@ -1,11 +1,11 @@
-package com.lzh.game.socket.core.message;
+package com.lzh.game.socket.core.protocol.message;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
  * @author zehong.l
- * @date 2024-04-07 14:22
+ * @since 2024-04-07 14:22
  **/
 @Data
 @Accessors(chain = true)

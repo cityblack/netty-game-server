@@ -1,11 +1,11 @@
-package com.lzh.game.socket.core.protocol;
+package com.lzh.game.socket.core.protocol.serial;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author zehong.l
- * @date 2024-04-07 14:49
+ * @since 2024-04-07 14:49
  **/
 public class MessageSerializeManager {
 

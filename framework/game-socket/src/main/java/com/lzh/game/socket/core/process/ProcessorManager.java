@@ -8,21 +8,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ProcessorManager {
 
-    public ProcessorManager() {
-        this(new ConcurrentHashMap<>(), new ConcurrentHashMap<>());
-    }
 
-    public ProcessorManager(Map<Class<?>, Processor<?>> processContain, Map<ProcessEventType, List<ProcessEventListen>> processEventListen) {
-        this.processContain = processContain;
-        this.processEventListen = processEventListen;
-    }
+//    public ProcessorManager() {
+//        this(new CopyOnWriteArrayList<>(), new ConcurrentHashMap<>());
+//    }
+//
+//    public ProcessorManager(List<Processor<?>> processContain, Map<ProcessEventType, List<ProcessEventListen>> processEventListen) {
+//        this.processContain = processContain;
+//        this.processEventListen = processEventListen;
+//    }
 
-    private final Map<Class<?>, Processor<?>> processContain;
+    private final List<Processor<?>> processContain;
 
     private final Map<ProcessEventType, List<ProcessEventListen>> processEventListen;
 
-    public void registerProcessor(Class<?> command, Processor<?> process) {
-        processContain.put(command, process);
+    public void addProcessor(Processor<?> process) {
+//        processContain.put(command, process);
     }
 
     public void unRegisterProcessor(Class<?> command) {
@@ -50,4 +51,6 @@ public class ProcessorManager {
     public List<ProcessEventListen> getEventListen(ProcessEventType type) {
         return processEventListen.getOrDefault(type, Collections.emptyList());
     }
+
+
 }

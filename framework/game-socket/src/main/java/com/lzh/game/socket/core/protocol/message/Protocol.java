@@ -1,10 +1,12 @@
-package com.lzh.game.socket.core.message;
+package com.lzh.game.socket.core.protocol.message;
+
+import com.lzh.game.socket.Constant;
 
 import java.lang.annotation.*;
 
 /**
  * @author zehong.l
- * @date 2024-04-07 14:28
+ * @since 2024-04-07 14:28
  **/
 @Documented
 @Target({ElementType.TYPE})
@@ -16,5 +18,5 @@ public @interface Protocol {
 
     int protocolType() default 0;
 
-    int serializeType() default 0;
+    int serializeType() default Constant.DEFAULT_SERIAL_SIGN;
 }

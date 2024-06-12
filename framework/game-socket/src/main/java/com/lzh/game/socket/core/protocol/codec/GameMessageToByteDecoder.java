@@ -1,11 +1,11 @@
 package com.lzh.game.socket.core.protocol.codec;
 
 import com.lzh.game.socket.Constant;
-import com.lzh.game.socket.core.message.MessageManager;
+import com.lzh.game.socket.core.protocol.message.MessageDefine;
+import com.lzh.game.socket.core.protocol.message.MessageManager;
 import com.lzh.game.socket.core.protocol.AbstractCommand;
-import com.lzh.game.socket.core.protocol.MessageSerialize;
-import com.lzh.game.socket.core.protocol.MessageSerializeManager;
-import com.lzh.game.socket.utils.ByteBuffUtils;
+import com.lzh.game.socket.core.protocol.serial.MessageSerialize;
+import com.lzh.game.socket.core.protocol.serial.MessageSerializeManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -26,14 +26,15 @@ public class GameMessageToByteDecoder extends MessageToByteEncoder<Object> {
     public void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
         /**
          * len: int
-         * msgId: msg short
+         * msgId: sort
          * type: request / response / one way byte
          * request: int
-         * data: Object Serializable data. bytes
+         * data: Object Serializable data
          */
         try {
             if (msg instanceof AbstractCommand command) {
-                if (!manager.hasMessage(command.getMsgId())) {
+                var define = manager.findDefine(command.getMsgId());
+                if (!Objects.isNull(define)) {
                     log.error("Encoder. Not defined msg [{}]", command.getMsgId());
                     return;
                 }
@@ -43,10 +44,10 @@ public class GameMessageToByteDecoder extends MessageToByteEncoder<Object> {
                     wrapper.writeShort(msgId);
                     wrapper.writeByte(command.getType());
                     wrapper.writeInt(command.getRequestId());
-                    encode(msgId, command.getData(), wrapper);
+                    encode(define, command.getData(), wrapper);
 
                     int bodyLen = wrapper.readableBytes();
-                    out.ensureWritable(bodyLen + 4);
+                    out.ensureWritable(bodyLen + Constant.HEAD_LEN);
                     out.writeInt(bodyLen);
                     out.writeBytes(wrapper, wrapper.readerIndex(), bodyLen);
                 } finally {
@@ -63,7 +64,8 @@ public class GameMessageToByteDecoder extends MessageToByteEncoder<Object> {
         }
     }
 
-    protected void encode(int msgId, Object msg, ByteBuf out) throws Exception {
+    protected void encode(MessageDefine define, Object msg, ByteBuf out) throws Exception {
+        int msgId = define.getMsgId();
         int serializeType = manager.getSerializeType(msgId);
         MessageSerialize handler = MessageSerializeManager.getInstance()
                 .getProtocolMessage(serializeType);
@@ -71,18 +73,6 @@ public class GameMessageToByteDecoder extends MessageToByteEncoder<Object> {
             log.error("Not defined msg serialize type [{}-{}]", msgId, serializeType);
             return;
         }
-        handler.encode(msgId, msg, out);
-    }
-
-    static int computeRawVarint32Size(int value) {
-        if ((value & -128) == 0) {
-            return 1;
-        } else if ((value & -16384) == 0) {
-            return 2;
-        } else if ((value & -2097152) == 0) {
-            return 3;
-        } else {
-            return (value & -268435456) == 0 ? 4 : 5;
-        }
+        handler.encode(define, msg, out);
     }
 }

@@ -5,7 +5,7 @@ import com.lzh.game.socket.GameSocketProperties;
 import com.lzh.game.socket.core.AtomicLifCycle;
 import com.lzh.game.socket.core.LifeCycle;
 import com.lzh.game.socket.core.invoke.InvokeSupport;
-import com.lzh.game.socket.core.message.MessageManager;
+import com.lzh.game.socket.core.protocol.message.MessageManager;
 import com.lzh.game.socket.core.process.MessageHandlerImpl;
 import com.lzh.game.socket.core.process.Processor;
 import com.lzh.game.socket.core.process.ProcessorManager;
@@ -100,7 +100,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         }
     }
 
-    public void addProcessor(Class<?> command, Processor<?> process) {
+    public void addProcessor(Processor<?> process) {
         this.processorManager.registerProcessor(command, process);
     }
 
