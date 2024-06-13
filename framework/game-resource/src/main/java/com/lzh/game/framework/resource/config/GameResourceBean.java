@@ -5,7 +5,6 @@ import com.lzh.game.framework.resource.data.cache.MemoryResourceCacheFactory;
 import com.lzh.game.framework.resource.data.cache.ResourceCacheFactory;
 import com.lzh.game.framework.resource.reload.ResourceReloadMeta;
 import com.lzh.game.framework.resource.reload.SpringResourceReloadMeta;
-import com.lzh.game.resource.data.*;
 import com.lzh.game.framework.resource.data.load.MongoLoadResourceHandler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;

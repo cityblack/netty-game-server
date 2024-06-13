@@ -1,4 +1,4 @@
-package com.lzh.game.business.utils;
+package com.lzh.game.framework.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;

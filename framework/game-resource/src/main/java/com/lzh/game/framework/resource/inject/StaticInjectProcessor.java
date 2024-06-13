@@ -1,7 +1,6 @@
 package com.lzh.game.framework.resource.inject;
 
 import com.lzh.game.framework.resource.*;
-import com.lzh.game.resource.*;
 import com.lzh.game.framework.resource.data.ResourceManageHandle;
 import javassist.*;
 import lombok.extern.slf4j.Slf4j;

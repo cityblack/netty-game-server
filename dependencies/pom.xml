@@ -21,11 +21,10 @@
         <protostuff.version>1.8.0</protostuff.version>
         <netty.version>4.1.108.Final</netty.version>
         <eventbus.version>3.1.1</eventbus.version>
-        <guava.version>31.0.1-jre</guava.version>
+        <guava.version>33.2.1-jre</guava.version>
         <lombok.version>1.18.30</lombok.version>
         <slf4j-api.verion>2.0.12</slf4j-api.verion>
         <log4j-slf4j-impl.version>2.17.1</log4j-slf4j-impl.version>
-        <reflections.version>0.9.10</reflections.version>
         <spring-boot.version>3.2.4</spring-boot.version>
         <redisson.version>3.16.1</redisson.version>
         <jjwt.version>0.7.0</jjwt.version>
@@ -68,12 +67,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-configuration-processor</artifactId>
-                <optional>true</optional>
-            </dependency>
-
-            <dependency>
                 <groupId>org.greenrobot</groupId>
                 <artifactId>eventbus</artifactId>
                 <version>${eventbus.version}</version>
@@ -83,13 +76,6 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
-            <dependency>
-                <groupId>org.reflections</groupId>
-                <artifactId>reflections</artifactId>
-                <version>${reflections.version}</version>
             </dependency>
 
             <dependency>

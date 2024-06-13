@@ -1,9 +1,9 @@
 package com.lzh.game.framework.resource.data.cache;
 
 import com.google.common.collect.Table;
-import com.lzh.game.common.serialization.JsonUtils;
 import com.lzh.game.framework.resource.data.GetterBuild;
 import com.lzh.game.framework.resource.data.IndexGetter;
+import com.lzh.game.framework.utils.JsonUtils;
 
 import java.io.Serializable;
 import java.text.MessageFormat;

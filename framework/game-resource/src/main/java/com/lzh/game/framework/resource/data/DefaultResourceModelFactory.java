@@ -1,16 +1,18 @@
 package com.lzh.game.framework.resource.data;
 
-import com.lzh.game.framework.resource.config.GameResourceProperties;
 import com.lzh.game.framework.resource.Resource;
+import com.lzh.game.framework.resource.config.GameResourceProperties;
+import com.lzh.game.framework.utils.ClassScannerUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.reflections.Reflections;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -86,17 +88,23 @@ public class DefaultResourceModelFactory implements ResourceModelMeta, Initializ
     }
 
     private void prepareLoad() throws Exception {
-        Class<? extends ResourceNameStrategyStandard> standardType = resourceProperties.getNameStrategyStandard();
-        ResourceNameStrategyStandard nameStrategyStandard = standardType.getDeclaredConstructor().newInstance();
+        StopWatch watch = new StopWatch();
+        watch.start();
+        log.info("Begin load resource.");
+        try {
+            Class<? extends ResourceNameStrategyStandard> standardType = resourceProperties.getNameStrategyStandard();
+            ResourceNameStrategyStandard nameStrategyStandard = standardType.getDeclaredConstructor().newInstance();
 
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage(resourceProperties.getResourceScannerPath())));
-        Set<Class<?>> set = reflections.getTypesAnnotatedWith(Resource.class);
-        if (set.isEmpty()) {
-            log.warn("Not register any resource!!");
-            return;
+            var list = ClassScannerUtils.scanPackage(resourceProperties.getResourceScannerPath(), e -> e.isAnnotationPresent(Resource.class));
+            if (list.isEmpty()) {
+                log.warn("Not register any resource!!");
+                return;
+            }
+            list.forEach(e -> loadModel(e, nameStrategyStandard));
+        } finally {
+            watch.stop();
+            log.info("Load resource finish, use time: {}", watch.getTotalTimeMillis());
         }
-        set.stream().forEach(e -> loadModel(e, nameStrategyStandard));
     }
 
     @Override
