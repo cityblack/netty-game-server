@@ -1,8 +1,10 @@
 package com.lzh.game.framework.repository;
 
+import com.lzh.game.framework.repository.cache.CacheDataRepository;
 import com.lzh.game.framework.repository.cache.CacheEntity;
 import com.lzh.game.framework.repository.db.Element;
 import com.lzh.game.framework.repository.db.Persist;
+import com.lzh.game.framework.repository.db.PersistEntity;
 import com.lzh.game.framework.repository.db.PersistRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
@@ -14,7 +16,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * Find data from cache. If can't find. find data from db
+ *
  * @param <PK>
  * @param <T>
  */
@@ -22,30 +24,27 @@ import java.util.function.Function;
 public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T extends BaseEntity<PK>>
         implements DataRepository<PK, T>, DisposableBean {
 
-    private CacheManager cache;
-
     private Persist persist;
 
     private Class<T> cacheClass;
 
-    private String cacheName;
+    private CacheDataRepository<PK, T> cache;
 
     private PersistRepository repository;
 
     private boolean clearMemAfterClose;
 
-    public DataRepositoryImpl(CacheManager cache, Persist persist, Class<T> cacheClass, PersistRepository repository, boolean clearMemAfterClose) {
+    public DataRepositoryImpl(CacheDataRepository<PK, T> cache, Persist persist, Class<T> cacheClass, PersistRepository repository, boolean clearMemAfterClose) {
         this.cache = cache;
         this.persist = persist;
         this.cacheClass = cacheClass;
-        this.cacheName = cacheClass.getSimpleName();
         this.repository = repository;
         this.clearMemAfterClose = clearMemAfterClose;
     }
 
     @Override
     public T get(PK pk) {
-        return getCache().get(pk, cacheClass);
+        return cache.get(pk);
     }
 
     @Override
@@ -56,7 +55,7 @@ public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T exte
         }
         T entity = repository.findById(pk, this.cacheClass);
         if (Objects.nonNull(entity)) {
-            addCache(entity);
+            add(entity);
         }
         return entity;
     }
@@ -65,9 +64,14 @@ public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T exte
     public T loadOrCreate(PK pk, Function<PK, T> create) {
         T entity = load(pk);
         if (Objects.isNull(entity)) {
-            entity = create.apply(pk);
-            addCache(entity);
-            saveToDb(entity);
+            synchronized (this) {
+                entity = load(pk);
+                if (Objects.isNull(entity)) {
+                    entity = create.apply(pk);
+                    add(entity);
+                    saveToDb(entity);
+                }
+            }
         }
         return entity;
     }
@@ -81,49 +85,44 @@ public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T exte
 
     @Override
     public void clear() {
-        getCache().clear();
+        cache.clear();
     }
 
     @Override
     public T save(T entity) {
-        addCache(entity);
+        cache.add(entity);
         persist.put(Element.saveOf(entity, this.cacheClass));
         return entity;
     }
 
     @Override
     public void add(T entity) {
-        addCache(entity);
+        cache.add(entity);
     }
 
-    private Cache getCache() {
-        return cache.getCache(this.cacheName);
+    @Override
+    public void deleteMem(PK pk) {
+        cache.deleteMem(pk);
     }
 
     @Override
     public void update(PK pk, T data) {
-
         if (Objects.isNull(data)) {
             return;
         }
-        getCache().put(pk, data);
-        persist.put(Element.saveOf(data, data.getClass()));
+        cache.add(data);
+        persist.put(Element.saveOf(data, this.cacheClass));
     }
 
     @Override
-    public T deleter(PK pk) {
+    public void deleter(PK pk) {
         T data = load(pk);
         if (Objects.nonNull(data)) {
+            deleteMem(pk);
             persist.put(Element.deleterOf(data, this.cacheClass));
-            this.getCache().evict(pk);
         }
-        return data;
     }
 
-    private void addCache(CacheEntity<PK> cacheEntity) {
-        PK key = cacheEntity.cacheKey();
-        getCache().put(key, cacheEntity);
-    }
 
     private void saveToDb(T entity) {
         this.persist.put(Element.saveOf(entity, this.cacheClass));

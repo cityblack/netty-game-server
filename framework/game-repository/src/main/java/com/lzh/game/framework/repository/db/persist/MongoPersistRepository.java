@@ -30,17 +30,17 @@ public class MongoPersistRepository implements PersistRepository {
     }
 
     @Override
-    public void save(PersistEntity entity) {
+    public void save(PersistEntity<?> entity) {
         mongoOperations.save(entity);
     }
 
     @Override
-    public void saveAll(Collection<PersistEntity> entities) {
+    public void saveAll(Collection<PersistEntity<?>> entities) {
         entities.forEach(this::save);
     }
 
     @Override
-    public void update(PersistEntity entity) {
+    public void update(PersistEntity<?> entity) {
         mongoOperations.save(entity);
     }
 
@@ -48,7 +48,7 @@ public class MongoPersistRepository implements PersistRepository {
     public <PK extends Serializable & Comparable<PK>, T extends PersistEntity<PK>> void update(PK pk, Class<T> clazz, Map<String, Object> change) {
         Query query = findKeyQuery(pk, clazz);
         Update update = new Update();
-        change.forEach((k,v) -> update.set(k,v));
+        change.forEach(update::set);
         mongoOperations.updateFirst(query, update, clazz);
     }
 
@@ -58,7 +58,7 @@ public class MongoPersistRepository implements PersistRepository {
     }
 
     @Override
-    public void deleter(PersistEntity entity) {
+    public <PK extends Serializable & Comparable<PK>, T extends PersistEntity<PK>> void deleter(T entity) {
 
         mongoOperations.remove(entity);
     }
@@ -69,11 +69,11 @@ public class MongoPersistRepository implements PersistRepository {
     }
 
     @Override
-    public <T extends PersistEntity> List<T> findAll(Class<T> clazz) {
+    public <PK extends Serializable & Comparable<PK>, T extends PersistEntity<PK>> List<T> findAll(Class<T> clazz) {
         return mongoOperations.findAll(clazz);
     }
 
-    private <PK extends Serializable, T extends PersistEntity>Query findKeyQuery(PK pk, Class<T> clazz) {
+    private <PK extends Serializable & Comparable<PK>, T extends PersistEntity<PK>>Query findKeyQuery(PK pk, Class<T> clazz) {
 
         PersistentEntity persistentEntity = mappingContext.getPersistentEntity(clazz);
         String idKey = ID_FIELD;

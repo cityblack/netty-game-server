@@ -1,7 +1,7 @@
 package com.lzh.game.start.pool;
 
-import com.lzh.game.socket.core.process.ProcessorExecutorService;
-import com.lzh.game.socket.core.session.Session;
+import com.lzh.game.framework.socket.core.process.ProcessorExecutorService;
+import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.start.cmd.impl.CmdMessage;
 import lombok.extern.slf4j.Slf4j;
 

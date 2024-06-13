@@ -1,6 +1,6 @@
 package com.lzh.game.start;
 
-import com.lzh.socket.starter.EnableTcpServer;
+import com.lzh.game.framework.socket.starter.EnableTcpServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;

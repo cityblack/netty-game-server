@@ -1,36 +1,34 @@
 package com.lzh.game.framework.gateway;
 
-import com.lzh.game.common.bean.EnhanceHandlerMethod;
-import com.lzh.game.common.util.Constant;
-import com.lzh.game.socket.core.invoke.InvokeSupport;
-import com.lzh.game.socket.core.bootstrap.GameServer;
-import com.lzh.game.socket.GameSocketProperties;
-import com.lzh.game.socket.core.ForwardSessionSelect;
-import com.lzh.game.socket.core.process.RequestDispatch;
-import com.lzh.game.socket.core.bootstrap.GameTcpClient;
-import com.lzh.game.socket.core.bootstrap.TcpCommonServer;
-import com.lzh.game.socket.core.invoke.RequestConvertManager;
-import com.lzh.game.socket.core.invoke.InvokeMethodArgumentValues;
-import com.lzh.game.socket.core.process.ForwardGatewayProcess;
-import com.lzh.game.socket.core.process.FutureResponseProcess;
-import com.lzh.game.socket.core.session.*;
-import com.lzh.game.socket.core.session.cache.GameSessionMemoryCacheManage;
-import com.lzh.game.socket.core.session.impl.GameSession;
-import com.lzh.socket.starter.GameSocketConfiguration;
-import com.lzh.socket.starter.SpringGameServerProperties;
+import com.lzh.game.framework.socket.core.bootstrap.GameServer;
+import com.lzh.game.framework.socket.GameSocketProperties;
+import com.lzh.game.framework.socket.core.ForwardSessionSelect;
+import com.lzh.game.framework.socket.core.process.RequestDispatch;
+import com.lzh.game.framework.socket.core.bootstrap.GameTcpClient;
+import com.lzh.game.framework.socket.core.bootstrap.TcpCommonServer;
+import com.lzh.game.framework.socket.core.invoke.RequestConvertManager;
+import com.lzh.game.framework.socket.core.invoke.InvokeMethodArgumentValues;
+import com.lzh.game.framework.socket.core.process.ForwardGatewayProcess;
+import com.lzh.game.framework.socket.core.process.FutureResponseProcess;
+import com.lzh.game.framework.socket.core.session.GameSessionManage;
+import com.lzh.game.framework.socket.core.session.Session;
+import com.lzh.game.framework.socket.core.session.SessionFactory;
+import com.lzh.game.framework.socket.core.session.SessionManage;
+import com.lzh.game.framework.socket.core.session.cache.GameSessionMemoryCacheManage;
+import com.lzh.game.framework.socket.core.session.impl.GameSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import javax.annotation.Resource;
 
 @Configuration
 @Import(GameSocketConfiguration.class)
 @EnableConfigurationProperties(GatewayProperties.class)
 public class GateConfiguration {
 
-    @Resource
+    @Autowired
     private GatewayProperties properties;
 
     @Bean

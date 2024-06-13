@@ -9,8 +9,8 @@ import com.lzh.game.start.model.core.util.consume.ConsumeUtils;
 import com.lzh.game.start.model.core.util.reward.Reward;
 import com.lzh.game.start.model.core.util.reward.RewardDef;
 import com.lzh.game.start.model.core.util.reward.RewardUtils;
-import com.lzh.game.resource.Id;
-import com.lzh.game.resource.Resource;
+import com.lzh.game.framework.resource.Id;
+import com.lzh.game.framework.resource.Resource;
 import com.lzh.game.start.model.item.model.ItemType;
 import lombok.Data;
 

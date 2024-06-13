@@ -1,8 +1,8 @@
 package com.lzh.game.start.config.convert;
 
 import com.lzh.game.start.util.ApplicationUtils;
-import com.lzh.game.socket.core.invoke.RequestConvert;
-import com.lzh.game.socket.core.session.Session;
+import com.lzh.game.framework.socket.core.invoke.RequestConvert;
+import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.start.model.player.Player;
 import com.lzh.game.start.model.player.service.PlayerService;
 

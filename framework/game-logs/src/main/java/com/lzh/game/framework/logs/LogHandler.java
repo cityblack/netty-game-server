@@ -1,6 +1,7 @@
 package com.lzh.game.framework.logs;
 
-import com.lzh.game.common.util.ClassScanner;
+import com.lzh.game.framework.logs.anno.LogFacade;
+import com.lzh.game.framework.utils.ClassScannerUtils;
 import javassist.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.DefaultParameterNameDiscoverer;
@@ -14,7 +15,7 @@ import java.util.stream.Stream;
 
 /**
  * @author zehong.l
- * @date 2023-05-31 15:42
+ * @since 2023-05-31 15:42
  **/
 @Slf4j
 public class LogHandler {
@@ -31,7 +32,7 @@ public class LogHandler {
     public static void init(String scanPath) {
         log.info("{}. Loading log config..", scanPath);
         long startTime = System.currentTimeMillis();
-        var list = ClassScanner.scanPackage(scanPath, e -> e.isAnnotationPresent(LogFacade.class));
+        var list = ClassScannerUtils.scanPackage(scanPath, e -> e.isAnnotationPresent(LogFacade.class));
         for (Class<?> clazz : list) {
             registerLog(clazz);
         }

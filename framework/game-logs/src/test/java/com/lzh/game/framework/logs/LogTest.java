@@ -1,7 +1,6 @@
 package com.lzh.game.framework.logs;
 
-import com.lzh.game.framework.logs.LogFacade;
-import com.lzh.game.framework.logs.LogMethod;
+import com.lzh.game.framework.logs.anno.LogFacade;
 
 /**
  * @author zehong.l

@@ -1,8 +1,7 @@
 package com.lzh.game.start.model.item.bag;
 
-import com.lzh.game.repository.BaseEntity;
+import com.lzh.game.framework.repository.BaseEntity;
 import com.lzh.game.start.model.item.bag.model.ItemStorage;
-import com.lzh.game.repository.db.PersistEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

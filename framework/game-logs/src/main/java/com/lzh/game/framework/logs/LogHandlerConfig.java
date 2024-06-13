@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @author zehong.l
- * @date 2024-04-01 18:14
+ * @since 2024-04-01 18:14
  **/
 @Configuration
 @EnableConfigurationProperties

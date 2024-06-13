@@ -1,5 +1,6 @@
 package com.lzh.game.framework.repository;
 
+import com.lzh.game.framework.repository.cache.CacheDataRepositoryImpl;
 import com.lzh.game.framework.repository.db.Persist;
 import com.lzh.game.framework.repository.db.PersistEntity;
 import com.lzh.game.framework.repository.db.PersistRepository;
@@ -57,7 +58,7 @@ public class RepositoryInjectProcessor implements BeanPostProcessor, Ordered, Ap
             throwInjectTypeError(bean, field);
         }
         Class<?> dataType = (Class<?>) types[1];
-        if (!PersistEntity.class.isAssignableFrom(dataType)) {
+        if (!BaseEntity.class.isAssignableFrom(dataType)) {
             throwInjectTypeError(bean, field);
         }
         DataRepository<?, ?> repository = createRepository(dataType);
@@ -75,8 +76,7 @@ public class RepositoryInjectProcessor implements BeanPostProcessor, Ordered, Ap
         Persist persist = applicationContext.getBean(Persist.class);
         PersistRepository repository = applicationContext.getBean(PersistRepository.class);
         GameRepositoryConfig config = applicationContext.getBean(GameRepositoryConfig.class);
-
-        return new DataRepositoryImpl(cacheManager, persist, dataClass, repository, config.isClearRedisAfterClose());
+        return new DataRepositoryImpl(new CacheDataRepositoryImpl(cacheManager, dataClass), persist, dataClass, repository, config.isClearCacheAfterClose());
     }
 
     private void injectValue(Field field, Object bean, DataRepository<?, ?> data) {

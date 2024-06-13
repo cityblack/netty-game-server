@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * @author zehong.l
- * @date 2023-05-31 16:39
+ * @since 2023-05-31 16:39
  **/
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -15,7 +15,6 @@ public @interface LogMethod {
 
     String logFile();
 
-    int logReason();
+    int logReason() default 0;
 
-    boolean recordUser() default true;
 }

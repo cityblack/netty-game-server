@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 @ConfigurationProperties(prefix = "game.repository")
 public class GameRepositoryConfig {
 
-    private boolean clearRedisAfterClose = true;
+    private boolean clearCacheAfterClose = true;
     /**
      * Use {@link RedisPersistConsumer}
      */

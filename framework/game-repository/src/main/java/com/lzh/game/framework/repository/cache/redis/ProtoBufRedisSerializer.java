@@ -1,6 +1,6 @@
 package com.lzh.game.framework.repository.cache.redis;
 
-import com.lzh.game.common.serialization.ProtoBufUtils;
+import com.lzh.game.framework.utils.ProtoBufUtils;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
 

@@ -1,15 +1,15 @@
 package com.lzh.game.start.demo;
 
-import com.lzh.game.socket.annotation.RequestMapping;
+import com.lzh.game.framework.socket.annotation.RequestMapping;
 import com.lzh.game.start.cmd.impl.CmdMessage;
-import com.lzh.socket.starter.Action;
+import com.lzh.game.framework.socket.starter.Action;
 import lombok.extern.slf4j.Slf4j;
 
 @Action
 @Slf4j
 public class HelloAction {
 
-    @RequestMapping(CmdMessage.CM_HELLO)
+
     public ResponseHello hello(RequestHello hello) {
         log.info("Server get the message:{}", hello.getContent());
         ResponseHello response = new ResponseHello();

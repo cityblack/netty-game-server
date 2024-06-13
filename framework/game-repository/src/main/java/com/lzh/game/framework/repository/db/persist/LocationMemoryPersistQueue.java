@@ -28,7 +28,7 @@ public class LocationMemoryPersistQueue implements Persist, InitializingBean, Di
 
     public LocationMemoryPersistQueue(PersistConsumer consumer) {
         this.persistConsumer = consumer;
-        this.queue = new LinkedBlockingQueue();
+        this.queue = new LinkedBlockingQueue<>();
         this.enable = new AtomicBoolean(true);
         this.consumeTimer = Executors.newScheduledThreadPool(2);
     }

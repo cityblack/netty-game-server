@@ -11,34 +11,34 @@ public class Element implements Serializable {
 
     private Serializable id;
 
-    private Class<? extends PersistEntity> clazz;
+    private Class<? extends PersistEntity<?>> clazz;
 
-    private PersistEntity entity;
+    private PersistEntity<?> entity;
 
     private EventType eventType;
 
-    private Element(Serializable id, EventType eventType, Class<? extends PersistEntity> clazz) {
+    private Element(Serializable id, EventType eventType, Class<? extends PersistEntity<?>> clazz) {
         this.id = id;
         this.eventType = eventType;
         this.clazz = clazz;
     }
 
-    protected Element(Serializable id, Class<? extends PersistEntity> clazz, PersistEntity entity, EventType eventType) {
+    protected Element(Serializable id, Class<? extends PersistEntity<?>> clazz, PersistEntity<?> entity, EventType eventType) {
         this.id = id;
         this.clazz = clazz;
         this.entity = entity;
         this.eventType = eventType;
     }
 
-    public static Element saveOf(PersistEntity entity, Class<? extends PersistEntity> clazz) {
+    public static Element saveOf(PersistEntity<?> entity, Class<? extends PersistEntity<?>> clazz) {
         return new Element(entity.getKey(), clazz, entity, EventType.SAVE);
     }
 
-    public static Element deleterOf(PersistEntity entity, Class<? extends PersistEntity> clazz) {
+    public static Element deleterOf(PersistEntity<?> entity, Class<? extends PersistEntity<?>> clazz) {
         return new Element(entity.getKey(), clazz, entity, EventType.DELETER);
     }
 
-    public static Element updateOf(PersistEntity entity, Class<? extends PersistEntity> clazz) {
+    public static Element updateOf(PersistEntity<?> entity, Class<? extends PersistEntity<?>> clazz) {
         return new Element(entity.getKey(), clazz, entity, EventType.UPDATE);
     }
 
@@ -50,19 +50,19 @@ public class Element implements Serializable {
         this.id = id;
     }
 
-    public Class<? extends PersistEntity> getClazz() {
+    public Class<? extends PersistEntity<?>> getClazz() {
         return clazz;
     }
 
-    public void setClazz(Class<? extends PersistEntity> clazz) {
+    public void setClazz(Class<? extends PersistEntity<?>> clazz) {
         this.clazz = clazz;
     }
 
-    public PersistEntity getEntity() {
+    public PersistEntity<?> getEntity() {
         return entity;
     }
 
-    public void setEntity(PersistEntity entity) {
+    public void setEntity(PersistEntity<?> entity) {
         this.entity = entity;
     }
 

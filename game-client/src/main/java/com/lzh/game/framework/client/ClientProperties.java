@@ -1,6 +1,6 @@
 package com.lzh.game.framework.client;
 
-import com.lzh.game.socket.GameSocketProperties;
+import com.lzh.game.framework.socket.GameSocketProperties;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

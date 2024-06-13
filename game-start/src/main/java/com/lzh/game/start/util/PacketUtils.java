@@ -1,7 +1,7 @@
 package com.lzh.game.start.util;
 
-import com.lzh.game.socket.utils.SocketUtils;
-import com.lzh.game.socket.core.session.Session;
+import com.lzh.game.framework.socket.utils.SocketUtils;
+import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.start.model.player.Player;
 import com.lzh.game.start.model.player.service.SessionPlayerManage;
 

@@ -1,7 +1,7 @@
 package com.lzh.game.start.model.item.resource;
 
-import com.lzh.game.resource.Id;
-import com.lzh.game.resource.Resource;
+import com.lzh.game.framework.resource.Id;
+import com.lzh.game.framework.resource.Resource;
 import lombok.Data;
 
 @Resource
