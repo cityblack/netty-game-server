@@ -38,21 +38,6 @@ public interface DataRepository<PK extends Serializable & Comparable<PK>, T exte
     T loadOrCreate(PK pk, Function<PK, T> create);
 
     /**
-     * Update cache proxy data to mem. If data entity extends {@link PersistEntity} while update to db
-     *
-     * @param pk
-     * @param data
-     */
-    void update(PK pk, T data);
-
-    /**
-     * @param data
-     */
-    default void update(T data) {
-        update(data.cacheKey(), data);
-    }
-
-    /**
      * Deleter data from mem. If the class extends {@link PersistEntity} will persist to db
      */
     void deleter(PK pk);

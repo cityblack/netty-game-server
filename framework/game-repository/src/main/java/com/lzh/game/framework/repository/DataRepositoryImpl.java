@@ -53,11 +53,17 @@ public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T exte
         if (Objects.nonNull(cache)) {
             return cache;
         }
-        T entity = repository.findById(pk, this.cacheClass);
-        if (Objects.nonNull(entity)) {
-            add(entity);
+        synchronized (this) {
+            cache = get(pk);
+            if (Objects.isNull(cache)) {
+                T entity = repository.findById(pk, this.cacheClass);
+                if (Objects.nonNull(entity)) {
+                    add(entity);
+                    return entity;
+                }
+            }
+            return cache;
         }
-        return entity;
     }
 
     @Override
@@ -103,15 +109,6 @@ public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T exte
     @Override
     public void deleteMem(PK pk) {
         cache.deleteMem(pk);
-    }
-
-    @Override
-    public void update(PK pk, T data) {
-        if (Objects.isNull(data)) {
-            return;
-        }
-        cache.add(data);
-        persist.put(Element.saveOf(data, this.cacheClass));
     }
 
     @Override

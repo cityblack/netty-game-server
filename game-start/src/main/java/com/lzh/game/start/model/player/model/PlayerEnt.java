@@ -1,7 +1,7 @@
 package com.lzh.game.start.model.player.model;
 
-import com.lzh.game.common.util.TimeUtils;
-import com.lzh.game.repository.BaseEntity;
+import com.lzh.game.business.utils.TimeUtils;
+import com.lzh.game.framework.repository.LongBaseEntity;
 import com.lzh.game.start.model.wallet.Wallet;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -12,7 +12,7 @@ import java.io.Serializable;
 
 @Data
 @Document
-public class PlayerEnt extends BaseEntity<Long> implements Serializable {
+public class PlayerEnt extends LongBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 2728415253086770853L;
 

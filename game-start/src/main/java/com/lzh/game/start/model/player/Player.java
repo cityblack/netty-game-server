@@ -1,8 +1,8 @@
 package com.lzh.game.start.model.player;
 
+import com.lzh.game.business.utils.TimeUtils;
+import com.lzh.game.framework.repository.LongBaseEntity;
 import com.lzh.game.start.util.ApplicationUtils;
-import com.lzh.game.common.util.TimeUtils;
-import com.lzh.game.repository.BaseEntity;
 import com.lzh.game.start.model.item.bag.Bag;
 import com.lzh.game.start.model.item.bag.dao.BagDataManage;
 import com.lzh.game.start.model.player.model.PlayerEnt;
@@ -11,7 +11,7 @@ import com.lzh.game.start.model.wallet.Wallet;
 /**
  * Don't cache player data anywhere.
  */
-public class Player extends BaseEntity<Long> {
+public class Player extends LongBaseEntity {
 
     private long objectId;
 
