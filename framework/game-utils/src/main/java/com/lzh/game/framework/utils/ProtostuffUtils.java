@@ -11,7 +11,7 @@ import org.springframework.objenesis.ObjenesisStd;
  * @author zehong.l
  * @since 2024-06-13 15:53
  **/
-public class ProtoBufUtils {
+public class ProtostuffUtils {
 
     private final static Objenesis OBJENESIS = new ObjenesisStd(true);
 

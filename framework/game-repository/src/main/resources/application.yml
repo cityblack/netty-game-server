@@ -13,5 +13,5 @@ logging:
     com.lzh.game.repository: debug
 game:
   repository:
-    clear-redis-after-close: false
+    clear-after-close: false
 

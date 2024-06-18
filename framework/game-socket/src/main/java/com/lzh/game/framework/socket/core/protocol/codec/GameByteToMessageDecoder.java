@@ -1,13 +1,12 @@
 package com.lzh.game.framework.socket.core.protocol.codec;
 
+import com.lzh.game.framework.socket.Constant;
 import com.lzh.game.framework.socket.core.protocol.AbstractCommand;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.Response;
 import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerialize;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerializeManager;
-import com.lzh.game.framework.socket.Constant;
-import com.lzh.game.socket.core.protocol.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -70,6 +69,7 @@ public class GameByteToMessageDecoder extends ByteToMessageDecoder {
         if (dataToBytes) {
             byte[] bytes = new byte[dataLen];
             in.readBytes(bytes, in.readerIndex(), bytes.length);
+            in.markReaderIndex();
             return bytes;
         }
         var define = manager.findDefine(msgId);

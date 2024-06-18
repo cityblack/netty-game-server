@@ -1,11 +1,11 @@
 package com.lzh.game.framework.socket.core.protocol.codec;
 
+import com.lzh.game.framework.socket.Constant;
+import com.lzh.game.framework.socket.core.protocol.AbstractCommand;
 import com.lzh.game.framework.socket.core.protocol.message.MessageDefine;
 import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerialize;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerializeManager;
-import com.lzh.game.framework.socket.Constant;
-import com.lzh.game.framework.socket.core.protocol.AbstractCommand;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -34,7 +34,7 @@ public class GameMessageToByteDecoder extends MessageToByteEncoder<Object> {
         try {
             if (msg instanceof AbstractCommand command) {
                 var define = manager.findDefine(command.getMsgId());
-                if (!Objects.isNull(define)) {
+                if (Objects.isNull(define)) {
                     log.error("Encoder. Not defined msg [{}]", command.getMsgId());
                     return;
                 }
