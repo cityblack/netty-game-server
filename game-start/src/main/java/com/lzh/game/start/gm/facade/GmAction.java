@@ -1,6 +1,6 @@
 package com.lzh.game.start.gm.facade;
 
-import com.lzh.game.framework.socket.annotation.RequestMapping;
+import com.lzh.game.framework.socket.annotation.Receive;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.start.cmd.impl.CmdMessage;
 import com.lzh.game.start.gm.packet.GmParam;
@@ -14,7 +14,7 @@ public class GmAction {
     @Autowired
     private GmService gmService;
 
-    @RequestMapping(CmdMessage.CM_GM)
+    @Receive(CmdMessage.CM_GM)
     public void gmRequest(Session session, GmParam param) {
         gmService.doGmMethod(session, param.getMethodName(), param.getValue());
     }

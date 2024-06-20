@@ -10,7 +10,6 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RequestMapping {
+public @interface Receive {
 
-    int value() default 0;
 }

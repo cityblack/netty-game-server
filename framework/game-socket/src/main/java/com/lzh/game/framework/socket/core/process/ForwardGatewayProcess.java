@@ -1,6 +1,5 @@
 package com.lzh.game.framework.socket.core.process;
 
-import com.lzh.game.common.util.Constant;
 import com.lzh.game.framework.socket.core.FutureAsyncResponse;
 import com.lzh.game.framework.socket.core.bootstrap.GameTcpClient;
 import com.lzh.game.framework.socket.core.session.Session;

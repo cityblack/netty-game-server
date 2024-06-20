@@ -4,6 +4,6 @@ import com.lzh.game.framework.socket.core.session.Session;
 
 public interface ProcessorExecutorService<T> {
 
-    void submit(Session session, T command, Runnable runnable);
+    void submit(Session session, T msg, Runnable runnable);
 
 }

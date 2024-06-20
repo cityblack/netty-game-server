@@ -1,6 +1,6 @@
 package com.lzh.game.framework.socket.core.invoke;
 
-import com.lzh.game.framework.socket.annotation.RequestMapping;
+import com.lzh.game.framework.socket.annotation.Receive;
 import lombok.Data;
 
 import java.lang.reflect.Method;
@@ -18,18 +18,18 @@ public class InvokeUtils {
     public static List<InvokeModel> parseBean(Object bean) {
         Class<?> clazz = bean.getClass();
         return Stream.of(clazz.getDeclaredMethods())
-                .filter(method -> method.isAnnotationPresent(RequestMapping.class))
+                .filter(method -> method.isAnnotationPresent(Receive.class))
                 .map(method -> toModel(bean, method))
                 .collect(Collectors.toList());
     }
 
     private static InvokeModel toModel(Object bean, Method method) {
         EnhanceHandlerMethod invoke = new EnhanceHandlerMethod(bean, method);
-        RequestMapping mapping = method.getAnnotation(RequestMapping.class);
+        Receive mapping = method.getAnnotation(Receive.class);
         return parseTargetMethod(mapping, invoke);
     }
 
-    private static InvokeModel parseTargetMethod(RequestMapping mapping, EnhanceHandlerMethod method) {
+    private static InvokeModel parseTargetMethod(Receive mapping, EnhanceHandlerMethod method) {
         int cmd = mapping.value();
 
         List<Class<?>> protoParamType = Stream.of(method.getParamsType())

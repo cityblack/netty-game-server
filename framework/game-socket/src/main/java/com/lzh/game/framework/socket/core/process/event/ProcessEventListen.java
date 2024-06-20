@@ -1,4 +1,4 @@
-package com.lzh.game.framework.socket.core.process;
+package com.lzh.game.framework.socket.core.process.event;
 
 import com.lzh.game.framework.socket.core.session.Session;
 

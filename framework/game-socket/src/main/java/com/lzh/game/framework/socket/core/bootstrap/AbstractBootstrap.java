@@ -15,7 +15,7 @@ import com.lzh.game.framework.socket.core.AtomicLifCycle;
 import com.lzh.game.framework.socket.core.LifeCycle;
 import com.lzh.game.framework.socket.core.process.MessageHandlerImpl;
 import com.lzh.game.framework.socket.core.process.Processor;
-import com.lzh.game.framework.socket.core.process.ProcessorManager;
+import com.lzh.game.framework.socket.core.process.context.ProcessorContext;
 
 public abstract class AbstractBootstrap<T extends GameSocketProperties>
         implements LifeCycle {
@@ -24,7 +24,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     protected T properties;
 
-    protected ProcessorManager processorManager;
+    protected ProcessorContext processorManager;
 
     protected SessionManage<? extends Session> sessionManage;
 
@@ -39,7 +39,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         this.properties = properties;
         this.sessionManage = sessionManage;
 
-        this.processorManager = new ProcessorManager();
+        this.processorManager = new ProcessorContext(processEventListen);
         this.ioHandler = new GameIoHandler<>(new MessageHandlerImpl(processorManager), this.sessionManage);
     }
 
@@ -65,7 +65,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         return ioHandler;
     }
 
-    public ProcessorManager getProcessManager() {
+    public ProcessorContext getProcessManager() {
         return processorManager;
     }
 

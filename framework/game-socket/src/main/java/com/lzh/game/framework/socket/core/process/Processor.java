@@ -1,5 +1,6 @@
 package com.lzh.game.framework.socket.core.process;
 
+import com.lzh.game.framework.socket.core.process.context.ProcessorContext;
 import com.lzh.game.framework.socket.core.session.Session;
 
 /**
@@ -8,11 +9,10 @@ import com.lzh.game.framework.socket.core.session.Session;
  * Response
  * forward -- gateway
  *
- * @param <E>
  */
-public interface Processor<E> {
+public interface Processor {
 
-    void process(Session session, E e);
+    void process(Session session, Object e, ProcessorContext context);
 
-    boolean match(E msg);
+    boolean match(Object msg);
 }

@@ -11,7 +11,7 @@ import io.netty.buffer.ByteBuf;
  * @author zehong.l
  * @since 2024-04-07 14:53
  **/
-public class ProtostuffProtocol implements MessageSerialize {
+public class ProtostuffSerialize implements MessageSerialize {
 
     @Override
     public Object decode(MessageDefine define, ByteBuf in) throws DecodeSerializeException {

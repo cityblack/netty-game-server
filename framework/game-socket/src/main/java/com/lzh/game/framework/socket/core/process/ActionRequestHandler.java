@@ -1,7 +1,5 @@
 package com.lzh.game.framework.socket.core.process;
 
-import com.lzh.game.common.bean.EnhanceHandlerMethod;
-import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.framework.socket.core.invoke.InvokeMethodArgumentValues;
 import com.lzh.game.framework.socket.core.invoke.InvokeSupport;
 import com.lzh.game.framework.socket.core.invoke.support.ErrorHandler;
@@ -16,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 
 @Slf4j
-public class ActionRequestHandler implements RequestDispatch, Processor<Request> {
+public class ActionRequestHandler implements RequestDispatch, Processor {
 
     private ErrorHandler errorHandler;
 
@@ -24,13 +22,13 @@ public class ActionRequestHandler implements RequestDispatch, Processor<Request>
 
     private InvokeMethodArgumentValues transfer;
 
-    private InvokeSupport<EnhanceHandlerMethod> support;
+    private InvokeSupport support;
 
-    public ActionRequestHandler(InvokeSupport<EnhanceHandlerMethod> support, InvokeMethodArgumentValues transfer) {
+    public ActionRequestHandler(InvokeSupport support, InvokeMethodArgumentValues transfer) {
         this(support, transfer, new NoneErrorHandler(), new NoneInterceptorHandler());
     }
 
-    public ActionRequestHandler(InvokeSupport<EnhanceHandlerMethod> support, InvokeMethodArgumentValues transfer, ErrorHandler errorHandler, InterceptorHandler interceptorHandler) {
+    public ActionRequestHandler(InvokeSupport support, InvokeMethodArgumentValues transfer, ErrorHandler errorHandler, InterceptorHandler interceptorHandler) {
         this.errorHandler = errorHandler;
         this.interceptorHandler = interceptorHandler;
         this.transfer = transfer;
@@ -95,12 +93,12 @@ public class ActionRequestHandler implements RequestDispatch, Processor<Request>
     }
 
     @Override
-    public void process(Session session, Request request) {
+    public void process(Session session, Object request) {
 
     }
 
     @Override
-    public boolean match(Request msg) {
+    public boolean match(Object msg) {
         return false;
     }
 

@@ -1,5 +1,7 @@
 package com.lzh.game.framework.socket.core.process;
 
+import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
+import com.lzh.game.framework.socket.core.process.event.ProcessEventType;
 import com.lzh.game.framework.socket.core.session.Session;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,10 +13,10 @@ import java.util.List;
 @Slf4j
 public class MessageHandlerImpl implements MessageHandler {
 
-    private ProcessorManager manager;
+    private final ProcessorPipeline pipLine;
 
-    public MessageHandlerImpl(ProcessorManager manager) {
-        this.manager = manager;
+    public MessageHandlerImpl(ProcessorPipeline pipLine) {
+        this.pipLine = pipLine;
     }
 
     @Override
@@ -32,7 +34,7 @@ public class MessageHandlerImpl implements MessageHandler {
     @Override
     public void exceptionCaught(Session session, Throwable throwable) {
         log.error("session:[{}] error", session.getRemoteAddress(), throwable);
-        doEvent(session, ProcessEventType.EXCEPTION);
+        doEvent(session, ProcessEventType.EXCEPTION, throwable);
     }
 
     @Override
@@ -47,15 +49,15 @@ public class MessageHandlerImpl implements MessageHandler {
     }
 
     private void received(Session session, Object data) {
-
-//        Processor process = manager.getProcess(data.getClass());
-//        process.process(session, data);
+        pipLine.fireReceive(session, data);
     }
 
 
     private void doEvent(Session session, ProcessEventType type) {
-        for (ProcessEventListen event : manager.getEventListen(type)) {
-            event.event(session);
-        }
+        doEvent(session, type, null);
+    }
+
+    private void doEvent(Session session, ProcessEventType type, Object data) {
+        pipLine.fireEvent(session, type, data);
     }
 }
