@@ -1,6 +1,5 @@
 package com.lzh.game.framework.socket.starter;
 
-import com.lzh.game.framework.socket.core.invoke.MethodInvoke;
 import com.lzh.game.framework.socket.core.invoke.support.ErrorHandler;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.Response;

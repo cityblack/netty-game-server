@@ -1,5 +1,7 @@
 package com.lzh.game.framework.socket.core.invoke;
 
+import com.lzh.game.framework.utils.bean.MethodInvoke;
+
 import java.util.List;
 
 /**

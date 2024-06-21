@@ -4,11 +4,11 @@ import com.lzh.game.framework.socket.core.invoke.InvokeMethodArgumentValues;
 import com.lzh.game.framework.socket.core.invoke.InvokeSupport;
 import com.lzh.game.framework.socket.core.invoke.support.ErrorHandler;
 import com.lzh.game.framework.socket.core.invoke.support.InterceptorHandler;
-import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.exception.NotDefinedResponseProtocolException;
 import com.lzh.game.framework.socket.exception.NotFondProtocolException;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.Response;
+import com.lzh.game.framework.utils.bean.HandlerMethod;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -37,7 +37,7 @@ public class ActionRequestHandler implements RequestDispatch {
 
     protected void executeAction(Request request, Response response) {
         int msgId = request.getMsgId();
-        EnhanceHandlerMethod method = support.getActionHandler(msgId);
+        MethodInvoke method = support.getActionHandler(msgId);
         if (Objects.isNull(method)) {
             this.onError(request, response, new NotFondProtocolException(msgId));
             return;

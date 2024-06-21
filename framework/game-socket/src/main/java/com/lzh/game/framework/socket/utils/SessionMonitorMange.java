@@ -159,7 +159,7 @@ public class SessionMonitorMange<S extends Session>
         }
     }
 
-    protected class MonitorObjectMate {
+    protected static class MonitorObjectMate {
         String address;
         SeasonMonitorConfig config;
         Consumer<String> notConnectedCall;

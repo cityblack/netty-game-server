@@ -1,8 +1,7 @@
 package com.lzh.game.framework.socket.core.invoke;
 
-
-import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.framework.socket.core.protocol.Request;
+import com.lzh.game.framework.utils.bean.HandlerMethod;
 
 public interface InvokeMethodArgumentValues {
 

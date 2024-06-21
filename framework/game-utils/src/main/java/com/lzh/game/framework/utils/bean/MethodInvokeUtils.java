@@ -1,8 +1,9 @@
-package com.lzh.game.framework.socket.utils;
+package com.lzh.game.framework.utils.bean;
 
-import com.lzh.game.framework.socket.core.invoke.MethodInvoke;
 import javassist.*;
+import javassist.bytecode.ClassFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 /**
  * @author zehong.l
- * @since 2024/6/13 3:01
+ * @since 2024/6/21 21:58
  **/
 @Slf4j
 public class MethodInvokeUtils {
@@ -27,7 +28,7 @@ public class MethodInvokeUtils {
      * @param method
      * @return
      */
-    public static MethodInvoke enhanceInvoke(Object bean, Method method) throws NotFoundException, CannotCompileException, IOException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public static MethodInvoke enhanceInvoke(Object bean, Method method) throws NotFoundException, CannotCompileException, IOException, NoSuchMethodException {
 
         String superName = bean.getClass().getName();
         String newClassName = superName.replaceAll("(.+)\\.(\\w+)", "$1.MethodInvoke$2") + "_" + method.getName();
@@ -51,8 +52,7 @@ public class MethodInvokeUtils {
 //        enhance.getClassFile2().setMinorVersion(ClassFile.JAVA_8);
         enhance.writeFile(MethodInvoke.class.getClassLoader().getResource("./").getFile());
         Constructor<?> enhanceConstructor = enhance.toClass().getConstructor(bean.getClass());
-
-        return (MethodInvoke) enhanceConstructor.newInstance();
+        return (MethodInvoke) BeanUtils.instantiateClass(enhanceConstructor, bean);
     }
 
     private static String buildInvokeMethodBody(Method method) {

@@ -1,8 +1,9 @@
-package com.lzh.game.framework.socket.core.invoke;
+package com.lzh.game.framework.utils.bean;
 
 /**
+ * Java reflect enhance
  * @author zehong.l
- * @since 2024/6/13 3:01
+ * @since 2024/6/21 21:58
  **/
 public interface MethodInvoke {
 
