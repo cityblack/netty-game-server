@@ -60,7 +60,7 @@ public class GameByteToMessageDecoder extends ByteToMessageDecoder {
             return;
         }
         AbstractCommand command = Constant.isRequest(type) ?
-                Request.of(msgId, requestId, o) : Response.of(msgId, requestId, o);
+                Request.of(manager.findDefine(msgId), requestId, o) : Response.of(msgId, requestId, o);
         command.setType(type);
         out.add(command);
     }

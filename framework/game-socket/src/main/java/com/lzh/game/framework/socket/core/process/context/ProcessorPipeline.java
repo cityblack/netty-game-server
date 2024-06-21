@@ -1,8 +1,8 @@
 package com.lzh.game.framework.socket.core.process.context;
 
 import com.lzh.game.framework.socket.core.process.Processor;
+import com.lzh.game.framework.socket.core.process.event.ProcessEvent;
 import com.lzh.game.framework.socket.core.process.event.ProcessEventListen;
-import com.lzh.game.framework.socket.core.process.event.ProcessEventType;
 import com.lzh.game.framework.socket.core.session.Session;
 
 /**
@@ -15,9 +15,13 @@ public interface ProcessorPipeline {
 
     void addLast(Processor processor);
 
-    void addProcessEventListen(ProcessEventType eventType, ProcessEventListen eventListen);
+    void addProcessEventListen(ProcessEvent event, ProcessEventListen eventListen);
 
     void fireReceive(Session session, Object msg);
 
-    void fireEvent(Session session, ProcessEventType type, Object o);
+    void fireEvent(ProcessEvent event, Session session, Object o);
+
+    default void fireEvent(ProcessEvent event, Session session) {
+        fireEvent(event, session, null);
+    }
 }

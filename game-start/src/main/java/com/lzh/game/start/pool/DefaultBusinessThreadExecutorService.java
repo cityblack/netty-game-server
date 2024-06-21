@@ -1,8 +1,8 @@
 package com.lzh.game.start.pool;
 
 import com.lzh.game.framework.socket.core.process.ProcessorExecutorService;
+import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.session.Session;
-import com.lzh.game.start.cmd.impl.CmdMessage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;
@@ -29,26 +29,16 @@ public class DefaultBusinessThreadExecutorService implements ProcessorExecutorSe
 
     private static int available;
 
-    private static Set<Integer> specialCmd;
-
     public static DefaultBusinessThreadExecutorService getInstance() {
         return instance;
     }
 
     static {
-        specialCmd = new HashSet<>();
-        specialCmd.add(CmdMessage.CM_LOGIN);
-        specialCmd.add(CmdMessage.CM_REGISTER);
-        specialCmd.add(CmdMessage.CM_LOGOUT);
         init();
     }
 
-    private boolean specialRequest(int cmd) {
-        return specialCmd.contains(cmd);
-    }
-
-    private int index(ServerExchange exchange) {
-        Session session = exchange.getSession();
+    private int index(Request request) {
+        Session session = request.getSession();
         // todo. Game scene
         return session.hashCode() % available;
     }
@@ -71,20 +61,27 @@ public class DefaultBusinessThreadExecutorService implements ProcessorExecutorSe
         return CompletableFuture.supplyAsync(() -> function.apply(key), executors[mod]);
     }
 
-    @Override
-    public void submit(ServerExchange exchange, Runnable runnable) {
-        if (specialRequest(exchange.getRequest().cmd())) {
-            CompletableFuture.runAsync(runnable, COMMON);
-        } else {
-            CompletableFuture.runAsync(runnable, executors[index(exchange)]);
-        }
-    }
-
-    @Override
-    public void submit(Session session, Runnable runnable) {
-        CompletableFuture.runAsync(runnable, executors[index(session)]);
-    }
+//    @Override
+//    public void submit(ServerExchange exchange, Runnable runnable) {
+//        if (specialRequest(exchange.getRequest().cmd())) {
+//            CompletableFuture.runAsync(runnable, COMMON);
+//        } else {
+//            CompletableFuture.runAsync(runnable, executors[index(exchange)]);
+//        }
+//    }
+//
+//    @Override
+//    public void submit(Session session, Runnable runnable) {
+//        CompletableFuture.runAsync(runnable, executors[index(session)]);
+//    }
 
     private DefaultBusinessThreadExecutorService() {
+    }
+
+    @Override
+    public void submit(Session session, Object msg, Runnable runnable) {
+        Request request = (Request) msg;
+        int index = index(request);
+        executors[index].submit(runnable);
     }
 }

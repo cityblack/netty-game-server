@@ -1,10 +1,11 @@
 package com.lzh.game.framework.socket.core.bootstrap;
 
-import com.lzh.game.framework.socket.core.process.MessageHandler;
+import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
+import com.lzh.game.framework.socket.core.process.event.ProcessEvent;
+import com.lzh.game.framework.socket.core.protocol.AbstractCommand;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionManage;
 import com.lzh.game.framework.socket.core.session.SessionUtils;
-import com.lzh.game.framework.socket.core.protocol.AbstractCommand;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -17,12 +18,12 @@ import java.util.Objects;
 @ChannelHandler.Sharable
 public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandler<AbstractCommand> {
 
-    private MessageHandler messageHandler;
+    private ProcessorPipeline pipeline;
 
     private SessionManage<S> sessionManage;
 
-    public GameIoHandler(MessageHandler messageHandler, SessionManage<S> sessionManage) {
-        this.messageHandler = messageHandler;
+    public GameIoHandler(ProcessorPipeline pipeline, SessionManage<S> sessionManage) {
+        this.pipeline = pipeline;
         this.sessionManage = sessionManage;
     }
 
@@ -31,24 +32,26 @@ public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandle
         S session = sessionManage.createSession(ctx.channel());
         SessionUtils.channelBindSession(ctx.channel(), session);
         sessionManage.pushSession(session.getId(), session);
-        messageHandler.opened(session);
+        log.info("session [{}/{}] is connected.", session.getId(), session.getRemoteAddress());
+        pipeline.fireEvent(ProcessEvent.CONNECT, session);
         super.channelActive(ctx);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        Session s = getSession(ctx.channel());
-        if (Objects.isNull(s)) {
+        Session session = getSession(ctx.channel());
+        if (Objects.isNull(session)) {
             return;
         }
-        messageHandler.close(s);
-        sessionManage.removeSession(s.getId());
+        log.info("session [{}/{}] is close.", session.getId(), session.getRemoteAddress());
+        doEvent(ProcessEvent.CLOSE,session);
+        sessionManage.removeSession(session.getId());
         SessionUtils.channelUnbindSession(ctx.channel());
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        messageHandler.exceptionCaught(getSession(ctx.channel()), cause);
+        pipeline.fireEvent(ProcessEvent.EXCEPTION, getSession(ctx.channel()), cause);
         super.exceptionCaught(ctx, cause);
     }
 
@@ -58,6 +61,10 @@ public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandle
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, AbstractCommand msg) {
-        messageHandler.messageReceived(getSession(ctx.channel()), msg);
+        pipeline.fireReceive(getSession(ctx.channel()), msg);
+    }
+
+    private void doEvent(ProcessEvent type, Session session) {
+        pipeline.fireEvent(type, session);
     }
 }

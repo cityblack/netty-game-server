@@ -1,6 +1,7 @@
 package com.lzh.game.framework.socket.core.protocol;
 
 import com.lzh.game.framework.socket.Constant;
+import com.lzh.game.framework.socket.core.protocol.message.MessageDefine;
 import com.lzh.game.framework.socket.core.session.Session;
 
 import java.io.Serializable;
@@ -13,9 +14,12 @@ public class Request extends AbstractCommand implements Serializable {
 
     private Response response;
 
-    public static Request of(int msgId, int requestId, Object data) {
+    private MessageDefine define;
+
+    public static Request of(MessageDefine define, int requestId, Object data) {
         Request request = new Request();
-        request.setMsgId(msgId);
+        request.define = define;
+        request.setMsgId(define.getMsgId());
         request.setData(data);
         request.setDataClass(data.getClass());
         request.setRequestId(requestId);
@@ -36,6 +40,10 @@ public class Request extends AbstractCommand implements Serializable {
 
     public void setResponse(Response response) {
         this.response = response;
+    }
+
+    public MessageDefine getDefine() {
+        return define;
     }
 
     public boolean isOneWay() {

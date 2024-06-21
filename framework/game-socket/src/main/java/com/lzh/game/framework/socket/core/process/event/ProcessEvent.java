@@ -1,6 +1,6 @@
 package com.lzh.game.framework.socket.core.process.event;
 
-public enum ProcessEventType {
+public enum ProcessEvent {
 
     CONNECT,
     CLOSE,

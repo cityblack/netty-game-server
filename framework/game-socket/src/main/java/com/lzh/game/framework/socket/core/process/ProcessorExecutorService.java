@@ -2,8 +2,8 @@ package com.lzh.game.framework.socket.core.process;
 
 import com.lzh.game.framework.socket.core.session.Session;
 
-public interface ProcessorExecutorService<T> {
+public interface ProcessorExecutorService {
 
-    void submit(Session session, T msg, Runnable runnable);
+    void submit(Session session, Object msg, Runnable runnable);
 
 }

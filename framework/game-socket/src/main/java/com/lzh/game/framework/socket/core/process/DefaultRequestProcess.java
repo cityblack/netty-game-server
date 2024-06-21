@@ -1,5 +1,6 @@
 package com.lzh.game.framework.socket.core.process;
 
+import com.lzh.game.framework.socket.core.process.context.ProcessorContext;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.session.Session;
 import lombok.extern.slf4j.Slf4j;
@@ -11,50 +12,35 @@ import java.util.concurrent.Executors;
  * Parse target Object data earlier
  */
 @Slf4j
-public class DefaultRequestProcess implements Processor<Request> {
+public class DefaultRequestProcess implements Processor {
 
     private RequestDispatch dispatch;
 
-    private ProcessorExecutorService<Request> executorService;
+    private ProcessorExecutorService executorService;
 
     public DefaultRequestProcess(RequestDispatch requestHandle) {
-        this(requestHandle, new DefaultExecutorService());
+        this.dispatch = requestHandle;
     }
 
-    public DefaultRequestProcess(RequestDispatch dispatch, ProcessorExecutorService<Request> executorService) {
+    public DefaultRequestProcess(RequestDispatch dispatch, ProcessorExecutorService executorService) {
         this.dispatch = dispatch;
         this.executorService = executorService;
     }
 
     @Override
-    public void process(Session session, Request request) {
-        executorService.submit(session, request, new ProcessTask(request));
+    public void process(ProcessorContext context, Session session, Object data) {
+        Request request = (Request) data;
+        dispatch.handle(request);
+        context.fireReceive(session, null);
     }
 
-
-    private class ProcessTask implements Runnable {
-
-        private Request request;
-
-        public ProcessTask(Request request) {
-            this.request = request;
-        }
-
-        @Override
-        public void run() {
-            dispatch.handle(request);
-        }
+    @Override
+    public boolean match(Session session, Object msg) {
+        return msg instanceof Request;
     }
 
-
-    private static class DefaultExecutorService implements ProcessorExecutorService<Request> {
-
-        private ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
-
-        @Override
-        public void submit(Session session, Request command, Runnable runnable) {
-            service.submit(runnable);
-        }
+    @Override
+    public ProcessorExecutorService service() {
+        return executorService;
     }
 }

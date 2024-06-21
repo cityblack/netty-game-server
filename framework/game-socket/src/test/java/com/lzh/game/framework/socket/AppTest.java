@@ -26,7 +26,7 @@ public class AppTest {
         GameSocketProperties properties = new GameSocketProperties();
         properties.setRequestTimeout(5000);
         GameTcpClient client = new GameTcpClient(properties);
-        client.addProcessor(Constant.RESPONSE_SIGN, new FutureResponseProcess());
+//        client.addProcessor(Constant.RESPONSE_SIGN, new FutureResponseProcess());
         client.start();
         Session session = client.conn("localhost", 8081, 5000);
         AsyncResponse<String> future = client.request(session, -10086, "hello world", String.class);

@@ -2,8 +2,13 @@ package com.lzh.game.framework.socket.core.process.context;
 
 import com.lzh.game.framework.socket.core.process.Processor;
 import com.lzh.game.framework.socket.core.process.ProcessorExecutorService;
+import com.lzh.game.framework.socket.core.session.Session;
+
+import java.util.Objects;
 
 /**
+ * UnSafe
+ *
  * @author zehong.l
  * @since 2024-06-20 17:34
  **/
@@ -13,17 +18,53 @@ public abstract class AbstractProcessorContext implements ProcessorContext {
         this.pipeline = pipeline;
     }
 
+    public AbstractProcessorContext(Processor processor, ProcessorPipeline pipeline) {
+        this.processor = processor;
+        this.pipeline = pipeline;
+    }
+
     private ProcessorPipeline pipeline;
 
-    private ProcessorExecutorService<?> executor;
+    private Processor processor;
 
     AbstractProcessorContext prev;
 
     AbstractProcessorContext next;
 
-//    protected abstract Processor getProcessor();
+    static void invokeReceive(final AbstractProcessorContext next, Session session, Object msg) {
+        next.invokeReceive(session, msg);
+    }
 
-    public ProcessorExecutorService<?> getExecutor() {
-        return executor;
+    public abstract void invokeReceive(Session session, Object msg);
+
+    public ProcessorPipeline getPipeline() {
+        return pipeline;
+    }
+
+    public Processor getProcessor() {
+        return processor;
+    }
+
+    @Override
+    public void fireReceive(Session session, Object msg) {
+       var next = findNextContext(this, session, msg);
+        var executor = next.processor.service();
+        if (Objects.nonNull(executor)) {
+            executor.submit(session, msg, () ->  invokeReceive(next, session, msg));
+        } else {
+            invokeReceive(next, session, msg);
+        }
+    }
+
+    static AbstractProcessorContext findNextContext(AbstractProcessorContext context, Session session, Object msg) {
+        var next = context.next;
+        for (;;) {
+            var processor = next.processor;
+            if (Objects.nonNull(processor) && !processor.match(session, msg)) {
+                context = context.next;
+                continue;
+            }
+            return next;
+        }
     }
 }

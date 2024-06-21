@@ -1,7 +1,5 @@
 package com.lzh.game.framework.socket.core.bootstrap;
 
-import com.lzh.game.common.server.ServerCloseEvent;
-import com.lzh.game.common.server.ServerStartEvent;
 import com.lzh.game.framework.socket.exception.ServerStarException;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -10,7 +8,6 @@ import io.netty.channel.EventLoopGroup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -89,14 +86,14 @@ public class NetServer implements GameServer {
     }
 
     private void sendBeforeStartEvent(int port) {
-        EventBus.getDefault().post(new ServerStartEvent(System.currentTimeMillis(), port));
+//        EventBus.getDefault().post(new ServerStartEvent(System.currentTimeMillis(), port));
     }
 
     private void sendCloseEvent() {
-        try {
-            EventBus.getDefault().post(new ServerCloseEvent(System.currentTimeMillis(), port));
-        } catch (Exception e) {
-            log.error("Close server error: ", e);
-        }
+//        try {
+//            EventBus.getDefault().post(new ServerCloseEvent(System.currentTimeMillis(), port));
+//        } catch (Exception e) {
+//            log.error("Close server error: ", e);
+//        }
     }
 }

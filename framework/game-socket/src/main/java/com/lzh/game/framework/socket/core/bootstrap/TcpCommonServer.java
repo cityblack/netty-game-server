@@ -7,6 +7,7 @@ import com.lzh.game.framework.socket.GameServerSocketProperties;
 import com.lzh.game.framework.socket.core.protocol.codec.GameByteToMessageDecoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -26,7 +27,7 @@ public class TcpCommonServer extends AbstractServerBootstrap
 
     @Override
     protected NetServer createServer(int port) {
-        final EventLoopGroup workerGroup = new NioEventLoopGroup();
+        final EventLoopGroup workerGroup = new EpollEventLoopGroup();
         final ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(workerGroup)
                 .channel(NioServerSocketChannel.class)

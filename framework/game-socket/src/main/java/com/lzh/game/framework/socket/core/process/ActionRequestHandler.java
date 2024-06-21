@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 
 @Slf4j
-public class ActionRequestHandler implements RequestDispatch, Processor {
+public class ActionRequestHandler implements RequestDispatch {
 
     private ErrorHandler errorHandler;
 
@@ -92,15 +92,6 @@ public class ActionRequestHandler implements RequestDispatch, Processor {
         executeAction(request, response);
     }
 
-    @Override
-    public void process(Session session, Object request) {
-
-    }
-
-    @Override
-    public boolean match(Object msg) {
-        return false;
-    }
 
     private static class NoneErrorHandler implements ErrorHandler {
         @Override

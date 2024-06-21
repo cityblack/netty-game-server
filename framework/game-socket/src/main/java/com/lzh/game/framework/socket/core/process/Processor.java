@@ -12,7 +12,13 @@ import com.lzh.game.framework.socket.core.session.Session;
  */
 public interface Processor {
 
-    void process(Session session, Object e, ProcessorContext context);
+    void process(ProcessorContext context, Session session, Object data);
 
-    boolean match(Object msg);
+    boolean match(Session session, Object msg);
+
+    /**
+     * executors.
+     * @return Using the original executors, if the return value is null
+     */
+    ProcessorExecutorService service();
 }
