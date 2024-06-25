@@ -15,6 +15,11 @@ public class DecodeSerializeException extends Exception {
         this.define = define;
     }
 
+    public DecodeSerializeException(MessageDefine define, String message) {
+        super(message);
+        this.define = define;
+    }
+
     public MessageDefine getDefine() {
         return define;
     }

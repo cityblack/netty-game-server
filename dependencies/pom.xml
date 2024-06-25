@@ -18,6 +18,7 @@
     <description>dependencies</description>
 
     <properties>
+        <protobuf.version>4.27.0</protobuf.version>
         <protostuff.version>1.8.0</protostuff.version>
         <netty.version>4.1.108.Final</netty.version>
         <eventbus.version>3.1.1</eventbus.version>
@@ -89,7 +90,11 @@
                 <artifactId>javassist</artifactId>
                 <version>${javassist.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

@@ -1,5 +1,6 @@
 package com.lzh.game.framework.socket.core.invoke;
 
+import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
 import com.lzh.game.framework.utils.bean.MethodInvoke;
 
 import java.util.List;
@@ -9,11 +10,11 @@ import java.util.List;
  */
 public interface InvokeSupport {
 
-    MethodInvoke getActionHandler(int msgId);
+    EnhanceMethodInvoke getActionHandler(int msgId);
 
     boolean containMapping(int msgId);
 
-    void register(int msgId, MethodInvoke invoke);
+    void register(int msgId, EnhanceMethodInvoke invoke);
 
-    List<MethodInvoke> getAllActionHandler();
+    List<EnhanceMethodInvoke> getAllActionHandler();
 }

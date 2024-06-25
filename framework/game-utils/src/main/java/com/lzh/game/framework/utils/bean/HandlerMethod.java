@@ -99,6 +99,10 @@ public class HandlerMethod implements MethodInvoke {
         return this.method.toGenericString();
     }
 
+    public String getName() {
+        return method.getName();
+    }
+
     @Override
     public Object invoke(Object... args) {
         try {

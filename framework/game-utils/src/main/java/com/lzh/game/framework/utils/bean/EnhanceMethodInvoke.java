@@ -6,5 +6,7 @@ package com.lzh.game.framework.utils.bean;
  **/
 public interface EnhanceMethodInvoke extends MethodInvoke {
 
+    Class<?>[] getParamsType();
 
+    Class<?> getReturnType();
 }
