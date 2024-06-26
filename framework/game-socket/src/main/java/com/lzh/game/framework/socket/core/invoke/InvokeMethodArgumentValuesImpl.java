@@ -1,6 +1,5 @@
 package com.lzh.game.framework.socket.core.invoke;
 
-import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.framework.socket.core.protocol.message.NetMessage;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.protocol.Request;

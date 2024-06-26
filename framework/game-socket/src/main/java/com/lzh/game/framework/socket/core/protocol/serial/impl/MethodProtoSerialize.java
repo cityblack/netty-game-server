@@ -18,7 +18,8 @@ public class MethodProtoSerialize implements MessageSerialize {
     @Override
     public Object decode(MessageDefine define, ByteBuf in) throws DecodeSerializeException {
         var type = define.getMsgClass();
-        CodedInputStream.newInstance()
+
+//        CodedInputStream.newInstance()
         for (Field field : type.getFields()) {
             var fieldType = field.getType();
             if (!fieldType.isPrimitive()) {
