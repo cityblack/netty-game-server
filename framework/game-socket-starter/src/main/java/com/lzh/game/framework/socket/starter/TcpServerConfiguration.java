@@ -1,12 +1,11 @@
 package com.lzh.game.framework.socket.starter;
 
-import com.lzh.game.common.bean.EnhanceHandlerMethod;
-import com.lzh.game.framework.socket.core.invoke.InvokeSupport;
 import com.lzh.game.framework.socket.core.bootstrap.GameServer;
-import com.lzh.game.framework.socket.core.process.RequestDispatch;
 import com.lzh.game.framework.socket.core.bootstrap.TcpCommonServer;
-import com.lzh.game.framework.socket.core.invoke.RequestConvertManager;
-import com.lzh.game.framework.socket.core.invoke.InvokeMethodArgumentValues;
+import com.lzh.game.framework.socket.core.invoke.convert.InvokeMethodArgumentValues;
+import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
+import com.lzh.game.framework.socket.core.invoke.convert.RequestConvertManager;
+import com.lzh.game.framework.socket.core.invoke.RequestDispatch;
 import com.lzh.game.framework.socket.core.session.GameSessionManage;
 import com.lzh.game.framework.socket.core.session.SessionFactory;
 import com.lzh.game.framework.socket.core.session.SessionManage;
@@ -25,13 +24,13 @@ public class TcpServerConfiguration {
             , RequestDispatch requestHandle
             , InvokeSupport actionSupport
             , RequestConvertManager requestConvertManager
-            , InvokeMethodArgumentValues<Request> argumentValues) {
+            , InvokeMethodArgumentValues argumentValues) {
 
         TcpCommonServer server = new SpringTcpCommonServer(serverSocketProperties, serverSessionManage());
-        server.setDispatch(requestHandle)
-                .setMethodSupport(actionSupport)
-                .setConvertManager(requestConvertManager)
-                .setArgumentValues(argumentValues);
+//        server.setDispatch(requestHandle)
+//                .setMethodSupport(actionSupport)
+//                .setConvertManager(requestConvertManager)
+//                .setArgumentValues(argumentValues);
         server.asyncStart();
         return server;
     }

@@ -1,7 +1,7 @@
 package com.lzh.game.framework.socket.core.filter;
 
 import com.lzh.game.framework.socket.core.protocol.Request;
-import com.lzh.game.framework.socket.core.process.RequestDispatch;
+import com.lzh.game.framework.socket.core.invoke.RequestDispatch;
 
 import java.util.List;
 

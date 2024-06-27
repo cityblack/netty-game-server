@@ -1,7 +1,5 @@
 package com.lzh.game.framework.socket;
 
-import com.lzh.game.framework.socket.annotation.Receive;
-
 public class ServerDemo {
 
 //    @Receive(-10086)

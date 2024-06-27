@@ -1,7 +1,7 @@
 package com.lzh.game.start.config;
 
-import com.lzh.game.framework.socket.core.invoke.RequestConvert;
-import com.lzh.game.framework.socket.core.invoke.RequestConvertManager;
+import com.lzh.game.framework.socket.core.invoke.convert.RequestConvert;
+import com.lzh.game.framework.socket.core.invoke.convert.RequestConvertManager;
 import com.lzh.game.start.config.convert.PlayerConvert;
 import com.lzh.game.start.model.player.Player;
 

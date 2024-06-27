@@ -2,6 +2,8 @@ package com.lzh.game.framework.socket.starter;
 
 import com.lzh.game.framework.socket.GameServerSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.TcpCommonServer;
+import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
+import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionManage;
 import org.springframework.beans.BeansException;
@@ -17,22 +19,26 @@ public class SpringTcpCommonServer extends TcpCommonServer implements Applicatio
 
     private List<SocketServerInit> inits;
 
-    public SpringTcpCommonServer(GameServerSocketProperties properties) {
-        super(properties);
+    protected SpringTcpCommonServer(GameServerSocketProperties properties, SessionManage<? extends Session> sessionManage, ProcessorPipeline pipeline, MessageManager messageManager) {
+        super(properties, sessionManage, pipeline, messageManager);
     }
 
-    public SpringTcpCommonServer(GameServerSocketProperties properties, SessionManage<? extends Session> sessionManage) {
+    protected SpringTcpCommonServer(GameServerSocketProperties properties, SessionManage<? extends Session> sessionManage) {
         super(properties, sessionManage);
+    }
+
+    protected SpringTcpCommonServer(GameServerSocketProperties properties) {
+        super(properties);
     }
 
     @Override
     protected void doInit(GameServerSocketProperties properties) {
+        super.doInit(properties);
         if (Objects.nonNull(inits)) {
             for (SocketServerInit init : this.inits) {
                 init.doInit(properties, this);
             }
         }
-        super.doInit(properties);
     }
 
     @Override

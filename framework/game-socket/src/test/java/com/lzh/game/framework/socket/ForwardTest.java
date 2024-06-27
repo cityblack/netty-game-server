@@ -8,6 +8,7 @@ import com.lzh.game.framework.socket.core.bootstrap.TcpCommonServer;
 import com.lzh.game.framework.socket.core.process.ForwardGatewayProcess;
 import com.lzh.game.framework.socket.core.process.FutureResponseProcess;
 import com.lzh.game.framework.socket.core.session.Session;
+import com.lzh.game.framework.socket.utils.Constant;
 import org.junit.jupiter.api.Test;
 
 public class ForwardTest {

@@ -1,4 +1,4 @@
-package com.lzh.game.framework.socket.core.invoke;
+package com.lzh.game.framework.socket.core.invoke.convert;
 
 public interface RequestConvertManager {
 

@@ -1,9 +1,9 @@
-package com.lzh.game.framework.socket.core.invoke;
+package com.lzh.game.framework.socket.core.invoke.convert;
 
-import com.lzh.game.framework.socket.core.protocol.message.NetMessage;
-import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.Response;
+import com.lzh.game.framework.socket.core.session.Session;
+import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -12,23 +12,22 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
-public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValues, RequestConvertManager {
+public class DefaultInvokeMethodArgumentValues implements InvokeMethodArgumentValues, RequestConvertManager {
 
     private final Map<Class<?>, RequestConvert<?>> convertContain = new HashMap<>();
 
     {
         registerConvert(Session.class, Request::getSession);
         registerConvert(Request.class, (r) -> r);
-        registerConvert(Response.class, r -> r.getResponse());
-        registerConvert(NetMessage.class, r -> r.getData());
+        registerConvert(Response.class, Request::getResponse);
     }
 
 
-    public InvokeMethodArgumentValuesImpl() {
+    public DefaultInvokeMethodArgumentValues() {
         this(new ConcurrentHashMap<>());
     }
 
-    public InvokeMethodArgumentValuesImpl(Map<Integer, RequestConvert<?>[]> convert) {
+    public DefaultInvokeMethodArgumentValues(Map<Integer, RequestConvert<?>[]> convert) {
         this.convert = convert;
     }
 
@@ -47,7 +46,7 @@ public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValue
         return getOrCreateDefaultConvert(targetConvert);
     }
 
-    private Object[] getMethodArgumentValues(Request request, HandlerMethod handlerMethod) throws Exception {
+    private Object[] getMethodArgumentValues(Request request, EnhanceMethodInvoke handlerMethod) {
         int msgId = request.getMsgId();
         RequestConvert<?>[] cs = this.convert.get(msgId);
         if (Objects.isNull(cs)) {
@@ -62,7 +61,7 @@ public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValue
         return convert(request, cs);
     }
 
-    private RequestConvert<?>[] buildArgumentValues(HandlerMethod handlerMethod) {
+    private RequestConvert<?>[] buildArgumentValues(EnhanceMethodInvoke handlerMethod) {
         Class<?>[] parameters = handlerMethod.getParamsType();
         RequestConvert<?>[] params = new RequestConvert[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
@@ -73,7 +72,7 @@ public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValue
     }
 
     @Override
-    public Object[] transfer(Request request, HandlerMethod handlerMethod) throws Exception {
+    public Object[] transfer(Request request, EnhanceMethodInvoke handlerMethod) {
         return this.getMethodArgumentValues(request, handlerMethod);
     }
 
@@ -98,7 +97,6 @@ public class InvokeMethodArgumentValuesImpl implements InvokeMethodArgumentValue
         if (Objects.isNull(convert)) {
             synchronized (this.convertContain) {
                 if (!this.convertContain.containsKey(clazz)) {
-//                    registerConvert(clazz, new ProtoBufferConvert<>(clazz));
                     return getConvert(clazz);
                 }
             }

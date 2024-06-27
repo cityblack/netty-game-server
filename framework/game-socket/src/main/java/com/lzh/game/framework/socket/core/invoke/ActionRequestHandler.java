@@ -1,14 +1,14 @@
-package com.lzh.game.framework.socket.core.process;
+package com.lzh.game.framework.socket.core.invoke;
 
-import com.lzh.game.framework.socket.core.invoke.InvokeMethodArgumentValues;
-import com.lzh.game.framework.socket.core.invoke.InvokeSupport;
+import com.lzh.game.framework.socket.core.invoke.convert.InvokeMethodArgumentValues;
 import com.lzh.game.framework.socket.core.invoke.support.ErrorHandler;
 import com.lzh.game.framework.socket.core.invoke.support.InterceptorHandler;
-import com.lzh.game.framework.socket.exception.NotDefinedResponseProtocolException;
-import com.lzh.game.framework.socket.exception.NotFondProtocolException;
+import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.Response;
-import com.lzh.game.framework.utils.bean.HandlerMethod;
+import com.lzh.game.framework.socket.exception.NotDefinedResponseProtocolException;
+import com.lzh.game.framework.socket.exception.NotFondProtocolException;
+import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -25,7 +25,7 @@ public class ActionRequestHandler implements RequestDispatch {
     private InvokeSupport support;
 
     public ActionRequestHandler(InvokeSupport support, InvokeMethodArgumentValues transfer) {
-        this(support, transfer, new NoneErrorHandler(), new NoneInterceptorHandler());
+        this(support, transfer, null, null);
     }
 
     public ActionRequestHandler(InvokeSupport support, InvokeMethodArgumentValues transfer, ErrorHandler errorHandler, InterceptorHandler interceptorHandler) {
@@ -37,7 +37,7 @@ public class ActionRequestHandler implements RequestDispatch {
 
     protected void executeAction(Request request, Response response) {
         int msgId = request.getMsgId();
-        MethodInvoke method = support.getActionHandler(msgId);
+        var method = support.getActionHandler(msgId);
         if (Objects.isNull(method)) {
             this.onError(request, response, new NotFondProtocolException(msgId));
             return;
@@ -54,16 +54,16 @@ public class ActionRequestHandler implements RequestDispatch {
         }
     }
 
-    private Object invokeForRequest(Request request, HandlerMethod handlerMethod) throws Exception {
+    private Object invokeForRequest(Request request, EnhanceMethodInvoke handlerMethod) throws Exception {
         Object[] args = transfer.transfer(request, handlerMethod);
         if (isIntercept(request, handlerMethod, args)) {
             return null;
         }
-        return handlerMethod.doInvoke(args);
+        return handlerMethod.invoke(args);
     }
 
-    private boolean isIntercept(Request request, HandlerMethod handlerMethod, Object[] args) {
-        return this.interceptorHandler.isIntercept(request, handlerMethod, args);
+    private boolean isIntercept(Request request, EnhanceMethodInvoke handlerMethod, Object[] args) {
+        return Objects.nonNull(this.interceptorHandler) && this.interceptorHandler.isIntercept(request, handlerMethod, args);
     }
 
     private boolean resolveException(Exception ex, Request request, Response response) {
@@ -92,18 +92,4 @@ public class ActionRequestHandler implements RequestDispatch {
         executeAction(request, response);
     }
 
-
-    private static class NoneErrorHandler implements ErrorHandler {
-        @Override
-        public boolean resolveException(Exception ex, Request request, Response response) {
-            return false;
-        }
-    }
-
-    private static class NoneInterceptorHandler implements InterceptorHandler {
-        @Override
-        public boolean isIntercept(Request request, HandlerMethod handlerMethod, Object[] args) {
-            return false;
-        }
-    }
 }

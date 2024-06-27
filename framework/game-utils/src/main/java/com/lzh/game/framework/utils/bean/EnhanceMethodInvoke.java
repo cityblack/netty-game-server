@@ -9,4 +9,6 @@ public interface EnhanceMethodInvoke extends MethodInvoke {
     Class<?>[] getParamsType();
 
     Class<?> getReturnType();
+
+    boolean isVoid();
 }

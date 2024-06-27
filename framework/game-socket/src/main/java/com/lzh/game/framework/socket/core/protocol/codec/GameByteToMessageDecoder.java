@@ -1,6 +1,6 @@
 package com.lzh.game.framework.socket.core.protocol.codec;
 
-import com.lzh.game.framework.socket.Constant;
+import com.lzh.game.framework.socket.utils.Constant;
 import com.lzh.game.framework.socket.core.protocol.AbstractCommand;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.Response;

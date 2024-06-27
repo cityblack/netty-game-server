@@ -1,8 +1,10 @@
 package com.lzh.game.framework.socket.core.bootstrap;
 
 import com.lzh.game.framework.socket.core.filter.Filter;
-import com.lzh.game.framework.socket.core.invoke.DefaultActionInvokeSupport;
-import com.lzh.game.framework.socket.core.invoke.InvokeUtils;
+import com.lzh.game.framework.socket.core.invoke.support.DefaultActionInvokeSupport;
+import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
+import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
+import com.lzh.game.framework.socket.utils.InvokeUtils;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionManage;
 import com.lzh.game.framework.socket.GameServerSocketProperties;
@@ -16,9 +18,13 @@ public abstract class AbstractServerBootstrap
 
     private NetServer netServer;
 
-    private List<Filter> filters = new ArrayList<>();
+    private final List<Filter> filters = new ArrayList<>();
 
-    private List<Object> beans = new ArrayList<>();
+    private final List<Object> beans = new ArrayList<>();
+
+    protected AbstractServerBootstrap(GameServerSocketProperties properties, SessionManage<? extends Session> sessionManage, ProcessorPipeline pipeline, MessageManager messageManager) {
+        super(properties, sessionManage, pipeline, messageManager);
+    }
 
     protected AbstractServerBootstrap(GameServerSocketProperties properties, SessionManage<? extends Session> sessionManage) {
         super(properties, sessionManage);
@@ -41,11 +47,9 @@ public abstract class AbstractServerBootstrap
                 }
             }
         }
-//        if (!getProcessManager().hasProcessor(Request.class)) {
-//            var dispatch = new ActionRequestHandler(getMethodSupport(), new InvokeMethodArgumentValuesImpl());
-//            addProcessor(Request.class, new DefaultRequestProcess(new FilterHandler(this.filters, dispatch)));
-//        }
         this.netServer = createServer(getPort());
+        this.filters.clear();
+        this.beans.clear();
     }
 
     @Override
@@ -81,6 +85,9 @@ public abstract class AbstractServerBootstrap
         List<InvokeUtils.InvokeModel> list = InvokeUtils.parseBean(bean);
         for (InvokeUtils.InvokeModel model : list) {
             getMethodSupport().register(model.getValue(), model.getHandlerMethod());
+            if (Objects.nonNull(model.getNewProtoClass())) {
+                getMessageManager().addMessage(model.getNewProtoClass());
+            }
         }
     }
 

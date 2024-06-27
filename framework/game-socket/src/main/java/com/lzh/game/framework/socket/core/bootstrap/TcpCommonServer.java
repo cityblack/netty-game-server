@@ -1,14 +1,15 @@
 package com.lzh.game.framework.socket.core.bootstrap;
 
+import com.lzh.game.framework.socket.GameServerSocketProperties;
+import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
+import com.lzh.game.framework.socket.core.protocol.codec.GameByteToMessageDecoder;
 import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteDecoder;
+import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionManage;
-import com.lzh.game.framework.socket.GameServerSocketProperties;
-import com.lzh.game.framework.socket.core.protocol.codec.GameByteToMessageDecoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 
@@ -17,11 +18,15 @@ import java.util.concurrent.TimeUnit;
 public class TcpCommonServer extends AbstractServerBootstrap
         implements GameServer {
 
-    public TcpCommonServer(GameServerSocketProperties properties, SessionManage<? extends Session> sessionManage) {
+    protected TcpCommonServer(GameServerSocketProperties properties, SessionManage<? extends Session> sessionManage, ProcessorPipeline pipeline, MessageManager messageManager) {
+        super(properties, sessionManage, pipeline, messageManager);
+    }
+
+    protected TcpCommonServer(GameServerSocketProperties properties, SessionManage<? extends Session> sessionManage) {
         super(properties, sessionManage);
     }
 
-    public TcpCommonServer(GameServerSocketProperties properties) {
+    protected TcpCommonServer(GameServerSocketProperties properties) {
         super(properties);
     }
 

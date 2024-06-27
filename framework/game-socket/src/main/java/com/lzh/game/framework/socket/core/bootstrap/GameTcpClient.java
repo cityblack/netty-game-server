@@ -1,28 +1,22 @@
 package com.lzh.game.framework.socket.core.bootstrap;
 
-import com.lzh.game.common.util.Constant;
-import com.lzh.game.framework.socket.Constant;
+import com.lzh.game.framework.socket.utils.Constant;
 import com.lzh.game.framework.socket.GameServerSocketProperties;
 import com.lzh.game.framework.socket.GameSocketProperties;
-import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteDecoder;
-import com.lzh.game.framework.socket.core.session.Session;
-import com.lzh.game.framework.socket.core.session.SessionManage;
-import com.lzh.game.framework.socket.core.session.SessionUtils;
-import com.lzh.game.framework.socket.core.session.impl.FutureSession;
-import com.lzh.game.socket.*;
 import com.lzh.game.framework.socket.core.AsyncResponse;
 import com.lzh.game.framework.socket.core.FutureAsyncResponse;
 import com.lzh.game.framework.socket.core.RequestFuture;
 import com.lzh.game.framework.socket.core.protocol.Request;
-import com.lzh.game.framework.socket.core.protocol.codec.GameByteToMessageDecoder;
+import com.lzh.game.framework.socket.core.session.Session;
+import com.lzh.game.framework.socket.core.session.SessionManage;
+import com.lzh.game.framework.socket.core.session.SessionUtils;
+import com.lzh.game.framework.socket.core.session.impl.FutureSession;
 import com.lzh.game.framework.socket.utils.SocketUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
-import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
@@ -134,10 +128,10 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
                                 .addLast(new IdleStateHandler(0, 0, 180, TimeUnit.SECONDS))
-                                .addLast(new ProtobufVarint32FrameDecoder())
-                                .addLast("decoder", new GameByteToMessageDecoder())
-                                .addLast(new ProtobufVarint32LengthFieldPrepender())
-                                .addLast("encoder", new GameMessageToByteDecoder())
+//                                .addLast(new ProtobufVarint32FrameDecoder())
+//                                .addLast("decoder", new GameByteToMessageDecoder())
+//                                .addLast(new ProtobufVarint32LengthFieldPrepender())
+//                                .addLast("encoder", new GameMessageToByteDecoder())
                                 .addLast(getIoHandler());
                     }
                 });

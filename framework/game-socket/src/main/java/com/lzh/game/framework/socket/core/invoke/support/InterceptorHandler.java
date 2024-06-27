@@ -1,6 +1,7 @@
 package com.lzh.game.framework.socket.core.invoke.support;
 
 import com.lzh.game.framework.socket.core.protocol.Request;
+import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
 import com.lzh.game.framework.utils.bean.HandlerMethod;
 
 /**
@@ -16,5 +17,5 @@ public interface InterceptorHandler {
      * @param args
      * @return true not call the target method
      */
-    boolean isIntercept(Request request, HandlerMethod handlerMethod, Object[] args);
+    boolean isIntercept(Request request, EnhanceMethodInvoke handlerMethod, Object[] args);
 }

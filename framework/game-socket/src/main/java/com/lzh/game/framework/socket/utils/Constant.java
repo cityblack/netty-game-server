@@ -1,4 +1,4 @@
-package com.lzh.game.framework.socket;
+package com.lzh.game.framework.socket.utils;
 
 public class Constant {
 

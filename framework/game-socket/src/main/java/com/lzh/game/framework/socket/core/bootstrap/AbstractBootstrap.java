@@ -3,9 +3,11 @@ package com.lzh.game.framework.socket.core.bootstrap;
 import com.lzh.game.framework.socket.GameSocketProperties;
 import com.lzh.game.framework.socket.core.AtomicLifCycle;
 import com.lzh.game.framework.socket.core.LifeCycle;
-import com.lzh.game.framework.socket.core.invoke.InvokeSupport;
+import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.process.Processor;
-import com.lzh.game.framework.socket.core.process.context.ProcessorContext;
+import com.lzh.game.framework.socket.core.process.context.DefaultProcessorPipeline;
+import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
+import com.lzh.game.framework.socket.core.protocol.message.DefaultMessageManager;
 import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
 import com.lzh.game.framework.socket.core.session.GameSessionManage;
 import com.lzh.game.framework.socket.core.session.Session;
@@ -15,6 +17,8 @@ import com.lzh.game.framework.socket.core.session.cache.GameSessionMemoryCacheMa
 import com.lzh.game.framework.socket.core.session.cache.SessionMemoryCacheManage;
 import com.lzh.game.framework.socket.core.session.impl.GameSession;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 public abstract class AbstractBootstrap<T extends GameSocketProperties>
         implements LifeCycle {
 
@@ -22,27 +26,28 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     protected T properties;
 
-    protected ProcessorContext processorManager;
-
     protected SessionManage<? extends Session> sessionManage;
-
-    protected GameIoHandler<? extends Session> ioHandler;
 
     private MessageManager messageManager;
 
     private InvokeSupport methodSupport;
 
+    private ProcessorPipeline pipeline;
+
     protected AbstractBootstrap(T properties
-            , SessionManage<? extends Session> sessionManage) {
+            , SessionManage<? extends Session> sessionManage, ProcessorPipeline pipeline, MessageManager messageManager) {
         this.properties = properties;
         this.sessionManage = sessionManage;
+        this.pipeline = pipeline;
+        this.messageManager = messageManager;
+    }
 
-//        this.processorManager = new ProcessorContext(processEventListen);
-        this.ioHandler = new GameIoHandler<>(new MessageHandlerImpl(), this.sessionManage);
+    protected AbstractBootstrap(T properties, SessionManage<? extends Session> sessionManage) {
+        this(properties, sessionManage, new DefaultProcessorPipeline(), new DefaultMessageManager(new ConcurrentHashMap<>()));
     }
 
     protected AbstractBootstrap(T properties) {
-        this(properties, defaultSession());
+        this(properties, defaultSession(), new DefaultProcessorPipeline(), new DefaultMessageManager(new ConcurrentHashMap<>()));
     }
 
     public static SessionManage<Session> defaultSession() {
@@ -57,14 +62,6 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     public <S extends Session> SessionManage<S> getSessionManage() {
         return (SessionManage<S>) sessionManage;
-    }
-
-    public GameIoHandler<? extends Session> getIoHandler() {
-        return ioHandler;
-    }
-
-    public ProcessorContext getProcessManager() {
-        return processorManager;
     }
 
     public InvokeSupport getMethodSupport() {
@@ -99,7 +96,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
     }
 
     public void addProcessor(Processor process) {
-//        this.processorManager.registerProcessor(command, process);
+        this.pipeline.addLast(process);
     }
 
     @Override
@@ -120,5 +117,13 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
             asyncStartup();
             STATUS.start();
         }
+    }
+
+    public ProcessorPipeline getPipeline() {
+        return pipeline;
+    }
+
+    public void setPipeline(ProcessorPipeline pipeline) {
+        this.pipeline = pipeline;
     }
 }

@@ -1,10 +1,12 @@
 package com.lzh.game.framework.socket.starter;
 
-import com.lzh.game.common.bean.EnhanceHandlerMethod;
 import com.lzh.game.framework.socket.GameServerSocketProperties;
-import com.lzh.game.framework.socket.core.invoke.*;
-import com.lzh.game.socket.core.invoke.convert.DefaultConvertManager;
-import com.lzh.game.framework.socket.core.process.RequestDispatch;
+import com.lzh.game.framework.socket.core.invoke.RequestDispatch;
+import com.lzh.game.framework.socket.core.invoke.convert.InvokeMethodArgumentValues;
+import com.lzh.game.framework.socket.core.invoke.convert.RequestConvertManager;
+import com.lzh.game.framework.socket.core.invoke.support.DefaultActionInvokeSupport;
+import com.lzh.game.framework.socket.core.invoke.convert.DefaultInvokeMethodArgumentValues;
+import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -28,7 +30,7 @@ public class GameSocketConfiguration {
     }
 
     @Bean
-    public InvokeSupport<EnhanceHandlerMethod> actionSupport() {
+    public InvokeSupport actionSupport() {
         DefaultActionInvokeSupport support = new DefaultActionInvokeSupport();
         return new SpringActionSupport(support, convertManager());
     }
@@ -44,7 +46,7 @@ public class GameSocketConfiguration {
     }
 
     @Bean
-    public RequestDispatch requestHandler(InvokeSupport<EnhanceHandlerMethod> actionMethodSupport
+    public RequestDispatch requestHandler(InvokeSupport actionMethodSupport
             , InvokeMethodArgumentValues invokeMethodArgumentValues
             , SpringExceptionHandler errorHandler, SpringInterceptorHandler interceptorHandler) {
         return new SpringRequestHandler(actionMethodSupport, invokeMethodArgumentValues, errorHandler, interceptorHandler);
@@ -53,7 +55,7 @@ public class GameSocketConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public InvokeMethodArgumentValues invokeMethodArgumentValues() {
-        return new InvokeMethodArgumentValuesImpl();
+        return new DefaultInvokeMethodArgumentValues();
     }
 
     protected GameServerSocketProperties getServerSocketProperties() {

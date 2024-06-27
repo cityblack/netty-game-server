@@ -1,4 +1,4 @@
-package com.lzh.game.framework.socket.starter;
+package com.lzh.game.framework.socket.starter.anno;
 
 import java.lang.annotation.*;
 

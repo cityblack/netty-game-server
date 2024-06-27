@@ -14,13 +14,13 @@ public class ByteBuffUtils {
         return byteBuf.readInt();
     }
 
-    public static long readLong(ByteBuf byteBuf) {
-
-    }
-
-    public static double readDouble(ByteBuf byteBuf) {
-
-    }
+//    public static long readLong(ByteBuf byteBuf) {
+//
+//    }
+//
+//    public static double readDouble(ByteBuf byteBuf) {
+//
+//    }
 
     public static void writeRawVarint32(ByteBuf out, int value) {
         while (true) {

@@ -1,4 +1,4 @@
-package com.lzh.game.framework.socket.annotation;
+package com.lzh.game.framework.socket.core.invoke;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,5 +12,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Receive {
 
+    /**
+     * If the value equals zero will auto produce a MessageDefined
+     * @return msg id
+     */
     int value() default 0;
 }
