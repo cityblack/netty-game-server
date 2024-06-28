@@ -14,4 +14,9 @@ public class PlayerConvert implements RequestConvert<Player> {
         Session session = request.getSession();
         return ApplicationUtils.getBean(PlayerService.class).getPlayer(session);
     }
+
+    @Override
+    public boolean match(Class<?> type) {
+        return type == Player.class;
+    }
 }

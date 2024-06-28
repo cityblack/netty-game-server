@@ -23,7 +23,9 @@ public class SpringActionSupport implements InvokeSupport, ApplicationContextAwa
 
     private InvokeSupport support;
 
-    private RequestConvertManager requestConvertManager;
+    public SpringActionSupport(InvokeSupport support) {
+        this.support = support;
+    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

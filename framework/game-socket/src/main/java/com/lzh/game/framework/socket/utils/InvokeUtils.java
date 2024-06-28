@@ -29,8 +29,6 @@ import java.util.stream.Stream;
  */
 public class InvokeUtils {
 
-    public static Object[] EMPTY_OBJECT = new Object[0];
-
     private static ClassPool pl;
 
     static {
@@ -43,6 +41,7 @@ public class InvokeUtils {
         return Stream.of(clazz.getDeclaredMethods())
                 .filter(method -> method.isAnnotationPresent(Receive.class))
                 .map(method -> toModel(bean, method))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
@@ -57,19 +56,20 @@ public class InvokeUtils {
     /**
      * {@link com.lzh.game.framework.socket.core.protocol.message.Protocol}
      * {@link Receive}
+     *
      * @param receive
      * @param bean
      * @param method
      * @return
      */
     private static InvokeModel parseTargetMethod(Receive receive, Object bean, HandlerMethod method) {
+        boolean useSimpleProto = receive.value() != 0;
+        var protocol = getProtoCol(method.getParamsType());
+        if (!useSimpleProto && protocol.size() != 1) {
+            throw new IllegalArgumentException();
+        }
+        int msgId = useSimpleProto ? receive.value() : protocol.get(0).value();
         try {
-            Protocol protocol = getProtoCol(method.getParamsType());
-            if (receive.value() != 0 && Objects.nonNull(protocol)) {
-                throw new IllegalArgumentException(bean.getClass().getName() + "." + method.getName() + " Duplicate definition @Receive and @Protocol");
-            }
-            boolean useSimpleProto = receive.value() != 0;
-            int msgId = useSimpleProto ? receive.value() : protocol.value();
             var model = new InvokeModel();
             if (useSimpleProto) {
                 model.setNewProtoClass(buildMethodClass(msgId, method));
@@ -83,15 +83,21 @@ public class InvokeUtils {
         }
     }
 
+    /**
+     * Use primitive or @Protocol method's param to build a new class
+     * @param msgId
+     * @param method
+     * @return
+     */
     private static Class<?> buildMethodClass(int msgId, HandlerMethod method) {
         List<Class<?>> list = new ArrayList<>();
         for (Class<?> type : method.getParamsType()) {
-            if (!type.isPrimitive()) {
-                throw new IllegalArgumentException("Simple proto field type is not primitive.");
+            if (!isSimpleProtocParam(type)) {
+                continue;
             }
             list.add(type);
         }
-        var name = "%dSimpleProtoClass".formatted(msgId);
+        var name = "SimpleProtoClass%d".formatted(msgId);
         return buildClass(list, name, msgId);
     }
 
@@ -122,6 +128,7 @@ public class InvokeUtils {
             annot.addMemberValue("serializeType", new IntegerMemberValue(constant, Constant.DEFAULT_SERIAL_SIGN));
             enhance.getClassFile().addAttribute(attr);
 
+            enhance.writeFile(InvokeUtils.class.getResource("./").getFile());
             return enhance.toClass();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -131,7 +138,7 @@ public class InvokeUtils {
     private static String buildGetValueMethodBody(List<String> fieldNames) {
         var method = "public Object[] getFieldValues() { \t\n";
         if (!fieldNames.isEmpty()) {
-            method += "return " + String.join(",", fieldNames) + ";\t\n";
+            method += "return new Object[]{" + String.join(",", fieldNames) + "};\t\n";
         } else {
             method += "return null;\t\n";
         }
@@ -139,13 +146,18 @@ public class InvokeUtils {
         return method;
     }
 
-    private static Protocol getProtoCol(Class<?>[] types) {
+    private static List<Protocol> getProtoCol(Class<?>[] types) {
+        List<Protocol> list = new ArrayList<>();
         for (Class<?> type : types) {
             if (type.isAnnotationPresent(Protocol.class)) {
-                return type.getAnnotation(Protocol.class);
+                list.add(type.getAnnotation(Protocol.class));
             }
         }
-        return null;
+        return list;
+    }
+
+    public static boolean isSimpleProtocParam(Class<?> type) {
+        return type.isPrimitive() || type.isAnnotationPresent(Protocol.class);
     }
 
     @Data
@@ -211,6 +223,7 @@ public class InvokeUtils {
         }
     }
 
-    private InvokeUtils() {}
+    private InvokeUtils() {
+    }
 
 }

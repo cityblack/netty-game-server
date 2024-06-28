@@ -26,7 +26,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     protected T properties;
 
-    protected SessionManage<? extends Session> sessionManage;
+    protected SessionManage<Session> sessionManage;
 
     private MessageManager messageManager;
 
@@ -34,20 +34,23 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     private ProcessorPipeline pipeline;
 
+    private GameIoHandler ioHandler;
+
     protected AbstractBootstrap(T properties
-            , SessionManage<? extends Session> sessionManage, ProcessorPipeline pipeline, MessageManager messageManager) {
+            , SessionManage<Session> sessionManage, MessageManager messageManager) {
         this.properties = properties;
         this.sessionManage = sessionManage;
-        this.pipeline = pipeline;
+        this.pipeline = new DefaultProcessorPipeline();
         this.messageManager = messageManager;
+        this.ioHandler = new GameIoHandler(pipeline, sessionManage);
     }
 
-    protected AbstractBootstrap(T properties, SessionManage<? extends Session> sessionManage) {
-        this(properties, sessionManage, new DefaultProcessorPipeline(), new DefaultMessageManager(new ConcurrentHashMap<>()));
+    protected AbstractBootstrap(T properties, SessionManage<Session> sessionManage) {
+        this(properties, sessionManage, new DefaultMessageManager(new ConcurrentHashMap<>()));
     }
 
     protected AbstractBootstrap(T properties) {
-        this(properties, defaultSession(), new DefaultProcessorPipeline(), new DefaultMessageManager(new ConcurrentHashMap<>()));
+        this(properties, defaultSession());
     }
 
     public static SessionManage<Session> defaultSession() {
@@ -60,8 +63,8 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         return properties;
     }
 
-    public <S extends Session> SessionManage<S> getSessionManage() {
-        return (SessionManage<S>) sessionManage;
+    public SessionManage<Session> getSessionManage() {
+        return sessionManage;
     }
 
     public InvokeSupport getMethodSupport() {
@@ -104,7 +107,6 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         return STATUS.isStared();
     }
 
-
     @Override
     public void shutDown() {
         STATUS.shutDown();
@@ -125,5 +127,9 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     public void setPipeline(ProcessorPipeline pipeline) {
         this.pipeline = pipeline;
+    }
+
+    public GameIoHandler getIoHandler() {
+        return ioHandler;
     }
 }

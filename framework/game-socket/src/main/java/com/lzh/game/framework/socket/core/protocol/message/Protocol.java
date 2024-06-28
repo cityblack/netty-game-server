@@ -16,7 +16,7 @@ public @interface Protocol {
     // msg id
     int value();
 
-    int protocolType() default 0;
+//    int protocolType() default 0;
 
     int serializeType() default Constant.DEFAULT_SERIAL_SIGN;
 }

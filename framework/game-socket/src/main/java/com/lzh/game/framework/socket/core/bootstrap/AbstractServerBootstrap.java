@@ -22,11 +22,11 @@ public abstract class AbstractServerBootstrap
 
     private final List<Object> beans = new ArrayList<>();
 
-    protected AbstractServerBootstrap(GameServerSocketProperties properties, SessionManage<? extends Session> sessionManage, ProcessorPipeline pipeline, MessageManager messageManager) {
-        super(properties, sessionManage, pipeline, messageManager);
+    protected AbstractServerBootstrap(GameServerSocketProperties properties, SessionManage<Session> sessionManage, MessageManager messageManager) {
+        super(properties, sessionManage, messageManager);
     }
 
-    protected AbstractServerBootstrap(GameServerSocketProperties properties, SessionManage<? extends Session> sessionManage) {
+    protected AbstractServerBootstrap(GameServerSocketProperties properties, SessionManage<Session> sessionManage) {
         super(properties, sessionManage);
     }
 
@@ -82,7 +82,7 @@ public abstract class AbstractServerBootstrap
     }
 
     private void addInvokeBean0(Object bean) {
-        List<InvokeUtils.InvokeModel> list = InvokeUtils.parseBean(bean);
+        var list = InvokeUtils.parseBean(bean);
         for (InvokeUtils.InvokeModel model : list) {
             getMethodSupport().register(model.getValue(), model.getHandlerMethod());
             if (Objects.nonNull(model.getNewProtoClass())) {

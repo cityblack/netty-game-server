@@ -1,38 +1,34 @@
 package com.lzh.game.framework.socket.core.invoke.convert;
 
+import com.lzh.game.framework.socket.core.invoke.convert.impl.*;
 import com.lzh.game.framework.socket.core.protocol.Request;
-import com.lzh.game.framework.socket.core.protocol.Response;
-import com.lzh.game.framework.socket.core.session.Session;
+import com.lzh.game.framework.socket.core.protocol.message.SimpleProtoc;
+import com.lzh.game.framework.socket.utils.InvokeUtils;
 import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * {@link InvokeUtils#parseBean(Object)}
+ */
 @Slf4j
 public class DefaultInvokeMethodArgumentValues implements InvokeMethodArgumentValues, RequestConvertManager {
 
-    private final Map<Class<?>, RequestConvert<?>> convertContain = new HashMap<>();
-
-    {
-        registerConvert(Session.class, Request::getSession);
-        registerConvert(Request.class, (r) -> r);
-        registerConvert(Response.class, Request::getResponse);
-    }
-
+    private final Map<Integer, RequestConvert<?>[]> convert;
+    private List<RequestConvert<?>> converts;
 
     public DefaultInvokeMethodArgumentValues() {
-        this(new ConcurrentHashMap<>());
+        this(new HashMap<>());
+        var cs = Arrays.asList(new RequestParamConvert()
+                , new ResponseConvert(), new SessionConvert(), new ProtocConvert());
+        converts = new CopyOnWriteArrayList<>(cs);
     }
 
     public DefaultInvokeMethodArgumentValues(Map<Integer, RequestConvert<?>[]> convert) {
         this.convert = convert;
     }
-
-    //
-    private final Map<Integer, RequestConvert<?>[]> convert;
 
     private Object[] convert(Request request, RequestConvert<?>[] converts) {
         Object[] values = new Object[]{converts.length};
@@ -43,31 +39,53 @@ public class DefaultInvokeMethodArgumentValues implements InvokeMethodArgumentVa
     }
 
     private RequestConvert<?> getTargetConvert(Class<?> targetConvert) {
-        return getOrCreateDefaultConvert(targetConvert);
-    }
-
-    private Object[] getMethodArgumentValues(Request request, EnhanceMethodInvoke handlerMethod) {
-        int msgId = request.getMsgId();
-        RequestConvert<?>[] cs = this.convert.get(msgId);
-        if (Objects.isNull(cs)) {
-            synchronized (this) {
-                if (!this.convert.containsKey(msgId)) {
-                    RequestConvert<?>[] tmp = buildArgumentValues(handlerMethod);
-                    this.convert.put(msgId, tmp);
-                    cs = tmp;
-                }
+        for (var requestConvert : this.converts) {
+            if (requestConvert.match(targetConvert)) {
+                return requestConvert;
             }
         }
-        return convert(request, cs);
+        throw new ClassCastException("Can not find " + targetConvert.getName() + "'s convert.");
     }
 
-    private RequestConvert<?>[] buildArgumentValues(EnhanceMethodInvoke handlerMethod) {
-        Class<?>[] parameters = handlerMethod.getParamsType();
-        RequestConvert<?>[] params = new RequestConvert[parameters.length];
-        for (int i = 0; i < parameters.length; i++) {
-            Class<?> target = parameters[i];
-            params[i] = getTargetConvert(target);
+    private Object[] getMethodArgumentValues(Request request, EnhanceMethodInvoke invoke) {
+        return convert(request, getConvert(request.getMsgId(), request, invoke));
+    }
+
+    private RequestConvert<?>[] getConvert(int msgId, Request request, EnhanceMethodInvoke invoke) {
+        RequestConvert<?>[] converts = this.convert.get(msgId);
+        if (Objects.isNull(converts)) {
+            synchronized (this) {
+                if (!this.convert.containsKey(msgId)) {
+                    RequestConvert<?>[] tmp = buildArgumentValues(request, invoke);
+                    this.convert.put(msgId, tmp);
+                }
+                return this.convert.get(msgId);
+            }
         }
+        return converts;
+    }
+
+    private RequestConvert<?>[] buildArgumentValues(Request request, EnhanceMethodInvoke invoke) {
+        Class<?>[] parameters = invoke.getParamsType();
+        RequestConvert<?>[] params = new RequestConvert[parameters.length];
+        if (request.getData() instanceof SimpleProtoc protoc) {
+            var fields = protoc.getFieldValues();
+            int index = 0;
+            for (int i = 0; i < parameters.length; i++) {
+                Class<?> target = parameters[i];
+                if (InvokeUtils.isSimpleProtocParam(target)) {
+                    params[i] = new SimpleProtocConvert(index++, fields);
+                } else {
+                    params[i] = getTargetConvert(target);
+                }
+            }
+        } else {
+            for (int i = 0; i < parameters.length; i++) {
+                Class<?> target = parameters[i];
+                params[i] = getTargetConvert(target);
+            }
+        }
+
         return params;
     }
 
@@ -77,30 +95,8 @@ public class DefaultInvokeMethodArgumentValues implements InvokeMethodArgumentVa
     }
 
     @Override
-    public void registerConvert(Class<?> target, RequestConvert<?> convert) {
-        convertContain.put(target, convert);
+    public void registerConvert(RequestConvert<?> convert) {
+        this.converts.add(convert);
     }
 
-    @Override
-    public RequestConvert<?> getConvert(Class<?> clazz) {
-        return convertContain.get(clazz);
-    }
-
-    @Override
-    public boolean hasConvert(Class<?> target) {
-        return convertContain.containsKey(target);
-    }
-
-    @Override
-    public RequestConvert<?> getOrCreateDefaultConvert(Class<?> clazz) {
-        RequestConvert<?> convert = getConvert(clazz);
-        if (Objects.isNull(convert)) {
-            synchronized (this.convertContain) {
-                if (!this.convertContain.containsKey(clazz)) {
-                    return getConvert(clazz);
-                }
-            }
-        }
-        return convert;
-    }
 }

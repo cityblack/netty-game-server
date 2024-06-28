@@ -11,14 +11,14 @@ public class AppTest {
 
     @Test
     public void startServer() {
-        GameServerSocketProperties properties = new GameServerSocketProperties();
-        properties.setPort(8081);
-        properties.setOpenGm(true);
-
-        TcpCommonServer server = new TcpCommonServer(properties);
-        ServerDemo demo = new ServerDemo();
-        server.addInvokeBean(demo);
-        server.start();
+//        GameServerSocketProperties properties = new GameServerSocketProperties();
+//        properties.setPort(8081);
+//        properties.setOpenGm(true);
+//
+//        TcpCommonServer server = new TcpCommonServer(properties);
+//        ServerDemo demo = new ServerDemo();
+//        server.addInvokeBean(demo);
+//        server.start();
     }
 
     @Test

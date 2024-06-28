@@ -1,8 +1,8 @@
 package com.lzh.game.framework.socket.core;
 
-import com.lzh.game.common.serialization.ProtoBufUtils;
 
-import java.util.Objects;
+import com.lzh.game.framework.socket.core.protocol.Response;
+
 import java.util.concurrent.CompletableFuture;
 
 public class FutureAsyncResponse<T> implements AsyncResponse<T> {
@@ -19,10 +19,11 @@ public class FutureAsyncResponse<T> implements AsyncResponse<T> {
     @Override
     public T get() {
         Response response = getResponse();
-        if (Objects.isNull(response.byteData())) {
-            return null;
-        }
-        return ProtoBufUtils.deSerialize(response.byteData(), type);
+        return null;
+//        if (Objects.isNull(response.byteData())) {
+//            return null;
+//        }
+//        return ProtoBufUtils.deSerialize(response.byteData(), type);
     }
 
     @Override

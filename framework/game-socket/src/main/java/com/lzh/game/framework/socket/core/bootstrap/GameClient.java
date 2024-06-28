@@ -20,11 +20,11 @@ public interface GameClient extends LifeCycle {
 
     void oneWay(Session session, Request request);
 
-    default void oneWay(Session session, int cmd) {
-        oneWay(session, cmd, null);
+    default void oneWay(Session session, int msgId) {
+        oneWay(session, msgId, null);
     }
 
-    void oneWay(Session session, int cmd, Object params);
+    void oneWay(Session session, int msgId, Object params);
 
     <T> AsyncResponse<T> request(Session session, Request request, Class<T> returnType);
 

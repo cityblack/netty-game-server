@@ -15,7 +15,7 @@ public class MessageDefine {
 
     private Class<?> msgClass;
 
-    private int protocolType;
+//    private int protocolType;
 
     private int serializeType;
 

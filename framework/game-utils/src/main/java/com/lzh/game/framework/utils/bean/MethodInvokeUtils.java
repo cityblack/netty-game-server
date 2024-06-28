@@ -50,7 +50,7 @@ public class MethodInvokeUtils {
         enhance.addMethod(invoke);
 
 //        enhance.getClassFile2().setMinorVersion(ClassFile.JAVA_8);
-        enhance.writeFile(MethodInvoke.class.getClassLoader().getResource("./").getFile());
+//        enhance.writeFile(MethodInvoke.class.getClassLoader().getResource("./").getFile());
         Constructor<?> enhanceConstructor = enhance.toClass().getConstructor(bean.getClass());
         return (MethodInvoke) BeanUtils.instantiateClass(enhanceConstructor, bean);
     }

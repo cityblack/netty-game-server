@@ -48,7 +48,7 @@ public class DefaultMessageManager implements MessageManager {
         return new MessageDefine()
                 .setMsgId(protocol.value())
                 .setMsgClass(msg)
-                .setSerializeType(protocol.serializeType())
-                .setProtocolType(protocol.protocolType());
+                .setSerializeType(protocol.serializeType());
+//                .setProtocolType(protocol.protocolType());
     }
 }

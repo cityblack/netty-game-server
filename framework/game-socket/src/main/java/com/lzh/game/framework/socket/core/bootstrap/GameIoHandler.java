@@ -16,20 +16,20 @@ import java.util.Objects;
 
 @Slf4j
 @ChannelHandler.Sharable
-public class GameIoHandler<S extends Session> extends SimpleChannelInboundHandler<AbstractCommand> {
+public class GameIoHandler extends SimpleChannelInboundHandler<AbstractCommand> {
 
     private ProcessorPipeline pipeline;
 
-    private SessionManage<S> sessionManage;
+    private SessionManage<Session> sessionManage;
 
-    public GameIoHandler(ProcessorPipeline pipeline, SessionManage<S> sessionManage) {
+    public GameIoHandler(ProcessorPipeline pipeline, SessionManage<Session> sessionManage) {
         this.pipeline = pipeline;
         this.sessionManage = sessionManage;
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        S session = sessionManage.createSession(ctx.channel());
+        var session = sessionManage.createSession(ctx.channel());
         SessionUtils.channelBindSession(ctx.channel(), session);
         sessionManage.pushSession(session.getId(), session);
         log.info("session [{}/{}] is connected.", session.getId(), session.getRemoteAddress());

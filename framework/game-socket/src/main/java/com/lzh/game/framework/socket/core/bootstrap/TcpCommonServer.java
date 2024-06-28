@@ -18,11 +18,12 @@ import java.util.concurrent.TimeUnit;
 public class TcpCommonServer extends AbstractServerBootstrap
         implements GameServer {
 
-    protected TcpCommonServer(GameServerSocketProperties properties, SessionManage<? extends Session> sessionManage, ProcessorPipeline pipeline, MessageManager messageManager) {
-        super(properties, sessionManage, pipeline, messageManager);
+
+    protected TcpCommonServer(GameServerSocketProperties properties, SessionManage<Session> sessionManage, MessageManager messageManager) {
+        super(properties, sessionManage, messageManager);
     }
 
-    protected TcpCommonServer(GameServerSocketProperties properties, SessionManage<? extends Session> sessionManage) {
+    protected TcpCommonServer(GameServerSocketProperties properties, SessionManage<Session> sessionManage) {
         super(properties, sessionManage);
     }
 
