@@ -2,7 +2,7 @@ package com.lzh.game.framework.socket.utils;
 
 import com.lzh.game.framework.socket.core.invoke.Receive;
 import com.lzh.game.framework.socket.core.protocol.message.Protocol;
-import com.lzh.game.framework.socket.core.protocol.message.SimpleProtoc;
+import com.lzh.game.framework.socket.core.protocol.message.ComposeProtoc;
 import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
 import com.lzh.game.framework.utils.bean.HandlerMethod;
 import com.lzh.game.framework.utils.bean.MethodInvoke;
@@ -97,6 +97,9 @@ public class InvokeUtils {
             }
             list.add(type);
         }
+//        if (list.isEmpty()) {
+//
+//        }
         var name = "SimpleProtoClass%d".formatted(msgId);
         return buildClass(list, name, msgId);
     }
@@ -105,7 +108,7 @@ public class InvokeUtils {
     private static Class<?> buildClass(List<Class<?>> fields, String className, int msgId) {
         try {
             CtClass enhance = pl.makeClass(className);
-            enhance.addInterface(pl.getCtClass(SimpleProtoc.class.getName()));
+            enhance.addInterface(pl.getCtClass(ComposeProtoc.class.getName()));
 
             List<String> fieldNames = new ArrayList<>(fields.size());
 

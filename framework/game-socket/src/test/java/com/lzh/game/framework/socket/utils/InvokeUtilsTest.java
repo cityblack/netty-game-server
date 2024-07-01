@@ -23,7 +23,7 @@ class InvokeUtilsTest {
     void parseBean() {
         var list = InvokeUtils.parseBean(new RequestTestBean());
         for (InvokeUtils.InvokeModel model : list) {
-            System.out.println(model.getValue() + "_" + (Objects.isNull(model.getNewProtoClass()) ? "" : model.getNewProtoClass().getName()));
+            log.info("{}-{}", model.getValue(), Objects.isNull(model.getNewProtoClass()) ? null : model.getNewProtoClass().getName());
         }
     }
 

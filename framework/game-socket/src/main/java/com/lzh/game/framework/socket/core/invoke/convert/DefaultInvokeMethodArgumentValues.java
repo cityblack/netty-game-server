@@ -2,7 +2,7 @@ package com.lzh.game.framework.socket.core.invoke.convert;
 
 import com.lzh.game.framework.socket.core.invoke.convert.impl.*;
 import com.lzh.game.framework.socket.core.protocol.Request;
-import com.lzh.game.framework.socket.core.protocol.message.SimpleProtoc;
+import com.lzh.game.framework.socket.core.protocol.message.ComposeProtoc;
 import com.lzh.game.framework.socket.utils.InvokeUtils;
 import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +68,7 @@ public class DefaultInvokeMethodArgumentValues implements InvokeMethodArgumentVa
     private RequestConvert<?>[] buildArgumentValues(Request request, EnhanceMethodInvoke invoke) {
         Class<?>[] parameters = invoke.getParamsType();
         RequestConvert<?>[] params = new RequestConvert[parameters.length];
-        if (request.getData() instanceof SimpleProtoc protoc) {
+        if (request.getData() instanceof ComposeProtoc protoc) {
             var fields = protoc.getFieldValues();
             int index = 0;
             for (int i = 0; i < parameters.length; i++) {
