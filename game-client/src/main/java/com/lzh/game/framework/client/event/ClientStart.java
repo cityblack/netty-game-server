@@ -1,6 +1,6 @@
 package com.lzh.game.framework.client.event;
 
-import com.lzh.game.framework.socket.core.bootstrap.GameClient;
+import com.lzh.game.framework.socket.core.bootstrap.client.GameClient;
 import com.lzh.game.common.event.Event;
 import lombok.Getter;
 

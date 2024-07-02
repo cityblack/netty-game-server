@@ -38,9 +38,10 @@ public class GameMessageToByteDecoder extends MessageToByteEncoder<Object> {
                     log.error("Encoder. Not defined msg [{}]", command.getMsgId());
                     return;
                 }
+                out.markWriterIndex();
                 var wrapper = this.allocateBuffer(ctx, msg, isPreferDirect());
                 try {
-                    int msgId = command.getMsgId();
+                    var msgId = command.getMsgId();
                     wrapper.writeShort(msgId);
                     wrapper.writeByte(command.getType());
                     wrapper.writeInt(command.getRequestId());
@@ -50,6 +51,8 @@ public class GameMessageToByteDecoder extends MessageToByteEncoder<Object> {
                     out.ensureWritable(bodyLen + Constant.HEAD_LEN);
                     out.writeInt(bodyLen);
                     out.writeBytes(wrapper, wrapper.readerIndex(), bodyLen);
+                } catch (Exception e) {
+                    out.resetWriterIndex();
                 } finally {
                     wrapper.release();
                 }
@@ -65,7 +68,7 @@ public class GameMessageToByteDecoder extends MessageToByteEncoder<Object> {
     }
 
     protected void encode(MessageDefine define, Object msg, ByteBuf out) throws Exception {
-        int msgId = define.getMsgId();
+        var msgId = define.getMsgId();
         int serializeType = manager.getSerializeType(msgId);
         MessageSerialize handler = MessageSerializeManager.getInstance()
                 .getProtocolMessage(serializeType);

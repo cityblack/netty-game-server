@@ -1,5 +1,6 @@
 package com.lzh.game.framework.gateway;
 
+import com.lzh.game.framework.socket.GameServerSocketProperties;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,4 +16,5 @@ public class GatewayProperties {
     @Setter
     private List<String> serverAddress = new ArrayList<>();
 
+    private GameServerSocketProperties server;
 }

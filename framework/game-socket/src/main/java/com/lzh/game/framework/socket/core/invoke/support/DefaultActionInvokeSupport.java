@@ -1,6 +1,5 @@
 package com.lzh.game.framework.socket.core.invoke.support;
 
-import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,25 +11,25 @@ import java.util.Map;
 @Slf4j
 public class DefaultActionInvokeSupport implements InvokeSupport {
 
-    private final Map<Integer, EnhanceMethodInvoke> protocolMap = new HashMap<>();
+    private final Map<Short, EnhanceMethodInvoke> protocolMap = new HashMap<>();
 
     @Override
-    public EnhanceMethodInvoke getActionHandler(int cmd) {
-        return protocolMap.get(cmd);
+    public EnhanceMethodInvoke getActionHandler(short msgId) {
+        return protocolMap.get(msgId);
     }
 
     @Override
-    public boolean containMapping(int cmd) {
-        return protocolMap.containsKey(cmd);
+    public boolean containMapping(short msgId) {
+        return protocolMap.containsKey(msgId);
     }
 
     @Override
-    public void register(int cmd, EnhanceMethodInvoke invoke) {
+    public void register(short msgId, EnhanceMethodInvoke invoke) {
 
-        if (protocolMap.containsKey(cmd)) {
-            throw new IllegalArgumentException("Repeated registration " + cmd + " proto.");
+        if (protocolMap.containsKey(msgId)) {
+            throw new IllegalArgumentException("Repeated registration " + msgId + " proto.");
         }
-        protocolMap.put(cmd, invoke);
+        protocolMap.put(msgId, invoke);
 
     }
 

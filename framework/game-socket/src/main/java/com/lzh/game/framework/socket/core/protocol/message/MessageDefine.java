@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class MessageDefine {
 
-    private int msgId;
+    private short msgId;
 
     private Class<?> msgClass;
 
@@ -19,4 +19,11 @@ public class MessageDefine {
 
     private int serializeType;
 
+    public MessageDefine(short msgId, Class<?> msgClass) {
+        this.msgId = msgId;
+        this.msgClass = msgClass;
+    }
+
+    public MessageDefine() {
+    }
 }

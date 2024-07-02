@@ -17,8 +17,8 @@ public interface Processor {
     boolean match(Session session, Object msg);
 
     /**
-     * executors.
-     * @return Using the original executors, if the return value is null
+     * Use current thread while the value is null
+     * @return Using the original executors.
      */
     ProcessorExecutorService service();
 }

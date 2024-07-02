@@ -1,5 +1,11 @@
 package com.lzh.game.framework.socket.core.bootstrap;
 
+import com.lzh.game.framework.socket.GameServerSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.server.GameServer;
+import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
+import com.lzh.game.framework.socket.core.process.event.ProcessEvent;
+import com.lzh.game.framework.socket.core.session.Session;
+import com.lzh.game.framework.socket.core.session.impl.AbstractSession;
 import com.lzh.game.framework.socket.exception.ServerStarException;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -9,6 +15,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Instant;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Getter
@@ -16,7 +24,11 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 public class NetServer implements GameServer {
 
-    private Channel channel;
+    private ServerSession session;
+
+    private ProcessorPipeline pipeline;
+
+    private GameServerSocketProperties properties;
 
     private int port;
 
@@ -26,8 +38,10 @@ public class NetServer implements GameServer {
 
     private AtomicLong openTimestamp = new AtomicLong();
 
-    public NetServer(int port) {
+    public NetServer(int port, GameServerSocketProperties properties, ProcessorPipeline pipeline) {
         this.port = port;
+        this.properties = properties;
+        this.pipeline = pipeline;
     }
 
     @Override
@@ -35,7 +49,7 @@ public class NetServer implements GameServer {
         try {
             sendBeforeStartEvent(port);
             ChannelFuture future = this.bootstrap.bind(port);
-            this.channel = future.channel();
+            this.session = new ServerSession(future.channel());
             this.openTimestamp.set(System.currentTimeMillis());
             startDaemonAwaitThread(future);
             log.info("Start server on {}", this.port);
@@ -48,10 +62,12 @@ public class NetServer implements GameServer {
     public void start() {
         try {
             sendBeforeStartEvent(port);
-            ChannelFuture future = this.bootstrap.bind(port).sync().channel().closeFuture().sync();
-            this.channel = future.channel();
+            ChannelFuture future = this.bootstrap.bind(port)
+                    .sync();
+            this.session = new ServerSession(future.channel());
             this.openTimestamp.set(System.currentTimeMillis());
             log.info("Start server on {}", this.port);
+            future.channel().closeFuture().sync();
         } catch (Exception e) {
             throw new ServerStarException("Server start error", e);
         }
@@ -86,14 +102,17 @@ public class NetServer implements GameServer {
     }
 
     private void sendBeforeStartEvent(int port) {
-//        EventBus.getDefault().post(new ServerStartEvent(System.currentTimeMillis(), port));
+        pipeline.fireEvent(ProcessEvent.SERVER_START, session, port);
     }
 
     private void sendCloseEvent() {
-//        try {
-//            EventBus.getDefault().post(new ServerCloseEvent(System.currentTimeMillis(), port));
-//        } catch (Exception e) {
-//            log.error("Close server error: ", e);
-//        }
+        pipeline.fireEvent(ProcessEvent.CLOSE, session);
+    }
+
+    static class ServerSession extends AbstractSession {
+
+        protected ServerSession(Channel channel) {
+            super(channel, false);
+        }
     }
 }

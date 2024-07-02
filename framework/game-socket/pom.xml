@@ -22,9 +22,10 @@
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
+            <groupId>org.apache.fury</groupId>
+            <artifactId>fury-core</artifactId>
         </dependency>
 
         <dependency>

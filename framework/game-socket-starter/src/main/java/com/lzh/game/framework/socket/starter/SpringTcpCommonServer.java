@@ -1,7 +1,8 @@
 package com.lzh.game.framework.socket.starter;
 
-import com.lzh.game.framework.socket.GameServerSocketProperties;
-import com.lzh.game.framework.socket.core.bootstrap.TcpCommonServer;
+import com.lzh.game.framework.socket.core.bootstrap.server.TcpCommonServer;
+import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
+import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionManage;
 import org.springframework.beans.BeansException;
@@ -13,17 +14,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class SpringTcpCommonServer extends TcpCommonServer implements ApplicationContextAware {
+public class SpringTcpCommonServer extends TcpCommonServer<SpringGameServerProperties>
+        implements ApplicationContextAware {
 
     private List<SocketServerInit> inits;
 
-    protected SpringTcpCommonServer(GameServerSocketProperties properties, SessionManage<Session> sessionManage) {
-        super(properties, sessionManage);
+    public SpringTcpCommonServer(SpringGameServerProperties properties, SessionManage<Session> sessionManage, MessageManager messageManager, InvokeSupport invokeSupport) {
+        super(properties, sessionManage, messageManager, invokeSupport);
     }
 
-
     @Override
-    protected void doInit(GameServerSocketProperties properties) {
+    protected void doInit(SpringGameServerProperties properties) {
         super.doInit(properties);
         if (Objects.nonNull(inits)) {
             for (SocketServerInit init : this.inits) {

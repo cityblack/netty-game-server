@@ -11,17 +11,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class GatewaySessionManage<S extends Session> extends GameSessionManage<S> {
+public class GatewaySessionManage extends GameSessionManage<Session> {
 
-    public GatewaySessionManage(SessionFactory<S> factory) {
-        super(factory, new CacheManage());
+    public GatewaySessionManage(SessionFactory<Session> factory) {
+        super(factory, new CacheManage<>());
     }
 
     static class CacheManage<S extends Session> implements SessionMemoryCacheManage<String, S> {
 
         @Override
         public SessionMemoryCache<String, S> getSessionCache() {
-            return new Cache();
+            return new Cache<>();
         }
     }
 

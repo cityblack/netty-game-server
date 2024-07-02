@@ -1,6 +1,9 @@
-package com.lzh.game.framework.socket.core.bootstrap;
+package com.lzh.game.framework.socket.core.bootstrap.server;
 
 import com.lzh.game.framework.socket.GameServerSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.NetServer;
+import com.lzh.game.framework.socket.core.bootstrap.ServerIdleHandler;
+import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
 import com.lzh.game.framework.socket.core.protocol.codec.GameByteToMessageDecoder;
 import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteDecoder;
@@ -9,38 +12,39 @@ import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionManage;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
-import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.concurrent.TimeUnit;
 
-public class TcpCommonServer extends AbstractServerBootstrap
+public class TcpCommonServer<T extends GameServerSocketProperties> extends AbstractServerBootstrap<T>
         implements GameServer {
 
-
-    protected TcpCommonServer(GameServerSocketProperties properties, SessionManage<Session> sessionManage, MessageManager messageManager) {
-        super(properties, sessionManage, messageManager);
+    public TcpCommonServer(T properties, SessionManage<Session> sessionManage, MessageManager messageManager, InvokeSupport invokeSupport) {
+        super(properties, sessionManage, messageManager, invokeSupport);
     }
 
-    protected TcpCommonServer(GameServerSocketProperties properties, SessionManage<Session> sessionManage) {
+    public TcpCommonServer(T properties, SessionManage<Session> sessionManage) {
         super(properties, sessionManage);
     }
 
-    protected TcpCommonServer(GameServerSocketProperties properties) {
+    public TcpCommonServer(T properties) {
         super(properties);
     }
 
     @Override
-    protected NetServer createServer(int port) {
-        final EventLoopGroup workerGroup = new EpollEventLoopGroup();
+    protected NetServer createServer(int port, T properties, ProcessorPipeline pipeline) {
+        final EventLoopGroup bossGroup = new NioEventLoopGroup(properties.getBossWordCore());
+        final EventLoopGroup workerGroup = new NioEventLoopGroup();
         final ServerBootstrap bootstrap = new ServerBootstrap();
-        bootstrap.group(workerGroup)
+        bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
 //                .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
                 .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
                 .childHandler(channelHandler());
-        NetServer server = new NetServer(port);
+        NetServer server = new NetServer(port, properties, pipeline);
         server.setBootstrap(bootstrap);
         server.setEventLoopGroup(workerGroup);
         return server;
@@ -51,7 +55,7 @@ public class TcpCommonServer extends AbstractServerBootstrap
             @Override
             protected void initChannel(Channel ch) throws Exception {
                 ch.pipeline()
-//                        .addLast(new LoggingHandler(properties.getNettyLogLevel()))
+                        .addLast(new LoggingHandler(properties.getNettyLogLevel()))
                         .addLast(new IdleStateHandler(0, 0, getProperties().getServerIdleTime(), TimeUnit.MILLISECONDS))
                         .addLast("serverIdleHandler", new ServerIdleHandler())
                         .addLast("decoder", new GameByteToMessageDecoder(getMessageManager()))

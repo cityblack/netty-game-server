@@ -1,12 +1,13 @@
 package com.lzh.game.framework.socket.starter;
 
-import com.lzh.game.framework.socket.core.bootstrap.GameServer;
-import com.lzh.game.framework.socket.core.bootstrap.TcpCommonServer;
+import com.lzh.game.framework.socket.core.bootstrap.server.GameServer;
+import com.lzh.game.framework.socket.core.bootstrap.server.TcpCommonServer;
 import com.lzh.game.framework.socket.core.invoke.convert.InvokeMethodArgumentValues;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.invoke.convert.RequestConvertManager;
 import com.lzh.game.framework.socket.core.invoke.RequestDispatch;
 import com.lzh.game.framework.socket.core.session.GameSessionManage;
+import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionFactory;
 import com.lzh.game.framework.socket.core.session.SessionManage;
 import com.lzh.game.framework.socket.core.session.cache.GameSessionMemoryCacheManage;
@@ -35,8 +36,8 @@ public class TcpServerConfiguration {
         return server;
     }
 
-    protected SessionManage<GameSession> serverSessionManage() {
-        SessionFactory<GameSession> sessionFactory = GameSession::of;
+    protected SessionManage<Session> serverSessionManage() {
+        SessionFactory<Session> sessionFactory = GameSession::of;
         return new GameSessionManage<>(sessionFactory, new GameSessionMemoryCacheManage<>());
     }
 }

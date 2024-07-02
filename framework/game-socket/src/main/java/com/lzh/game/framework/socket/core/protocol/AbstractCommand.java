@@ -13,7 +13,7 @@ public class AbstractCommand {
 
     private byte type;
 
-    private int msgId;
+    private short msgId;
 
     private int requestId;
 

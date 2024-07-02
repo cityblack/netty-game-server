@@ -1,8 +1,7 @@
 package com.lzh.game.framework.socket.starter;
 
-import com.lzh.game.framework.socket.core.bootstrap.AbstractServerBootstrap;
+import com.lzh.game.framework.socket.core.bootstrap.server.AbstractServerBootstrap;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
-import com.lzh.game.framework.socket.core.invoke.convert.RequestConvertManager;
 import com.lzh.game.framework.socket.starter.anno.Action;
 import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
 import lombok.extern.slf4j.Slf4j;
@@ -62,17 +61,17 @@ public class SpringActionSupport implements InvokeSupport, ApplicationContextAwa
     }
 
     @Override
-    public EnhanceMethodInvoke getActionHandler(int msgId) {
+    public EnhanceMethodInvoke getActionHandler(short msgId) {
         return support.getActionHandler(msgId);
     }
 
     @Override
-    public boolean containMapping(int msgId) {
+    public boolean containMapping(short msgId) {
         return support.containMapping(msgId);
     }
 
     @Override
-    public void register(int msgId, EnhanceMethodInvoke invoke) {
+    public void register(short msgId, EnhanceMethodInvoke invoke) {
         support.register(msgId, invoke);
     }
 

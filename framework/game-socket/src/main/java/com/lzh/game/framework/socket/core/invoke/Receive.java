@@ -16,5 +16,5 @@ public @interface Receive {
      * If the value equals zero will auto produce a MessageDefined
      * @return msg id
      */
-    int value() default 0;
+    short value() default 0;
 }

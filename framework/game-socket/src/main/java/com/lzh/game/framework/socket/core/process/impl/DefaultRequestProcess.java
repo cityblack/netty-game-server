@@ -1,6 +1,8 @@
-package com.lzh.game.framework.socket.core.process;
+package com.lzh.game.framework.socket.core.process.impl;
 
 import com.lzh.game.framework.socket.core.invoke.RequestDispatch;
+import com.lzh.game.framework.socket.core.process.Processor;
+import com.lzh.game.framework.socket.core.process.ProcessorExecutorService;
 import com.lzh.game.framework.socket.core.process.context.ProcessorContext;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.session.Session;
@@ -12,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DefaultRequestProcess implements Processor {
 
-    private RequestDispatch dispatch;
+    private final RequestDispatch dispatch;
 
     private ProcessorExecutorService executorService;
 

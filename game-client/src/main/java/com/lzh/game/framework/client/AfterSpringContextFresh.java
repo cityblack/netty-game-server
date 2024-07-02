@@ -1,7 +1,7 @@
 package com.lzh.game.framework.client;
 
 import com.lzh.game.framework.client.event.ClientStart;
-import com.lzh.game.framework.socket.core.bootstrap.GameClient;
+import com.lzh.game.framework.socket.core.bootstrap.client.GameClient;
 import org.greenrobot.eventbus.EventBus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;

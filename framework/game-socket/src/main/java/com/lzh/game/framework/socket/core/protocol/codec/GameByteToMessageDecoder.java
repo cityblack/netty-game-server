@@ -65,7 +65,7 @@ public class GameByteToMessageDecoder extends ByteToMessageDecoder {
         out.add(command);
     }
 
-    public Object decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, int msgId, int dataLen) throws Exception {
+    public Object decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, short msgId, int dataLen) throws Exception {
         if (dataToBytes) {
             byte[] bytes = new byte[dataLen];
             in.readBytes(bytes, in.readerIndex(), bytes.length);

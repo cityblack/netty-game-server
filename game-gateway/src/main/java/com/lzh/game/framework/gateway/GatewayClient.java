@@ -1,7 +1,7 @@
 package com.lzh.game.framework.gateway;
 
 import com.lzh.game.framework.socket.GameSocketProperties;
-import com.lzh.game.framework.socket.core.bootstrap.GameTcpClient;
+import com.lzh.game.framework.socket.core.bootstrap.client.GameTcpClient;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionManage;
 import com.lzh.game.framework.socket.utils.SeasonMonitorConfig;

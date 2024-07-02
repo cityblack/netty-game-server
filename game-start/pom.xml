@@ -25,6 +25,7 @@
             <artifactId>game-socket-starter</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.lzh.game.framework</groupId>
             <artifactId>game-repository</artifactId>

@@ -1,7 +1,7 @@
 package com.lzh.game.framework.socket.core.protocol.serial;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author zehong.l
@@ -9,7 +9,7 @@ import java.util.Map;
  **/
 public class MessageSerializeManager {
 
-    private final Map<Integer, MessageSerialize> handlers = new HashMap<>();
+    private final Map<Integer, MessageSerialize> handlers = new ConcurrentHashMap<>();
 
     public void registerMessage(int type, MessageSerialize handler) {
         handlers.put(type, handler);
@@ -25,7 +25,7 @@ public class MessageSerializeManager {
 
     private static class SingletonHolder {
 
-        private static MessageSerializeManager INSTANCE = new MessageSerializeManager();
+        private static final MessageSerializeManager INSTANCE = new MessageSerializeManager();
     }
 
     private MessageSerializeManager() {

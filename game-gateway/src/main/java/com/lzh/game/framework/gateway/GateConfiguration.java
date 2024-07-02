@@ -1,15 +1,12 @@
 package com.lzh.game.framework.gateway;
 
-import com.lzh.game.framework.socket.core.bootstrap.GameServer;
+import com.lzh.game.framework.socket.core.bootstrap.server.GameServer;
 import com.lzh.game.framework.socket.GameSocketProperties;
 import com.lzh.game.framework.socket.core.ForwardSessionSelect;
-import com.lzh.game.framework.socket.core.invoke.RequestDispatch;
-import com.lzh.game.framework.socket.core.bootstrap.GameTcpClient;
-import com.lzh.game.framework.socket.core.bootstrap.TcpCommonServer;
-import com.lzh.game.framework.socket.core.invoke.convert.RequestConvertManager;
-import com.lzh.game.framework.socket.core.invoke.convert.InvokeMethodArgumentValues;
-import com.lzh.game.framework.socket.core.process.ForwardGatewayProcess;
-import com.lzh.game.framework.socket.core.process.FutureResponseProcess;
+import com.lzh.game.framework.socket.core.bootstrap.client.GameTcpClient;
+import com.lzh.game.framework.socket.core.bootstrap.server.TcpCommonServer;
+import com.lzh.game.framework.socket.core.process.impl.ForwardGatewayProcess;
+import com.lzh.game.framework.socket.core.process.impl.FutureResponseProcess;
 import com.lzh.game.framework.socket.core.session.GameSessionManage;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionFactory;
@@ -20,11 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 
 @Configuration
-@Import(GameSocketConfiguration.class)
 @EnableConfigurationProperties(GatewayProperties.class)
 public class GateConfiguration {
 
@@ -32,19 +27,14 @@ public class GateConfiguration {
     private GatewayProperties properties;
 
     @Bean
-    public GameServer gameServer(SpringGameServerProperties serverSocketProperties
-            , RequestDispatch requestHandle
-            , InvokeSupport<EnhanceHandlerMethod> actionSupport
-            , RequestConvertManager requestConvertManager
-            , InvokeMethodArgumentValues argumentValues, ForwardGatewayProcess gatewayProcess) {
+    public GameServer gameServer() {
 
-        TcpCommonServer server = new TcpCommonServer(serverSocketProperties, serverSessionManage());
+        var server = new TcpCommonServer<>(serverSocketProperties, serverSessionManage());
         server.setDispatch(requestHandle)
                 .setMethodSupport(actionSupport)
                 .setConvertManager(requestConvertManager)
                 .setArgumentValues(argumentValues);
 
-        server.addProcessor(Constant.REQUEST_SIGN, gatewayProcess);
         server.asyncStart();
         return server;
     }
@@ -53,7 +43,7 @@ public class GateConfiguration {
     public GameTcpClient client() {
         GatewayClient client = new GatewayClient(new GameSocketProperties(), properties, clientSessionMange());
         FutureResponseProcess process = new FutureResponseProcess();
-        client.addProcessor(Constant.RESPONSE_SIGN, process);
+
         client.start();
         return client;
     }
@@ -65,7 +55,7 @@ public class GateConfiguration {
     }
 
     public SessionManage<Session> clientSessionMange() {
-        SessionFactory<GameSession> factory = GameSession::of;
+        SessionFactory<Session> factory = GameSession::of;
         return new GatewaySessionManage(factory);
     }
 

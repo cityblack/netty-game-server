@@ -4,8 +4,8 @@ import com.lzh.game.common.bean.HandlerMethod;
 import com.lzh.game.framework.client.bootstrap.ResponseDispatcher;
 import com.lzh.game.framework.client.bootstrap.ResponseProcess;
 import com.lzh.game.framework.socket.GameSocketProperties;
-import com.lzh.game.framework.socket.core.bootstrap.GameClient;
-import com.lzh.game.framework.socket.core.bootstrap.GameTcpClient;
+import com.lzh.game.framework.socket.core.bootstrap.client.GameClient;
+import com.lzh.game.framework.socket.core.bootstrap.client.GameTcpClient;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.session.GameSessionManage;
@@ -41,7 +41,7 @@ public class Config {
         SessionFactory<Session> sessionFactory = GameSession::of;
         GameSessionManage<Session> manage = new GameSessionManage<>(sessionFactory, new GameSessionMemoryCacheManage());
         GameTcpClient client = new GameTcpClient(properties, manage);
-        client.addProcessor(Request.class, responseProcess);
+//        client.addProcessor(Request.class, responseProcess);
         client.start();
         return client;
     }

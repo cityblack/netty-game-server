@@ -2,27 +2,20 @@ package com.lzh.game.framework.socket.core.invoke.convert.impl;
 
 import com.lzh.game.framework.socket.core.invoke.convert.RequestConvert;
 import com.lzh.game.framework.socket.core.protocol.Request;
-import lombok.AllArgsConstructor;
 
 /**
  * @author zehong.l
- * @since 2024-06-28 12:14
+ * @since 2024-07-02 14:48
  **/
-@AllArgsConstructor
-public class SimpleProtocConvert implements RequestConvert {
-
-    private int index;
-
-    private Object[] fields;
+public class VoidConvert implements RequestConvert<Object> {
 
     @Override
     public Object convert(Request request) {
-        return fields[index];
+        return null;
     }
 
     @Override
-    public boolean match(Class type) {
-        return true;
+    public boolean match(Class<?> type) {
+        return type == Void.class;
     }
-
 }

@@ -11,17 +11,17 @@ import com.lzh.game.framework.socket.core.session.Session;
  **/
 public interface ProcessorPipeline {
 
-    void addFirst(Processor processor);
+    ProcessorPipeline addFirst(Processor processor);
 
-    void addLast(Processor processor);
+    ProcessorPipeline addLast(Processor processor);
 
-    void addProcessEventListen(ProcessEvent event, ProcessEventListen eventListen);
+    ProcessorPipeline addProcessEventListen(ProcessEvent event, ProcessEventListen eventListen);
 
-    void fireReceive(Session session, Object msg);
+    ProcessorPipeline fireReceive(Session session, Object msg);
 
-    void fireEvent(ProcessEvent event, Session session, Object o);
+    ProcessorPipeline fireEvent(ProcessEvent event, Session session, Object o);
 
-    default void fireEvent(ProcessEvent event, Session session) {
-        fireEvent(event, session, null);
+    default ProcessorPipeline fireEvent(ProcessEvent event, Session session) {
+        return fireEvent(event, session, null);
     }
 }

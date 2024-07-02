@@ -10,7 +10,7 @@ public class Constant {
         return type == REQUEST_SIGN || type == ONEWAY_SIGN;
     }
 
-    public static final int DEFAULT_SERIAL_SIGN = 1;
+    public static final int DEFAULT_SERIAL_SIGN = 0;
 
     public static final int HEAD_LEN = 4;
     // Request message type. min

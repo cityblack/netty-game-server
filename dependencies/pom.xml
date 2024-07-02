@@ -32,6 +32,7 @@
         <redission-starter.version>3.11.4</redission-starter.version>
         <caffeine.version>2.8.8</caffeine.version>
         <javassist.version>3.30.2-GA</javassist.version>
+        <fury.version>0.5.1</fury.version>
     </properties>
 
     <dependencyManagement>
@@ -94,6 +95,16 @@
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
                 <version>${protobuf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.fury</groupId>
+                <artifactId>fury-core</artifactId>
+                <version>${fury.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

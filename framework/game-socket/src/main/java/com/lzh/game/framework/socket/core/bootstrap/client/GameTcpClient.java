@@ -1,11 +1,12 @@
-package com.lzh.game.framework.socket.core.bootstrap;
+package com.lzh.game.framework.socket.core.bootstrap.client;
 
+import com.lzh.game.framework.socket.core.bootstrap.AbstractBootstrap;
 import com.lzh.game.framework.socket.utils.Constant;
 import com.lzh.game.framework.socket.GameServerSocketProperties;
 import com.lzh.game.framework.socket.GameSocketProperties;
 import com.lzh.game.framework.socket.core.AsyncResponse;
 import com.lzh.game.framework.socket.core.FutureAsyncResponse;
-import com.lzh.game.framework.socket.core.RequestFuture;
+import com.lzh.game.framework.socket.core.process.impl.RequestFuture;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionManage;
@@ -75,21 +76,6 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
                 }
             }
         });
-        /*future.awaitUninterruptibly();
-        if (!future.isDone()) {
-            String errMsg = "Create connection to " + host + ":" + port + " timeout!";
-            throw new RuntimeException(errMsg);
-        }
-        if (future.isCancelled()) {
-            String errMsg = "Create connection to " + host + ":" + port + " cancelled by user!";
-            log.warn(errMsg);
-            throw new RuntimeException(errMsg);
-        }
-        if (!future.isSuccess()) {
-            String errMsg = "Create connection to " + host + ":" + port + " error!";
-            log.warn(errMsg);
-            throw new ConnectException(errMsg);
-        }*/
         return future.channel();
     }
 
@@ -100,7 +86,7 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
     }
 
     @Override
-    public void oneWay(Session session, int cmd, Object params) {
+    public void oneWay(Session session, short cmd, Object params) {
         checkStatus();
         oneWay(session, SocketUtils.createRequest(cmd, params, Constant.ONEWAY_SIGN));
     }
@@ -115,7 +101,7 @@ public class GameTcpClient extends AbstractBootstrap<GameSocketProperties>
     }
 
     @Override
-    public <T> AsyncResponse<T> request(Session session, int cmd, Object params, Class<T> returnType) {
+     public <T> AsyncResponse<T> request(Session session, short cmd, Object params, Class<T> returnType) {
         return request(session, SocketUtils.createRequest(cmd, params, Constant.REQUEST_SIGN), returnType);
     }
 

@@ -16,13 +16,13 @@ import java.util.Objects;
 @Slf4j
 public class ActionRequestHandler implements RequestDispatch {
 
-    private ErrorHandler errorHandler;
+    private final ErrorHandler errorHandler;
 
-    private InterceptorHandler interceptorHandler;
+    private final InterceptorHandler interceptorHandler;
 
-    private InvokeMethodArgumentValues transfer;
+    private final InvokeMethodArgumentValues transfer;
 
-    private InvokeSupport support;
+    private final InvokeSupport support;
 
     public ActionRequestHandler(InvokeSupport support, InvokeMethodArgumentValues transfer) {
         this(support, transfer, null, null);
@@ -36,7 +36,7 @@ public class ActionRequestHandler implements RequestDispatch {
     }
 
     protected void executeAction(Request request, Response response) {
-        int msgId = request.getMsgId();
+        var msgId = request.getMsgId();
         var method = support.getActionHandler(msgId);
         if (Objects.isNull(method)) {
             this.onError(request, response, new NotFondProtocolException(msgId));

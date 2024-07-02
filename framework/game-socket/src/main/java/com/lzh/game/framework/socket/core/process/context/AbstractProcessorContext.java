@@ -23,7 +23,7 @@ public abstract class AbstractProcessorContext implements ProcessorContext {
         this.pipeline = pipeline;
     }
 
-    private ProcessorPipeline pipeline;
+    private final ProcessorPipeline pipeline;
 
     private Processor processor;
 

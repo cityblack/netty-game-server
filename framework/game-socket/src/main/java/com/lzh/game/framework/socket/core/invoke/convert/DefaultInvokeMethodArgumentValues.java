@@ -3,7 +3,6 @@ package com.lzh.game.framework.socket.core.invoke.convert;
 import com.lzh.game.framework.socket.core.invoke.convert.impl.*;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.message.ComposeProtoc;
-import com.lzh.game.framework.socket.utils.InvokeUtils;
 import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,7 +10,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * {@link InvokeUtils#parseBean(Object)}
+ *
  */
 @Slf4j
 public class DefaultInvokeMethodArgumentValues implements InvokeMethodArgumentValues, RequestConvertManager {
@@ -22,7 +21,10 @@ public class DefaultInvokeMethodArgumentValues implements InvokeMethodArgumentVa
     public DefaultInvokeMethodArgumentValues() {
         this(new HashMap<>());
         var cs = Arrays.asList(new RequestParamConvert()
-                , new ResponseConvert(), new SessionConvert(), new ProtocConvert());
+                , new ResponseConvert()
+                , new SessionConvert()
+                , new VoidConvert()
+                , new ProtocConvert());
         converts = new CopyOnWriteArrayList<>(cs);
     }
 
@@ -73,10 +75,10 @@ public class DefaultInvokeMethodArgumentValues implements InvokeMethodArgumentVa
             int index = 0;
             for (int i = 0; i < parameters.length; i++) {
                 Class<?> target = parameters[i];
-                if (InvokeUtils.isSimpleProtocParam(target)) {
-                    params[i] = new SimpleProtocConvert(index++, fields);
-                } else {
+                if (target.isAnnotationPresent(SysParam.class)) {
                     params[i] = getTargetConvert(target);
+                } else {
+                    params[i] = new ComposeProtocolConvert(index++, fields);
                 }
             }
         } else {

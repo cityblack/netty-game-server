@@ -1,48 +1,69 @@
-package com.lzh.game.framework.socket.utils;
+package com.lzh.game.framework.socket.core.invoke;
 
-import com.lzh.game.framework.socket.core.invoke.Receive;
-import com.lzh.game.framework.socket.core.protocol.message.Protocol;
+import com.lzh.game.framework.socket.core.invoke.convert.SysParam;
+import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.protocol.message.ComposeProtoc;
+import com.lzh.game.framework.socket.core.protocol.message.MessageDefine;
+import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
+import com.lzh.game.framework.socket.core.protocol.message.Protocol;
 import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
 import com.lzh.game.framework.utils.bean.HandlerMethod;
 import com.lzh.game.framework.utils.bean.MethodInvoke;
 import com.lzh.game.framework.utils.bean.MethodInvokeUtils;
 import javassist.*;
-import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.annotation.Annotation;
-import javassist.bytecode.annotation.IntegerMemberValue;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
 /**
- * Parse bean to invoker.
- * Agreement. Apart from the built-in parameters, there is only one additional parameter
- */
-public class InvokeUtils {
+ * @author zehong.l
+ * @since 2024-07-02 11:51
+ **/
+@Slf4j
+public class InvokeBeanHelper {
 
     private static ClassPool pl;
+
+    private static final Map<String, Class<?>> PROTOC_CLASS = new ConcurrentHashMap<>();
 
     static {
         pl = ClassPool.getDefault();
         pl.importPackage("java.lang");
     }
 
-    public static List<InvokeModel> parseBean(Object bean) {
+    private InvokeSupport invokeSupport;
+
+    private MessageManager messageManager;
+
+    public InvokeBeanHelper(InvokeSupport invokeSupport, MessageManager messageManager) {
+        this.invokeSupport = invokeSupport;
+        this.messageManager = messageManager;
+    }
+
+    public void parseBean(Object bean, Predicate<Method> filter) {
         Class<?> clazz = bean.getClass();
-        return Stream.of(clazz.getDeclaredMethods())
-                .filter(method -> method.isAnnotationPresent(Receive.class))
+        Stream.of(clazz.getDeclaredMethods())
+                .filter(filter)
                 .map(method -> toModel(bean, method))
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .forEach(e -> {
+                    invokeSupport.register(e.getValue(), e.getHandlerMethod());
+                    for (MessageDefine define : e.defines) {
+                        messageManager.registerMessage(define);
+                    }
+                    for (Class<?> clz : e.protocol) {
+                        messageManager.addMessage(clz);
+                    }
+                });
     }
 
     private static InvokeModel toModel(Object bean, Method method) {
@@ -63,17 +84,31 @@ public class InvokeUtils {
      * @return
      */
     private static InvokeModel parseTargetMethod(Receive receive, Object bean, HandlerMethod method) {
-        boolean useSimpleProto = receive.value() != 0;
+        boolean useCompose = receive.value() != 0;
         var protocol = getProtoCol(method.getParamsType());
-        if (!useSimpleProto && protocol.size() != 1) {
-            throw new IllegalArgumentException();
+        // If compose protocol not used , Can only have one parameter
+        if (!useCompose && protocol.size() != 1) {
+            throw new IllegalArgumentException("If compose protocol not used , Can only have one parameter.");
         }
-        int msgId = useSimpleProto ? receive.value() : protocol.get(0).value();
+        short msgId = useCompose ? receive.value() : protocol.get(0).value();
+        boolean hasParam = method.getParamsType().length > 0;
         try {
             var model = new InvokeModel();
-            if (useSimpleProto) {
-                model.setNewProtoClass(buildMethodClass(msgId, method));
+            if (!hasParam) {
+                model.defines.add(new MessageDefine(msgId, Void.class));
+            } else if (useCompose) {
+                if (method.getParamsType().length == 1) {
+                    var type = method.getParamsType()[0];
+                    model.defines.add(new MessageDefine(msgId, type));
+                } else {
+                    var newType = getOrBuildProtocolClass(method);
+                    model.defines.add(new MessageDefine(msgId, newType));
+                }
             }
+            for (Class<?> clz : method.getParamsType()) {
+                parseProtocol(clz, model.getProtocol());
+            }
+
             model.setValue(msgId);
             var enhance = MethodInvokeUtils.enhanceInvoke(bean, method.getMethod());
             model.setHandlerMethod(new EnhanceInvokeImpl(method, enhance));
@@ -83,29 +118,46 @@ public class InvokeUtils {
         }
     }
 
+    private static void parseProtocol(Class<?> clz, List<Class<?>> protocols) {
+        if (!clz.isAnnotationPresent(Protocol.class)) {
+            return;
+        }
+        protocols.add(clz);
+        for (Field field : clz.getFields()) {
+            var type = field.getType();
+            if (!type.isAnnotationPresent(Protocol.class)) {
+                continue;
+            }
+            parseProtocol(clz, protocols);
+        }
+    }
+
+    private static Class<?> getOrBuildProtocolClass(HandlerMethod method) {
+        var key = Arrays.stream(method.getParamsType())
+                .map(Class::getName)
+                .collect(Collectors.joining());
+        return PROTOC_CLASS.computeIfAbsent(key, k -> buildProtocolClass(k, method));
+    }
+
     /**
      * Use primitive or @Protocol method's param to build a new class
-     * @param msgId
+     *
      * @param method
      * @return
      */
-    private static Class<?> buildMethodClass(int msgId, HandlerMethod method) {
+    private static Class<?> buildProtocolClass(String className, HandlerMethod method) {
         List<Class<?>> list = new ArrayList<>();
         for (Class<?> type : method.getParamsType()) {
-            if (!isSimpleProtocParam(type)) {
+            if (!isSysParam(type)) {
                 continue;
             }
             list.add(type);
         }
-//        if (list.isEmpty()) {
-//
-//        }
-        var name = "SimpleProtoClass%d".formatted(msgId);
-        return buildClass(list, name, msgId);
+        return buildClass(list, className);
     }
 
     // use javassist build class
-    private static Class<?> buildClass(List<Class<?>> fields, String className, int msgId) {
+    private static Class<?> buildClass(List<Class<?>> fields, String className) {
         try {
             CtClass enhance = pl.makeClass(className);
             enhance.addInterface(pl.getCtClass(ComposeProtoc.class.getName()));
@@ -124,14 +176,8 @@ public class InvokeUtils {
             CtMethod getValues = CtNewMethod.make(buildGetValueMethodBody(fieldNames), enhance);
             enhance.addMethod(getValues);
 
-            var constant = enhance.getClassFile().getConstPool();
-            AnnotationsAttribute attr = new AnnotationsAttribute(constant, AnnotationsAttribute.visibleTag);
-            Annotation annot = new Annotation(constant, pl.getCtClass(Protocol.class.getName()));
-            annot.addMemberValue("value", new IntegerMemberValue(constant, msgId));
-            annot.addMemberValue("serializeType", new IntegerMemberValue(constant, Constant.DEFAULT_SERIAL_SIGN));
-            enhance.getClassFile().addAttribute(attr);
-
-            enhance.writeFile(InvokeUtils.class.getResource("./").getFile());
+            log.debug("Build class: {}", className);
+//            enhance.writeFile(InvokeUtils.class.getResource("./").getFile());
             return enhance.toClass();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -159,42 +205,23 @@ public class InvokeUtils {
         return list;
     }
 
-    public static boolean isSimpleProtocParam(Class<?> type) {
-        return type.isPrimitive() || type.isAnnotationPresent(Protocol.class);
+    public static boolean isSysParam(Class<?> type) {
+        return type.isAnnotationPresent(SysParam.class);
     }
 
     @Data
     @Accessors(chain = true)
-    public static class InvokeModel {
+    private static class InvokeModel {
         /**
          * cmd id
          */
-        private int value;
+        private short value;
 
         private EnhanceMethodInvoke handlerMethod;
 
-        private Class<?> newProtoClass;
+        private List<MessageDefine> defines = new ArrayList<>();
 
-        @Override
-        public boolean equals(Object obj) {
-
-            if (this == obj) {
-                return true;
-            }
-            if (!(obj instanceof InvokeModel)) {
-                return false;
-            }
-            if (((InvokeModel) obj).getValue() == this.getValue()) {
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(this.value);
-        }
-
+        private List<Class<?>> protocol = new ArrayList<>();
 
     }
 
@@ -224,9 +251,6 @@ public class InvokeUtils {
         public Object invoke(Object... args) {
             return invoke.invoke(args);
         }
-    }
-
-    private InvokeUtils() {
     }
 
 }

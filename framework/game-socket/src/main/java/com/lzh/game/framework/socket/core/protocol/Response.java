@@ -23,7 +23,7 @@ public class Response extends AbstractCommand
         return response;
     }
 
-    public static Response of(int msgId, int requestId, Object data) {
+    public static Response of(short msgId, int requestId, Object data) {
         Response response = new Response();
         response.setData(data);
         response.setRequestId(requestId);

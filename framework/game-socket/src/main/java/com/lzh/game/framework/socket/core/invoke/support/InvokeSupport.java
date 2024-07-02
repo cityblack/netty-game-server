@@ -10,11 +10,11 @@ import java.util.List;
  */
 public interface InvokeSupport {
 
-    EnhanceMethodInvoke getActionHandler(int msgId);
+    EnhanceMethodInvoke getActionHandler(short msgId);
 
-    boolean containMapping(int msgId);
+    boolean containMapping(short msgId);
 
-    void register(int msgId, EnhanceMethodInvoke invoke);
+    void register(short msgId, EnhanceMethodInvoke invoke);
 
     List<EnhanceMethodInvoke> getAllActionHandler();
 }

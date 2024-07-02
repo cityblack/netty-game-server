@@ -31,39 +31,43 @@ public class DefaultProcessorPipeline implements ProcessorPipeline {
     }
 
     @Override
-    public void addFirst(Processor processor) {
+    public ProcessorPipeline addFirst(Processor processor) {
         var context = new DefaultProcessorContext(this, processor);
         context.next = head.next;
         context.prev = head;
         context.next.prev = context;
         head.next = context;
+        return this;
     }
 
     @Override
-    public void addLast(Processor processor) {
+    public ProcessorPipeline addLast(Processor processor) {
         var context = new DefaultProcessorContext(this, processor);
         context.next = tail;
         context.prev = tail.prev;
         context.prev.next = context;
         tail.prev = context;
+        return this;
     }
 
     @Override
-    public void addProcessEventListen(ProcessEvent event, ProcessEventListen eventListen) {
+    public ProcessorPipeline addProcessEventListen(ProcessEvent event, ProcessEventListen eventListen) {
         var list = events.computeIfAbsent(event, k -> new CopyOnWriteArrayList<>());
         list.add(eventListen);
+        return this;
     }
 
     @Override
-    public void fireReceive(Session session, Object msg) {
+    public ProcessorPipeline fireReceive(Session session, Object msg) {
         head.fireReceive(session, msg);
     }
 
     @Override
-    public void fireEvent(ProcessEvent event, Session session, Object o) {
+    public ProcessorPipeline fireEvent(ProcessEvent event, Session session, Object o) {
         for (ProcessEventListen listen : events.getOrDefault(event, Collections.emptyList())) {
             listen.event(session, o);
         }
+        return this;
     }
 
     final class HeadContext extends AbstractProcessorContext {

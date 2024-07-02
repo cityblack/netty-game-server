@@ -4,6 +4,9 @@ public enum ProcessEvent {
 
     CONNECT,
     CLOSE,
-    EXCEPTION
+    EXCEPTION,
+
+    SERVER_START,
+    SEVER_STOP
 
 }

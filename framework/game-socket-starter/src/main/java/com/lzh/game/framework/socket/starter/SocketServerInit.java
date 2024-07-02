@@ -1,7 +1,7 @@
 package com.lzh.game.framework.socket.starter;
 
 import com.lzh.game.framework.socket.GameServerSocketProperties;
-import com.lzh.game.framework.socket.core.bootstrap.AbstractServerBootstrap;
+import com.lzh.game.framework.socket.core.bootstrap.server.AbstractServerBootstrap;
 
 /**
  * Impl the interface to change server config when server init.

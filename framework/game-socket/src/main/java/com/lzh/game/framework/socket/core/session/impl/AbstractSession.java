@@ -20,8 +20,14 @@ public abstract class AbstractSession implements Session {
     private Integer port;
 
     protected AbstractSession(Channel channel) {
+        this(channel, true);
+    }
+
+    protected AbstractSession(Channel channel, boolean init) {
         this.channel = channel;
-        this.init(channel);
+        if (init) {
+            this.init(channel);
+        }
     }
 
     protected void init(Channel channel) {
