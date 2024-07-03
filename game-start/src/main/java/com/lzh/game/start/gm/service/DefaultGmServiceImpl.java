@@ -1,7 +1,7 @@
 package com.lzh.game.start.gm.service;
 
 import com.lzh.game.start.util.ApplicationUtils;
-import com.lzh.game.framework.socket.GameServerSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
 import com.lzh.game.start.gm.GmFacade;
 import com.lzh.game.start.model.player.Player;
 import com.lzh.game.framework.socket.core.session.Session;

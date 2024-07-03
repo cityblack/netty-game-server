@@ -1,10 +1,9 @@
 package com.lzh.game.framework.gateway;
 
-import com.lzh.game.framework.socket.GameServerSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -5,7 +5,7 @@ import com.lzh.game.common.event.SubscribeListener;
 import com.lzh.game.common.server.ServerCloseEvent;
 import com.lzh.game.common.server.ServerStartEvent;
 import com.lzh.game.framework.server.SystemFiveClockEvent;
-import com.lzh.game.framework.socket.GameServerSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
 import com.lzh.game.start.log.LogReason;
 import com.lzh.game.start.log.LoggerUtils;
 import lombok.extern.slf4j.Slf4j;

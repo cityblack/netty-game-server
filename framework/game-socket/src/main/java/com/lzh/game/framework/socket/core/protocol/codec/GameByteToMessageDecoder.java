@@ -50,8 +50,8 @@ public class GameByteToMessageDecoder extends ByteToMessageDecoder {
             return;
         }
         int startIndex = in.readerIndex();
-        byte type = in.readByte();
         short msgId = in.readShort();
+        byte type = in.readByte();
         int requestId = in.readerIndex();
         int dataLen = len - in.readableBytes() + startIndex;
 

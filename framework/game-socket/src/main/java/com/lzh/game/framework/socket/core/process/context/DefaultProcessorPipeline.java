@@ -60,6 +60,7 @@ public class DefaultProcessorPipeline implements ProcessorPipeline {
     @Override
     public ProcessorPipeline fireReceive(Session session, Object msg) {
         head.fireReceive(session, msg);
+        return this;
     }
 
     @Override

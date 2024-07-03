@@ -1,8 +1,8 @@
 package com.lzh.game.framework.gateway;
 
+import com.lzh.game.framework.socket.core.bootstrap.client.GameClientSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.server.GameServer;
-import com.lzh.game.framework.socket.GameSocketProperties;
-import com.lzh.game.framework.socket.core.ForwardSessionSelect;
+import com.lzh.game.framework.socket.core.process.impl.ForwardSessionSelect;
 import com.lzh.game.framework.socket.core.bootstrap.client.GameTcpClient;
 import com.lzh.game.framework.socket.core.bootstrap.server.TcpCommonServer;
 import com.lzh.game.framework.socket.core.process.impl.ForwardGatewayProcess;
@@ -41,7 +41,7 @@ public class GateConfiguration {
 
     @Bean
     public GameTcpClient client() {
-        GatewayClient client = new GatewayClient(new GameSocketProperties(), properties, clientSessionMange());
+        GatewayClient client = new GatewayClient(new GameClientSocketProperties(), properties, clientSessionMange());
         FutureResponseProcess process = new FutureResponseProcess();
 
         client.start();
@@ -51,7 +51,7 @@ public class GateConfiguration {
     @Bean
     public ForwardGatewayProcess gatewayProcess(GameTcpClient client) {
         ForwardSessionSelect select = new RandomSessionSelect();
-        return new ForwardGatewayProcess(client, select, client.getService());
+        return new ForwardGatewayProcess(client, select);
     }
 
     public SessionManage<Session> clientSessionMange() {

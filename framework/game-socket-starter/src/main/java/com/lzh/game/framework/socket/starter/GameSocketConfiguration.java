@@ -1,6 +1,6 @@
 package com.lzh.game.framework.socket.starter;
 
-import com.lzh.game.framework.socket.GameServerSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
 import com.lzh.game.framework.socket.core.invoke.RequestDispatch;
 import com.lzh.game.framework.socket.core.invoke.convert.DefaultInvokeMethodArgumentValues;
 import com.lzh.game.framework.socket.core.invoke.convert.InvokeMethodArgumentValues;

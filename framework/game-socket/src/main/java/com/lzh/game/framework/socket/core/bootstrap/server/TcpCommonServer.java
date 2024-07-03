@@ -1,6 +1,5 @@
 package com.lzh.game.framework.socket.core.bootstrap.server;
 
-import com.lzh.game.framework.socket.GameServerSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.NetServer;
 import com.lzh.game.framework.socket.core.bootstrap.ServerIdleHandler;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
@@ -17,6 +16,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class TcpCommonServer<T extends GameServerSocketProperties> extends AbstractServerBootstrap<T>
@@ -24,10 +24,6 @@ public class TcpCommonServer<T extends GameServerSocketProperties> extends Abstr
 
     public TcpCommonServer(T properties, SessionManage<Session> sessionManage, MessageManager messageManager, InvokeSupport invokeSupport) {
         super(properties, sessionManage, messageManager, invokeSupport);
-    }
-
-    public TcpCommonServer(T properties, SessionManage<Session> sessionManage) {
-        super(properties, sessionManage);
     }
 
     public TcpCommonServer(T properties) {
@@ -50,12 +46,21 @@ public class TcpCommonServer<T extends GameServerSocketProperties> extends Abstr
         return server;
     }
 
+    private void addOptions(ServerBootstrap bootstrap, T properties) {
+        for (Map.Entry<String, Object> entry : properties.getNetty().getChannelOptions().entrySet()) {
+            bootstrap.option(ChannelOption.valueOf(entry.getKey()), entry.getValue());
+        }
+        for (Map.Entry<String, Object> entry : properties.getNetty().getChildOptions().entrySet()) {
+
+        }
+    }
+
     private ChannelHandler channelHandler() {
         return new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
                 ch.pipeline()
-                        .addLast(new LoggingHandler(properties.getNettyLogLevel()))
+                        .addLast(new LoggingHandler(properties.getNetty().getNettyLogLevel()))
                         .addLast(new IdleStateHandler(0, 0, getProperties().getServerIdleTime(), TimeUnit.MILLISECONDS))
                         .addLast("serverIdleHandler", new ServerIdleHandler())
                         .addLast("decoder", new GameByteToMessageDecoder(getMessageManager()))

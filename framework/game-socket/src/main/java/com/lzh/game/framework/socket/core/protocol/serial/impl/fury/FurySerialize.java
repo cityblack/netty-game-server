@@ -28,10 +28,10 @@ public class FurySerialize implements MessageSerialize {
         }
         this.fury = build.buildThreadLocalFury();
         manager.addRegisterListen(e -> {
-            var type = e.getMsgClass();
-            if (type.isPrimitive() || type.isArray()) {
+            if (!e.isCompose()) {
                 return;
             }
+            var type = e.getMsgClass();
             this.fury.register(type, e.getMsgId());
         });
     }

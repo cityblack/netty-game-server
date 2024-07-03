@@ -1,4 +1,4 @@
-package com.lzh.game.framework.socket.core;
+package com.lzh.game.framework.socket.core.bootstrap.client;
 
 import com.lzh.game.framework.socket.core.protocol.Response;
 

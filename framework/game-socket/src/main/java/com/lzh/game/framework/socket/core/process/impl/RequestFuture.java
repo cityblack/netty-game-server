@@ -13,6 +13,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.*;
 
+/**
+ * Use HashedWheelTimer to request
+ */
 @Slf4j
 public class RequestFuture extends CompletableFuture<Response> {
 
@@ -95,32 +98,26 @@ public class RequestFuture extends CompletableFuture<Response> {
         return FUTURES.get(requestId);
     }
 
-    private static class TimeoutCheckTask implements TimerTask {
-
-        private final int requestId;
-
-        public TimeoutCheckTask(int requestId) {
-            this.requestId = requestId;
-        }
+    private record TimeoutCheckTask(int requestId) implements TimerTask {
 
         @Override
-        public void run(Timeout timeout) throws Exception {
-            RequestFuture future = RequestFuture.getFuture(requestId);
-            if (Objects.isNull(future) || future.isDone() || future.isCancelled()) {
-                return;
+            public void run(Timeout timeout) throws Exception {
+                RequestFuture future = RequestFuture.getFuture(requestId);
+                if (Objects.isNull(future) || future.isDone() || future.isCancelled()) {
+                    return;
+                }
+                if (Objects.nonNull(future.service)) {
+                    future.service.execute(() -> notifyTimeout(future));
+                } else {
+                    notifyTimeout(future);
+                }
             }
-            if (Objects.nonNull(future.service)) {
-                future.service.execute(() -> notifyTimeout(future));
-            } else {
-                notifyTimeout(future);
-            }
-        }
 
-        private void notifyTimeout(RequestFuture future) {
-            Response response = new Response();
-            response.setError(new TimeoutException());
-            response.setRequestId(future.id);
-            RequestFuture.received(response, true);
+            private void notifyTimeout(RequestFuture future) {
+                Response response = new Response();
+                response.setError(new TimeoutException());
+                response.setRequestId(future.id);
+                RequestFuture.received(response, true);
+            }
         }
-    }
 }

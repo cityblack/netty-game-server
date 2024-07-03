@@ -3,6 +3,8 @@ package com.lzh.game.framework.socket.core.bootstrap;
 import com.lzh.game.framework.socket.GameSocketProperties;
 import com.lzh.game.framework.socket.core.AtomicLifCycle;
 import com.lzh.game.framework.socket.core.LifeCycle;
+import com.lzh.game.framework.socket.core.filter.Filter;
+import com.lzh.game.framework.socket.core.filter.FilterHandler;
 import com.lzh.game.framework.socket.core.invoke.ActionRequestHandler;
 import com.lzh.game.framework.socket.core.invoke.InvokeBeanHelper;
 import com.lzh.game.framework.socket.core.invoke.Receive;
@@ -29,6 +31,7 @@ import com.lzh.game.framework.socket.utils.Constant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class AbstractBootstrap<T extends GameSocketProperties>
         implements LifeCycle {
@@ -50,6 +53,8 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
     protected List<Object> beans = new ArrayList<>();
 
     protected List<Processor> processors = new ArrayList<>();
+
+    protected List<Filter> filters = new CopyOnWriteArrayList<>();
 
     private final ProcessorPipeline pipeline;
 
@@ -143,10 +148,12 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         if (Objects.isNull(messageManager)) {
             this.messageManager = new DefaultMessageManager();
         }
-        if (processors.isEmpty()) {
+        if (properties.isUseDefaultProcessor()) {
             var dispatch = new ActionRequestHandler(invokeSupport, new DefaultInvokeMethodArgumentValues());
-            this.processors.add(new DefaultRequestProcess(dispatch));
+            var filter = new FilterHandler(this.filters, dispatch);
+            this.processors.add(new DefaultRequestProcess(filter));
         }
+        this.beanHelper = new InvokeBeanHelper(this.invokeSupport, this.messageManager);
     }
 
     public void addInvokeBean(Object bean) {
@@ -182,6 +189,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
     @Override
     public void asyncStart() {
         if (STATUS.running()) {
+            init();
             doInit(this.properties);
             asyncStartup();
             STATUS.start();
@@ -198,5 +206,13 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     public InvokeBeanHelper getBeanHelper() {
         return beanHelper;
+    }
+
+    public void setSessionManage(SessionManage<Session> sessionManage) {
+        this.sessionManage = sessionManage;
+    }
+
+    public void addFilter(Filter filter) {
+        this.filters.add(filter);
     }
 }

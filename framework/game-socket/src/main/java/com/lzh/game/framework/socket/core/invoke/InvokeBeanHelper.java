@@ -6,6 +6,7 @@ import com.lzh.game.framework.socket.core.protocol.message.ComposeProtoc;
 import com.lzh.game.framework.socket.core.protocol.message.MessageDefine;
 import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
 import com.lzh.game.framework.socket.core.protocol.message.Protocol;
+import com.lzh.game.framework.socket.utils.Constant;
 import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
 import com.lzh.game.framework.utils.bean.HandlerMethod;
 import com.lzh.game.framework.utils.bean.MethodInvoke;
@@ -57,13 +58,26 @@ public class InvokeBeanHelper {
                 .filter(Objects::nonNull)
                 .forEach(e -> {
                     invokeSupport.register(e.getValue(), e.getHandlerMethod());
-                    for (MessageDefine define : e.defines) {
-                        messageManager.registerMessage(define);
+                    if (Objects.nonNull(e.message.define)) {
+                        messageManager.registerMessage(e.message.define);
                     }
-                    for (Class<?> clz : e.protocol) {
+                    for (Class<?> clz : e.message.protocol) {
                         messageManager.addMessage(clz);
                     }
                 });
+    }
+
+    public void parseMessage(short msgId, Object... params) {
+        var types = Stream.of(params)
+                .map(Object::getClass)
+                .toArray(Class<?>[]::new);
+        var msg = parseParams(msgId, types);
+        if (Objects.nonNull(msg.define)) {
+            messageManager.registerMessage(msg.define);
+        }
+        for (Class<?> clz : msg.protocol) {
+            messageManager.addMessage(clz);
+        }
     }
 
     private static InvokeModel toModel(Object bean, Method method) {
@@ -72,6 +86,33 @@ public class InvokeBeanHelper {
             return null;
         }
         return parseTargetMethod(receive, bean, new HandlerMethod(bean, method));
+    }
+
+    private static Message parseParams(short msgId, Class<?>[] types) {
+        var message = new Message();
+        var type = getOrBuildProtocolClass(types);
+        if (type.isAnnotationPresent(Protocol.class)) {
+            message.protocol.add(type);
+        } else {
+            message.define = new MessageDefine()
+                    .setMsgId(msgId)
+                    .setFieldTypes(types)
+                    .setSerializeType(Constant.DEFAULT_SERIAL_SIGN)
+                    .setMsgClass(type);
+            if (ComposeProtoc.class.isAssignableFrom(type)) {
+                try {
+                    message.define.setCompose(true);
+                    message.define.setAllArgsConstructor(type.getConstructor(types));
+                } catch (NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        for (Class<?> clz : types) {
+            // Traversal class's fields to find @Protocol class that one add to manager
+            parseProtocol(clz, message.protocol);
+        }
+        return message;
     }
 
     /**
@@ -91,22 +132,12 @@ public class InvokeBeanHelper {
             throw new IllegalArgumentException("If compose protocol not used , Can only have one parameter.");
         }
         short msgId = useCompose ? receive.value() : protocol.get(0).value();
-        boolean hasParam = method.getParamsType().length > 0;
         try {
             var model = new InvokeModel();
-            if (!hasParam) {
-                model.defines.add(new MessageDefine(msgId, Void.class));
-            } else if (useCompose) {
-                if (method.getParamsType().length == 1) {
-                    var type = method.getParamsType()[0];
-                    model.defines.add(new MessageDefine(msgId, type));
-                } else {
-                    var newType = getOrBuildProtocolClass(method);
-                    model.defines.add(new MessageDefine(msgId, newType));
-                }
-            }
-            for (Class<?> clz : method.getParamsType()) {
-                parseProtocol(clz, model.getProtocol());
+            model.message = parseParams(msgId, method.getParamsType());
+
+            if (!method.isVoid() && method.getReturnType().isAnnotationPresent(Protocol.class)) {
+                model.message.getProtocol().add(method.getReturnType());
             }
 
             model.setValue(msgId);
@@ -132,23 +163,27 @@ public class InvokeBeanHelper {
         }
     }
 
-    private static Class<?> getOrBuildProtocolClass(HandlerMethod method) {
-        var key = Arrays.stream(method.getParamsType())
-                .map(Class::getName)
-                .collect(Collectors.joining());
-        return PROTOC_CLASS.computeIfAbsent(key, k -> buildProtocolClass(k, method));
+    public static Class<?> getOrBuildProtocolClass(HandlerMethod method) {
+        return getOrBuildProtocolClass(method.getParamsType());
     }
 
-    /**
-     * Use primitive or @Protocol method's param to build a new class
-     *
-     * @param method
-     * @return
-     */
-    private static Class<?> buildProtocolClass(String className, HandlerMethod method) {
+    public static Class<?> getOrBuildProtocolClass(Class<?>[] params) {
+        if (params.length == 0) {
+            return Void.class;
+        }
+        if (params.length == 1) {
+            return params[0];
+        }
+        var key = Arrays.stream(params)
+                .map(Class::getName)
+                .collect(Collectors.joining());
+        return PROTOC_CLASS.computeIfAbsent(key, k -> buildProtocolClass(k, params));
+    }
+
+    private static Class<?> buildProtocolClass(String className, Class<?>[] params) {
         List<Class<?>> list = new ArrayList<>();
-        for (Class<?> type : method.getParamsType()) {
-            if (!isSysParam(type)) {
+        for (Class<?> type : params) {
+            if (isSysParam(type)) {
                 continue;
             }
             list.add(type);
@@ -157,22 +192,29 @@ public class InvokeBeanHelper {
     }
 
     // use javassist build class
-    private static Class<?> buildClass(List<Class<?>> fields, String className) {
+    public static Class<?> buildClass(List<Class<?>> fields, String className) {
         try {
             CtClass enhance = pl.makeClass(className);
             enhance.addInterface(pl.getCtClass(ComposeProtoc.class.getName()));
 
             List<String> fieldNames = new ArrayList<>(fields.size());
-
+            CtClass[] paramTypes = new CtClass[fields.size()];
             for (int i = 0; i < fields.size(); i++) {
                 Class<?> field = fields.get(i);
                 String fieldName = "var%d".formatted(i);
-                CtField beanField = new CtField(pl.get(field.getTypeName()), fieldName, enhance);
+                var type = pl.get(field.getTypeName());
+                CtField beanField = new CtField(type, fieldName, enhance);
                 enhance.addField(beanField);
                 fieldNames.add(fieldName);
+                paramTypes[i] = type;
             }
 
-            // SimpleProtoc impl
+            // All args constructor
+            enhance.addConstructor(CtNewConstructor.make(paramTypes, new CtClass[0], enhance));
+            // Default constructor
+            enhance.addConstructor(CtNewConstructor.defaultConstructor(enhance));
+
+            // ComposeProtoc impl
             CtMethod getValues = CtNewMethod.make(buildGetValueMethodBody(fieldNames), enhance);
             enhance.addMethod(getValues);
 
@@ -219,10 +261,16 @@ public class InvokeBeanHelper {
 
         private EnhanceMethodInvoke handlerMethod;
 
-        private List<MessageDefine> defines = new ArrayList<>();
+        private Message message;
+
+    }
+
+    @Data
+    private static class Message {
+
+        private MessageDefine define;
 
         private List<Class<?>> protocol = new ArrayList<>();
-
     }
 
     @AllArgsConstructor

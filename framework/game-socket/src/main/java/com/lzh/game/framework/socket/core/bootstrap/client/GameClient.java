@@ -1,21 +1,14 @@
 package com.lzh.game.framework.socket.core.bootstrap.client;
 
-import com.lzh.game.framework.socket.core.AsyncResponse;
 import com.lzh.game.framework.socket.core.LifeCycle;
-import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.protocol.Request;
+import com.lzh.game.framework.socket.core.session.Session;
 
 /**
  * One to many server
  */
 public interface GameClient extends LifeCycle {
 
-    /**
-     * @param host
-     * @param port
-     * @param connectTimeout
-     * @return
-     */
     Session conn(String host, int port, int connectTimeout);
 
     void oneWay(Session session, Request request);
@@ -24,13 +17,28 @@ public interface GameClient extends LifeCycle {
         oneWay(session, msgId, null);
     }
 
-    void oneWay(Session session, short msgId, Object params);
+    /**
+     * @param session
+     * @param msgId   -- msg id
+     */
+    void oneWay(Session session, short msgId, Object param);
 
-    <T> AsyncResponse<T> request(Session session, Request request, Class<T> returnType);
+    <T>AsyncResponse<T> request(Session session, Request request);
 
-    default <T>AsyncResponse<T> request(Session session, short cmd, Class<T> returnType) {
-        return request(session, cmd, null, returnType);
+    default <T>AsyncResponse<T> request(Session session, short msgId) {
+        return request(session, msgId, null);
     }
 
-    <T>AsyncResponse<T> request(Session session, short cmd, Object params, Class<T> returnType);
+    void oneWayCompose(Session session, short msgId, Object... params);
+
+    /**
+     * @param session
+     * @param msgId      -- msg id
+     * @param param     -- @protocol
+     * @return
+     */
+    <T>AsyncResponse<T> request(Session session, short msgId, Object param);
+
+    <T>AsyncResponse<T> requestCompose(Session session, short msgId, Object... params);
+
 }

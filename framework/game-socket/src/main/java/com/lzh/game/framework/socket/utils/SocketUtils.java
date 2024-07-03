@@ -8,7 +8,7 @@ public class SocketUtils {
 
     private static final AtomicInteger REQUEST = new AtomicInteger();
 
-    public static Request createCommonRequest(short msgId, Object data) {
+    public static Request createRequest(short msgId, Object data) {
         return createRequest(msgId, data, Constant.REQUEST_SIGN);
     }
 

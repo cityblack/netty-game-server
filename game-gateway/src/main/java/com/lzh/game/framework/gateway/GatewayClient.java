@@ -1,6 +1,6 @@
 package com.lzh.game.framework.gateway;
 
-import com.lzh.game.framework.socket.GameSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.client.GameClientSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.client.GameTcpClient;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionManage;
@@ -18,7 +18,7 @@ public class GatewayClient extends GameTcpClient {
 
     private GatewayProperties properties;
 
-    public GatewayClient(GameSocketProperties socketProperties, GatewayProperties properties, SessionManage<Session> sessionManage) {
+    public GatewayClient(GameClientSocketProperties socketProperties, GatewayProperties properties, SessionManage<Session> sessionManage) {
         super(socketProperties, new SessionMonitorMange<>(sessionManage));
         this.properties = properties;
     }
@@ -68,7 +68,7 @@ public class GatewayClient extends GameTcpClient {
     protected void doConnect(String address) {
         try {
             String[] value = address.split(":");
-            conn(value[0], Integer.parseInt(value[1]), getProperties().getRequestTimeout());
+            conn(value[0], Integer.parseInt(value[1]), getProperties().getConnectTimeout());
         } catch (Exception e) {
             e.printStackTrace();
         }

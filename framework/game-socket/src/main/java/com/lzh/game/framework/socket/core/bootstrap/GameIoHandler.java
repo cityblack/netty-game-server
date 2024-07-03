@@ -30,7 +30,6 @@ public class GameIoHandler extends SimpleChannelInboundHandler<AbstractCommand> 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         var session = sessionManage.createSession(ctx.channel());
-        SessionUtils.channelBindSession(ctx.channel(), session);
         sessionManage.pushSession(session.getId(), session);
         log.info("session [{}/{}] is connected.", session.getId(), session.getRemoteAddress());
         pipeline.fireEvent(ProcessEvent.CONNECT, session);

@@ -1,20 +1,21 @@
 package com.lzh.game.framework.socket.core.bootstrap.server;
 
-import com.lzh.game.framework.socket.GameServerSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.AbstractBootstrap;
 import com.lzh.game.framework.socket.core.bootstrap.NetServer;
-import com.lzh.game.framework.socket.core.filter.Filter;
+import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
+import com.lzh.game.framework.socket.core.session.Session;
+import com.lzh.game.framework.socket.core.session.SessionManage;
 
 public abstract class AbstractServerBootstrap<T extends GameServerSocketProperties>
         extends AbstractBootstrap<T> implements GameServer {
 
     private NetServer netServer;
 
-    private List<Filter> filters = new ArrayList<>();
+    public AbstractServerBootstrap(T properties, SessionManage<Session> sessionManage, MessageManager messageManager, InvokeSupport invokeSupport) {
+        super(properties, sessionManage, messageManager, invokeSupport);
+    }
 
     public AbstractServerBootstrap(T properties) {
         super(properties);
@@ -49,7 +50,4 @@ public abstract class AbstractServerBootstrap<T extends GameServerSocketProperti
         return this.properties.getPort();
     }
 
-    public void addFilter(Filter filter) {
-        this.filters.add(filter);
-    }
 }
