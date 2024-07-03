@@ -10,13 +10,13 @@ public class ServerDemo {
 
     @Receive(-1000)
     public String hello(String hello) {
-        System.out.println(hello);
+        log.info(hello);
         return "server say:" + hello;
     }
 
     @Receive(-1002)
     public void noeWay(String one) {
-        System.out.println("one way:" + one);
+        log.info(one);
     }
 
     @Receive
@@ -30,5 +30,5 @@ public class ServerDemo {
                 , type, data.getId(), data.getAge());
     }
 
-    
+
 }
