@@ -32,7 +32,9 @@ public class GameIoHandler extends SimpleChannelInboundHandler<AbstractCommand> 
         var session = sessionManage.createSession(ctx.channel());
         sessionManage.pushSession(session.getId(), session);
         log.info("session [{}/{}] is connected.", session.getId(), session.getRemoteAddress());
-        pipeline.fireEvent(ProcessEvent.CONNECT, session);
+
+        SessionUtils.channelBindSession(ctx.channel(), session);
+        doEvent(ProcessEvent.CONNECT, session);
         super.channelActive(ctx);
     }
 
@@ -43,7 +45,7 @@ public class GameIoHandler extends SimpleChannelInboundHandler<AbstractCommand> 
             return;
         }
         log.info("session [{}/{}] is close.", session.getId(), session.getRemoteAddress());
-        doEvent(ProcessEvent.CLOSE,session);
+        doEvent(ProcessEvent.CLOSE, session);
         sessionManage.removeSession(session.getId());
         SessionUtils.channelUnbindSession(ctx.channel());
     }
@@ -55,7 +57,7 @@ public class GameIoHandler extends SimpleChannelInboundHandler<AbstractCommand> 
     }
 
     protected Session getSession(Channel channel) {
-        return SessionUtils.channelGetSession(channel);
+        return sessionManage.getSession(channel.id().asLongText());
     }
 
     @Override
@@ -63,7 +65,7 @@ public class GameIoHandler extends SimpleChannelInboundHandler<AbstractCommand> 
         pipeline.fireReceive(getSession(ctx.channel()), msg);
     }
 
-    private void doEvent(ProcessEvent type, Session session) {
-        pipeline.fireEvent(type, session);
+    private void doEvent(ProcessEvent event, Session session) {
+        pipeline.fireEvent(event, session);
     }
 }

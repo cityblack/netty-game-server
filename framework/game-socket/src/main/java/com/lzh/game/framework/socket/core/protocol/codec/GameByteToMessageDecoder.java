@@ -1,5 +1,6 @@
 package com.lzh.game.framework.socket.core.protocol.codec;
 
+import com.lzh.game.framework.socket.core.session.SessionUtils;
 import com.lzh.game.framework.socket.utils.Constant;
 import com.lzh.game.framework.socket.core.protocol.AbstractCommand;
 import com.lzh.game.framework.socket.core.protocol.Request;
@@ -61,6 +62,9 @@ public class GameByteToMessageDecoder extends ByteToMessageDecoder {
         }
         AbstractCommand command = Constant.isRequest(type) ?
                 Request.of(manager.findDefine(msgId), requestId, o) : Response.of(msgId, requestId, o);
+        if (command instanceof Request request) {
+            request.setSession(SessionUtils.channelGetSession(ctx.channel()));
+        }
         command.setType(type);
         out.add(command);
     }

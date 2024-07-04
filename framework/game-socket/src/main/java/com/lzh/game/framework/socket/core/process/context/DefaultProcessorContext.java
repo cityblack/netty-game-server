@@ -9,15 +9,12 @@ import com.lzh.game.framework.socket.core.session.Session;
  **/
 public class DefaultProcessorContext extends AbstractProcessorContext {
 
-    private final Processor processor;
-
     public DefaultProcessorContext(ProcessorPipeline pipeline, Processor processor) {
-        super(pipeline);
-        this.processor = processor;
+        super(processor, pipeline);
     }
 
     @Override
     public void invokeReceive(Session session, Object msg) {
-        processor.process(this, session, msg);
+        getProcessor().process(this, session, msg);
     }
 }

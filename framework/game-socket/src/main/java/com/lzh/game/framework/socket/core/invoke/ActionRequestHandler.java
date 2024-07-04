@@ -67,6 +67,9 @@ public class ActionRequestHandler implements RequestDispatch {
     }
 
     private boolean resolveException(Exception ex, Request request, Response response) {
+        if (Objects.isNull(this.errorHandler)) {
+            return false;
+        }
         return this.errorHandler.resolveException(ex, request, response);
     }
 

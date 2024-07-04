@@ -75,6 +75,7 @@ public class InvokeBeanHelper {
         }
     }
 
+
     private static InvokeModel toModel(Object bean, Method method) {
         Receive receive = method.getAnnotation(Receive.class);
         if (Objects.isNull(receive)) {

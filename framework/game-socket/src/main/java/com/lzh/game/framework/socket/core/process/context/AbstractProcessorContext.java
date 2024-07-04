@@ -14,10 +14,6 @@ import java.util.Objects;
  **/
 public abstract class AbstractProcessorContext implements ProcessorContext {
 
-    public AbstractProcessorContext(ProcessorPipeline pipeline) {
-        this.pipeline = pipeline;
-    }
-
     public AbstractProcessorContext(Processor processor, ProcessorPipeline pipeline) {
         this.processor = processor;
         this.pipeline = pipeline;
@@ -25,7 +21,7 @@ public abstract class AbstractProcessorContext implements ProcessorContext {
 
     private final ProcessorPipeline pipeline;
 
-    private Processor processor;
+    protected Processor processor;
 
     AbstractProcessorContext prev;
 
@@ -48,9 +44,8 @@ public abstract class AbstractProcessorContext implements ProcessorContext {
     @Override
     public void fireReceive(Session session, Object msg) {
        var next = findNextContext(this, session, msg);
-        var executor = next.processor.service();
-        if (Objects.nonNull(executor)) {
-            executor.submit(session, msg, () ->  invokeReceive(next, session, msg));
+        if (Objects.nonNull(next.processor) && Objects.nonNull(next.processor.service())) {
+            next.processor.service().submit(session, msg, () ->  invokeReceive(next, session, msg));
         } else {
             invokeReceive(next, session, msg);
         }
@@ -59,10 +54,8 @@ public abstract class AbstractProcessorContext implements ProcessorContext {
     static AbstractProcessorContext findNextContext(AbstractProcessorContext context, Session session, Object msg) {
         var next = context.next;
         for (;;) {
-            var processor = next.processor;
-
-            if (Objects.isNull(processor) || processor.match(session, msg)) {
-                return context;
+            if (next.processor.match(session, msg)) {
+                return next;
             }
             context = context.next;
         }

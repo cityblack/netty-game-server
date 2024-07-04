@@ -10,6 +10,7 @@ import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.codec.GameByteToMessageDecoder;
 import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteEncoder;
 import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
+import com.lzh.game.framework.socket.core.protocol.message.Protocol;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionManage;
 import com.lzh.game.framework.socket.core.session.SessionUtils;
@@ -60,6 +61,23 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
         return new FutureSession(future);
     }
 
+    @Override
+    public void oneWay(Session session, Object param) {
+        session.write(protocolToRequest(param));
+    }
+
+    private Request protocolToRequest(Object param) {
+        var anno = param.getClass().getAnnotation(Protocol.class);
+        if (Objects.isNull(anno)) {
+            throw new RuntimeException("Param didn't has @Protocol");
+        }
+        short msgId = anno.value();
+        if (!getMessageManager().hasMessage(msgId)) {
+            getMessageManager().addMessage(param.getClass());
+        }
+        return SocketUtils.createRequest(msgId, param, Constant.ONEWAY_SIGN);
+    }
+
     private Channel createChannel(String host, int port, int connectTimeout) {
         this.bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout);
         ChannelFuture future = this.bootstrap.connect(host, port);
@@ -67,16 +85,11 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
     }
 
     @Override
-    public void oneWay(Session session, Request request) {
+    public void oneWayRequest(Session session, Request request) {
         checkStatus();
         session.write(request);
     }
 
-    @Override
-    public void oneWay(Session session, short msgId, Object param) {
-        checkStatus();
-        oneWay(session, SocketUtils.createRequest(msgId, param, Constant.ONEWAY_SIGN));
-    }
 
     @Override
     public <T> AsyncResponse<T> request(Session session, Request request) {
@@ -88,21 +101,23 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
     }
 
     @Override
-    public void oneWayCompose(Session session, short msgId, Object... params) {
-        checkStatus();
-        oneWay(session, msgId, composeProtocol(msgId, params));
+    public <T> AsyncResponse<T> request(Session session, Object param) {
+        return null;
     }
 
     @Override
-    public <T> AsyncResponse<T> request(Session session, short msgId, Object params) {
+    public void oneWayCompose(Session session, short msgId, Object... params) {
         checkStatus();
-        return request(session, SocketUtils.createRequest(msgId, params, Constant.REQUEST_SIGN));
+        var request = SocketUtils.createRequest(msgId, composeProtocol(msgId, params));
+        oneWayRequest(session, request);
     }
+
 
     @Override
     public <T> AsyncResponse<T> requestCompose(Session session, short msgId, Object... params) {
         checkStatus();
-        return request(session, msgId, composeProtocol(msgId, params));
+        var request = SocketUtils.createRequest(msgId, composeProtocol(msgId, params));
+        return request(session, request);
     }
 
     private Object composeProtocol(short msgId, Object... params) {
@@ -118,7 +133,10 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
                 throw new RuntimeException(e);
             }
         }
-        return params;
+        if (params.length == 0) {
+            return null;
+        }
+        return params[0];
     }
 
     private Bootstrap createBootstrap() {

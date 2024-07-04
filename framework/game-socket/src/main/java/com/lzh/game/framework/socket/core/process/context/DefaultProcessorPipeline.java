@@ -1,6 +1,7 @@
 package com.lzh.game.framework.socket.core.process.context;
 
 import com.lzh.game.framework.socket.core.process.Processor;
+import com.lzh.game.framework.socket.core.process.ProcessorExecutorService;
 import com.lzh.game.framework.socket.core.process.event.ProcessEvent;
 import com.lzh.game.framework.socket.core.process.event.ProcessEventListen;
 import com.lzh.game.framework.socket.core.session.Session;
@@ -13,6 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * UnSafe
+ *
  * @author zehong.l
  * @since 2024-06-20 18:22
  **/
@@ -23,8 +25,9 @@ public class DefaultProcessorPipeline implements ProcessorPipeline {
     final Map<ProcessEvent, List<ProcessEventListen>> events;
 
     public DefaultProcessorPipeline() {
-        head = new HeadContext(this);
-        tail = new EmptyContext(this);
+        var none = new NoneProcessor();
+        head = new HeadContext(none, this);
+        tail = new EmptyContext(none, this);
         events = new ConcurrentHashMap<>((ProcessEvent.values().length * 3) >> 1);
         head.next = tail;
         tail.prev = head;
@@ -35,6 +38,7 @@ public class DefaultProcessorPipeline implements ProcessorPipeline {
         var context = new DefaultProcessorContext(this, processor);
         context.next = head.next;
         context.prev = head;
+        head.next.prev = context;
         head.next = context;
         return this;
     }
@@ -44,6 +48,7 @@ public class DefaultProcessorPipeline implements ProcessorPipeline {
         var context = new DefaultProcessorContext(this, processor);
         context.next = tail;
         context.prev = tail.prev;
+        tail.prev.next = context;
         tail.prev = context;
         return this;
     }
@@ -69,10 +74,11 @@ public class DefaultProcessorPipeline implements ProcessorPipeline {
         return this;
     }
 
-    final class HeadContext extends AbstractProcessorContext {
+    static final class HeadContext extends AbstractProcessorContext {
 
-        public HeadContext(ProcessorPipeline pipeline) {
-            super(pipeline);
+
+        public HeadContext(Processor processor, ProcessorPipeline pipeline) {
+            super(processor, pipeline);
         }
 
         @Override
@@ -81,10 +87,10 @@ public class DefaultProcessorPipeline implements ProcessorPipeline {
         }
     }
 
-    final class EmptyContext extends AbstractProcessorContext {
+    static final class EmptyContext extends AbstractProcessorContext {
 
-        public EmptyContext(ProcessorPipeline pipeline) {
-            super(pipeline);
+        public EmptyContext(Processor processor, ProcessorPipeline pipeline) {
+            super(processor, pipeline);
         }
 
         @Override
@@ -92,5 +98,23 @@ public class DefaultProcessorPipeline implements ProcessorPipeline {
 
         }
 
+    }
+
+    static final class NoneProcessor implements Processor {
+
+        @Override
+        public void process(ProcessorContext context, Session session, Object data) {
+
+        }
+
+        @Override
+        public boolean match(Session session, Object msg) {
+            return true;
+        }
+
+        @Override
+        public ProcessorExecutorService service() {
+            return null;
+        }
     }
 }
