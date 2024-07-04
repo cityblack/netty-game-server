@@ -2,6 +2,7 @@ package com.lzh.game.framework.utils.bean;
 
 import org.springframework.util.ClassUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -74,6 +75,10 @@ public class HandlerMethod implements MethodInvoke {
     public String getShortLogMessage() {
         int args = this.method.getParameterCount();
         return getBeanType().getName() + "#" + this.method.getName() + "[" + args + " args]";
+    }
+
+    public Annotation[][] getParameterAnnotations() {
+        return method.getParameterAnnotations();
     }
 
 

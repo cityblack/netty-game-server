@@ -14,11 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 
 @Slf4j
-public class GameMessageToByteDecoder extends MessageToByteEncoder<Object> {
+public class GameMessageToByteEncoder extends MessageToByteEncoder<Object> {
 
     private MessageManager manager;
 
-    public GameMessageToByteDecoder(MessageManager manager) {
+    public GameMessageToByteEncoder(MessageManager manager) {
         this.manager = manager;
     }
 
@@ -41,18 +41,17 @@ public class GameMessageToByteDecoder extends MessageToByteEncoder<Object> {
                 out.markWriterIndex();
                 var wrapper = this.allocateBuffer(ctx, msg, isPreferDirect());
                 try {
-                    var msgId = command.getMsgId();
-                    wrapper.writeShort(msgId);
-                    wrapper.writeByte(command.getType());
-                    wrapper.writeInt(command.getRequestId());
                     encode(define, command.getData(), wrapper);
-
                     int bodyLen = wrapper.readableBytes();
-                    out.ensureWritable(bodyLen + Constant.HEAD_LEN);
-                    out.writeInt(bodyLen);
+                    int len = bodyLen + Constant.HEAD_MIN_LEN;
+                    out.ensureWritable(len);
+
+                    out.writeInt(len);
+                    var msgId = command.getMsgId();
+                    out.writeShort(msgId);
+                    out.writeByte(command.getType());
+                    out.writeInt(command.getRequestId());
                     out.writeBytes(wrapper, wrapper.readerIndex(), bodyLen);
-                } catch (Exception e) {
-                    out.resetWriterIndex();
                 } finally {
                     wrapper.release();
                 }

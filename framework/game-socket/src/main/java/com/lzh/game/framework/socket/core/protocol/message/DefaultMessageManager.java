@@ -59,6 +59,11 @@ public class DefaultMessageManager implements MessageManager {
         listen.add(consumer);
     }
 
+    @Override
+    public int count() {
+        return msg.size();
+    }
+
     public static MessageDefine classToDefine(Class<?> msg) {
         Protocol protocol = msg.getAnnotation(Protocol.class);
         if (Objects.isNull(protocol)) {

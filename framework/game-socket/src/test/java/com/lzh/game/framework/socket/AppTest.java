@@ -7,6 +7,7 @@ import com.lzh.game.framework.socket.core.bootstrap.client.GameTcpClient;
 import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.server.TcpCommonServer;
 import com.lzh.game.framework.socket.core.session.Session;
+import io.netty.handler.logging.LogLevel;
 import org.junit.jupiter.api.Test;
 
 public class AppTest {
@@ -18,6 +19,7 @@ public class AppTest {
         properties.setOpenGm(true);
         properties.setBossWordCore(1);
         properties.setUseEpoll(true);
+        properties.getNetty().setLogLevel(LogLevel.INFO);
 
         var server = new TcpCommonServer<>(properties);
         ServerDemo demo = new ServerDemo();
@@ -32,9 +34,9 @@ public class AppTest {
         var client = new GameTcpClient<>(properties);
         client.start();
         Session session = client.conn("localhost", 8081, 5000);
-        AsyncResponse<String> future = client.requestCompose(session, (short) -10086, "hello world");
+        AsyncResponse<String> future = client.requestCompose(session, (short) -1000, "hello world");
         System.out.println(future.get());
-        client.oneWayCompose(session, (short) -10089, "request");
+        client.oneWayCompose(session, (short) -1002, "request");
         Thread.sleep(2000);
     }
 }

@@ -40,7 +40,7 @@ public class GameByteToMessageDecoder extends ByteToMessageDecoder {
          * request: int
          * data: Object Serializable data
          */
-        if (in.readableBytes() < Constant.HEAD_MIN_LEN) {
+        if (in.readableBytes() < Constant.HEAD_MAX_LEN) {
             return;
         }
         in.markReaderIndex();
@@ -52,10 +52,10 @@ public class GameByteToMessageDecoder extends ByteToMessageDecoder {
         int startIndex = in.readerIndex();
         short msgId = in.readShort();
         byte type = in.readByte();
-        int requestId = in.readerIndex();
-        int dataLen = len - in.readableBytes() + startIndex;
+        int requestId = in.readInt();
+        int dataLen = len - in.readerIndex() + startIndex;
 
-        Object o = decode(ctx, in, msgId, dataLen);
+        Object o = decode(ctx, in.readSlice(dataLen), msgId, dataLen);
         if (Objects.isNull(o)) {
             return;
         }

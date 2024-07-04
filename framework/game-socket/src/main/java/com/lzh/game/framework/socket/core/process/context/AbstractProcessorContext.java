@@ -60,11 +60,11 @@ public abstract class AbstractProcessorContext implements ProcessorContext {
         var next = context.next;
         for (;;) {
             var processor = next.processor;
-            if (Objects.nonNull(processor) && !processor.match(session, msg)) {
-                context = context.next;
-                continue;
+
+            if (Objects.isNull(processor) || processor.match(session, msg)) {
+                return context;
             }
-            return next;
+            context = context.next;
         }
     }
 }

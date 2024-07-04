@@ -1,6 +1,7 @@
 package com.lzh.game.framework.socket.bean;
 
 import com.lzh.game.framework.socket.core.invoke.Receive;
+import com.lzh.game.framework.socket.core.invoke.convert.SysParam;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.proto.RequestData;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +21,12 @@ public class ServerDemo {
     }
 
     @Receive
-    public void t1(Request request, RequestData data) {
+    public void t1(@SysParam Request request, RequestData data) {
         log.info("{}-{}-{}-{}", request.getSession().getId(), request.getDefine().getMsgId(), data.getId(), data.getAge());
     }
 
     @Receive(1004)
-    public void t2(Request request, int type, RequestData data) {
+    public void t2(@SysParam Request request, int type, RequestData data) {
         log.info("{}-{}-{}-{}-{}", request.getSession().getId(), request.getDefine().getMsgId()
                 , type, data.getId(), data.getAge());
     }

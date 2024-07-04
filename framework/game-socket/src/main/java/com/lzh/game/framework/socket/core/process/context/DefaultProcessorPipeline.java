@@ -35,7 +35,6 @@ public class DefaultProcessorPipeline implements ProcessorPipeline {
         var context = new DefaultProcessorContext(this, processor);
         context.next = head.next;
         context.prev = head;
-        context.next.prev = context;
         head.next = context;
         return this;
     }
@@ -45,7 +44,6 @@ public class DefaultProcessorPipeline implements ProcessorPipeline {
         var context = new DefaultProcessorContext(this, processor);
         context.next = tail;
         context.prev = tail.prev;
-        context.prev.next = context;
         tail.prev = context;
         return this;
     }

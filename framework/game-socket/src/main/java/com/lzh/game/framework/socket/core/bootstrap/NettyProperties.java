@@ -15,7 +15,7 @@ import java.util.Map;
 @Setter
 public class NettyProperties {
 
-    private LogLevel nettyLogLevel = LogLevel.ERROR;
+    private LogLevel logLevel = LogLevel.ERROR;
 
     private Map<String, Object> channelOptions = new HashMap<>();
 

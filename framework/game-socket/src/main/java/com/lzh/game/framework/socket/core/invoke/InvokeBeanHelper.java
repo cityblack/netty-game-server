@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,15 +32,6 @@ import java.util.stream.Stream;
  **/
 @Slf4j
 public class InvokeBeanHelper {
-
-    private static ClassPool pl;
-
-    private static final Map<String, Class<?>> PROTOC_CLASS = new ConcurrentHashMap<>();
-
-    static {
-        pl = ClassPool.getDefault();
-        pl.importPackage("java.lang");
-    }
 
     private InvokeSupport invokeSupport;
 
@@ -65,6 +57,9 @@ public class InvokeBeanHelper {
                         messageManager.addMessage(clz);
                     }
                 });
+        if (log.isDebugEnabled()) {
+            log.debug("Invoke size:{}", messageManager.count());
+        }
     }
 
     public void parseMessage(short msgId, Object... params) {
@@ -91,9 +86,7 @@ public class InvokeBeanHelper {
     private static Message parseParams(short msgId, Class<?>[] types) {
         var message = new Message();
         var type = getOrBuildProtocolClass(types);
-        if (type.isAnnotationPresent(Protocol.class)) {
-            message.protocol.add(type);
-        } else {
+        if (!type.isAnnotationPresent(Protocol.class)) {
             message.define = new MessageDefine()
                     .setMsgId(msgId)
                     .setFieldTypes(types)
@@ -112,6 +105,7 @@ public class InvokeBeanHelper {
             // Traversal class's fields to find @Protocol class that one add to manager
             parseProtocol(clz, message.protocol);
         }
+
         return message;
     }
 
@@ -134,7 +128,8 @@ public class InvokeBeanHelper {
         short msgId = useCompose ? receive.value() : protocol.get(0).value();
         try {
             var model = new InvokeModel();
-            model.message = parseParams(msgId, method.getParamsType());
+
+            model.message = parseParams(msgId, getMethodParamTypes(method));
 
             if (!method.isVoid() && method.getReturnType().isAnnotationPresent(Protocol.class)) {
                 model.message.getProtocol().add(method.getReturnType());
@@ -149,7 +144,31 @@ public class InvokeBeanHelper {
         }
     }
 
-    private static void parseProtocol(Class<?> clz, List<Class<?>> protocols) {
+    /**
+     * Filter @SysParam param type
+     *
+     * @param method
+     * @return
+     */
+    private static Class<?>[] getMethodParamTypes(HandlerMethod method) {
+        var paramTypes = method.getParamsType();
+        var anno = method.getParameterAnnotations();
+        var list = new ArrayList<>();
+        for (int i = 0; i < paramTypes.length; i++) {
+            boolean hasSysParam = Arrays.stream(anno[i])
+                    .anyMatch(e -> e.annotationType() == SysParam.class);
+            if (hasSysParam) {
+                continue;
+            }
+            list.add(paramTypes[i]);
+        }
+        return list.toArray(Class<?>[]::new);
+    }
+
+    private static void parseProtocol(Class<?> clz, Set<Class<?>> protocols) {
+        if (protocols.contains(clz)) {
+            return;
+        }
         if (!clz.isAnnotationPresent(Protocol.class)) {
             return;
         }
@@ -163,10 +182,6 @@ public class InvokeBeanHelper {
         }
     }
 
-    public static Class<?> getOrBuildProtocolClass(HandlerMethod method) {
-        return getOrBuildProtocolClass(method.getParamsType());
-    }
-
     public static Class<?> getOrBuildProtocolClass(Class<?>[] params) {
         if (params.length == 0) {
             return Void.class;
@@ -177,10 +192,11 @@ public class InvokeBeanHelper {
         var key = Arrays.stream(params)
                 .map(Class::getName)
                 .collect(Collectors.joining());
-        return PROTOC_CLASS.computeIfAbsent(key, k -> buildProtocolClass(k, params));
+
+        return PROTOC_CLASS.computeIfAbsent(key, k -> buildProtocolClass(params, false));
     }
 
-    private static Class<?> buildProtocolClass(String className, Class<?>[] params) {
+    public static Class<?> buildProtocolClass(Class<?>[] params, boolean writeFile) {
         List<Class<?>> list = new ArrayList<>();
         for (Class<?> type : params) {
             if (isSysParam(type)) {
@@ -188,53 +204,78 @@ public class InvokeBeanHelper {
             }
             list.add(type);
         }
-        return buildClass(list, className);
+        if (list.isEmpty()) {
+            throw new IllegalArgumentException("Compose protocol params is null.");
+        }
+        var className = "ComposeProtocol%d".formatted(PROTOC_CLASS.size() + 1);
+        return buildClass(list, className, writeFile);
     }
 
     // use javassist build class
-    public static Class<?> buildClass(List<Class<?>> fields, String className) {
+    private static Class<?> buildClass(List<Class<?>> fields, String className, boolean writeFile) {
         try {
             CtClass enhance = pl.makeClass(className);
-            enhance.addInterface(pl.getCtClass(ComposeProtoc.class.getName()));
+            var compose = pl.getCtClass(ComposeProtoc.class.getName());
+            enhance.addInterface(compose);
 
             List<String> fieldNames = new ArrayList<>(fields.size());
             CtClass[] paramTypes = new CtClass[fields.size()];
+            StringBuilder allArgsBody = new StringBuilder("{\t\n ");
+
             for (int i = 0; i < fields.size(); i++) {
                 Class<?> field = fields.get(i);
                 String fieldName = "var%d".formatted(i);
                 var type = pl.get(field.getTypeName());
                 CtField beanField = new CtField(type, fieldName, enhance);
+                beanField.setModifiers(Modifier.PUBLIC);
                 enhance.addField(beanField);
                 fieldNames.add(fieldName);
                 paramTypes[i] = type;
+                allArgsBody.append("this.")
+                        .append(fieldName)
+                        .append("= $%d;\t\n".formatted(i + 1));
+
             }
+            allArgsBody.append("}\t\n");
 
             // All args constructor
-            enhance.addConstructor(CtNewConstructor.make(paramTypes, new CtClass[0], enhance));
+            enhance.addConstructor(CtNewConstructor.make(paramTypes, new CtClass[0], allArgsBody.toString(), enhance));
             // Default constructor
             enhance.addConstructor(CtNewConstructor.defaultConstructor(enhance));
 
             // ComposeProtoc impl
-            CtMethod getValues = CtNewMethod.make(buildGetValueMethodBody(fieldNames), enhance);
+            CtMethod getValues = CtNewMethod.make(buildGetValueMethodBody(fields, fieldNames), enhance);
             enhance.addMethod(getValues);
 
             log.debug("Build class: {}", className);
-//            enhance.writeFile(InvokeUtils.class.getResource("./").getFile());
+            if (writeFile) {
+                enhance.writeFile(InvokeBeanHelper.class.getResource("./").getFile());
+            }
             return enhance.toClass();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static String buildGetValueMethodBody(List<String> fieldNames) {
-        var method = "public Object[] getFieldValues() { \t\n";
-        if (!fieldNames.isEmpty()) {
-            method += "return new Object[]{" + String.join(",", fieldNames) + "};\t\n";
-        } else {
-            method += "return null;\t\n";
+    private static String buildGetValueMethodBody(List<Class<?>> types, List<String> fieldNames) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < fieldNames.size(); i++) {
+            var name = fieldNames.get(i);
+            var type = types.get(i);
+            if (type.isPrimitive()) {
+                builder.append(VALUE_MAP.get(type).apply(name));
+            } else {
+                builder.append(name);
+            }
+            if (i != fieldNames.size() - 1) {
+                builder.append(",");
+            }
         }
-        method += "}\t\n";
-        return method;
+        return """
+                public Object[] getFieldValues() {
+                    return new Object[]{%s};
+                }
+                """.formatted(builder.toString());
     }
 
     private static List<Protocol> getProtoCol(Class<?>[] types) {
@@ -270,7 +311,7 @@ public class InvokeBeanHelper {
 
         private MessageDefine define;
 
-        private List<Class<?>> protocol = new ArrayList<>();
+        private Set<Class<?>> protocol = new HashSet<>();
     }
 
     @AllArgsConstructor
@@ -301,4 +342,19 @@ public class InvokeBeanHelper {
         }
     }
 
+    private final static ClassPool pl;
+
+    private static final Map<String, Class<?>> PROTOC_CLASS = new ConcurrentHashMap<>();
+
+    private static final Map<Class<?>, Function<String, String>> VALUE_MAP = new HashMap<>();
+
+    static {
+        pl = ClassPool.getDefault();
+        pl.importPackage("java.lang");
+        VALUE_MAP.put(int.class, "Integer.valueOf(%s)"::formatted);
+        VALUE_MAP.put(double.class, "Double.valueOf(%s)"::formatted);
+        VALUE_MAP.put(float.class, "Float.valueOf(%s)"::formatted);
+        VALUE_MAP.put(long.class, "Long.valueOf(%s)"::formatted);
+        VALUE_MAP.put(char.class, "String.valueOf(%s)"::formatted);
+    }
 }

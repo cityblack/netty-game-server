@@ -19,4 +19,6 @@ public interface MessageManager {
     void addMessage(Class<?> message);
 
     void addRegisterListen(Consumer<MessageDefine> consumer);
+
+    int count();
 }

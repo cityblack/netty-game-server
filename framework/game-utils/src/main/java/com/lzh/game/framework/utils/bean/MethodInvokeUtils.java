@@ -38,7 +38,7 @@ public class MethodInvokeUtils {
         enhance.setInterfaces(new CtClass[]{pl.getCtClass(MethodInvoke.class.getName())});
 
         CtClass beanClass = pl.getCtClass(superName);
-        log.info("General invoke class name:{}", newClassName);
+        log.debug("General invoke class name:{}", newClassName);
         CtField beanField = new CtField(beanClass, "bean", enhance);
         enhance.addField(beanField);
 

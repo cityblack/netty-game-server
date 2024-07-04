@@ -1,7 +1,6 @@
 package com.lzh.game.framework.socket.core.bootstrap.client;
 
 import com.lzh.game.framework.socket.core.bootstrap.AbstractBootstrap;
-import com.lzh.game.framework.socket.core.invoke.InvokeBeanHelper;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.process.event.ProcessEvent;
 import com.lzh.game.framework.socket.core.process.event.ProcessEventListen;
@@ -9,8 +8,7 @@ import com.lzh.game.framework.socket.core.process.impl.FutureResponseProcess;
 import com.lzh.game.framework.socket.core.process.impl.RequestFuture;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.codec.GameByteToMessageDecoder;
-import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteDecoder;
-import com.lzh.game.framework.socket.core.protocol.message.MessageDefine;
+import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteEncoder;
 import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionManage;
@@ -25,13 +23,10 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.Assert;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Stream;
 
 /**
  * Client
@@ -134,9 +129,9 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
                 .handler(new ChannelInitializer<SocketChannel>() {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
-                                .addLast(new LoggingHandler(properties.getNetty().getNettyLogLevel()))
+                                .addLast(new LoggingHandler(properties.getNetty().getLogLevel()))
                                 .addLast("decoder", new GameByteToMessageDecoder(getMessageManager()))
-                                .addLast("encoder", new GameMessageToByteDecoder(getMessageManager()))
+                                .addLast("encoder", new GameMessageToByteEncoder(getMessageManager()))
                                 .addLast(getIoHandler());
                     }
                 });

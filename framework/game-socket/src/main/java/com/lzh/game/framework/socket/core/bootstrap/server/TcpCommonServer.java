@@ -5,7 +5,7 @@ import com.lzh.game.framework.socket.core.bootstrap.ServerIdleHandler;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
 import com.lzh.game.framework.socket.core.protocol.codec.GameByteToMessageDecoder;
-import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteDecoder;
+import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteEncoder;
 import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionManage;
@@ -60,11 +60,11 @@ public class TcpCommonServer<T extends GameServerSocketProperties> extends Abstr
             @Override
             protected void initChannel(Channel ch) throws Exception {
                 ch.pipeline()
-                        .addLast(new LoggingHandler(properties.getNetty().getNettyLogLevel()))
+                        .addLast(new LoggingHandler(properties.getNetty().getLogLevel()))
                         .addLast(new IdleStateHandler(0, 0, getProperties().getServerIdleTime(), TimeUnit.MILLISECONDS))
                         .addLast("serverIdleHandler", new ServerIdleHandler())
                         .addLast("decoder", new GameByteToMessageDecoder(getMessageManager()))
-                        .addLast("encoder", new GameMessageToByteDecoder(getMessageManager()))
+                        .addLast("encoder", new GameMessageToByteEncoder(getMessageManager()))
                         .addLast(getIoHandler())
                 ;
             }

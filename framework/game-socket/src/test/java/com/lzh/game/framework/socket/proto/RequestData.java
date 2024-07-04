@@ -7,8 +7,8 @@ import lombok.Data;
  * @author zehong.l
  * @since 2024-06-28 18:03
  **/
-@Protocol(1003)
 @Data
+@Protocol(1003)
 public class RequestData {
 
     private long id;
