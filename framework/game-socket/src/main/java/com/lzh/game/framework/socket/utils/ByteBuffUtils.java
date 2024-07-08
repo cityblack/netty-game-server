@@ -4,23 +4,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.CorruptedFrameException;
 
 /**
- * use protocol buff 3
  * @author zehong.l
  * @since 2024-04-11 14:52
  **/
 public class ByteBuffUtils {
-
-    public static int readInt(ByteBuf byteBuf) {
-        return byteBuf.readInt();
-    }
-
-//    public static long readLong(ByteBuf byteBuf) {
-//
-//    }
-//
-//    public static double readDouble(ByteBuf byteBuf) {
-//
-//    }
 
     public static void writeRawVarint32(ByteBuf out, int value) {
         while (true) {

@@ -1,5 +1,6 @@
 package com.lzh.game.framework.socket.core.protocol.codec;
 
+import com.lzh.game.framework.socket.utils.ByteBuffUtils;
 import com.lzh.game.framework.socket.utils.Constant;
 import com.lzh.game.framework.socket.core.protocol.AbstractCommand;
 import com.lzh.game.framework.socket.core.protocol.message.MessageDefine;
@@ -16,7 +17,7 @@ import java.util.Objects;
 @Slf4j
 public class GameMessageToByteEncoder extends MessageToByteEncoder<Object> {
 
-    private MessageManager manager;
+    private final MessageManager manager;
 
     public GameMessageToByteEncoder(MessageManager manager) {
         this.manager = manager;
@@ -25,7 +26,7 @@ public class GameMessageToByteEncoder extends MessageToByteEncoder<Object> {
     @Override
     public void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
         /**
-         * len: int
+         * len: Varint32
          * msgId: sort
          * type: request / response / one way byte
          * request: int
@@ -46,7 +47,7 @@ public class GameMessageToByteEncoder extends MessageToByteEncoder<Object> {
                     int len = bodyLen + Constant.HEAD_MIN_LEN;
                     out.ensureWritable(len);
 
-                    out.writeInt(len);
+                    ByteBuffUtils.writeRawVarint32(out, len);
                     var msgId = command.getMsgId();
                     out.writeShort(msgId);
                     out.writeByte(command.getType());

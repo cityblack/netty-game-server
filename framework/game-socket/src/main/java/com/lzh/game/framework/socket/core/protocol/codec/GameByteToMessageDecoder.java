@@ -1,6 +1,7 @@
 package com.lzh.game.framework.socket.core.protocol.codec;
 
 import com.lzh.game.framework.socket.core.session.SessionUtils;
+import com.lzh.game.framework.socket.utils.ByteBuffUtils;
 import com.lzh.game.framework.socket.utils.Constant;
 import com.lzh.game.framework.socket.core.protocol.AbstractCommand;
 import com.lzh.game.framework.socket.core.protocol.Request;
@@ -11,6 +12,7 @@ import com.lzh.game.framework.socket.core.protocol.serial.MessageSerializeManage
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.handler.codec.CorruptedFrameException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -19,7 +21,7 @@ import java.util.Objects;
 @Slf4j
 public class GameByteToMessageDecoder extends ByteToMessageDecoder {
 
-    private MessageManager manager;
+    private final MessageManager manager;
 
     private boolean dataToBytes;
 
@@ -35,17 +37,25 @@ public class GameByteToMessageDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         /**
-         * len: int
+         * len: Varint32
          * msgId: sort
          * type: request / response / one way byte
          * request: int
          * data: Object Serializable data
          */
-        if (in.readableBytes() < Constant.HEAD_MAX_LEN) {
-            return;
+        in.markReaderIndex();
+        int preIndex = in.readerIndex();
+        int len = ByteBuffUtils.readRawVarint32(in);
+        if (preIndex != in.readerIndex()) {
+            if (len < 0) {
+                throw new CorruptedFrameException("negative length: " + len);
+            } else {
+                if (in.readableBytes() < len) {
+                    in.resetReaderIndex();
+                }
+            }
         }
         in.markReaderIndex();
-        int len = in.readInt();
         if (in.readableBytes() < len) {
             in.resetReaderIndex();
             return;

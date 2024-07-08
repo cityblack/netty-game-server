@@ -1,4 +1,4 @@
-package com.lzh.game.framework.socket.core;
+package com.lzh.game.framework.socket.core.bootstrap;
 
 public interface LifeCycle {
 

@@ -20,7 +20,5 @@ public class Constant {
 
     public static final int REQUEST_ID_MIN = 4;
 
-    public static final int HEAD_MAX_LEN = HEAD_LEN + MESSAGE_ID + MESSAGE_TYPE + REQUEST_ID_MIN;
-
     public static final int HEAD_MIN_LEN = MESSAGE_ID + MESSAGE_TYPE + REQUEST_ID_MIN;
 }
