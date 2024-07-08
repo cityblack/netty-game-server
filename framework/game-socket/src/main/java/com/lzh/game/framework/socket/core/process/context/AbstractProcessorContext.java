@@ -57,7 +57,7 @@ public abstract class AbstractProcessorContext implements ProcessorContext {
             if (next.processor.match(session, msg)) {
                 return next;
             }
-            context = context.next;
+            next = next.next;
         }
     }
 }

@@ -14,4 +14,6 @@ public class GameClientSocketProperties extends GameSocketProperties {
 
     private int connectTimeout = 2000;
 
+
+    private int requestTimeout = 5000;
 }

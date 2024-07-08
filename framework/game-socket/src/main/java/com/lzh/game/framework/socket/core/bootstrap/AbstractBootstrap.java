@@ -8,6 +8,7 @@ import com.lzh.game.framework.socket.core.filter.FilterHandler;
 import com.lzh.game.framework.socket.core.invoke.ActionRequestHandler;
 import com.lzh.game.framework.socket.core.invoke.InvokeBeanHelper;
 import com.lzh.game.framework.socket.core.invoke.Receive;
+import com.lzh.game.framework.socket.core.invoke.RequestDispatch;
 import com.lzh.game.framework.socket.core.invoke.convert.DefaultInvokeMethodArgumentValues;
 import com.lzh.game.framework.socket.core.invoke.support.DefaultActionInvokeSupport;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
@@ -128,9 +129,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         checkField();
         MessageSerializeManager.getInstance()
                 .registerMessage(Constant.DEFAULT_SERIAL_SIGN, new FurySerialize(messageManager, properties.getFury()));
-        for (Processor processor : this.processors) {
-            pipeline.addLast(processor);
-        }
+        this.addDefaultProcessor();
         if (!this.beans.isEmpty()) {
             for (Object bean : this.beans) {
                 this.addInvokeBean0(bean);
@@ -141,17 +140,31 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         this.processors = null;
     }
 
+    protected void addDefaultProcessor() {
+        for (int i = 0; i < this.processors.size(); i++) {
+            var processor = processors.get(i);
+            if (properties.isUseDefaultProcessor() && processor instanceof RequestDispatch dispatch
+                    && !(processor instanceof FilterHandler)) {
+                var filter = new FilterHandler(this.filters, dispatch);
+                processors.set(i, new DefaultRequestProcess(filter));
+            }
+        }
+        if (properties.isUseDefaultProcessor() && processors.isEmpty()) {
+            var dispatch = new ActionRequestHandler(invokeSupport, new DefaultInvokeMethodArgumentValues());
+            var filter = new FilterHandler(this.filters, dispatch);
+            this.processors.add(new DefaultRequestProcess(filter));
+        }
+        for (Processor processor : this.processors) {
+            pipeline.addLast(processor);
+        }
+    }
+
     protected void checkField() {
         if (Objects.isNull(invokeSupport)) {
             this.invokeSupport = new DefaultActionInvokeSupport();
         }
         if (Objects.isNull(messageManager)) {
             this.messageManager = new DefaultMessageManager();
-        }
-        if (properties.isUseDefaultProcessor()) {
-            var dispatch = new ActionRequestHandler(invokeSupport, new DefaultInvokeMethodArgumentValues());
-            var filter = new FilterHandler(this.filters, dispatch);
-            this.processors.add(new DefaultRequestProcess(filter));
         }
         this.beanHelper = new InvokeBeanHelper(this.invokeSupport, this.messageManager);
     }

@@ -63,10 +63,10 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
 
     @Override
     public void oneWay(Session session, Object param) {
-        session.write(protocolToRequest(param));
+        session.write(protocolToRequest(param, Constant.ONEWAY_SIGN));
     }
 
-    private Request protocolToRequest(Object param) {
+    private Request protocolToRequest(Object param, byte type) {
         var anno = param.getClass().getAnnotation(Protocol.class);
         if (Objects.isNull(anno)) {
             throw new RuntimeException("Param didn't has @Protocol");
@@ -75,7 +75,7 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
         if (!getMessageManager().hasMessage(msgId)) {
             getMessageManager().addMessage(param.getClass());
         }
-        return SocketUtils.createRequest(msgId, param, Constant.ONEWAY_SIGN);
+        return SocketUtils.createRequest(msgId, param, type);
     }
 
     private Channel createChannel(String host, int port, int connectTimeout) {
@@ -92,17 +92,32 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
 
 
     @Override
-    public <T> AsyncResponse<T> request(Session session, Request request) {
+    public <T> AsyncResponse<T> request(Session session, Request request, Class<T> type) {
         checkStatus();
-        RequestFuture future = RequestFuture.newFuture(request, getProperties().getConnectTimeout(), requestService);
+        checkReturnType(type);
+        RequestFuture future = RequestFuture.newFuture(request, getProperties().getRequestTimeout(), requestService);
         AsyncResponse<T> response = new FutureAsyncResponse<>(future);
         session.write(request);
         return response;
     }
 
+    // Must be @Protocol or default type
+    private void checkReturnType(Class<?> type) {
+        if (type.isAnnotationPresent(Protocol.class)) {
+            var msgId = type.getAnnotation(Protocol.class);
+            if (!getMessageManager().hasMessage(msgId.value())) {
+                getMessageManager().addMessage(type);
+            }
+        } else {
+            if (Objects.isNull(getMessageManager().findDefaultDefined(type))) {
+                throw new IllegalArgumentException("Not support the return type:" + type.getName());
+            }
+        }
+    }
+
     @Override
-    public <T> AsyncResponse<T> request(Session session, Object param) {
-        return null;
+    public <T> AsyncResponse<T> request(Session session, Object param, Class<T> type) {
+        return request(session, protocolToRequest(param, Constant.REQUEST_SIGN), type);
     }
 
     @Override
@@ -114,10 +129,10 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
 
 
     @Override
-    public <T> AsyncResponse<T> requestCompose(Session session, short msgId, Object... params) {
+    public <T> AsyncResponse<T> requestCompose(Session session, short msgId, Class<T> type, Object... params) {
         checkStatus();
         var request = SocketUtils.createRequest(msgId, composeProtocol(msgId, params));
-        return request(session, request);
+        return request(session, request, type);
     }
 
     private Object composeProtocol(short msgId, Object... params) {

@@ -17,8 +17,8 @@ public class FutureAsyncResponse<T> implements AsyncResponse<T> {
     @Override
     public T get() {
         Response response = getResponse();
-        if (Objects.isNull(response.getData())) {
-            return null;
+        if (Objects.nonNull(response.getError())) {
+            throw new RuntimeException(response.getError());
         }
         return (T) response.getData();
     }

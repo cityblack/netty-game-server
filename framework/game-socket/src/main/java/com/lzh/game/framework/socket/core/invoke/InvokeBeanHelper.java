@@ -33,9 +33,9 @@ import java.util.stream.Stream;
 @Slf4j
 public class InvokeBeanHelper {
 
-    private InvokeSupport invokeSupport;
+    private final InvokeSupport invokeSupport;
 
-    private MessageManager messageManager;
+    private final MessageManager messageManager;
 
     public InvokeBeanHelper(InvokeSupport invokeSupport, MessageManager messageManager) {
         this.invokeSupport = invokeSupport;
@@ -76,7 +76,7 @@ public class InvokeBeanHelper {
     }
 
 
-    private static InvokeModel toModel(Object bean, Method method) {
+    private InvokeModel toModel(Object bean, Method method) {
         Receive receive = method.getAnnotation(Receive.class);
         if (Objects.isNull(receive)) {
             return null;
@@ -119,7 +119,7 @@ public class InvokeBeanHelper {
      * @param method
      * @return
      */
-    private static InvokeModel parseTargetMethod(Receive receive, Object bean, HandlerMethod method) {
+    private InvokeModel parseTargetMethod(Receive receive, Object bean, HandlerMethod method) {
         boolean useCompose = receive.value() != 0;
         var protocol = getProtoCol(method.getParamsType());
         // If compose protocol not used , Can only have one parameter
@@ -132,8 +132,13 @@ public class InvokeBeanHelper {
 
             model.message = parseParams(msgId, getMethodParamTypes(method));
 
-            if (!method.isVoid() && method.getReturnType().isAnnotationPresent(Protocol.class)) {
-                model.message.getProtocol().add(method.getReturnType());
+            if (!method.isVoid()) {
+                var returnType = method.getReturnType();
+                if (returnType.isAnnotationPresent(Protocol.class)) {
+                    model.message.getProtocol().add(returnType);
+                } else if (Objects.isNull(messageManager.findDefaultDefined(returnType))) {
+                    throw new IllegalArgumentException("Not support the return type :" + returnType.getName());
+                }
             }
 
             model.setValue(msgId);

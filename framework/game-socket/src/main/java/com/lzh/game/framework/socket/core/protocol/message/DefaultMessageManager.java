@@ -1,10 +1,20 @@
 package com.lzh.game.framework.socket.core.protocol.message;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /**
@@ -17,8 +27,39 @@ public class DefaultMessageManager implements MessageManager {
 
     private final List<Consumer<MessageDefine>> listen = new CopyOnWriteArrayList<>();
 
+    private Map<Class<?>, MessageDefine> defaultDefined;
+
     public DefaultMessageManager() {
         this(new ConcurrentHashMap<>());
+        initRegister();
+    }
+
+    private void initRegister() {
+        var types = new Class<?>[]{
+                void.class, boolean.class, byte.class, char.class, short.class, int.class,
+                float.class, long.class, double.class, Void.class, Boolean.class, Byte.class,
+                Character.class, Short.class, Integer.class, Float.class, Long.class, Double.class,
+                String.class, boolean[].class, byte[].class, char[].class, short[].class, int[].class,
+                float[].class, long[].class, double[].class, String[].class, Object[].class, ArrayList.class,
+                HashMap.class, HashSet.class, Class.class, Object.class, LinkedList.class, TreeSet.class,
+                LinkedHashMap.class, TreeMap.class, Date.class, Timestamp.class, LocalDateTime.class, Instant.class,
+                BigInteger.class, BigDecimal.class, Optional.class, OptionalInt.class,
+                Boolean[].class, Byte[].class, Short[].class, Character[].class,
+                Integer[].class, Float[].class, Long[].class, Double[].class, ConcurrentHashMap.class,
+                ArrayBlockingQueue.class, LinkedBlockingQueue.class, AtomicBoolean.class, AtomicInteger.class,
+                AtomicLong.class, AtomicReference.class, Throwable.class, StackTraceElement.class, Exception.class, RuntimeException.class,
+                NullPointerException.class, IOException.class, IllegalArgumentException.class, IllegalStateException.class,
+                IndexOutOfBoundsException.class, ArrayIndexOutOfBoundsException.class
+        };
+        Map<Class<?>, MessageDefine> defaultDefined = new HashMap<>();
+        for (int i = 0; i < types.length; i++) {
+            var defined = new MessageDefine()
+                    .setMsgId((short) i)
+                    .setMsgClass(types[i]);
+            registerMessage(defined);
+            defaultDefined.put(defined.getMsgClass(), defined);
+        }
+        this.defaultDefined = defaultDefined;
     }
 
     public DefaultMessageManager(Map<Short, MessageDefine> msg) {
@@ -62,6 +103,11 @@ public class DefaultMessageManager implements MessageManager {
     @Override
     public int count() {
         return msg.size();
+    }
+
+    @Override
+    public MessageDefine findDefaultDefined(Class<?> type) {
+        return defaultDefined.get(type);
     }
 
     public static MessageDefine classToDefine(Class<?> msg) {

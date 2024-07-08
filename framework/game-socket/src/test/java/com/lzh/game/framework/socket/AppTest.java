@@ -34,7 +34,7 @@ public class AppTest {
         var client = new GameTcpClient<>(properties);
         client.start();
         Session session = client.conn("localhost", 8081, 5000);
-        AsyncResponse<String> future = client.requestCompose(session, (short) -1000, "hello world");
+        AsyncResponse<String> future = client.requestCompose(session, (short) -1000, String.class, "hello world");
         System.out.println(future.get());
         client.oneWayCompose(session, (short) -1002, "request");
         Thread.sleep(2000);

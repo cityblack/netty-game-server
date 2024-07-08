@@ -21,4 +21,6 @@ public interface MessageManager {
     void addRegisterListen(Consumer<MessageDefine> consumer);
 
     int count();
+
+    MessageDefine findDefaultDefined(Class<?> type);
 }

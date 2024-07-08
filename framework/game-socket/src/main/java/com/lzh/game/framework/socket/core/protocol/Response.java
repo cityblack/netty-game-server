@@ -1,5 +1,7 @@
 package com.lzh.game.framework.socket.core.protocol;
 
+import com.lzh.game.framework.socket.utils.Constant;
+
 import java.io.Serializable;
 
 public class Response extends AbstractCommand
@@ -20,6 +22,8 @@ public class Response extends AbstractCommand
     public static Response of(Request request) {
         Response response = new Response();
         response.request = request;
+        response.setRequestId(request.getRequestId());
+        response.setType(Constant.RESPONSE_SIGN);
         return response;
     }
 
