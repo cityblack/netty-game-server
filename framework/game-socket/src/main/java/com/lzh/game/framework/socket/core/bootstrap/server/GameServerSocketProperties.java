@@ -1,11 +1,8 @@
 package com.lzh.game.framework.socket.core.bootstrap.server;
 
-import com.lzh.game.framework.socket.GameSocketProperties;
+import com.lzh.game.framework.socket.core.GameSocketProperties;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 @Setter

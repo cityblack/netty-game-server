@@ -40,6 +40,7 @@ public class TcpCommonServer<T extends GameServerSocketProperties> extends Abstr
 //                .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
                 .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
                 .childHandler(channelHandler());
+        addOptions(bootstrap, properties);
         NetServer server = new NetServer(port, properties, pipeline);
         server.setBootstrap(bootstrap);
         server.setEventLoopGroup(workerGroup);
@@ -51,7 +52,7 @@ public class TcpCommonServer<T extends GameServerSocketProperties> extends Abstr
             bootstrap.option(ChannelOption.valueOf(entry.getKey()), entry.getValue());
         }
         for (Map.Entry<String, Object> entry : properties.getNetty().getChildOptions().entrySet()) {
-
+            bootstrap.childOption(ChannelOption.valueOf(entry.getKey()), entry.getValue());
         }
     }
 

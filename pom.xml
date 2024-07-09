@@ -12,8 +12,6 @@
     <modules>
         <module>framework</module>
         <module>business</module>
-        <module>game-gateway</module>
-        <module>game-client</module>
         <module>game-start</module>
         <module>parent</module>
         <module>dependencies</module>

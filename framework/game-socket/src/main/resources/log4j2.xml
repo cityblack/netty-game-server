@@ -3,7 +3,7 @@
     <loggers>
 
 <!--        <logger name="org.springframework" level="INFO"></logger>-->
-<!--        <logger name="io.netty" level="INFO"></logger>-->
+        <logger name="io.netty" level="ERROR"/>
 <!--        <logger name="com.lzh.game" level="DEBUG"></logger>-->
 
         <root level="DEBUG">

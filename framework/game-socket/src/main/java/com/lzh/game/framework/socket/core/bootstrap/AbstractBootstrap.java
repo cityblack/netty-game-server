@@ -1,6 +1,6 @@
 package com.lzh.game.framework.socket.core.bootstrap;
 
-import com.lzh.game.framework.socket.GameSocketProperties;
+import com.lzh.game.framework.socket.core.GameSocketProperties;
 import com.lzh.game.framework.socket.core.filter.Filter;
 import com.lzh.game.framework.socket.core.filter.FilterHandler;
 import com.lzh.game.framework.socket.core.invoke.ActionRequestHandler;
@@ -139,19 +139,13 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
     }
 
     protected void addDefaultProcessor() {
-        for (int i = 0; i < this.processors.size(); i++) {
-            var processor = processors.get(i);
-            if (properties.isUseDefaultProcessor() && processor instanceof RequestDispatch dispatch
-                    && !(processor instanceof FilterHandler)) {
-                var filter = new FilterHandler(this.filters, dispatch);
-                processors.set(i, new DefaultRequestProcess(filter));
-            }
-        }
-        if (properties.isUseDefaultProcessor() && processors.isEmpty()) {
+
+        if (properties.isUseDefaultRequest()) {
             var dispatch = new ActionRequestHandler(invokeSupport, new DefaultInvokeMethodArgumentValues());
             var filter = new FilterHandler(this.filters, dispatch);
             this.processors.add(new DefaultRequestProcess(filter));
         }
+
         for (Processor processor : this.processors) {
             pipeline.addLast(processor);
         }

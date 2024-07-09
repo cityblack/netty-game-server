@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.lzh.game.framework.gateway.GateConfiguration
-

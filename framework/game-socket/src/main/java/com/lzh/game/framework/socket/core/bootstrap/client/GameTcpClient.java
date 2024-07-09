@@ -177,9 +177,6 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
         if (Objects.isNull(requestService)) {
             requestService = Executors.newCachedThreadPool();
         }
-        if (properties.isUseDefaultProcessor()) {
-            getPipeline().addLast(new FutureResponseProcess());
-        }
         group = new NioEventLoopGroup();
         this.bootstrap = createBootstrap();
     }

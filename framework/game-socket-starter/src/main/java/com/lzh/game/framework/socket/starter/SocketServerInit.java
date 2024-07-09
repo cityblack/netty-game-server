@@ -8,5 +8,5 @@ import com.lzh.game.framework.socket.core.bootstrap.server.AbstractServerBootstr
  */
 public interface SocketServerInit {
 
-    void doInit(GameServerSocketProperties config, AbstractServerBootstrap server);
+    void doInit(GameServerSocketProperties config, AbstractServerBootstrap<? extends GameServerSocketProperties> server);
 }

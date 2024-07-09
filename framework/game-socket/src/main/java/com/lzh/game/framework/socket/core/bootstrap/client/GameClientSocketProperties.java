@@ -1,6 +1,6 @@
 package com.lzh.game.framework.socket.core.bootstrap.client;
 
-import com.lzh.game.framework.socket.GameSocketProperties;
+import com.lzh.game.framework.socket.core.GameSocketProperties;
 import lombok.Getter;
 import lombok.Setter;
 

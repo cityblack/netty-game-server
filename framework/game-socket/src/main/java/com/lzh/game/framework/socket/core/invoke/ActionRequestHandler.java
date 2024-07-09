@@ -1,6 +1,8 @@
 package com.lzh.game.framework.socket.core.invoke;
 
+import com.lzh.game.framework.socket.core.invoke.convert.DefaultInvokeMethodArgumentValues;
 import com.lzh.game.framework.socket.core.invoke.convert.InvokeMethodArgumentValues;
+import com.lzh.game.framework.socket.core.invoke.support.DefaultActionInvokeSupport;
 import com.lzh.game.framework.socket.core.invoke.support.ErrorHandler;
 import com.lzh.game.framework.socket.core.invoke.support.InterceptorHandler;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
@@ -23,6 +25,10 @@ public class ActionRequestHandler implements RequestDispatch {
     private final InvokeMethodArgumentValues transfer;
 
     private final InvokeSupport support;
+
+    public ActionRequestHandler() {
+        this(new DefaultActionInvokeSupport(), new DefaultInvokeMethodArgumentValues());
+    }
 
     public ActionRequestHandler(InvokeSupport support, InvokeMethodArgumentValues transfer) {
         this(support, transfer, null, null);

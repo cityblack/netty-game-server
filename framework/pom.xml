@@ -24,6 +24,7 @@
         <module>game-scheduler</module>
         <module>game-event</module>
         <module>game-utils</module>
+        <module>game-gateway</module>
     </modules>
 
 </project>

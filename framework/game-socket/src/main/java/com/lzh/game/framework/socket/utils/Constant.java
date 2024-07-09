@@ -12,8 +12,6 @@ public class Constant {
 
     public static final int DEFAULT_SERIAL_SIGN = 0;
 
-    public static final int HEAD_LEN = 4;
-    // Request message type. min
     public static final int MESSAGE_ID = 2;
 
     public static final int MESSAGE_TYPE = 1;
