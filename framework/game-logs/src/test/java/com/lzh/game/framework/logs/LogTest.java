@@ -1,6 +1,8 @@
 package com.lzh.game.framework.logs;
 
 import com.lzh.game.framework.logs.anno.LogFacade;
+import com.lzh.game.framework.logs.anno.DefaultLogDesc;
+import com.lzh.game.framework.logs.param.LogParam;
 
 /**
  * @author zehong.l
@@ -9,6 +11,9 @@ import com.lzh.game.framework.logs.anno.LogFacade;
 @LogFacade
 public interface LogTest {
 
-    @LogMethod(logFile = "helloWorld", logReason = 1000)
+    @DefaultLogDesc(logFile = "helloWorld", logReason = 1000)
     void logTest(int hello, String world);
+
+    @DefaultLogDesc(logFile = "helloWorld")
+    void test2(int hello, LogParam user);
 }

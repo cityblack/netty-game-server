@@ -1,5 +1,7 @@
 package com.lzh.game.framework.logs.anno;
 
+import com.lzh.game.framework.logs.LogScanPackages;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
@@ -11,10 +13,11 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
+@Import({LogScanPackages.Registrar.class})
 public @interface EnableLog {
 
     @AliasFor("value")
-    String scan();
+    String[] basePackages() default {};
 
     @AliasFor("scan")
     String value() default "";

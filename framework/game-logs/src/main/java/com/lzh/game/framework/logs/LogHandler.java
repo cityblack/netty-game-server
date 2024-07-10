@@ -1,6 +1,7 @@
 package com.lzh.game.framework.logs;
 
 import com.lzh.game.framework.logs.anno.LogFacade;
+import com.lzh.game.framework.logs.anno.DefaultLogDesc;
 import com.lzh.game.framework.utils.ClassScannerUtils;
 import javassist.*;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +20,6 @@ import java.util.stream.Stream;
  **/
 @Slf4j
 public class LogHandler {
-
-    private static final String LOG_PACK_NAME = LoggerUtils.class.getPackageName();
-    private static final String LOG_BUILD_CLASS = LOG_PACK_NAME + ".LoggerUtils.LogBuild";
 
     private static final Map<Class<?>, Object> INVOKE_OBJ = new HashMap<>();
 
@@ -92,7 +90,7 @@ public class LogHandler {
             if (!Objects.equals("void", method.getReturnType().getName())) {
                 throw new RuntimeException("Log method return type is not void.");
             }
-            if (!method.hasAnnotation(LogMethod.class)) {
+            if (!method.hasAnnotation(DefaultLogDesc.class)) {
                 throw new RuntimeException("Log method not has @LogMethod.");
             }
             if (method.getParameterTypes().length == 0) {
@@ -116,7 +114,7 @@ public class LogHandler {
         CtClass[] paramTypes = method.getParameterTypes();
         int paramLen = paramTypes.length;
 
-        LogMethod logMethod = (LogMethod) method.getAnnotation(LogMethod.class);
+        DefaultLogDesc logMethod = (DefaultLogDesc) method.getAnnotation(DefaultLogDesc.class);
 
         StringBuilder paramBuild = new StringBuilder("new Object[]{");
         for (int i = 0; i < paramLen; i++) {

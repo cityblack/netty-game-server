@@ -1,4 +1,4 @@
-package com.lzh.game.framework.logs;
+package com.lzh.game.framework.logs.anno;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  **/
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LogMethod {
+public @interface DefaultLogDesc {
 
     String logFile();
 
