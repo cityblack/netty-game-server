@@ -1,34 +1,40 @@
 package com.lzh.game.framework.logs;
 
 import com.lzh.game.framework.logs.anno.LogFacade;
-import com.lzh.game.framework.logs.anno.DefaultLogDesc;
+import com.lzh.game.framework.logs.desc.LogDescHandler;
+import com.lzh.game.framework.logs.invoke.LogInvoke;
+import com.lzh.game.framework.logs.invoke.LogMethodHandler;
 import com.lzh.game.framework.utils.ClassScannerUtils;
-import javassist.*;
+import javassist.util.proxy.Proxy;
+import javassist.util.proxy.ProxyFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author zehong.l
  * @since 2023-05-31 15:42
  **/
 @Slf4j
-public class LogHandler {
+public class LogHandler implements ApplicationContextAware {
 
-    private static final Map<Class<?>, Object> INVOKE_OBJ = new HashMap<>();
+    private static final Map<Class<?>, Object> INVOKE_BEAN = new HashMap<>();
 
-    private static final DefaultParameterNameDiscoverer DISCOVERER = new DefaultParameterNameDiscoverer();
+    private LogInvoke logInvoke;
 
-    private static final Function<Class<?>, String> BUILD_NEW_CLASS_NAME = (clazz) -> clazz.getName() + "impl$$$";
+    private LogDescHandler<? extends Annotation> descHandler;
 
-    public static void init(String scanPath) {
-        log.info("{}. Loading log config..", scanPath);
+    public void init(String[] scanPath) {
+        log.info("{}. Loading log config..", String.join(",", scanPath));
         long startTime = System.currentTimeMillis();
         var list = ClassScannerUtils.scanPackage(scanPath, e -> e.isAnnotationPresent(LogFacade.class));
         for (Class<?> clazz : list) {
@@ -37,132 +43,67 @@ public class LogHandler {
         log.info("Loaded log config. time:{}", System.currentTimeMillis() - startTime);
     }
 
-    public static void init() {
-        LogHandler.init("com.lzh.game");
-    }
-
     public static <T> T getLog(Class<T> clazz) {
-        Object invoke = INVOKE_OBJ.get(clazz);
+        Object invoke = INVOKE_BEAN.get(clazz);
         if (Objects.isNull(invoke)) {
             throw new RuntimeException("No register the " + clazz.getSimpleName() + " log.");
         }
         return (T) invoke;
     }
 
-    public static void registerLog(Class<?> logClass) {
+    public void registerLog(Class<?> logClass) {
         if (!logClass.isInterface()) {
             throw new RuntimeException("Log handler is not interface");
         }
         try {
             Object object = buildObject(logClass);
-            INVOKE_OBJ.put(logClass, object);
+            INVOKE_BEAN.put(logClass, object);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static Object buildObject(Class<?> clazz) throws NotFoundException, CannotCompileException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Class<?> build = buildClass(clazz);
-        return build.getConstructor().newInstance();
+    public Object buildObject(Class<?> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        ProxyFactory factory = new ProxyFactory();
+        factory.setInterfaces(new Class[]{clazz});
+        Class<?> clz = factory.createClass();
+        var bean = clz.getConstructor().newInstance();
+        ((Proxy) bean).setHandler(new LogMethodHandler(logInvoke, clazz, descHandler));
+        return bean;
     }
 
-    private static Class<?> buildClass(Class<?> clazz) throws NotFoundException, CannotCompileException, ClassNotFoundException {
-
-        ClassPool pool = ClassPool.getDefault();
-        pool.insertClassPath(new ClassClassPath(LogHandler.class));
-        String className = BUILD_NEW_CLASS_NAME.apply(clazz);
-        CtClass ctClass = pool.makeClass(className);
-
-        CtClass interfaceClass = pool.getCtClass(clazz.getName());
-        ctClass.addInterface(interfaceClass);
-
-//        CtMethod[] methods = interfaceClass.getDeclaredMethods();
-        Set<String> methodNames = new HashSet<>();
-        for (Method sourceMethod : clazz.getDeclaredMethods()) {
-            String methodName = sourceMethod.getName();
-            if (methodNames.contains(methodName)) {
-                throw new RuntimeException("Log method %s not unique.".formatted(methodName));
-            }
-            CtMethod method = pool.getMethod(clazz.getName(), methodName);
-            if (Modifier.isStatic(method.getModifiers())) {
-                continue;
-            }
-            if (!Objects.equals("void", method.getReturnType().getName())) {
-                throw new RuntimeException("Log method return type is not void.");
-            }
-            if (!method.hasAnnotation(DefaultLogDesc.class)) {
-                throw new RuntimeException("Log method not has @LogMethod.");
-            }
-            if (method.getParameterTypes().length == 0) {
-                throw new RuntimeException("Log method not has params.");
-            }
-            methodNames.add(method.getName());
-            String[] paramNames = parseParamNames(sourceMethod);
-            String fieldName = methodName + "$$Param_";
-            String fieldBody = "private static String[] %s = new String[]{%s};".formatted(fieldName, Stream.of(paramNames).collect(Collectors.joining("\",\"", "\"", "\"")));
-            CtField field = CtField.make(fieldBody, ctClass);
-            ctClass.addField(field);
-            CtMethod cm = new CtMethod(method.getReturnType(), methodName, method.getParameterTypes(), ctClass);
-            cm.setBody(buildMethodBody(fieldName, method));
-
-            ctClass.addMethod(cm);
-        }
-        return ctClass.toClass();
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        getInstance().descHandler = applicationContext.getBean(LogDescHandler.class);
+        getInstance().logInvoke = applicationContext.getBean(LogInvoke.class);
+        getInstance().init(applicationContext.getBean(LogScanPackages.class).packageNames());
+        registerToSpring(applicationContext);
     }
 
-    private static String buildMethodBody(String fieldName, CtMethod method) throws ClassNotFoundException, NotFoundException, CannotCompileException {
-        CtClass[] paramTypes = method.getParameterTypes();
-        int paramLen = paramTypes.length;
-
-        DefaultLogDesc logMethod = (DefaultLogDesc) method.getAnnotation(DefaultLogDesc.class);
-
-        StringBuilder paramBuild = new StringBuilder("new Object[]{");
-        for (int i = 0; i < paramLen; i++) {
-            paramBuild.append(paramConvert(i + 1, paramTypes[i]));
-            if (i != paramLen - 1) {
-                paramBuild.append(",");
+    private void registerToSpring(ApplicationContext context) {
+        if (context.getParentBeanFactory() instanceof BeanDefinitionRegistry registry) {
+            for (Map.Entry<Class<?>, Object> entry : INVOKE_BEAN.entrySet()) {
+                var name = entry.getValue().getClass().getName();
+                var beanDefinition = new GenericBeanDefinition();
+                beanDefinition.setBeanClass(entry.getKey());
+                registry.registerBeanDefinition(name, beanDefinition);
             }
         }
-        paramBuild.append("}");
-//        LoggerUtils.LogBuild.class.getPackageName()
-        String methodBody = """
-                {
-                 %s build =
-                 %s.LoggerUtils.of("%s", %d).addParam(%s, %s);
-                """.formatted(LOG_BUILD_CLASS, LOG_PACK_NAME, logMethod.logFile(), logMethod.logReason(), fieldName, paramBuild.toString());
-
-        methodBody += " build.log();";
-        return methodBody + "}";
     }
 
-    private static String paramConvert(int index, CtClass type) throws CannotCompileException {
-        String clazzName = type.getName();
-        String param = "$" + index;
-        if (Objects.equals("int", clazzName)) {
-            return "Integer.valueOf(%s)".formatted(param);
-        } else if (Objects.equals("float", clazzName)) {
-            return "Float.valueOf(%s)".formatted(param);
-        } else if (Objects.equals("double", clazzName)) {
-            return "Double.valueOf(%s)".formatted(param);
-        } else if (Objects.equals("long", clazzName)) {
-            return "Long.valueOf(%s)".formatted(param);
-        } else if (Objects.equals("char", clazzName)) {
-            return "String.valueOf(%s)".formatted(param);
-        } else if (Objects.equals("boolean", clazzName)) {
-            return "Boolean.valueOf(%s)".formatted(param);
-        }
-        return param;
+    public void setLogInvoke(LogInvoke logInvoke) {
+        this.logInvoke = logInvoke;
     }
 
-    private static String[] parseParamNames(Method method) {
-        return DISCOVERER.getParameterNames(method);
+    public void setDescHandler(LogDescHandler<? extends Annotation> descHandler) {
+        this.descHandler = descHandler;
     }
 
+    public static LogHandler getInstance() {
+        return Instance.INSTANCE;
+    }
 
-    public static void main(String[] args) throws NoSuchMethodException {
-
-//        LogHandler.init();
-//        LogHandler.getLog(LogTest.class).logTest(2444);
-//        LoggerUtils.of(LogFile.AGREEMENT, LogReason.CONSOLE).addParam(new String[]{"xx"}, 30).log();
+    public static class Instance {
+        public static final LogHandler INSTANCE = new LogHandler();
     }
 }

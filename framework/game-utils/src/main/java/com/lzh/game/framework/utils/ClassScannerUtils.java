@@ -11,9 +11,7 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 import org.springframework.util.ClassUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 
 /**
@@ -23,11 +21,10 @@ import java.util.function.Predicate;
 @Slf4j
 public class ClassScannerUtils {
 
-    public static List<Class<?>> scanPackage(String packageName, Predicate<Class<?>> classFilter) {
-        List<Class<?>> result = new ArrayList<>();
+    private static void scanPackage(Set<Class<?>> list, String packageName, Predicate<Class<?>> classFilter) {
         String classPath = ResourceLoader.CLASSPATH_URL_PREFIX
                 + ClassUtils.convertClassNameToResourcePath(packageName)
-                +"/**/*.class";
+                + "/**/*.class";
         try {
             ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
             MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory(resourcePatternResolver);
@@ -43,14 +40,29 @@ public class ClassScannerUtils {
                     }
                     Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(clazzName);
                     if (classFilter.test(clazz)) {
-                        result.add(clazz);
+                        list.add(clazz);
                     }
                 }
             }
-            return result;
         } catch (Exception e) {
             log.error("", e);
-            return Collections.emptyList();
         }
+    }
+
+    public static Set<Class<?>> scanPackage(String packageName, Predicate<Class<?>> classFilter) {
+        Set<Class<?>> result = new HashSet<>();
+        scanPackage(result, packageName, classFilter);
+        return result;
+    }
+
+    public static Set<Class<?>> scanPackage(String[] packageName, Predicate<Class<?>> classFilter) {
+        if (Objects.isNull(packageName) || packageName.length == 0) {
+            return Collections.emptySet();
+        }
+        Set<Class<?>> result = new HashSet<>();
+        for (String name : packageName) {
+            scanPackage(result, name, classFilter);
+        }
+        return result;
     }
 }

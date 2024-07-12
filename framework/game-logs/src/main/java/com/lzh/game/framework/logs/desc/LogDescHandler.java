@@ -8,7 +8,7 @@ import java.lang.annotation.Annotation;
  **/
 public interface LogDescHandler<T extends Annotation> {
 
-    T descAnno();
+    Class<T> descAnno();
 
     LogDescDefined getDefined(T anno);
 }

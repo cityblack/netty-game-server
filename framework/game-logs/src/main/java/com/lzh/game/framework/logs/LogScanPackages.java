@@ -13,25 +13,16 @@ import org.springframework.util.Assert;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author zehong.l
  * @since 2024-07-10 18:23
  **/
 @Slf4j
-public class LogScanPackages {
+public record LogScanPackages(String[] packageNames) {
 
     private static final String BEAN_NAME = LogScanPackages.class.getName();
-
-    private final List<String> packageNames;
-
-    public LogScanPackages(List<String> packageNames) {
-        this.packageNames = packageNames;
-    }
-
-    public List<String> getPackageNames() {
-        return packageNames;
-    }
 
     public static void registrar(BeanDefinitionRegistry registry, Collection<String> packages) {
         Assert.notNull(registry, "Registry is null.");
@@ -43,18 +34,18 @@ public class LogScanPackages {
         } else {
             var definition = new GenericBeanDefinition();
             definition.setBeanClass(LogScanPackages.class);
-            definition.getConstructorArgumentValues().addIndexedArgumentValue(0, Collections.unmodifiableCollection(packages));
+            definition.getConstructorArgumentValues().addIndexedArgumentValue(0, packages.toArray(String[]::new));
             definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
             registry.registerBeanDefinition(BEAN_NAME, definition);
         }
     }
 
-    private static List<String> mergePackages(ConstructorArgumentValues values, Collection<String> packageNames) {
-        List<String> list = new ArrayList<>();
-        var source = (Collection<String>) values.getIndexedArgumentValue(0, Collection.class).getValue();
-        list.addAll(source);
-        list.addAll(packageNames);
-        return list;
+    private static String[] mergePackages(ConstructorArgumentValues values, Collection<String> packageNames) {
+        var source = (String[]) values.getIndexedArgumentValue(0, String[].class).getValue();
+        if (Objects.isNull(source) || source.length == 0) {
+            return packageNames.toArray(String[]::new);
+        }
+        return Stream.concat(Arrays.stream(source), packageNames.stream()).toArray(String[]::new);
     }
 
     public static class Registrar implements ImportBeanDefinitionRegistrar {
