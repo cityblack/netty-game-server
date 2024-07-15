@@ -1,6 +1,6 @@
 package com.lzh.game.framework.logs.invoke;
 
-import com.lzh.game.framework.logs.LogUtils;
+import com.lzh.game.framework.logs.LogConstant;
 import com.lzh.game.framework.logs.invoke.serializer.LogContentSerializer;
 import com.lzh.game.framework.logs.param.LogReasonParam;
 import lombok.AllArgsConstructor;
@@ -36,10 +36,10 @@ public abstract class AbstractLogInvoke implements LogInvoke, DisposableBean {
         executorService.submit(() -> {
             Map<String, Object> content = new HashMap<>((args.length >> 1) * 3);
             var logFile = invokeInfo.getDescDefined().getLogFile();
-            content.put(LogUtils.LOG_FILE_KEY, logFile);
+            content.put(LogConstant.LOG_FILE_KEY, logFile);
             int reason = invokeInfo.getDescDefined().getLogReason();
             if (reason != 0) {
-                content.put(LogUtils.LOG_REASON_KEY, reason);
+                content.put(LogConstant.LOG_REASON_KEY, reason);
             }
             for (var param : params) {
                 content.put(param.name, param.value);
@@ -58,7 +58,7 @@ public abstract class AbstractLogInvoke implements LogInvoke, DisposableBean {
             Object arg = args[i];
             var paramName = invokeInfo.getParamNames()[i];
             if (arg instanceof LogReasonParam) {
-                paramName = LogUtils.LOG_REASON_KEY;
+                paramName = LogConstant.LOG_REASON_KEY;
             }
             if (arg instanceof LogReasonParam param) {
                 arg = param.factValue(paramName);
