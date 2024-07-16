@@ -3,6 +3,7 @@ package com.lzh.game.framework.logs;
 import com.lzh.game.framework.logs.anno.LogFacade;
 import com.lzh.game.framework.logs.anno.DefaultLogDesc;
 import com.lzh.game.framework.logs.param.LogParam;
+import com.lzh.game.framework.logs.param.LogReasonParam;
 
 /**
  * @author zehong.l
@@ -15,5 +16,5 @@ public interface LogTest {
     void logTest(int hello, String world);
 
     @DefaultLogDesc(logFile = "helloWorld")
-    void test2(int hello, LogParam user);
+    void test2(int hello, LogParam user, LogReasonParam logReason);
 }

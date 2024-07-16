@@ -57,7 +57,7 @@ public record LogScanPackages(String[] packageNames) {
         private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
             var attributes = AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(EnableLog.class.getName()));
             assert attributes != null;
-            var base = attributes.getStringArray("basePackages");
+            var base = attributes.getStringArray("value");
             if (base.length == 0) {
                 return Collections.emptySet();
             }

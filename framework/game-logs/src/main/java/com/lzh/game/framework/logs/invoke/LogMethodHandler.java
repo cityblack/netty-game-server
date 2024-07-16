@@ -19,7 +19,7 @@ public class LogMethodHandler implements MethodHandler {
 
     private final Map<String, MethodInvoke> methods = new HashMap<>();
 
-    public <T extends Annotation> LogMethodHandler(LogInvoke logInvoke, Class<?> clz, LogDescHandler<T> descHandler) {
+    public LogMethodHandler(LogInvoke logInvoke, Class<?> clz, LogDescHandler descHandler) {
         for (Method method : clz.getDeclaredMethods()) {
             if (Modifier.isStatic(method.getModifiers())
                     || Modifier.isAbstract(method.getModifiers()) || method.isDefault()) {
@@ -28,15 +28,16 @@ public class LogMethodHandler implements MethodHandler {
             if (method.getReturnType() != Void.class) {
                 throw new RuntimeException("The method " + clz.getName() + "#" + method.getName() + "is not void.");
             }
-            T anno = method.getAnnotation(descHandler.descAnno());
+//            T anno = method.getAnnotation(descHandler.descAnno());
+            var desc = descHandler.getDefined(method);
             var key = method.getName();
-            if (Objects.isNull(anno)) {
-                throw new RuntimeException("The method " + clz.getName() + "#" + key + " not has @" + anno.getClass().getName());
+            if (Objects.isNull(desc)) {
+                throw new RuntimeException("The method " + clz.getName() + "#" + key + " not defined desc. ");
             }
             if (methods.containsKey(key)) {
                 throw new RuntimeException("Duplicate definition method:" + clz.getName() + "#" + key);
             }
-            methods.put(method.getName(), new MethodInvoke(logInvoke, clz, method, descHandler.getDefined(anno)));
+            methods.put(method.getName(), new MethodInvoke(logInvoke, clz, method, desc));
         }
     }
 

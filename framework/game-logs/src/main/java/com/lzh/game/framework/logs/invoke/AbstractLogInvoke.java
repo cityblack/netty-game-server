@@ -10,6 +10,7 @@ import org.springframework.beans.factory.DisposableBean;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,6 +23,10 @@ public abstract class AbstractLogInvoke implements LogInvoke, DisposableBean {
     private final ExecutorService executorService;
 
     private final LogContentSerializer serializer;
+
+    public AbstractLogInvoke(LogContentSerializer serializer) {
+        this(Executors.newFixedThreadPool(2), serializer);
+    }
 
     public AbstractLogInvoke(ExecutorService executorService, LogContentSerializer serializer) {
         this.executorService = executorService;
@@ -78,10 +83,11 @@ public abstract class AbstractLogInvoke implements LogInvoke, DisposableBean {
 
     @Override
     public void destroy() throws Exception {
-        log.info("Closed log thead pool.");
         this.executorService.shutdown();
         if (!this.executorService.isTerminated() && !this.executorService.awaitTermination(10, TimeUnit.SECONDS)) {
+            log.info("Waiting log write to file.");
             this.executorService.shutdownNow();
         }
+        log.info("Closed log thead pool.");
     }
 }

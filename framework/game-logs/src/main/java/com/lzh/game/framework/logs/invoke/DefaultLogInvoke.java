@@ -15,6 +15,10 @@ public class DefaultLogInvoke extends AbstractLogInvoke implements LogInvoke {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LogConstant.LOGGER_NAME);
 
+    public DefaultLogInvoke(LogContentSerializer serializer) {
+        super(serializer);
+    }
+
     public DefaultLogInvoke(ExecutorService executorService, LogContentSerializer serializer) {
         super(executorService, serializer);
     }
