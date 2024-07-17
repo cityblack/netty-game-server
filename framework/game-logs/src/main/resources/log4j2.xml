@@ -4,7 +4,7 @@
         <root level="INFO">
             <appender-ref ref="Console"/>
             <appender-ref ref="RollingFileInfo"/>
-            <appender-ref ref="OP_OPERATE"/>
+            <appender-ref ref="OP_LOG"/>
         </root>
         <root level="error">
             <appender-ref ref="RollingFileError"/>
@@ -16,7 +16,7 @@
         </console>
 
         <RollingFile name="RollingFileInfo" fileName="log/console.log"
-                     filePattern="log/%d{yyyyMMdd}/console.%d{yyyyMMddHH}.log">
+                     filePattern="log/console.%d{yyyyMMdd}.log">
             <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss:SSS} [%t] - %l - %m%n"/>
             <Policies>
@@ -26,12 +26,12 @@
         </RollingFile>
         <!--异步日志配置，指向配置引用AppenderRef-->
         <Async name="ASYNC" bufferSize="262144" includeLocation="true">
-            <AppenderRef ref="OP_OPERATE"/>
+            <AppenderRef ref="OP_LOG"/>
         </Async>
 
-        <RollingFile name="OP_OPERATE" fileName="log/operate/operate.log"
-                     filePattern="log/%d{yyyyMMdd}/operate.%d{yyyyMMddHH}.log">
-            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+        <RollingFile name="OP_LOG" fileName="log/operate/operate.log"
+                     filePattern="log/operate.%d{yyyyMMdd}.log">
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss:SSS} [%t] - %l - %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy modulate="true" interval="1" />
@@ -40,7 +40,7 @@
         </RollingFile>
 
         <RollingFile name="RollingFileError" fileName="log/error.log"
-                     filePattern="log/%d{yyyyMMdd}/error.%d{yyyyMMddHH}.log">
+                     filePattern="log/error.%d{yyyyMMddHH}.log">
             <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss:SSS} [%t] - %l - %m%n"/>
             <Policies>

@@ -51,7 +51,10 @@ public record LogScanPackages(String[] packageNames) {
     public static class Registrar implements ImportBeanDefinitionRegistrar {
         @Override
         public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
-            registrar(registry, getPackagesToScan(metadata));
+            var packageNames = getPackagesToScan(metadata);
+            registrar(registry, packageNames);
+            var support = new LogRegisterSupport(packageNames.toArray(String[]::new));
+            support.registerRepositoriesIn(metadata, registry);
         }
 
         private Set<String> getPackagesToScan(AnnotationMetadata metadata) {

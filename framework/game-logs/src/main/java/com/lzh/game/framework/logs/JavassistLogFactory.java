@@ -14,13 +14,13 @@ import org.springframework.beans.factory.FactoryBean;
  * @author zehong.l
  * @since 2024-07-16 18:19
  **/
-public class LogFactory<T> implements FactoryBean<T>, BeanFactoryAware {
+public class JavassistLogFactory<T> implements FactoryBean<T>, BeanFactoryAware {
 
     private final Class<T> interfaceType;
 
     private BeanFactory beanFactory;
 
-    public LogFactory(Class<T> interfaceType) {
+    public JavassistLogFactory(Class<T> interfaceType) {
         this.interfaceType = interfaceType;
     }
 

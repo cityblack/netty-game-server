@@ -10,5 +10,5 @@ public class LogConstant {
 
     public static final String LOG_FILE_KEY = "logFile";
 
-    public static final String LOGGER_NAME = "OP_OPERATE";
+    public static final String LOGGER_NAME = "OP_LOG";
 }
