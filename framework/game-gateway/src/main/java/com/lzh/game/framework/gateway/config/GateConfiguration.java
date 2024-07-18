@@ -2,9 +2,8 @@ package com.lzh.game.framework.gateway.config;
 
 import com.lzh.game.framework.gateway.GatewayClient;
 import com.lzh.game.framework.gateway.GatewayClientSessionManage;
-import com.lzh.game.framework.gateway.process.ForwardSessionSelect;
-import com.lzh.game.framework.gateway.process.RandomSessionSelect;
 import com.lzh.game.framework.gateway.process.ForwardGatewayProcess;
+import com.lzh.game.framework.gateway.process.RandomSessionSelect;
 import com.lzh.game.framework.socket.core.bootstrap.client.GameClientSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.server.TcpCommonServer;
@@ -15,6 +14,7 @@ import com.lzh.game.framework.socket.core.session.SessionFactory;
 import com.lzh.game.framework.socket.core.session.SessionManage;
 import com.lzh.game.framework.socket.core.session.cache.GameSessionMemoryCacheManage;
 import com.lzh.game.framework.socket.core.session.impl.GameSession;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -25,32 +25,26 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(GatewayProperties.class)
 public class GateConfiguration {
 
-    @Autowired
+    @Resource
     private GatewayProperties properties;
 
     @Bean
-    public TcpCommonServer<GameServerSocketProperties> gameServer() {
+    public TcpCommonServer<GameServerSocketProperties> gameServer(GatewayClient client) {
         properties.getServer().setUseDefaultRequest(false);
         var server = new TcpCommonServer<>(properties.getServer());
         server.setSessionManage(serverSessionManage());
-        server.addProcessor(gatewayProcess());
+        server.addProcessor(new ForwardGatewayProcess(client, new RandomSessionSelect()));
         server.asyncStart();
         return server;
     }
 
     @Bean
     public GatewayClient client() {
-        GatewayClient client = new GatewayClient(new GameClientSocketProperties());
+        GatewayClient client = new GatewayClient(properties);
         client.setSessionManage(clientSessionMange());
         client.addProcessor(new FutureResponseProcess());
         client.start();
         return client;
-    }
-
-    @Bean
-    public ForwardGatewayProcess gatewayProcess() {
-        ForwardSessionSelect select = new RandomSessionSelect();
-        return new ForwardGatewayProcess(client(), select);
     }
 
     public SessionManage<Session> clientSessionMange() {

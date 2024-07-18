@@ -163,7 +163,7 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
                                 .addLast(new LoggingHandler(properties.getNetty().getLogLevel()))
-                                .addLast("decoder", new GameByteToMessageDecoder(getMessageManager()))
+                                .addLast("decoder", new GameByteToMessageDecoder(getMessageManager(), getProperties().isBodyDateToBytes()))
                                 .addLast("encoder", new GameMessageToByteEncoder(getMessageManager()))
                                 .addLast(getIoHandler());
                     }

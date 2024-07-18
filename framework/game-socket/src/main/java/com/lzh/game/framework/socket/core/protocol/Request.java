@@ -16,10 +16,10 @@ public class Request extends AbstractCommand implements Serializable {
 
     private MessageDefine define;
 
-    public static Request of(MessageDefine define, int requestId, Object data) {
+    public static Request of(short msgId, MessageDefine define, int requestId, Object data) {
         Request request = new Request();
         request.define = define;
-        request.setMsgId(define.getMsgId());
+        request.setMsgId(msgId);
         request.setData(data);
         request.setDataClass(data.getClass());
         request.setRequestId(requestId);

@@ -15,4 +15,6 @@ public abstract class GameSocketProperties {
     private FuryProperties fury = new FuryProperties();
 
     private boolean useDefaultRequest = true;
+
+    private boolean bodyDateToBytes = false;
 }

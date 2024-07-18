@@ -64,7 +64,7 @@ public class TcpCommonServer<T extends GameServerSocketProperties> extends Abstr
                         .addLast(new LoggingHandler(properties.getNetty().getLogLevel()))
                         .addLast(new IdleStateHandler(0, 0, getProperties().getServerIdleTime(), TimeUnit.MILLISECONDS))
                         .addLast("serverIdleHandler", new ServerIdleHandler())
-                        .addLast("decoder", new GameByteToMessageDecoder(getMessageManager()))
+                        .addLast("decoder", new GameByteToMessageDecoder(getMessageManager(), getProperties().isBodyDateToBytes()))
                         .addLast("encoder", new GameMessageToByteEncoder(getMessageManager()))
                         .addLast(getIoHandler())
                 ;

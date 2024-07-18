@@ -5,20 +5,19 @@ import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketPrope
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@ConfigurationProperties("game.gateway")
 @Getter
 @Setter
+@ConfigurationProperties("game.gateway")
 public class GatewayProperties {
 
-    @Getter
-    @Setter
     private List<String> serverAddress = new ArrayList<>();
 
-    private GameServerSocketProperties server;
+    private GameServerSocketProperties server = new GameServerSocketProperties();
 
-    private GameClientSocketProperties client;
+    private GameClientSocketProperties client = new GameClientSocketProperties();
 }

@@ -53,6 +53,7 @@ public class GameIoHandler extends SimpleChannelInboundHandler<AbstractCommand> 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         pipeline.fireEvent(ProcessEvent.EXCEPTION, getSession(ctx.channel()), cause);
+        log.error("", cause);
         super.exceptionCaught(ctx, cause);
     }
 

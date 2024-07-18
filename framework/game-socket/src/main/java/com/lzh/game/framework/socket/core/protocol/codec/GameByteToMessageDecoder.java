@@ -71,7 +71,7 @@ public class GameByteToMessageDecoder extends ByteToMessageDecoder {
             return;
         }
         AbstractCommand command = Constant.isRequest(type) ?
-                Request.of(manager.findDefine(msgId), requestId, o) : Response.of(msgId, requestId, o);
+                Request.of(msgId, manager.findDefine(msgId), requestId, o) : Response.of(msgId, requestId, o);
         if (command instanceof Request request) {
             request.setSession(SessionUtils.channelGetSession(ctx.channel()));
         }
