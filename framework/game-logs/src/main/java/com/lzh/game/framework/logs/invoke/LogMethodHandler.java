@@ -21,7 +21,7 @@ public class LogMethodHandler implements MethodHandler {
     private final Map<String, MethodInvoke> methods = new HashMap<>();
 
     public LogMethodHandler(LogInvoke logInvoke, Class<?> clz, LogDescHandler descHandler) {
-        for (Method method : clz.getDeclaredMethods()) {
+        for (Method method : clz.getMethods()) {
             if (Modifier.isStatic(method.getModifiers())
                     || !Modifier.isAbstract(method.getModifiers()) || method.isDefault()) {
                 continue;
