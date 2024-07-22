@@ -22,9 +22,11 @@ public class GatewayClientSessionManage extends GameSessionManage<Session> {
 
     static class CacheManage<S extends Session> implements SessionMemoryCacheManage<String, S> {
 
+        private final Cache<S> cache = new Cache<>();
+
         @Override
         public SessionMemoryCache<String, S> getSessionCache() {
-            return new Cache<>();
+            return cache;
         }
     }
 

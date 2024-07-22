@@ -36,7 +36,7 @@ import java.util.concurrent.Executors;
  * @param <C>
  */
 @Slf4j
-public class GameTcpClient<C extends GameClientSocketProperties> extends AbstractBootstrap<C>
+public class GameTcpClient<C extends GameClientSocketProperties> extends AbstractClient<C>
         implements GameClient {
 
     private EventLoopGroup group;
@@ -49,9 +49,14 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
         super(properties, sessionManage, messageManager, invokeSupport);
     }
 
+    public GameTcpClient(C properties, SessionManage<Session> sessionManage) {
+        super(properties, sessionManage);
+    }
+
     public GameTcpClient(C properties) {
         super(properties);
     }
+
 
     @Override
     public Session conn(String host, int port, int connectTimeout) {

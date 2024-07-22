@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 @Getter
 @Setter
-public class SeasonMonitorConfig {
+public class ConnectMonitorConfig {
 
     private long checkTimeInterval = TimeUnit.SECONDS.toMillis(10);
     // Zero is not limit retry connect times

@@ -31,8 +31,7 @@ public class GateConfiguration {
     @Bean
     public TcpCommonServer<GameServerSocketProperties> gameServer(GatewayClient client) {
         properties.getServer().setUseDefaultRequest(false);
-        var server = new TcpCommonServer<>(properties.getServer());
-        server.setSessionManage(serverSessionManage());
+        var server = new TcpCommonServer<>(properties.getServer(), serverSessionManage());
         server.addProcessor(new ForwardGatewayProcess(client, new RandomSessionSelect()));
         server.asyncStart();
         return server;
@@ -40,8 +39,7 @@ public class GateConfiguration {
 
     @Bean
     public GatewayClient client() {
-        GatewayClient client = new GatewayClient(properties);
-        client.setSessionManage(clientSessionMange());
+        GatewayClient client = new GatewayClient(properties, clientSessionMange());
         client.addProcessor(new FutureResponseProcess());
         client.start();
         return client;

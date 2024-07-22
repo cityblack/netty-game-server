@@ -5,8 +5,8 @@ import com.lzh.game.framework.socket.core.bootstrap.client.GameClientSocketPrope
 import com.lzh.game.framework.socket.core.bootstrap.client.GameTcpClient;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionManage;
-import com.lzh.game.framework.socket.core.session.monitor.SeasonMonitorConfig;
-import com.lzh.game.framework.socket.core.session.monitor.SessionMonitorMange;
+import com.lzh.game.framework.socket.core.session.monitor.DefaultConnectMonitor;
+import com.lzh.game.framework.socket.core.session.monitor.ConnectMonitorConfig;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -19,14 +19,9 @@ public class GatewayClient extends GameTcpClient<GameClientSocketProperties> {
 
     private final GatewayProperties properties;
 
-    public GatewayClient(GatewayProperties properties) {
-        super(properties.getClient());
+    public GatewayClient(GatewayProperties properties, SessionManage<Session> sessionManage) {
+        super(properties.getClient(), sessionManage);
         this.properties = properties;
-    }
-
-    @Override
-    public SessionMonitorMange<Session> getSessionManage() {
-        return (SessionMonitorMange<Session>) super.getSessionManage();
     }
 
     @Override
@@ -61,7 +56,7 @@ public class GatewayClient extends GameTcpClient<GameClientSocketProperties> {
         List<String> addresses = properties.getServerAddress();
         for (String address : addresses) {
             doConnect(address);
-            getSessionManage().register(address, new SeasonMonitorConfig(), RE_CONNECT);
+            getMonitor().register(address, new ConnectMonitorConfig(), RE_CONNECT);
         }
     }
 

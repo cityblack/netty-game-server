@@ -17,9 +17,14 @@ public abstract class AbstractServerBootstrap<T extends GameServerSocketProperti
         super(properties, sessionManage, messageManager, invokeSupport);
     }
 
+    public AbstractServerBootstrap(T properties, SessionManage<Session> sessionManage) {
+        super(properties, sessionManage);
+    }
+
     public AbstractServerBootstrap(T properties) {
         super(properties);
     }
+
 
     protected abstract NetServer createServer(int port, T properties, ProcessorPipeline pipeline);
 

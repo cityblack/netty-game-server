@@ -17,10 +17,8 @@ import com.lzh.game.framework.socket.core.session.SessionFactory;
 import com.lzh.game.framework.socket.core.session.SessionManage;
 import com.lzh.game.framework.socket.core.session.cache.GameSessionMemoryCacheManage;
 import com.lzh.game.framework.socket.core.session.impl.GameSession;
-import com.lzh.game.framework.socket.core.session.monitor.SessionMonitorMange;
 import io.netty.handler.logging.LogLevel;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 /**
  * @author zehong.l
@@ -43,11 +41,10 @@ class GatewayAppTest {
     }
 
     @Test
-    public void gateway() {
+    public void gateway() throws InterruptedException {
         var properties = new GatewayProperties();
         properties.getServerAddress().add("127.0.0.1:8082");
-        GatewayClient client = new GatewayClient(properties);
-        client.setSessionManage(new SessionMonitorMange<>(new GatewayClientSessionManage(GameSession::of)));
+        GatewayClient client = new GatewayClient(properties, new GatewayClientSessionManage(GameSession::of));
         client.addProcessor(new FutureResponseProcess());
         client.start();
 
@@ -55,8 +52,7 @@ class GatewayAppTest {
         serverProperties.setPort(8081);
         serverProperties.setUseDefaultRequest(false);
         serverProperties.setBodyDateToBytes(true);
-        var server = new TcpCommonServer<>(properties.getServer());
-        server.setSessionManage(sessionManage());
+        var server = new TcpCommonServer<>(properties.getServer(), sessionManage());
         server.addProcessor(new ForwardGatewayProcess(client, new RandomSessionSelect()));
         server.start();
     }

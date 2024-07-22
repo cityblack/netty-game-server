@@ -26,6 +26,10 @@ public class TcpCommonServer<T extends GameServerSocketProperties> extends Abstr
         super(properties, sessionManage, messageManager, invokeSupport);
     }
 
+    public TcpCommonServer(T properties, SessionManage<Session> sessionManage) {
+        super(properties, sessionManage);
+    }
+
     public TcpCommonServer(T properties) {
         super(properties);
     }

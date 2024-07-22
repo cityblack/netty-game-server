@@ -67,14 +67,17 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         this.invokeSupport = invokeSupport;
         this.pipeline = new DefaultProcessorPipeline();
         this.ioHandler = new GameIoHandler(pipeline, sessionManage);
-        this.beanHelper = new InvokeBeanHelper(this.invokeSupport, messageManager);
+    }
+
+    public AbstractBootstrap(T properties, SessionManage<Session> sessionManage) {
+        this.properties = properties;
+        this.sessionManage = sessionManage;
+        this.pipeline = new DefaultProcessorPipeline();
+        this.ioHandler = new GameIoHandler(pipeline, sessionManage);
     }
 
     public AbstractBootstrap(T properties) {
-        this.properties = properties;
-        this.sessionManage = defaultSession();
-        this.pipeline = new DefaultProcessorPipeline();
-        this.ioHandler = new GameIoHandler(pipeline, sessionManage);
+        this(properties, defaultSession());
     }
 
     public static SessionManage<Session> defaultSession() {
@@ -101,10 +104,6 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     public MessageManager getMessageManager() {
         return messageManager;
-    }
-
-    public void setMessageManager(MessageManager messageManager) {
-        this.messageManager = messageManager;
     }
 
     protected abstract void doInit(T properties);
@@ -211,10 +210,6 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     public InvokeBeanHelper getBeanHelper() {
         return beanHelper;
-    }
-
-    public void setSessionManage(SessionManage<Session> sessionManage) {
-        this.sessionManage = sessionManage;
     }
 
     public void addFilter(Filter filter) {
