@@ -1,6 +1,7 @@
 package com.lzh.game.framework.socket.core.bootstrap.server;
 
 import com.lzh.game.framework.socket.core.bootstrap.AbstractBootstrap;
+import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.NetServer;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
@@ -13,12 +14,8 @@ public abstract class AbstractServerBootstrap<T extends GameServerSocketProperti
 
     private NetServer netServer;
 
-    public AbstractServerBootstrap(T properties, SessionManage<Session> sessionManage, MessageManager messageManager, InvokeSupport invokeSupport) {
-        super(properties, sessionManage, messageManager, invokeSupport);
-    }
-
-    public AbstractServerBootstrap(T properties, SessionManage<Session> sessionManage) {
-        super(properties, sessionManage);
+    public AbstractServerBootstrap(T properties, BootstrapContext context) {
+        super(properties, context);
     }
 
     public AbstractServerBootstrap(T properties) {
@@ -30,7 +27,7 @@ public abstract class AbstractServerBootstrap<T extends GameServerSocketProperti
 
     @Override
     protected void doInit(T properties) {
-        this.netServer = createServer(getPort(), properties, getPipeline());
+        this.netServer = createServer(getPort(), properties, getContext().getPipeline());
         this.filters = null;
     }
 

@@ -1,5 +1,6 @@
 package com.lzh.game.framework.socket.core.invoke;
 
+import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.invoke.convert.SysParam;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.protocol.message.ComposeProtoc;
@@ -33,13 +34,10 @@ import java.util.stream.Stream;
 @Slf4j
 public class InvokeBeanHelper {
 
-    private final InvokeSupport invokeSupport;
+    private final BootstrapContext context;
 
-    private final MessageManager messageManager;
-
-    public InvokeBeanHelper(InvokeSupport invokeSupport, MessageManager messageManager) {
-        this.invokeSupport = invokeSupport;
-        this.messageManager = messageManager;
+    public InvokeBeanHelper(BootstrapContext context) {
+        this.context = context;
     }
 
     public void parseBean(Object bean, Predicate<Method> filter) {
@@ -49,16 +47,16 @@ public class InvokeBeanHelper {
                 .map(method -> toModel(bean, method))
                 .filter(Objects::nonNull)
                 .forEach(e -> {
-                    invokeSupport.register(e.getValue(), e.getHandlerMethod());
+                    context.getInvokeSupport().register(e.getValue(), e.getHandlerMethod());
                     if (Objects.nonNull(e.message.define)) {
-                        messageManager.registerMessage(e.message.define);
+                        context.getMessageManager().registerMessage(e.message.define);
                     }
                     for (Class<?> clz : e.message.protocol) {
-                        messageManager.addMessage(clz);
+                        context.getMessageManager().addMessage(clz);
                     }
                 });
         if (log.isDebugEnabled()) {
-            log.debug("Invoke size:{}", messageManager.count());
+            log.debug("Invoke size:{}", context.getMessageManager().count());
         }
     }
 
@@ -68,10 +66,10 @@ public class InvokeBeanHelper {
                 .toArray(Class<?>[]::new);
         var msg = parseParams(msgId, types);
         if (Objects.nonNull(msg.define)) {
-            messageManager.registerMessage(msg.define);
+            context.getMessageManager().registerMessage(msg.define);
         }
         for (Class<?> clz : msg.protocol) {
-            messageManager.addMessage(clz);
+            context.getMessageManager().addMessage(clz);
         }
     }
 
@@ -136,7 +134,7 @@ public class InvokeBeanHelper {
                 var returnType = method.getReturnType();
                 if (returnType.isAnnotationPresent(Protocol.class)) {
                     model.message.getProtocol().add(returnType);
-                } else if (Objects.isNull(messageManager.findDefaultDefined(returnType))) {
+                } else if (Objects.isNull(context.getMessageManager().findDefaultDefined(returnType))) {
                     throw new IllegalArgumentException("Not support the return type :" + returnType.getName());
                 }
             }

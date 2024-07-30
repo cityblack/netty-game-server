@@ -21,7 +21,7 @@ public abstract class AbstractSessionManage<S extends Session>
     }
 
     @Override
-    public void addSessionCloseListening(Consumer<S> consumer) {
+    public void addCloseListening(Consumer<S> consumer) {
         closeListener.add(consumer);
     }
 

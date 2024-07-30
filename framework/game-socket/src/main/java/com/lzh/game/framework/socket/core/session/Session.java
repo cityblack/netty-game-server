@@ -41,6 +41,10 @@ public interface Session {
         return (T) getAttributes().get(name);
     }
 
+    default boolean hasAttribute(String name) {
+        return getAttributes().containsKey(name);
+    }
+
     /**
      * Return the session attribute value or if not present raise an
      * {@link IllegalArgumentException}.

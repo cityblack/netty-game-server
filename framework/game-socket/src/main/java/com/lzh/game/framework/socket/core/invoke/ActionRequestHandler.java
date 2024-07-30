@@ -1,11 +1,9 @@
 package com.lzh.game.framework.socket.core.invoke;
 
-import com.lzh.game.framework.socket.core.invoke.convert.DefaultInvokeMethodArgumentValues;
+import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.invoke.convert.InvokeMethodArgumentValues;
-import com.lzh.game.framework.socket.core.invoke.support.DefaultActionInvokeSupport;
 import com.lzh.game.framework.socket.core.invoke.support.ErrorHandler;
 import com.lzh.game.framework.socket.core.invoke.support.InterceptorHandler;
-import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.Response;
 import com.lzh.game.framework.socket.exception.NotDefinedResponseProtocolException;
@@ -14,6 +12,7 @@ import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 @Slf4j
 public class ActionRequestHandler implements RequestDispatch {
@@ -24,26 +23,22 @@ public class ActionRequestHandler implements RequestDispatch {
 
     private final InvokeMethodArgumentValues transfer;
 
-    private final InvokeSupport support;
+    private final BootstrapContext context;
 
-    public ActionRequestHandler() {
-        this(new DefaultActionInvokeSupport(), new DefaultInvokeMethodArgumentValues());
+    public ActionRequestHandler(BootstrapContext context, InvokeMethodArgumentValues transfer) {
+        this(context, transfer, null, null);
     }
 
-    public ActionRequestHandler(InvokeSupport support, InvokeMethodArgumentValues transfer) {
-        this(support, transfer, null, null);
-    }
-
-    public ActionRequestHandler(InvokeSupport support, InvokeMethodArgumentValues transfer, ErrorHandler errorHandler, InterceptorHandler interceptorHandler) {
+    public ActionRequestHandler(BootstrapContext context, InvokeMethodArgumentValues transfer, ErrorHandler errorHandler, InterceptorHandler interceptorHandler) {
         this.errorHandler = errorHandler;
         this.interceptorHandler = interceptorHandler;
         this.transfer = transfer;
-        this.support = support;
+        this.context = context;
     }
 
     protected void executeAction(Request request, Response response) {
         var msgId = request.getMsgId();
-        var method = support.getActionHandler(msgId);
+        var method = context.getInvokeSupport().getActionHandler(msgId);
         if (Objects.isNull(method)) {
             this.onError(request, response, new NotFondProtocolException(msgId));
             return;
@@ -80,7 +75,10 @@ public class ActionRequestHandler implements RequestDispatch {
     }
 
     private void onSuccess(Request request, Response response, boolean hasResult) {
-        if (hasResult) {
+        if (hasResult && !request.isOneWay()) {
+            response.setDataClass(response.getData().getClass());
+            var defined = context.getMessageManager().findDefaultDefined(response.getData().getClass());
+            response.setMsgId(defined.getMsgId());
             request.getSession().write(response);
         }
     }
@@ -96,9 +94,8 @@ public class ActionRequestHandler implements RequestDispatch {
     }
 
     @Override
-    public void handle(Request request) {
+    public void handle(Request request, Consumer<Object> callBack) {
         Response response = Response.of(request);
         executeAction(request, response);
     }
-
 }

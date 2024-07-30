@@ -1,22 +1,12 @@
 package com.lzh.game.framework.socket.core.bootstrap.client;
 
-import com.lzh.game.framework.socket.core.bootstrap.AbstractBootstrap;
-import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
-import com.lzh.game.framework.socket.core.process.event.ProcessEvent;
-import com.lzh.game.framework.socket.core.process.event.ProcessEventListen;
-import com.lzh.game.framework.socket.core.process.impl.FutureResponseProcess;
-import com.lzh.game.framework.socket.core.process.impl.RequestFuture;
+import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.codec.GameByteToMessageDecoder;
 import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteEncoder;
-import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
-import com.lzh.game.framework.socket.core.protocol.message.Protocol;
 import com.lzh.game.framework.socket.core.session.Session;
-import com.lzh.game.framework.socket.core.session.SessionManage;
 import com.lzh.game.framework.socket.core.session.SessionUtils;
 import com.lzh.game.framework.socket.core.session.impl.FutureSession;
-import com.lzh.game.framework.socket.utils.Constant;
-import com.lzh.game.framework.socket.utils.SocketUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -26,7 +16,6 @@ import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
@@ -43,20 +32,17 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
 
     private Bootstrap bootstrap;
 
-    private ExecutorService requestService;
+    private final DefaultGameRequest gameRequest;
 
-    public GameTcpClient(C properties, SessionManage<Session> sessionManage, MessageManager messageManager, InvokeSupport invokeSupport) {
-        super(properties, sessionManage, messageManager, invokeSupport);
-    }
-
-    public GameTcpClient(C properties, SessionManage<Session> sessionManage) {
-        super(properties, sessionManage);
+    public GameTcpClient(C properties, BootstrapContext context) {
+        super(properties, context);
+        this.gameRequest = new DefaultGameRequest(this);
     }
 
     public GameTcpClient(C properties) {
         super(properties);
+        this.gameRequest = new DefaultGameRequest(this);
     }
-
 
     @Override
     public Session conn(String host, int port, int connectTimeout) {
@@ -68,19 +54,7 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
 
     @Override
     public void oneWay(Session session, Object param) {
-        session.write(protocolToRequest(param, Constant.ONEWAY_SIGN));
-    }
-
-    private Request protocolToRequest(Object param, byte type) {
-        var anno = param.getClass().getAnnotation(Protocol.class);
-        if (Objects.isNull(anno)) {
-            throw new RuntimeException("Param didn't has @Protocol");
-        }
-        short msgId = anno.value();
-        if (!getMessageManager().hasMessage(msgId)) {
-            getMessageManager().addMessage(param.getClass());
-        }
-        return SocketUtils.createRequest(msgId, param, type);
+        gameRequest.oneWay(session, param);
     }
 
     private Channel createChannel(String host, int port, int connectTimeout) {
@@ -91,72 +65,27 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
 
     @Override
     public void oneWayRequest(Session session, Request request) {
-        checkStatus();
-        session.write(request);
+        gameRequest.oneWayRequest(session, request);
     }
-
 
     @Override
     public <T> AsyncResponse<T> request(Session session, Request request, Class<T> type) {
-        checkStatus();
-        checkReturnType(type);
-        RequestFuture future = RequestFuture.newFuture(request, getProperties().getRequestTimeout(), requestService);
-        AsyncResponse<T> response = new FutureAsyncResponse<>(future);
-        session.write(request);
-        return response;
-    }
-
-    // Must be @Protocol or default type
-    private void checkReturnType(Class<?> type) {
-        if (type.isAnnotationPresent(Protocol.class)) {
-            var msgId = type.getAnnotation(Protocol.class);
-            if (!getMessageManager().hasMessage(msgId.value())) {
-                getMessageManager().addMessage(type);
-            }
-        } else {
-            if (Objects.isNull(getMessageManager().findDefaultDefined(type))) {
-                throw new IllegalArgumentException("Not support the return type:" + type.getName());
-            }
-        }
+        return gameRequest.request(session, request, type);
     }
 
     @Override
     public <T> AsyncResponse<T> request(Session session, Object param, Class<T> type) {
-        return request(session, protocolToRequest(param, Constant.REQUEST_SIGN), type);
+        return gameRequest.request(session, param, type);
     }
 
     @Override
     public void oneWayCompose(Session session, short msgId, Object... params) {
-        checkStatus();
-        var request = SocketUtils.createRequest(msgId, composeProtocol(msgId, params));
-        oneWayRequest(session, request);
+        gameRequest.oneWayCompose(session, msgId, params);
     }
-
 
     @Override
     public <T> AsyncResponse<T> requestCompose(Session session, short msgId, Class<T> type, Object... params) {
-        checkStatus();
-        var request = SocketUtils.createRequest(msgId, composeProtocol(msgId, params));
-        return request(session, request, type);
-    }
-
-    private Object composeProtocol(short msgId, Object... params) {
-        var message = getMessageManager().findDefine(msgId);
-        if (Objects.isNull(message)) {
-            getBeanHelper().parseMessage(msgId, params);
-            message = getMessageManager().findDefine(msgId);
-        }
-        if (message.isCompose()) {
-            try {
-                return message.getAllArgsConstructor().newInstance(params);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (params.length == 0) {
-            return null;
-        }
-        return params[0];
+        return gameRequest.requestCompose(session, msgId, type, params);
     }
 
     private Bootstrap createBootstrap() {
@@ -168,8 +97,8 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
                                 .addLast(new LoggingHandler(properties.getNetty().getLogLevel()))
-                                .addLast("decoder", new GameByteToMessageDecoder(getMessageManager(), getProperties().isBodyDateToBytes()))
-                                .addLast("encoder", new GameMessageToByteEncoder(getMessageManager()))
+                                .addLast("decoder", new GameByteToMessageDecoder(context, getProperties().isBodyDateToBytes()))
+                                .addLast("encoder", new GameMessageToByteEncoder(context))
                                 .addLast(getIoHandler());
                     }
                 });
@@ -178,9 +107,8 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
 
     @Override
     protected void doInit(C properties) {
-        getPipeline().addProcessEventListen(ProcessEvent.CONNECT, new SessionFutureListen());
-        if (Objects.isNull(requestService)) {
-            requestService = Executors.newCachedThreadPool();
+        if (Objects.isNull(getRequestService())) {
+            setRequestService(Executors.newCachedThreadPool());
         }
         group = new NioEventLoopGroup();
         this.bootstrap = createBootstrap();
@@ -200,23 +128,5 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
         if (!isStared()) {
             throw new RuntimeException("Client is not started..");
         }
-    }
-
-    private static class SessionFutureListen implements ProcessEventListen {
-
-        @Override
-        public void event(Session session, Object data) {
-            var future = SessionUtils.getBindFuture(session.getChannel());
-            future.complete(session);
-            log.info("session {} created", session.getId());
-        }
-    }
-
-    public ExecutorService getRequestService() {
-        return requestService;
-    }
-
-    public void setRequestService(ExecutorService requestService) {
-        this.requestService = requestService;
     }
 }

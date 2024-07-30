@@ -39,8 +39,6 @@ public class AppTest {
         var properties = new GameClientSocketProperties();
         properties.setConnectTimeout(5000);
         var client = new GameTcpClient<>(properties);
-        // request
-        client.addProcessor(new DefaultRequestProcess(new ActionRequestHandler()));
         // response
         client.addProcessor(new FutureResponseProcess());
         client.start();

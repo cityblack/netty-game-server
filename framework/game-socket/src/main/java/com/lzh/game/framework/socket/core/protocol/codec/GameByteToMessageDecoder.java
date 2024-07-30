@@ -1,5 +1,6 @@
 package com.lzh.game.framework.socket.core.protocol.codec;
 
+import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.session.SessionUtils;
 import com.lzh.game.framework.socket.utils.ByteBuffUtils;
 import com.lzh.game.framework.socket.utils.Constant;
@@ -21,16 +22,12 @@ import java.util.Objects;
 @Slf4j
 public class GameByteToMessageDecoder extends ByteToMessageDecoder {
 
-    private final MessageManager manager;
+    private final BootstrapContext context;
 
-    private boolean dataToBytes;
+    private final boolean dataToBytes;
 
-    public GameByteToMessageDecoder(MessageManager manager) {
-        this.manager = manager;
-    }
-
-    public GameByteToMessageDecoder(MessageManager manager, boolean dataToBytes) {
-        this.manager = manager;
+    public GameByteToMessageDecoder(BootstrapContext context, boolean dataToBytes) {
+        this.context = context;
         this.dataToBytes = dataToBytes;
     }
 
@@ -71,7 +68,7 @@ public class GameByteToMessageDecoder extends ByteToMessageDecoder {
             return;
         }
         AbstractCommand command = Constant.isRequest(type) ?
-                Request.of(msgId, manager.findDefine(msgId), requestId, o) : Response.of(msgId, requestId, o);
+                Request.of(msgId, context.getMessageManager().findDefine(msgId), requestId, o) : Response.of(msgId, requestId, o);
         if (command instanceof Request request) {
             request.setSession(SessionUtils.channelGetSession(ctx.channel()));
         }
@@ -86,12 +83,12 @@ public class GameByteToMessageDecoder extends ByteToMessageDecoder {
             in.markReaderIndex();
             return bytes;
         }
-        var define = manager.findDefine(msgId);
-        if (!manager.hasMessage(msgId)) {
+        var define = context.getMessageManager().findDefine(msgId);
+        if (!context.getMessageManager().hasMessage(msgId)) {
             log.warn("Not defined msgId [{}]", msgId);
             return null;
         }
-        int serializeType = manager.getSerializeType(msgId);
+        int serializeType = context.getMessageManager().getSerializeType(msgId);
         MessageSerialize handler = MessageSerializeManager.getInstance()
                 .getProtocolMessage(serializeType);
         if (Objects.isNull(handler)) {

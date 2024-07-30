@@ -1,5 +1,6 @@
 package com.lzh.game.framework.socket.core.bootstrap.server;
 
+import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.NetServer;
 import com.lzh.game.framework.socket.core.bootstrap.ServerIdleHandler;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
@@ -22,12 +23,9 @@ import java.util.concurrent.TimeUnit;
 public class TcpCommonServer<T extends GameServerSocketProperties> extends AbstractServerBootstrap<T>
         implements GameServer {
 
-    public TcpCommonServer(T properties, SessionManage<Session> sessionManage, MessageManager messageManager, InvokeSupport invokeSupport) {
-        super(properties, sessionManage, messageManager, invokeSupport);
-    }
 
-    public TcpCommonServer(T properties, SessionManage<Session> sessionManage) {
-        super(properties, sessionManage);
+    public TcpCommonServer(T properties, BootstrapContext context) {
+        super(properties, context);
     }
 
     public TcpCommonServer(T properties) {
@@ -68,8 +66,8 @@ public class TcpCommonServer<T extends GameServerSocketProperties> extends Abstr
                         .addLast(new LoggingHandler(properties.getNetty().getLogLevel()))
                         .addLast(new IdleStateHandler(0, 0, getProperties().getServerIdleTime(), TimeUnit.MILLISECONDS))
                         .addLast("serverIdleHandler", new ServerIdleHandler())
-                        .addLast("decoder", new GameByteToMessageDecoder(getMessageManager(), getProperties().isBodyDateToBytes()))
-                        .addLast("encoder", new GameMessageToByteEncoder(getMessageManager()))
+                        .addLast("decoder", new GameByteToMessageDecoder(context, getProperties().isBodyDateToBytes()))
+                        .addLast("encoder", new GameMessageToByteEncoder(context))
                         .addLast(getIoHandler())
                 ;
             }

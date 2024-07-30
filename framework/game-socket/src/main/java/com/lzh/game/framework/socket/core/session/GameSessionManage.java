@@ -1,7 +1,9 @@
 package com.lzh.game.framework.socket.core.session;
 
+import com.lzh.game.framework.socket.core.session.cache.GameSessionMemoryCacheManage;
 import com.lzh.game.framework.socket.core.session.cache.SessionMemoryCache;
 import com.lzh.game.framework.socket.core.session.cache.SessionMemoryCacheManage;
+import com.lzh.game.framework.socket.core.session.impl.GameSession;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -15,6 +17,10 @@ public class GameSessionManage<S extends Session> extends AbstractSessionManage<
     public GameSessionManage(SessionFactory<S> factory, SessionMemoryCacheManage<String, S> cacheManage) {
         super(factory);
         this.cacheManage = cacheManage;
+    }
+
+    public static GameSessionManage<Session> of() {
+        return new GameSessionManage<>(GameSession::of, new GameSessionMemoryCacheManage<>());
     }
 
     @Override

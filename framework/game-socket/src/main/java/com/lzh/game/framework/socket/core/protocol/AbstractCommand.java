@@ -21,4 +21,6 @@ public class AbstractCommand {
 
     private Class<?> dataClass;
 
+    private boolean bytesBody;
+
 }

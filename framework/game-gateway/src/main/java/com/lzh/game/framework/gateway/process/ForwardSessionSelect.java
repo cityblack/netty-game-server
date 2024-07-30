@@ -8,5 +8,5 @@ import com.lzh.game.framework.socket.core.protocol.Request;
 @FunctionalInterface
 public interface ForwardSessionSelect {
 
-    Session selected(GameTcpClient<GameClientSocketProperties> client, Request request);
+    Session selected(Request request);
 }

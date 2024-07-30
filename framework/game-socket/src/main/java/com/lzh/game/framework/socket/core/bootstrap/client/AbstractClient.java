@@ -1,12 +1,11 @@
 package com.lzh.game.framework.socket.core.bootstrap.client;
 
 import com.lzh.game.framework.socket.core.bootstrap.AbstractBootstrap;
-import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
-import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
-import com.lzh.game.framework.socket.core.session.Session;
-import com.lzh.game.framework.socket.core.session.SessionManage;
+import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.session.monitor.ConnectMonitor;
 import com.lzh.game.framework.socket.core.session.monitor.DefaultConnectMonitor;
+
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author zehong.l
@@ -17,23 +16,20 @@ public abstract class AbstractClient<C extends GameClientSocketProperties>
 
     private ConnectMonitor monitor;
 
-    public AbstractClient(C properties, SessionManage<Session> sessionManage, MessageManager messageManager, InvokeSupport invokeSupport) {
-        super(properties, sessionManage, messageManager, invokeSupport);
-    }
+    private ExecutorService requestService;
 
-    public AbstractClient(C properties, SessionManage<Session> sessionManage) {
-        super(properties, sessionManage);
+    public AbstractClient(C properties, BootstrapContext context) {
+        super(properties, context);
     }
 
     public AbstractClient(C properties) {
         super(properties);
     }
 
-
     @Override
     protected void init() {
         super.init();
-        this.monitor = new DefaultConnectMonitor(getSessionManage());
+        this.monitor = new DefaultConnectMonitor(getContext().getSessionManage());
     }
 
     public ConnectMonitor getMonitor() {
@@ -42,5 +38,13 @@ public abstract class AbstractClient<C extends GameClientSocketProperties>
 
     public void setMonitor(ConnectMonitor monitor) {
         this.monitor = monitor;
+    }
+
+    public ExecutorService getRequestService() {
+        return requestService;
+    }
+
+    public void setRequestService(ExecutorService requestService) {
+        this.requestService = requestService;
     }
 }

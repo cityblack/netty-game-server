@@ -30,8 +30,11 @@ public class DefaultRequestProcess implements Processor {
     @Override
     public void process(ProcessorContext context, Session session, Object data) {
         Request request = (Request) data;
-        dispatch.handle(request);
-        context.fireReceive(session, null);
+        dispatch.handle(request, response -> requestBack(context, session, response));
+    }
+
+    public static void requestBack(ProcessorContext context, Session session, Object data) {
+        context.fireReceive(session, data);
     }
 
     @Override

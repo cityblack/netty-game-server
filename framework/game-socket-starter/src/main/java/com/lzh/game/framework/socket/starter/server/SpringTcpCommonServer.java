@@ -1,5 +1,6 @@
 package com.lzh.game.framework.socket.starter.server;
 
+import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.server.TcpCommonServer;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
@@ -21,9 +22,14 @@ public class SpringTcpCommonServer extends TcpCommonServer<SpringGameServerPrope
 
     private List<SocketServerInit> inits;
 
-    public SpringTcpCommonServer(SpringGameServerProperties properties, SessionManage<Session> sessionManage, MessageManager messageManager, InvokeSupport invokeSupport) {
-        super(properties, sessionManage, messageManager, invokeSupport);
+    public SpringTcpCommonServer(SpringGameServerProperties properties, BootstrapContext context) {
+        super(properties, context);
     }
+
+    public SpringTcpCommonServer(SpringGameServerProperties properties) {
+        super(properties);
+    }
+
 
     @Override
     protected void doInit(SpringGameServerProperties properties) {

@@ -14,7 +14,7 @@ public interface SessionManage<T extends Session> extends SessionFactory<T> {
 
     void pushSession(String sessionId, T session);
 
-    void addSessionCloseListening(Consumer<T> consumer);
+    void addCloseListening(Consumer<T> consumer);
 
     boolean contain(String sessionId);
 

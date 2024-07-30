@@ -21,7 +21,7 @@ public class DefaultConnectMonitor implements ConnectMonitor {
 
     public DefaultConnectMonitor(SessionManage<Session> sessionManage) {
         sessionManage.addConnectListener(this::doConnect);
-        sessionManage.addSessionCloseListening(this::doCloseConnect);
+        sessionManage.addCloseListening(this::doCloseConnect);
     }
 
     private final Timer TASK_TIME = new HashedWheelTimer(new NameThreadFactory("session-monitor-re-connect", true), 30, TimeUnit.MILLISECONDS);

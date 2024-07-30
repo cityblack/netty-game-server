@@ -1,5 +1,6 @@
 package com.lzh.game.framework.socket.core.protocol.codec;
 
+import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.utils.ByteBuffUtils;
 import com.lzh.game.framework.socket.utils.Constant;
 import com.lzh.game.framework.socket.core.protocol.AbstractCommand;
@@ -17,10 +18,10 @@ import java.util.Objects;
 @Slf4j
 public class GameMessageToByteEncoder extends MessageToByteEncoder<Object> {
 
-    private final MessageManager manager;
+    private final BootstrapContext context;
 
-    public GameMessageToByteEncoder(MessageManager manager) {
-        this.manager = manager;
+    public GameMessageToByteEncoder(BootstrapContext context) {
+        this.context = context;
     }
 
     @Override
@@ -34,15 +35,11 @@ public class GameMessageToByteEncoder extends MessageToByteEncoder<Object> {
          */
         try {
             if (msg instanceof AbstractCommand command) {
-                var define = manager.findDefine(command.getMsgId());
-                if (Objects.isNull(define)) {
-                    log.error("Encoder. Not defined msg [{}]", command.getMsgId());
-                    return;
-                }
+
                 out.markWriterIndex();
                 var wrapper = this.allocateBuffer(ctx, msg, isPreferDirect());
                 try {
-                    encode(define, command.getData(), wrapper);
+                    encode(command, wrapper);
                     int bodyLen = wrapper.readableBytes();
                     int len = bodyLen + Constant.HEAD_MIN_LEN;
                     out.ensureWritable(len);
@@ -67,15 +64,24 @@ public class GameMessageToByteEncoder extends MessageToByteEncoder<Object> {
         }
     }
 
-    protected void encode(MessageDefine define, Object msg, ByteBuf out) throws Exception {
+    protected void encode(AbstractCommand command, ByteBuf out) throws Exception {
+        if (command.isBytesBody()) {
+            out.writeBytes((byte[]) command.getData());
+            return;
+        }
+        var define = context.getMessageManager().findDefine(command.getMsgId());
+        if (Objects.isNull(define)) {
+            log.error("Encoder. Not defined msg [{}]", command.getMsgId());
+            return;
+        }
         var msgId = define.getMsgId();
-        int serializeType = manager.getSerializeType(msgId);
+        int serializeType = context.getMessageManager().getSerializeType(msgId);
         MessageSerialize handler = MessageSerializeManager.getInstance()
                 .getProtocolMessage(serializeType);
         if (Objects.isNull(handler)) {
             log.error("Not defined msg serialize type [{}-{}]", msgId, serializeType);
             return;
         }
-        handler.encode(define, msg, out);
+        handler.encode(define, command.getData(), out);
     }
 }

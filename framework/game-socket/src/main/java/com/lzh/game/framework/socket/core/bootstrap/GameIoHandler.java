@@ -1,10 +1,8 @@
 package com.lzh.game.framework.socket.core.bootstrap;
 
-import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
 import com.lzh.game.framework.socket.core.process.event.ProcessEvent;
 import com.lzh.game.framework.socket.core.protocol.AbstractCommand;
 import com.lzh.game.framework.socket.core.session.Session;
-import com.lzh.game.framework.socket.core.session.SessionManage;
 import com.lzh.game.framework.socket.core.session.SessionUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -18,17 +16,15 @@ import java.util.Objects;
 @ChannelHandler.Sharable
 public class GameIoHandler extends SimpleChannelInboundHandler<AbstractCommand> {
 
-    private ProcessorPipeline pipeline;
+    private final BootstrapContext context;
 
-    private SessionManage<Session> sessionManage;
-
-    public GameIoHandler(ProcessorPipeline pipeline, SessionManage<Session> sessionManage) {
-        this.pipeline = pipeline;
-        this.sessionManage = sessionManage;
+    public GameIoHandler(BootstrapContext context) {
+        this.context = context;
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        var sessionManage = context.getSessionManage();
         var session = sessionManage.createSession(ctx.channel());
         sessionManage.pushSession(session.getId(), session);
         log.info("session [{}/{}] is connected.", session.getId(), session.getRemoteAddress());
@@ -46,27 +42,27 @@ public class GameIoHandler extends SimpleChannelInboundHandler<AbstractCommand> 
         }
         log.info("session [{}/{}] is close.", session.getId(), session.getRemoteAddress());
         doEvent(ProcessEvent.CLOSE, session);
-        sessionManage.removeSession(session.getId());
+        context.getSessionManage().removeSession(session.getId());
         SessionUtils.channelUnbindSession(ctx.channel());
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        pipeline.fireEvent(ProcessEvent.EXCEPTION, getSession(ctx.channel()), cause);
+        context.getPipeline().fireEvent(ProcessEvent.EXCEPTION, getSession(ctx.channel()), cause);
         log.error("", cause);
         super.exceptionCaught(ctx, cause);
     }
 
     protected Session getSession(Channel channel) {
-        return sessionManage.getSession(channel.id().asLongText());
+        return SessionUtils.channelGetSession(channel);
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, AbstractCommand msg) {
-        pipeline.fireReceive(getSession(ctx.channel()), msg);
+        context.getPipeline().fireReceive(getSession(ctx.channel()), msg);
     }
 
     private void doEvent(ProcessEvent event, Session session) {
-        pipeline.fireEvent(event, session);
+        context.getPipeline().fireEvent(event, session);
     }
 }

@@ -1,6 +1,7 @@
 package com.lzh.game.framework.gateway;
 
 import com.lzh.game.framework.gateway.config.GatewayProperties;
+import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.client.GameClientSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.client.GameTcpClient;
 import com.lzh.game.framework.socket.core.session.Session;
@@ -19,8 +20,8 @@ public class GatewayClient extends GameTcpClient<GameClientSocketProperties> {
 
     private final GatewayProperties properties;
 
-    public GatewayClient(GatewayProperties properties, SessionManage<Session> sessionManage) {
-        super(properties.getClient(), sessionManage);
+    public GatewayClient(GatewayProperties properties, BootstrapContext context) {
+        super(properties.getClient(), context);
         this.properties = properties;
     }
 

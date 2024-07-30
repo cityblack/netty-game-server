@@ -33,6 +33,7 @@ public abstract class AbstractProcessorContext implements ProcessorContext {
 
     public abstract void invokeReceive(Session session, Object msg);
 
+    @Override
     public ProcessorPipeline getPipeline() {
         return pipeline;
     }
