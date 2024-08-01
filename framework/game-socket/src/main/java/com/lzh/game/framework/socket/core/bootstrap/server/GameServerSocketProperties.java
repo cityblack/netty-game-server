@@ -12,8 +12,5 @@ public class GameServerSocketProperties extends GameSocketProperties {
     private Integer protocolVersion = 10000;
     private boolean openGm = false;
     private int serverIdleTime = 180000;
-    private int bossWordCore = 2;
-    private boolean useEpoll = true;
-
 
 }

@@ -1,12 +1,14 @@
 package com.lzh.game.framework.socket.core.session;
 
 import io.netty.channel.Channel;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
+@Slf4j
 public abstract class AbstractSessionManage<S extends Session>
         implements SessionManage<S> {
 
@@ -58,13 +60,21 @@ public abstract class AbstractSessionManage<S extends Session>
 
     protected void doConnect(S session) {
         for (Consumer<S> consumer : this.connectListener) {
-            consumer.accept(session);
+            try {
+                consumer.accept(session);
+            } catch (Exception e) {
+                log.error("Session connect event error: ", e);
+            }
         }
     }
 
     protected void doClose(S session) {
         for (Consumer<S> consumer : this.closeListener) {
-            consumer.accept(session);
+            try {
+                consumer.accept(session);
+            } catch (Exception e) {
+                log.error("Session close event error: ", e);
+            }
         }
     }
 

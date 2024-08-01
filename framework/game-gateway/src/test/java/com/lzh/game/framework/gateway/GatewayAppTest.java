@@ -8,8 +8,9 @@ import com.lzh.game.framework.socket.core.bootstrap.client.AsyncResponse;
 import com.lzh.game.framework.socket.core.bootstrap.client.GameClientSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.client.GameTcpClient;
 import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
-import com.lzh.game.framework.socket.core.bootstrap.server.TcpCommonServer;
+import com.lzh.game.framework.socket.core.bootstrap.server.TcpServer;
 import com.lzh.game.framework.socket.core.invoke.ActionRequestHandler;
+import com.lzh.game.framework.socket.core.invoke.convert.DefaultInvokeMethodArgumentValues;
 import com.lzh.game.framework.socket.core.process.impl.DefaultRequestProcess;
 import com.lzh.game.framework.socket.core.process.impl.FutureResponseProcess;
 import com.lzh.game.framework.socket.core.session.Session;
@@ -27,10 +28,9 @@ class GatewayAppTest {
         var properties = new GameServerSocketProperties();
         properties.setPort(8082);
         properties.setOpenGm(true);
-        properties.setBossWordCore(1);
-        properties.setUseEpoll(true);
         properties.getNetty().setLogLevel(LogLevel.INFO);
-        var server = new TcpCommonServer<>(properties);
+        var server = new TcpServer<>(properties);
+        server.addProcessor(new DefaultRequestProcess(new ActionRequestHandler(server.getContext(), new DefaultInvokeMethodArgumentValues())));
         ServerDemo demo = new ServerDemo();
         server.addInvokeBean(demo);
         server.start();
@@ -47,9 +47,8 @@ class GatewayAppTest {
 
         var serverProperties = properties.getServer();
         serverProperties.setPort(8081);
-        serverProperties.setUseDefaultRequest(false);
         serverProperties.setBodyDateToBytes(true);
-        var server = new TcpCommonServer<>(properties.getServer(), BootstrapContext.of());
+        var server = new TcpServer<>(properties.getServer(), BootstrapContext.of());
         server.addProcessor(new ForwardGatewayProcess(client, new RandomSessionSelect(client)));
         server.start();
     }

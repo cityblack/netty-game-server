@@ -1,5 +1,7 @@
 package com.lzh.game.framework.socket.core.protocol.message;
 
+import com.lzh.game.framework.socket.utils.Constant;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;

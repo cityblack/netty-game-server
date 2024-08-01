@@ -5,11 +5,9 @@ import com.lzh.game.framework.socket.core.bootstrap.client.AsyncResponse;
 import com.lzh.game.framework.socket.core.bootstrap.client.GameClientSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.client.GameTcpClient;
 import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
-import com.lzh.game.framework.socket.core.bootstrap.server.TcpCommonServer;
+import com.lzh.game.framework.socket.core.bootstrap.server.TcpServer;
 import com.lzh.game.framework.socket.core.invoke.ActionRequestHandler;
 import com.lzh.game.framework.socket.core.invoke.convert.DefaultInvokeMethodArgumentValues;
-import com.lzh.game.framework.socket.core.invoke.support.DefaultActionInvokeSupport;
-import com.lzh.game.framework.socket.core.process.Processor;
 import com.lzh.game.framework.socket.core.process.impl.DefaultRequestProcess;
 import com.lzh.game.framework.socket.core.process.impl.FutureResponseProcess;
 import com.lzh.game.framework.socket.core.session.Session;
@@ -23,12 +21,10 @@ public class AppTest {
         var properties = new GameServerSocketProperties();
         properties.setPort(8081);
         properties.setOpenGm(true);
-        properties.setBossWordCore(1);
-        properties.setUseEpoll(true);
         properties.getNetty().setLogLevel(LogLevel.INFO);
 
-        var server = new TcpCommonServer<>(properties);
-
+        var server = new TcpServer<>(properties);
+        server.addProcessor(new DefaultRequestProcess(new ActionRequestHandler(server.getContext(), new DefaultInvokeMethodArgumentValues())));
         ServerDemo demo = new ServerDemo();
         server.addInvokeBean(demo);
         server.start();

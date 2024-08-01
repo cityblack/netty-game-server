@@ -2,9 +2,12 @@ package com.lzh.game.framework.socket.core.bootstrap.client;
 
 import com.lzh.game.framework.socket.core.bootstrap.AbstractBootstrap;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
+import com.lzh.game.framework.socket.core.bootstrap.handler.DefaultHeartbeatHandler;
+import com.lzh.game.framework.socket.core.bootstrap.handler.HeartbeatHandler;
 import com.lzh.game.framework.socket.core.session.monitor.ConnectMonitor;
 import com.lzh.game.framework.socket.core.session.monitor.DefaultConnectMonitor;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -18,6 +21,8 @@ public abstract class AbstractClient<C extends GameClientSocketProperties>
 
     private ExecutorService requestService;
 
+    private HeartbeatHandler heartbeatHandler;
+
     public AbstractClient(C properties, BootstrapContext context) {
         super(properties, context);
     }
@@ -30,6 +35,10 @@ public abstract class AbstractClient<C extends GameClientSocketProperties>
     protected void init() {
         super.init();
         this.monitor = new DefaultConnectMonitor(getContext().getSessionManage());
+        if (Objects.isNull(heartbeatHandler)) {
+            this.heartbeatHandler = new DefaultHeartbeatHandler(this);
+        }
+        this.getHeartbeatHandler().start();
     }
 
     public ConnectMonitor getMonitor() {
@@ -46,5 +55,19 @@ public abstract class AbstractClient<C extends GameClientSocketProperties>
 
     public void setRequestService(ExecutorService requestService) {
         this.requestService = requestService;
+    }
+
+    public HeartbeatHandler getHeartbeatHandler() {
+        return heartbeatHandler;
+    }
+
+    public void setHeartbeatHandler(HeartbeatHandler heartbeatHandler) {
+        this.heartbeatHandler = heartbeatHandler;
+    }
+
+    @Override
+    public void shutDown() {
+        super.shutDown();
+        this.heartbeatHandler.shutdown();
     }
 }

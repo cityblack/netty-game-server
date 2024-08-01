@@ -22,7 +22,6 @@ public abstract class AbstractServerBootstrap<T extends GameServerSocketProperti
         super(properties);
     }
 
-
     protected abstract NetServer createServer(int port, T properties, ProcessorPipeline pipeline);
 
     @Override

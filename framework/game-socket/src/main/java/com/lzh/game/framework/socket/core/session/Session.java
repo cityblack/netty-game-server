@@ -62,7 +62,9 @@ public interface Session {
         return value;
     }
 
-    boolean opened();
+    boolean isOpened();
+
+    boolean isActive();
 
     /**
      * close the session

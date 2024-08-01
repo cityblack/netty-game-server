@@ -2,60 +2,45 @@ package com.lzh.game.framework.socket.core.bootstrap.server;
 
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.NetServer;
-import com.lzh.game.framework.socket.core.bootstrap.ServerIdleHandler;
-import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
+import com.lzh.game.framework.socket.core.bootstrap.handler.ServerIdleHandler;
 import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
-import com.lzh.game.framework.socket.core.protocol.codec.GameByteToMessageDecoder;
+import com.lzh.game.framework.socket.core.protocol.codec.ByteToGameMessageDecoder;
 import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteEncoder;
-import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
-import com.lzh.game.framework.socket.core.session.Session;
-import com.lzh.game.framework.socket.core.session.SessionManage;
+import com.lzh.game.framework.socket.utils.NettyUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class TcpCommonServer<T extends GameServerSocketProperties> extends AbstractServerBootstrap<T>
+public class TcpServer<T extends GameServerSocketProperties> extends AbstractServerBootstrap<T>
         implements GameServer {
 
-
-    public TcpCommonServer(T properties, BootstrapContext context) {
+    public TcpServer(T properties, BootstrapContext context) {
         super(properties, context);
     }
 
-    public TcpCommonServer(T properties) {
+    public TcpServer(T properties) {
         super(properties);
     }
 
     @Override
     protected NetServer createServer(int port, T properties, ProcessorPipeline pipeline) {
-        final EventLoopGroup bossGroup = new NioEventLoopGroup(properties.getBossWordCore());
-        final EventLoopGroup workerGroup = new NioEventLoopGroup();
+        var netty = properties.getNetty();
+        final EventLoopGroup bossGroup = NettyUtils.group(netty.isUseEpoll(), netty.getBossWordCore());
+        final EventLoopGroup workerGroup = NettyUtils.group(netty.isUseEpoll(), netty.getWorkCore());
         final ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)
-//                .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+                .channel(NettyUtils.serverChannelType(netty.isUseEpoll()))
                 .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
                 .childHandler(channelHandler());
-        addOptions(bootstrap, properties);
+        NettyUtils.serverBootAddOptions(bootstrap, properties.getNetty());
         NetServer server = new NetServer(port, properties, pipeline);
         server.setBootstrap(bootstrap);
         server.setEventLoopGroup(workerGroup);
         return server;
-    }
-
-    private void addOptions(ServerBootstrap bootstrap, T properties) {
-        for (Map.Entry<String, Object> entry : properties.getNetty().getChannelOptions().entrySet()) {
-            bootstrap.option(ChannelOption.valueOf(entry.getKey()), entry.getValue());
-        }
-        for (Map.Entry<String, Object> entry : properties.getNetty().getChildOptions().entrySet()) {
-            bootstrap.childOption(ChannelOption.valueOf(entry.getKey()), entry.getValue());
-        }
     }
 
     private ChannelHandler channelHandler() {
@@ -66,7 +51,7 @@ public class TcpCommonServer<T extends GameServerSocketProperties> extends Abstr
                         .addLast(new LoggingHandler(properties.getNetty().getLogLevel()))
                         .addLast(new IdleStateHandler(0, 0, getProperties().getServerIdleTime(), TimeUnit.MILLISECONDS))
                         .addLast("serverIdleHandler", new ServerIdleHandler())
-                        .addLast("decoder", new GameByteToMessageDecoder(context, getProperties().isBodyDateToBytes()))
+                        .addLast("decoder", new ByteToGameMessageDecoder(context, getProperties().isBodyDateToBytes()))
                         .addLast("encoder", new GameMessageToByteEncoder(context))
                         .addLast(getIoHandler())
                 ;

@@ -13,8 +13,7 @@ public abstract class AbstractSession implements Session {
     private transient Channel channel;
     private String id;
     private String remoteAddress;
-    private Map<String, Object> attribute = new ConcurrentHashMap<>();
-    private transient AtomicBoolean opened = new AtomicBoolean(true);
+    private final Map<String, Object> attribute = new ConcurrentHashMap<>();
     private transient Instant lastAccessTime;
     private transient Instant creationTime;
     private Integer port;
@@ -80,13 +79,17 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
-    public boolean opened() {
-        return opened.get();
+    public boolean isOpened() {
+        return this.channel.isOpen();
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.channel.isActive() && isOpened();
     }
 
     @Override
     public void close() {
-        this.opened.set(false);
         this.channel.close();
         this.attribute.clear();
     }

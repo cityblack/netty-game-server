@@ -52,8 +52,13 @@ public class FutureSession implements Session {
     }
 
     @Override
-    public boolean opened() {
-        return blockGetSession().opened();
+    public boolean isOpened() {
+        return blockGetSession().isOpened();
+    }
+
+    @Override
+    public boolean isActive() {
+        return blockGetSession().isActive();
     }
 
     @Override

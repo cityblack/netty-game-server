@@ -2,7 +2,7 @@ package com.lzh.game.framework.socket.core.bootstrap.client;
 
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.protocol.Request;
-import com.lzh.game.framework.socket.core.protocol.codec.GameByteToMessageDecoder;
+import com.lzh.game.framework.socket.core.protocol.codec.ByteToGameMessageDecoder;
 import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteEncoder;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionUtils;
@@ -97,7 +97,7 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
                                 .addLast(new LoggingHandler(properties.getNetty().getLogLevel()))
-                                .addLast("decoder", new GameByteToMessageDecoder(context, getProperties().isBodyDateToBytes()))
+                                .addLast("decoder", new ByteToGameMessageDecoder(context, getProperties().isBodyDateToBytes()))
                                 .addLast("encoder", new GameMessageToByteEncoder(context))
                                 .addLast(getIoHandler());
                     }

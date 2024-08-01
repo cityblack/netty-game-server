@@ -37,6 +37,7 @@ public class DefaultConnectMonitor implements ConnectMonitor {
         }
         mate.closeTimeout();
         mate.connected = true;
+        log.info("{} connected. close monitor task", session.getId());
     }
 
     private void doCloseConnect(Session session) {
@@ -119,7 +120,6 @@ public class DefaultConnectMonitor implements ConnectMonitor {
         Consumer<String> notConnectedCall;
         Timeout timeout;
         int failCount;
-
         volatile boolean connected;
 
         public MonitorMate(String address, ConnectMonitorConfig config, Consumer<String> notConnectedCall) {

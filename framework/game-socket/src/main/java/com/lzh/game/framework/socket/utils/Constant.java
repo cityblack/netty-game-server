@@ -23,4 +23,8 @@ public class Constant {
     public static final String AUTH_SESSION_KEY = "auth_session";
 
     public static final short AUTH_PROTOCOL_ID = -1;
+
+    public static final short HEARTBEAT_PROTOCOL_ID = -2;
+
+    public static final String HEARTBEAT_TASK_KEY = "heartbeat_task";
 }

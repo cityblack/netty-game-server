@@ -7,7 +7,6 @@ import com.lzh.game.framework.socket.utils.Constant;
 import com.lzh.game.framework.socket.core.protocol.AbstractCommand;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.Response;
-import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerialize;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerializeManager;
 import io.netty.buffer.ByteBuf;
@@ -20,13 +19,13 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-public class GameByteToMessageDecoder extends ByteToMessageDecoder {
+public class ByteToGameMessageDecoder extends ByteToMessageDecoder {
 
     private final BootstrapContext context;
 
     private final boolean dataToBytes;
 
-    public GameByteToMessageDecoder(BootstrapContext context, boolean dataToBytes) {
+    public ByteToGameMessageDecoder(BootstrapContext context, boolean dataToBytes) {
         this.context = context;
         this.dataToBytes = dataToBytes;
     }
@@ -77,7 +76,7 @@ public class GameByteToMessageDecoder extends ByteToMessageDecoder {
     }
 
     public Object decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, short msgId, int dataLen) throws Exception {
-        if (dataToBytes) {
+        if (dataToBytes && msgId != Constant.HEARTBEAT_PROTOCOL_ID) {
             byte[] bytes = new byte[dataLen];
             in.readBytes(bytes, in.readerIndex(), bytes.length);
             in.markReaderIndex();

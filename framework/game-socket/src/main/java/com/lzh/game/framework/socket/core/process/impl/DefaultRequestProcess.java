@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DefaultRequestProcess implements Processor {
 
-    private final RequestDispatch dispatch;
+    private RequestDispatch dispatch;
 
     private ProcessorExecutorService executorService;
 
@@ -45,5 +45,13 @@ public class DefaultRequestProcess implements Processor {
     @Override
     public ProcessorExecutorService service() {
         return executorService;
+    }
+
+    public RequestDispatch getDispatch() {
+        return dispatch;
+    }
+
+    public void setDispatch(RequestDispatch dispatch) {
+        this.dispatch = dispatch;
     }
 }

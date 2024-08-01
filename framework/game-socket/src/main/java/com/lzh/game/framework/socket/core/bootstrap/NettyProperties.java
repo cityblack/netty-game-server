@@ -15,10 +15,16 @@ import java.util.Map;
 @Setter
 public class NettyProperties {
 
-    private LogLevel logLevel = LogLevel.ERROR;
+    private LogLevel logLevel = LogLevel.DEBUG;
 
     private Map<String, Object> channelOptions = new HashMap<>();
 
     private Map<String, Object> childOptions = new HashMap<>();
 
+    private boolean useEpoll = true;
+
+    private int bossWordCore = 1;
+
+    // use default core
+    private int workCore = 0;
 }
