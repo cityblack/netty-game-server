@@ -25,6 +25,7 @@
         <module>game-event</module>
         <module>game-utils</module>
         <module>game-gateway</module>
+        <module>game-hotswap</module>
     </modules>
 
 </project>
