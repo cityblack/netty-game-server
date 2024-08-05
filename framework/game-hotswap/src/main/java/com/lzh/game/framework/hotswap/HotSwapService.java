@@ -6,5 +6,7 @@ package com.lzh.game.framework.hotswap;
  **/
 public class HotSwapService {
 
+    public void execute(String dir) {
 
+    }
 }
