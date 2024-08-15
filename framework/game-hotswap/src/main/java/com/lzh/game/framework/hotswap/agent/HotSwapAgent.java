@@ -1,5 +1,6 @@
 package com.lzh.game.framework.hotswap.agent;
 
+import com.lzh.game.framework.hotswap.HotSwapBean;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -25,10 +26,11 @@ public class HotSwapAgent implements ApplicationContextAware {
     public static void agentmain(String args, Instrumentation instrumentation) {
         try {
             Class.forName("com.lzh.game.framework.hotswap.HotSwapBean");
-            System.out.println("run??");
+            byte[] date = HotSwapBean.getInstance().updateData;
+            
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            HotSwapBean.getInstance().error = e;
         }
 
     }

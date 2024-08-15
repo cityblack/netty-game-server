@@ -2,22 +2,18 @@ package com.lzh.game.framework.hotswap;
 
 import com.lzh.game.framework.hotswap.agent.HotSwapAgent;
 import com.sun.tools.attach.VirtualMachine;
-import javassist.ClassPool;
+import com.sun.tools.classfile.ClassFile;
+import com.sun.tools.classfile.ConstantPoolException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cglib.core.ClassInfo;
 
 import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zehong.l
@@ -30,36 +26,68 @@ public class HotSwapBean {
 
     public volatile boolean update;
 
+    public volatile Throwable error;
+
     private final Map<String, ClassFileInfo> classInfo = new HashMap<>();
 
     public synchronized List<ClassFileInfo> swap(String hotDir, String agentLib) throws Exception {
-
         var files = getSwapFiles(hotDir);
         if (files.isEmpty()) {
             log.warn("{} not have swap file", hotDir);
             return Collections.emptyList();
         }
+        var able = parseSwapFiles(files);
+        if (able.isEmpty()) {
+            log.warn("not have changed file.");
+            return Collections.emptyList();
+        }
+        loadNewClass(able);
 
         return null;
     }
 
-    private static Map<String, ClassFileInfo> parseSwapFiles(Map<String, Long> files) {
+    private void loadNewClass(Map<String, ClassFileInfo> files) {
+        try {
+            for (String className : files.keySet()) {
+                this.getClass().getClassLoader().loadClass(className);
+            }
+        } catch (Exception e) {
 
+        }
+    }
+
+    private Map<String, ClassFileInfo> parseSwapFiles(Map<String, Long> files) {
+        var result = new HashMap<String, ClassFileInfo>();
+        for (Map.Entry<String, Long> entry : files.entrySet()) {
+            checkFile(entry.getKey(), entry.getValue(), result);
+        }
+        return result;
     }
 
     private void checkFile(String filePath, long lastModifyTime, Map<String, ClassFileInfo> contain) {
         try {
             log.info("file [{}] start checking", filePath);
-            var bytes = Files.readAllBytes(Paths.get(filePath));
-
-        } catch (IOException e) {
+            var path = Paths.get(filePath);
+            var bytes = Files.readAllBytes(path);
+            var className = getClassName(bytes);
+            var newInfo = new ClassFileInfo(filePath, className, bytes, lastModifyTime);
+            var old = classInfo.get(className);
+            if (Objects.nonNull(old)) {
+                if (old.getLastModifyTime() == newInfo.getLastModifyTime()
+                        || Objects.equals(old.getMd5(), newInfo.getMd5())) {
+                    log.info("Ignore class: [{}] update. cause one is not change", className);
+                    return;
+                }
+            }
+            contain.put(className, newInfo);
+        } catch (IOException | ConstantPoolException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private String readClassName(byte[] bytes) throws Exception {
-        var input = new DataInputStream(new ByteArrayInputStream(bytes));
-        
+    private String getClassName(byte[] bytes) throws ConstantPoolException, IOException {
+        var clz = ClassFile.read(new ByteArrayInputStream(bytes));
+        return clz.getName();
     }
 
     private Map<String, Long> getSwapFiles(String dir) throws IOException {
