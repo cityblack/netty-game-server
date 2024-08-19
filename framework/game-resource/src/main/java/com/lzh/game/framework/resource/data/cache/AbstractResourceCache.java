@@ -17,7 +17,7 @@ public abstract class AbstractResourceCache<K extends Serializable, T>
     protected void buildIndex(T data, String indexName, IndexGetter getter, Table<String, Serializable, T> uniqueIndexContain, Table<String, Serializable, List<T>> indexContain) {
         Serializable value = getter.get(data);
         if (Objects.isNull(value)) {
-            throw new RuntimeException("@" + (GetterBuild.isIdGetter(getter) ? "Id" : "Index") + " value can't null. data: [" + JsonUtils.toJson(data) +"]");
+            throw new RuntimeException("@" + (GetterBuild.isIdGetter(getter) ? "Id" : "Index") + " value can't null. data: [" + JsonUtils.toJson(data) + "]");
         }
         if (getter.unique()) {
             if (uniqueIndexContain.contains(indexName, value)) {

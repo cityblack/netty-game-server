@@ -1,6 +1,6 @@
 package com.lzh.game.framework.resource.data.cache;
 
-import com.lzh.game.framework.resource.data.ResourceModel;
+import com.lzh.game.framework.resource.data.ResourceMeta;
 
 import java.io.Serializable;
 import java.util.List;
@@ -22,11 +22,11 @@ public interface ResourceCache<K extends Serializable, T> {
 
     T findOne(String indexName, Serializable value);
 
-    void put(List<T> data, ResourceModel resourceModel, Consumer<T> beforePut);
+    void put(List<T> data, ResourceMeta resourceModel, Consumer<T> beforePut);
 
     void clear();
 
-    default void put(List<T> data, ResourceModel resourceModel) {
+    default void put(List<T> data, ResourceMeta resourceModel) {
         this.put(data, resourceModel, null);
     }
 }

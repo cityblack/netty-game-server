@@ -1,17 +1,14 @@
 package com.lzh.game.framework.hotswap.agent;
 
-import com.lzh.game.framework.hotswap.HotSwapBean;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -21,18 +18,23 @@ import java.util.jar.Manifest;
  * @author zehong.l
  * @since 2024-08-02 14:50
  **/
-public class HotSwapAgent implements ApplicationContextAware {
+public class HotSwapAgent {
 
     public static void agentmain(String args, Instrumentation instrumentation) {
         try {
-            Class.forName("com.lzh.game.framework.hotswap.HotSwapBean");
+            Class.forName("com.lzh.game.framework.hotswap.agent.HotSwapBean");
             byte[] date = HotSwapBean.getInstance().updateData;
-            
-
+            var classDate = HotSwapUtils.byteToClassInfo(date);
+            var defined = new ClassDefinition[classDate.size()];
+            int i = 0;
+            for (Map.Entry<String, byte[]> entry : classDate.entrySet()) {
+                defined[i++] = new ClassDefinition(Class.forName(entry.getKey()), entry.getValue());
+            }
+            instrumentation.redefineClasses(defined);
+            HotSwapBean.getInstance().updateData = null;
         } catch (Exception e) {
             HotSwapBean.getInstance().error = e;
         }
-
     }
 
     public static File createAgentLib(String path) throws IOException {
@@ -49,6 +51,7 @@ public class HotSwapAgent implements ApplicationContextAware {
         attrs.put(new Attributes.Name("Can-Retransform-Classes"), "true");
         try (var output = new JarOutputStream(new FileOutputStream(jar), manifest)) {
             addClassToJar(output, HotSwapAgent.class);
+            addClassToJar(output, HotSwapUtils.class);
             output.closeEntry();
         }
         return jar;
@@ -73,20 +76,4 @@ public class HotSwapAgent implements ApplicationContextAware {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-
-//        Files.createFile(Paths.get("/Users/jsonp/Desktop/2/1.txt"));
-        var file = new File("/Users/jsonp/Desktop/2/1.txt");
-//        var parent = file.getParentFile().getAbsolutePath();
-        var path = Paths.get(file.getParent());
-        if (!Files.exists(path)) {
-            Files.createDirectories(path);
-        }
-        Files.createFile(Paths.get("/Users/jsonp/Desktop/2/1.txt"));
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-
-    }
 }

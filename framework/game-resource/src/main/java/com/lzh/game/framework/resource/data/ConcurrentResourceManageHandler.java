@@ -13,19 +13,19 @@ import java.util.concurrent.locks.LockSupport;
  * 的原子变量更改成写操作中{@link #WRITING}
  * 读取资源时若为写状态, 则会自旋转等待写状态完成
  */
-public class ConcurrentResourceManageHandler implements ResourceManageHandle {
+public class ConcurrentResourceManageHandler implements ResourceManager {
     // Fact option handler
-    private ResourceManageHandle handler;
+    private ResourceManager handler;
     /**
      * Use AtomicBoolean to reduce the force of the lock
      */
     private Map<Class<?>, AtomicBoolean> status;
 
-    private ResourceModelMeta factory;
+    private ResourceMetaManager factory;
 
     private final boolean WRITING = Boolean.TRUE;
 
-    public ConcurrentResourceManageHandler(ResourceModelMeta factory, ResourceManageHandle handler) {
+    public ConcurrentResourceManageHandler(ResourceMetaManager factory, ResourceManager handler) {
         this.handler = handler;
         this.factory = factory;
         this.init();

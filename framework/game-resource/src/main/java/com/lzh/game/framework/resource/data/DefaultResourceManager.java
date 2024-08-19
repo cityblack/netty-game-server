@@ -12,20 +12,20 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
-public class DefaultResourceManageHandle implements ResourceManageHandle {
+public class DefaultResourceManager implements ResourceManager {
 
-    private LoadResourceHandle loadResourceHandle;
+    private ResourceLoadHandle resourceLoadHandle;
 
     private ResourceCacheFactory cacheFactory;
 
     private ResourceReloadMeta reloadMeta;
 
-    private ResourceModelMeta modelManage;
+    private ResourceMetaManager modelManage;
 
     private Map<Class<?>, ResourceCache<Serializable, ?>> caches = new HashMap<>();
 
-    public DefaultResourceManageHandle(LoadResourceHandle loadResourceHandle, ResourceCacheFactory cacheFactory, ResourceReloadMeta reloadMeta, ResourceModelMeta modelManage) {
-        this.loadResourceHandle = loadResourceHandle;
+    public DefaultResourceManager(ResourceLoadHandle resourceLoadHandle, ResourceCacheFactory cacheFactory, ResourceReloadMeta reloadMeta, ResourceMetaManager modelManage) {
+        this.resourceLoadHandle = resourceLoadHandle;
         this.cacheFactory = cacheFactory;
         this.reloadMeta = reloadMeta;
         this.modelManage = modelManage;
@@ -77,8 +77,8 @@ public class DefaultResourceManageHandle implements ResourceManageHandle {
     }
 
     private void flashData(Class<?> type) {
-        ResourceModel model = modelManage.getResource(type);
-        List list = loadResourceHandle.loadList(type, model.getResourceName());
+        ResourceMeta model = modelManage.getResource(type);
+        List list = resourceLoadHandle.loadList(type, model.getResourceName());
         ResourceCache<Serializable, ?> cache = this.caches.computeIfAbsent(type,
                 (k) -> cacheFactory.newCache(k, model));
         cache.put(list, model, this::putData);

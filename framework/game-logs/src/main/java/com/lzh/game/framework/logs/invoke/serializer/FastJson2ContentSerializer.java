@@ -1,6 +1,6 @@
 package com.lzh.game.framework.logs.invoke.serializer;
 
-import com.alibaba.fastjson2.JSON;
+import com.lzh.game.framework.utils.JsonUtils;
 
 import java.util.Map;
 
@@ -11,6 +11,6 @@ import java.util.Map;
 public class FastJson2ContentSerializer implements LogContentSerializer {
     @Override
     public String serializer(Map<String, Object> content) {
-        return JSON.toJSONString(content);
+        return JsonUtils.toJson(content);
     }
 }

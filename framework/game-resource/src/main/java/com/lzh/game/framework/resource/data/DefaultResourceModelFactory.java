@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 @Slf4j
-public class DefaultResourceModelFactory implements ResourceModelMeta, InitializingBean, DisposableBean {
+public class DefaultResourceModelFactory implements ResourceMetaManager, InitializingBean, DisposableBean {
 
     private final GameResourceProperties resourceProperties;
 
@@ -25,15 +25,15 @@ public class DefaultResourceModelFactory implements ResourceModelMeta, Initializ
     }
 
     private Map<String, Class<?>> nameCache = new HashMap<>();
-    private Map<Class<?>, ResourceModel> classCache = new HashMap<>();
+    private Map<Class<?>, ResourceMeta> classCache = new HashMap<>();
 
     @Override
-    public ResourceModel getResource(String resourceName) {
+    public ResourceMeta getResource(String resourceName) {
         return classCache.get(nameCache.get(resourceName));
     }
 
     @Override
-    public ResourceModel getResource(Class<?> resourceClass) {
+    public ResourceMeta getResource(Class<?> resourceClass) {
         return classCache.get(resourceClass);
     }
 
@@ -48,20 +48,20 @@ public class DefaultResourceModelFactory implements ResourceModelMeta, Initializ
     }
 
     @Override
-    public Iterator<ResourceModel> iterator() {
+    public Iterator<ResourceMeta> iterator() {
 
         return classCache.values().iterator();
     }
 
     private void loadModel(Class<?> type, ResourceNameStrategyStandard nameStrategyStandard) {
 
-        ResourceModel model = parseToModel(type, nameStrategyStandard);
+        ResourceMeta model = parseToModel(type, nameStrategyStandard);
 
         nameCache.put(model.getResourceName(), type);
         classCache.put(type, model);
     }
 
-    private ResourceModel parseToModel(Class<?> type, ResourceNameStrategyStandard nameStrategyStandard) {
+    private ResourceMeta parseToModel(Class<?> type, ResourceNameStrategyStandard nameStrategyStandard) {
 
         Resource resource = type.getAnnotation(Resource.class);
         String name = resource.name();
@@ -75,7 +75,7 @@ public class DefaultResourceModelFactory implements ResourceModelMeta, Initializ
             throw new IllegalArgumentException("Already exist [" +  name +"] the resource name.");
         }
         // nameCache.put(name, type);
-        ResourceModel model = ResourceModel.of(type, name);
+        ResourceMeta model = ResourceMeta.of(type, name);
         if (Objects.isNull(model.getId())) {
             throw new IllegalArgumentException("[" + type.getName() + "] not defined @Id.");
         }

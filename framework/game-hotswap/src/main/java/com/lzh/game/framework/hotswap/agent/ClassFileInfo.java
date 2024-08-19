@@ -1,4 +1,4 @@
-package com.lzh.game.framework.hotswap;
+package com.lzh.game.framework.hotswap.agent;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;

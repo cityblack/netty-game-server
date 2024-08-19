@@ -5,7 +5,7 @@ import com.lzh.game.framework.resource.data.cache.MemoryResourceCacheFactory;
 import com.lzh.game.framework.resource.data.cache.ResourceCacheFactory;
 import com.lzh.game.framework.resource.reload.ResourceReloadMeta;
 import com.lzh.game.framework.resource.reload.SpringResourceReloadMeta;
-import com.lzh.game.framework.resource.data.load.MongoLoadResourceHandler;
+import com.lzh.game.framework.resource.data.load.MongoResourceLoadHandler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -20,7 +20,7 @@ import org.springframework.format.support.FormattingConversionService;
 public class GameResourceBean {
 
     @Bean
-    public ResourceModelMeta resourceModelManage(GameResourceProperties resourceProperties) {
+    public ResourceMetaManager resourceModelManage(GameResourceProperties resourceProperties) {
         return new DefaultResourceModelFactory(resourceProperties);
     }
 
@@ -32,10 +32,10 @@ public class GameResourceBean {
      */
     @Bean
     @ConditionalOnMissingClass
-    public ResourceManageHandle resourceManageHandler(ResourceModelMeta resourceModelMeta, MongoTemplate mongoTemplate) {
-        MongoLoadResourceHandler loader = new MongoLoadResourceHandler(mongoTemplate);
+    public ResourceManager resourceManageHandler(ResourceMetaManager resourceModelMeta, MongoTemplate mongoTemplate) {
+        MongoResourceLoadHandler loader = new MongoResourceLoadHandler(mongoTemplate);
         ResourceCacheFactory factory = new MemoryResourceCacheFactory();
-        DefaultResourceManageHandle handler = new DefaultResourceManageHandle(loader, factory, reloadMeta(), resourceModelMeta);
+        DefaultResourceManager handler = new DefaultResourceManager(loader, factory, reloadMeta(), resourceModelMeta);
         ConcurrentResourceManageHandler concurrent = new ConcurrentResourceManageHandler(resourceModelMeta, handler);
         concurrent.reload();
         return concurrent;

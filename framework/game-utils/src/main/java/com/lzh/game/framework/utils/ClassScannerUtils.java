@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 @Slf4j
 public class ClassScannerUtils {
 
-    static final String DEFAULT_RESOURCE_PATTERN = "**/*.class";
+    static final String DEFAULT_RESOURCE_PATTERN = "/**/*.class";
 
     private static void scanPackage(Set<Class<?>> list, String packageName, Predicate<Class<?>> classFilter) {
         String classPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX

@@ -1,4 +1,4 @@
-package com.lzh.game.framework.resource;
+package com.lzh.game.framework.resource.storage;
 
 import java.io.Serializable;
 import java.util.List;

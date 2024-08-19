@@ -1,6 +1,9 @@
-package com.lzh.game.framework.resource;
+package com.lzh.game.framework.resource.resource;
 
-import com.lzh.game.common.serialization.JsonUtils;
+import com.lzh.game.framework.resource.Id;
+import com.lzh.game.framework.resource.Resource;
+import com.lzh.game.framework.resource.storage.StorageInstance;
+import com.lzh.game.framework.utils.JsonUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -61,7 +64,7 @@ public class ConfigValueResource<T> implements StorageInstance<T> {
                     return (T) JsonUtils.toCollection(content, HashSet.class, targetClz);
                 }
                 case OBJECT: {
-                    return (T) JsonUtils.toObj(content, targetClz);
+                    return (T) JsonUtils.toBean(content, targetClz);
                 }
                 default: {
                     throw new IllegalArgumentException("Not defined type:" + this.type);

@@ -1,6 +1,5 @@
 package com.lzh.game.framework.resource.reload;
 
-import com.lzh.game.framework.resource.ResourceReload;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

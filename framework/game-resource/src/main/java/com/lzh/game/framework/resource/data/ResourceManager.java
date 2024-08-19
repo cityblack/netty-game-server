@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Static resource getting manage
  */
-public interface ResourceManageHandle {
+public interface ResourceManager {
 
     <T> List<T> findAll(Class<T> clazz);
 

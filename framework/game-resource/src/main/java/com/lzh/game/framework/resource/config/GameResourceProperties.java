@@ -11,5 +11,5 @@ public class GameResourceProperties {
 
     private Class<? extends ResourceNameStrategyStandard> nameStrategyStandard = DefaultNameStrategyStandard.class;
 
-    private String[] resourceScannerPath = new String[]{"com.lzh.game"};
+    private String[] resourceScannerPath = new String[]{"com.lzh.game.framework.resource"};
 }

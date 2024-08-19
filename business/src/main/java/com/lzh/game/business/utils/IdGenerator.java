@@ -5,9 +5,9 @@ package com.lzh.game.business.utils;
  */
 public class IdGenerator {
 
-    private static IdGenerator idGenerator = new IdGenerator();
+    private static final IdGenerator idGenerator = new IdGenerator();
 
-    private SnowFlake snowFlake = new SnowFlake();
+    private final SnowFlake snowFlake = new SnowFlake();
 
     private IdGenerator() {}
 

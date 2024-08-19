@@ -5,11 +5,11 @@ import java.util.stream.Stream;
 /**
  * @Resource manage
  */
-public interface ResourceModelMeta extends Iterable<ResourceModel> {
+public interface ResourceMetaManager extends Iterable<ResourceMeta> {
 
-    ResourceModel getResource(String resourceName);
+    ResourceMeta getResource(String resourceName);
 
-    ResourceModel getResource(Class<?> resourceType);
+    ResourceMeta getResource(Class<?> resourceType);
 
     Stream<String> getAllResourceName();
 

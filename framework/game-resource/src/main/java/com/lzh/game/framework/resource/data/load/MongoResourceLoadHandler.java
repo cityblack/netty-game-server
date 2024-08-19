@@ -1,17 +1,17 @@
 package com.lzh.game.framework.resource.data.load;
 
-import com.lzh.game.framework.resource.data.LoadResourceHandle;
+import com.lzh.game.framework.resource.data.ResourceLoadHandle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.List;
 
 @Slf4j
-public class MongoLoadResourceHandler implements LoadResourceHandle {
+public class MongoResourceLoadHandler implements ResourceLoadHandle {
 
     private MongoTemplate mongoTemplate;
 
-    public MongoLoadResourceHandler(MongoTemplate mongoTemplate) {
+    public MongoResourceLoadHandler(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 

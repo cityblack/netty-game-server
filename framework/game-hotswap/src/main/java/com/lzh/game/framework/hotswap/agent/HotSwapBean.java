@@ -1,6 +1,5 @@
-package com.lzh.game.framework.hotswap;
+package com.lzh.game.framework.hotswap.agent;
 
-import com.lzh.game.framework.hotswap.agent.HotSwapAgent;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.classfile.ClassFile;
 import com.sun.tools.classfile.ConstantPoolException;
@@ -24,32 +23,39 @@ public class HotSwapBean {
 
     public volatile byte[] updateData;
 
-    public volatile boolean update;
-
     public volatile Throwable error;
 
-    private final Map<String, ClassFileInfo> classInfo = new HashMap<>();
+    private final Map<String, ClassFileInfo> CLASS_INFO = new HashMap<>();
 
-    public synchronized List<ClassFileInfo> swap(String hotDir, String agentLib) throws Exception {
-        var files = getSwapFiles(hotDir);
-        if (files.isEmpty()) {
-            log.warn("{} not have swap file", hotDir);
-            return Collections.emptyList();
+    public synchronized List<ClassFileInfo> swap(String hotDir, String agentLib) {
+        try {
+            var files = getSwapFiles(hotDir);
+            if (files.isEmpty()) {
+                log.warn("{} not have swap file", hotDir);
+                return Collections.emptyList();
+            }
+            var able = parseSwapFiles(files);
+            if (able.isEmpty()) {
+                log.warn("not have changed file.");
+                return Collections.emptyList();
+            }
+            loadNewClass(able);
+            starVM(agentLib);
+            if (Objects.nonNull(error)) {
+                log.error("Hot swap fail. ", error);
+                return Collections.emptyList();
+            }
+            return new ArrayList<>(able.values());
+        } catch (Exception e) {
+            log.error("Hot swap fail. ", e);
+            throw new RuntimeException(e);
         }
-        var able = parseSwapFiles(files);
-        if (able.isEmpty()) {
-            log.warn("not have changed file.");
-            return Collections.emptyList();
-        }
-        loadNewClass(able);
-
-        return null;
     }
 
     private void loadNewClass(Map<String, ClassFileInfo> files) {
         try {
             for (String className : files.keySet()) {
-                this.getClass().getClassLoader().loadClass(className);
+                Thread.currentThread().getContextClassLoader().loadClass(className);
             }
         } catch (Exception e) {
 
@@ -71,7 +77,7 @@ public class HotSwapBean {
             var bytes = Files.readAllBytes(path);
             var className = getClassName(bytes);
             var newInfo = new ClassFileInfo(filePath, className, bytes, lastModifyTime);
-            var old = classInfo.get(className);
+            var old = CLASS_INFO.get(className);
             if (Objects.nonNull(old)) {
                 if (old.getLastModifyTime() == newInfo.getLastModifyTime()
                         || Objects.equals(old.getMd5(), newInfo.getMd5())) {
@@ -105,15 +111,25 @@ public class HotSwapBean {
         return files;
     }
 
-    public void starVM(String lib) {
+    private void starVM(String lib) {
         try {
-            File file = HotSwapAgent.createAgentLib(lib);
+            var path = libAbsolutePath(lib);
             var pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
             var vm = VirtualMachine.attach(pid);
-            vm.loadAgent(file.getAbsolutePath());
+            vm.loadAgent(path);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String libAbsolutePath(String lib) throws IOException {
+        var path = Paths.get(lib);
+        if (!Files.exists(path)) {
+            log.info("Agent lib not exists. Regeneration lib file to: {}", lib);
+            File file = HotSwapAgent.createAgentLib(lib);
+            return file.getAbsolutePath();
+        }
+        return path.toFile().getAbsolutePath();
     }
 
     public static HotSwapBean getInstance() {

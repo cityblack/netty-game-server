@@ -1,4 +1,4 @@
-package com.lzh.game.framework.resource;
+package com.lzh.game.framework.resource.storage;
 
 public interface StorageInstance<V> {
 

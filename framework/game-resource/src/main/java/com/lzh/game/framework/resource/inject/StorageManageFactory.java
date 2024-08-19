@@ -1,42 +1,42 @@
 package com.lzh.game.framework.resource.inject;
 
-import com.lzh.game.framework.resource.Storage;
-import com.lzh.game.framework.resource.data.ResourceManageHandle;
-import com.lzh.game.framework.resource.data.ResourceModel;
-import com.lzh.game.framework.resource.data.ResourceModelMeta;
+import com.lzh.game.framework.resource.storage.Storage;
+import com.lzh.game.framework.resource.data.ResourceManager;
+import com.lzh.game.framework.resource.data.ResourceMeta;
+import com.lzh.game.framework.resource.data.ResourceMetaManager;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StorageManageFactory implements FactoryBean<DefaultStorageManage> {
+public class StorageManageFactory implements FactoryBean<DefaultStorageManager> {
 
     @Autowired
-    private ResourceManageHandle resourceManageHandle;
+    private ResourceManager resourceManageHandle;
 
     @Autowired
-    private ResourceModelMeta resourceModelMeta;
+    private ResourceMetaManager resourceModelMeta;
 
     @Override
-    public DefaultStorageManage getObject() throws Exception {
+    public DefaultStorageManager getObject() throws Exception {
 
-        DefaultStorageManage manage = new DefaultStorageManage(resourceManageHandle);
+        DefaultStorageManager manage = new DefaultStorageManager(resourceManageHandle);
 
-        for (ResourceModel model: resourceModelMeta) {
+        for (ResourceMeta model: resourceModelMeta) {
             Class<?> type = model.getDataType();
             if (manage.containStorage(type)) {
                continue;
             }
             Storage storage = manage.createStorage(type);
-            manage.putStorage(type, storage);
+            manage.registerStore(type, storage);
         }
 
         return manage;
     }
 
     @Override
-    public Class<DefaultStorageManage> getObjectType() {
-        return DefaultStorageManage.class;
+    public Class<DefaultStorageManager> getObjectType() {
+        return DefaultStorageManager.class;
     }
 
 }

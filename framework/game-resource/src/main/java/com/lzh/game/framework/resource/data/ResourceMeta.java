@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
  * {@link Index}
  * Resource entity model
  */
-public class ResourceModel {
+public class ResourceMeta {
 
     private IndexGetter id;
 
@@ -24,7 +24,7 @@ public class ResourceModel {
     // All index. include id index
     private Map<String, IndexGetter> index;
 
-    public ResourceModel() {
+    public ResourceMeta() {
         index = new HashMap<>();
     }
 
@@ -73,8 +73,8 @@ public class ResourceModel {
         return index.values();
     }
 
-    public static ResourceModel of(Class<?> type, String resourceName) {
-        ResourceModel model = new ResourceModel();
+    public static ResourceMeta of(Class<?> type, String resourceName) {
+        ResourceMeta model = new ResourceMeta();
         model.setDataType(type);
         model.setResourceName(resourceName);
         ReflectionUtils.doWithFields(type, field -> {

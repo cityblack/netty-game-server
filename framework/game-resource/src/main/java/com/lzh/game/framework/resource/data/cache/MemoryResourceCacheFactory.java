@@ -2,7 +2,7 @@ package com.lzh.game.framework.resource.data.cache;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import com.lzh.game.framework.resource.data.ResourceModel;
+import com.lzh.game.framework.resource.data.ResourceMeta;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 public class MemoryResourceCacheFactory implements ResourceCacheFactory {
 
     @Override
-    public <K extends Serializable, T> ResourceCache<K, T> newCache(Class<T> type, ResourceModel model) {
+    public <K extends Serializable, T> ResourceCache<K, T> newCache(Class<T> type, ResourceMeta model) {
         return new Cache<>(type, model.getId().name());
     }
 
@@ -77,7 +77,7 @@ public class MemoryResourceCacheFactory implements ResourceCacheFactory {
         }
 
         @Override
-        public void put(List<T> data, ResourceModel resourceModel, Consumer<T> beforePut) {
+        public void put(List<T> data, ResourceMeta resourceModel, Consumer<T> beforePut) {
             Table<String, Serializable, List<T>> index = HashBasedTable.create();
             Table<String, Serializable, T> uniqueIndex = HashBasedTable.create();
             List<T> contain = new ArrayList<>(data.size());

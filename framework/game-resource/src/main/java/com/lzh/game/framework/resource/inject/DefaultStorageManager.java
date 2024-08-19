@@ -1,8 +1,8 @@
 package com.lzh.game.framework.resource.inject;
 
 
-import com.lzh.game.framework.resource.Storage;
-import com.lzh.game.framework.resource.data.ResourceManageHandle;
+import com.lzh.game.framework.resource.storage.Storage;
+import com.lzh.game.framework.resource.data.ResourceManager;
 
 import java.io.Serializable;
 import java.util.List;
@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultStorageManage implements StorageManage {
+public class DefaultStorageManager implements StorageManager {
 
-    private ResourceManageHandle resourceManageHandle;
+    private ResourceManager resourceManageHandle;
 
     private Map<Class<?>, Storage<?,?>> storageMap = new ConcurrentHashMap<>();
 
@@ -65,7 +65,7 @@ public class DefaultStorageManage implements StorageManage {
         }
     }
 
-    public DefaultStorageManage(ResourceManageHandle resourceManageHandle) {
+    public DefaultStorageManager(ResourceManager resourceManageHandle) {
         this.resourceManageHandle = resourceManageHandle;
     }
 
@@ -74,8 +74,8 @@ public class DefaultStorageManage implements StorageManage {
         return storageMap.containsKey(type);
     }
 
-    public void putStorage(Class<?> type, Storage storage) {
-        storageMap.put(type, storage);
+    @Override
+    public void registerStore(Class<?> clz, Storage<?, ?> storage) {
+        storageMap.put(clz, storage);
     }
-
 }

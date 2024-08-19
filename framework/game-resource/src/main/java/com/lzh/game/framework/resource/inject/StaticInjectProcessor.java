@@ -1,27 +1,25 @@
 package com.lzh.game.framework.resource.inject;
 
-import com.lzh.game.framework.resource.*;
-import com.lzh.game.framework.resource.data.ResourceManageHandle;
-import javassist.*;
+import com.lzh.game.framework.resource.Resource;
+import com.lzh.game.framework.resource.Static;
+import com.lzh.game.framework.resource.storage.Storage;
+import com.lzh.game.framework.resource.storage.StorageInstance;
+import javassist.util.proxy.Proxy;
+import javassist.util.proxy.ProxyFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Write @static value
@@ -29,6 +27,8 @@ import java.util.Set;
 @Slf4j
 @Component
 public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
+
+    private final Map<Class<?>, Class<?>> INSTANCE_TYPE = new HashMap<>();
 
     enum InjectType {
         // Storage type
@@ -55,12 +55,6 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
 
     @Autowired
     private StorageManageFactory storageManageFactory;
-
-    @Autowired
-    private ResourceManageHandle resourceManageHandle;
-
-    @Autowired
-    private ConversionService conversionService;
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -110,12 +104,11 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
         }
         Class<?> dataType = (Class<?>) types[1];
 
-        StorageManage manage = getStorageManage();
+        StorageManager manage = getStorageManage();
 
         checkStorageAndThrow(dataType);
 
-        Storage<?, ?> storage = manage.getStorage(dataType);
-        injectValue(field, bean, storage);
+        injectValue(field, bean, manage.getStorage(dataType));
     }
 
     /**
@@ -134,106 +127,41 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
         Class<?> type = field.getType();
 
         checkStorageAndThrow(type);
-        StorageManage manage = getStorageManage();
+        StorageManager manage = getStorageManage();
         Storage storage = manage.getStorage(type);
-
-        // @Resource type has unique @Id field
-        ReflectionUtils.doWithFields(type, f -> {
-            Class<?> idType = f.getType();
-            Object key = conversionService.convert(sign, idType);
-            try {
-                StorageInstance instance = createProxyInstance(type, storage, key);
-                injectValue(field, bean, instance);
-            } catch (NotFoundException e) {
-                e.printStackTrace();
-            } catch (CannotCompileException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            }
-        }, f -> f.isAnnotationPresent(Id.class));
+        StorageInstance<?> instance = createProxyInstance(type, storage, sign);
+        injectValue(field, bean, instance);
     }
 
     /**
-     * Use Javassist produce proxy object
-     * Object extends StorageInstance
      *
-     * @param clz
      * @return
      */
-    private StorageInstance createProxyInstance(Class<?> clz, Storage storage, Object key) throws NotFoundException, CannotCompileException, NoSuchMethodException {
-        Class<?> primaryInterface = StorageInstance.class;
-        String methodBody = "{ Object value = storage.getOrThrow(key);return ((com.lzh.game.resource.StorageInstance)value).getValue(); }";
+    private StorageInstance<?> createProxyInstance(Class<?> type, Storage storage, String key) {
+        try {
+            var bean = getInstanceType(type).newInstance();
+            ((Proxy) bean).setHandler(new StorageInstanceBridge(storage, key));
+            return (StorageInstance) bean;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-        String superClassName = clz.getName();
-        String newClassName = superClassName.replaceAll("(.+)\\.(\\w+)", "$1.GameResource$2");
-        ClassPool classPool = ClassPool.getDefault();
-
-        classPool.appendClassPath(new ClassClassPath(clz));
-
-        CtClass superCt = classPool.getCtClass(superClassName);
-        CtClass targetCt = classPool.makeClass(newClassName, superCt);
-        targetCt.setModifiers(Modifier.setPublic(Modifier.FINAL));
-
-        log.info("Generating {}" + newClassName);
-
-        // storage and key field
-        CtClass storageType = classPool.getCtClass(Storage.class.getName());
-        CtField storageField = new CtField(storageType, "storage", targetCt);
-        targetCt.addField(storageField);
-
-        CtClass keyClass = classPool.getCtClass(key.getClass().getName());
-        CtField keyField = new CtField(keyClass, "key", targetCt);
-        targetCt.addField(keyField);
-
-        // constructor
-        CtConstructor constructor = new CtConstructor(new CtClass[]{storageType, keyClass}, targetCt);
-        String constructorBody = "{ this.storage = $1; this.key = $2; }";
-        constructor.setBody(constructorBody);
-        targetCt.addConstructor(constructor);
-
-        // Make a set of method signatures we inherit implementation for, so we don't generate delegates for these
-        Set<String> superSigs = new HashSet<>();
-        for (CtMethod method : superCt.getMethods()) {
-            if ((method.getModifiers() & Modifier.FINAL) == Modifier.FINAL) {
-                superSigs.add(method.getName() + method.getSignature());
+    private Class<?> getInstanceType(Class<?> type) {
+        var result = INSTANCE_TYPE.get(type);
+        if (Objects.isNull(result)) {
+            synchronized (INSTANCE_TYPE) {
+                if (!INSTANCE_TYPE.containsKey(type)) {
+                    ProxyFactory factory = new ProxyFactory();
+                    factory.setInterfaces(new Class[]{StorageInstance.class});
+                    factory.setSuperclass(type);
+                    Class<?> clz = factory.createClass();
+                    INSTANCE_TYPE.put(type, clz);
+                }
+                return INSTANCE_TYPE.get(type);
             }
         }
-
-        Set<String> methods = new HashSet<>();
-        for (Class<?> intf : getAllInterfaces(primaryInterface)) {
-            CtClass intfCt = classPool.getCtClass(intf.getName());
-            targetCt.addInterface(intfCt);
-            for (CtMethod intfMethod : intfCt.getDeclaredMethods()) {
-                final String signature = intfMethod.getName() + intfMethod.getSignature();
-
-                // don't generate delegates for methods we override
-                if (superSigs.contains(signature)) {
-                    continue;
-                }
-
-                // Ignore already added methods that come from other interfaces
-                if (methods.contains(signature)) {
-                    continue;
-                }
-
-                // Track what methods we've added
-                methods.add(signature);
-
-                // Clone the method we want to inject into
-                CtMethod method = CtNewMethod.copy(intfMethod, targetCt, null);
-                // StorageInstance#getValue
-                if (method.getName().equals("getValue")) {
-                    String modifiedBody = methodBody;
-                    method.setBody(modifiedBody);
-                }
-
-                targetCt.addMethod(method);
-            }
-        }
-        Class<?> resultClz = targetCt.toClass();
-        Constructor<?> resultClzConstructor = resultClz.getConstructor(Storage.class, key.getClass());
-        return (StorageInstance) BeanUtils.instantiateClass(resultClzConstructor, storage, key);
+        return result;
     }
 
     private void throwInjectTypeError(Object bean, Field field, String type) {
@@ -246,17 +174,12 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
         ReflectionUtils.setField(field, bean, value);
     }
 
-    protected StorageManage getStorageManage() {
+    protected StorageManager getStorageManage() {
         try {
             return storageManageFactory.getObject();
         } catch (Exception e) {
-
             throw new RuntimeException(e);
         }
-    }
-
-    protected ResourceManageHandle getResourceManageHandler() {
-        return resourceManageHandle;
     }
 
     private void checkStorageAndThrow(Class<?> type) {

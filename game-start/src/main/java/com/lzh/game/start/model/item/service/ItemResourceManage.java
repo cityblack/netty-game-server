@@ -3,7 +3,7 @@ package com.lzh.game.start.model.item.service;
 import com.lzh.game.start.model.item.resource.ItemResource;
 import com.lzh.game.start.model.item.resource.PandoraResource;
 import com.lzh.game.framework.resource.Static;
-import com.lzh.game.framework.resource.Storage;
+import com.lzh.game.framework.resource.storage.Storage;
 import org.springframework.stereotype.Component;
 
 @Component

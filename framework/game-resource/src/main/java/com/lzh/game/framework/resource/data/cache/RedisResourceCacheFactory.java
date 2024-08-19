@@ -2,7 +2,7 @@ package com.lzh.game.framework.resource.data.cache;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import com.lzh.game.framework.resource.data.ResourceModel;
+import com.lzh.game.framework.resource.data.ResourceMeta;
 import org.redisson.Redisson;
 
 import java.io.Serializable;
@@ -18,7 +18,7 @@ public class RedisResourceCacheFactory implements ResourceCacheFactory {
     }
 
     @Override
-    public <K extends Serializable, T> ResourceCache<K, T> newCache(Class<T> type, ResourceModel model) {
+    public <K extends Serializable, T> ResourceCache<K, T> newCache(Class<T> type, ResourceMeta model) {
         return new RedisCache<>(model.getResourceName(), model.getId().name());
     }
 
@@ -75,7 +75,7 @@ public class RedisResourceCacheFactory implements ResourceCacheFactory {
         }
 
         @Override
-        public void put(List<T> data, ResourceModel resourceModel, Consumer<T> beforePut) {
+        public void put(List<T> data, ResourceMeta resourceModel, Consumer<T> beforePut) {
             Table<String, Serializable, List<T>> index = HashBasedTable.create();
             Table<String, Serializable, T> uniqueIndex = HashBasedTable.create();
             for (T d : data) {
