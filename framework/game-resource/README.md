@@ -9,3 +9,7 @@ The model is static resource center
 
 Read data from mongodb by default. Custom ResourceManageHandler bean to replace mongodb
 
+Autoboxing
+Reloading lock
+
+

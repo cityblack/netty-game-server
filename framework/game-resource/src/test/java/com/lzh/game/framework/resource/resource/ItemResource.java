@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Resource
 @Data
-public class TestItemResource {
+public class ItemResource {
 
     public static final String INDEX = "index";
 
@@ -16,7 +16,7 @@ public class TestItemResource {
 
     private String name;
 
-    private int type;
+    private String type;
 
     private boolean pile;
 

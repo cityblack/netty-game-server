@@ -3,6 +3,11 @@ package com.lzh.game.framework.resource.storage;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * avoid autoboxing?
+ * @param <K>
+ * @param <V>
+ */
 public interface Storage<K extends Serializable, V> {
     /**
      * Get all data
@@ -38,4 +43,9 @@ public interface Storage<K extends Serializable, V> {
      * @param k
      */
     V getOrThrow(K k);
+
+    /**
+     * Reload data
+     */
+    void reload();
 }

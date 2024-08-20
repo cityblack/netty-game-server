@@ -1,4 +1,4 @@
-package com.lzh.game.framework.resource.data;
+package com.lzh.game.framework.resource.data.meta.index;
 
 import com.lzh.game.framework.resource.Index;
 import org.springframework.util.ReflectionUtils;

@@ -1,54 +1,51 @@
 package com.lzh.game.framework.resource.config;
 
-import com.lzh.game.framework.resource.data.*;
-import com.lzh.game.framework.resource.data.cache.MemoryResourceCacheFactory;
-import com.lzh.game.framework.resource.data.cache.ResourceCacheFactory;
-import com.lzh.game.framework.resource.reload.ResourceReloadMeta;
-import com.lzh.game.framework.resource.reload.SpringResourceReloadMeta;
+import com.lzh.game.framework.resource.data.DefaultResourceMetaManager;
 import com.lzh.game.framework.resource.data.load.MongoResourceLoadHandler;
+import com.lzh.game.framework.resource.data.load.ResourceLoadHandler;
+import com.lzh.game.framework.resource.data.meta.ResourceMetaManager;
+import com.lzh.game.framework.resource.storage.manager.DefaultStorageManager;
+import com.lzh.game.framework.resource.storage.manager.StorageManageFactory;
+import com.lzh.game.framework.resource.storage.manager.StorageManager;
+import com.lzh.game.framework.resource.reload.ResourceReloadHandler;
+import com.lzh.game.framework.resource.reload.SpringResourceReloadHandler;
+import com.lzh.game.framework.resource.storage.StorageFactory;
+import com.lzh.game.framework.resource.storage.impl.CASStorageFactory;
+import com.lzh.game.framework.resource.storage.impl.DefaultStorageFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.format.support.FormattingConversionService;
 
 @Configuration
 @EnableConfigurationProperties(GameResourceProperties.class)
 public class GameResourceBean {
 
     @Bean
+    public StorageManageFactory storageManager() {
+        return new StorageManageFactory();
+    }
+
+    @Bean
     public ResourceMetaManager resourceModelManage(GameResourceProperties resourceProperties) {
-        return new DefaultResourceModelFactory(resourceProperties);
-    }
-
-    /**
-     * Use mongo load and local memory cache
-     * @param resourceModelMeta
-     * @param mongoTemplate
-     * @return
-     */
-    @Bean
-    @ConditionalOnMissingClass
-    public ResourceManager resourceManageHandler(ResourceMetaManager resourceModelMeta, MongoTemplate mongoTemplate) {
-        MongoResourceLoadHandler loader = new MongoResourceLoadHandler(mongoTemplate);
-        ResourceCacheFactory factory = new MemoryResourceCacheFactory();
-        DefaultResourceManager handler = new DefaultResourceManager(loader, factory, reloadMeta(), resourceModelMeta);
-        ConcurrentResourceManageHandler concurrent = new ConcurrentResourceManageHandler(resourceModelMeta, handler);
-        concurrent.reload();
-        return concurrent;
+        return new DefaultResourceMetaManager(resourceProperties);
     }
 
     @Bean
-    public ResourceReloadMeta reloadMeta() {
-        return new SpringResourceReloadMeta();
+    public ResourceReloadHandler reloadMeta(StorageManager storageManager, ResourceMetaManager resourceModelManage) {
+        return new SpringResourceReloadHandler(storageManager, resourceModelManage);
     }
 
+    @Bean
     @ConditionalOnMissingBean
+    public StorageFactory storageFactory(ResourceLoadHandler resourceLoadHandler) {
+        return new CASStorageFactory(new DefaultStorageFactory(resourceLoadHandler));
+    }
+
     @Bean
-    public ConversionService conversionService() {
-        return new FormattingConversionService();
+    @ConditionalOnMissingBean
+    public ResourceLoadHandler resourceLoadHandler(MongoTemplate mongoTemplate) {
+        return new MongoResourceLoadHandler(mongoTemplate);
     }
 }

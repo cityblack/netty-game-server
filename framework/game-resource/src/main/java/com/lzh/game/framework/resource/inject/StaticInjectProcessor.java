@@ -2,8 +2,10 @@ package com.lzh.game.framework.resource.inject;
 
 import com.lzh.game.framework.resource.Resource;
 import com.lzh.game.framework.resource.Static;
+import com.lzh.game.framework.resource.storage.IntKeyStorage;
 import com.lzh.game.framework.resource.storage.Storage;
 import com.lzh.game.framework.resource.storage.StorageInstance;
+import com.lzh.game.framework.resource.storage.manager.StorageManager;
 import javassist.util.proxy.Proxy;
 import javassist.util.proxy.ProxyFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +56,7 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
     }
 
     @Autowired
-    private StorageManageFactory storageManageFactory;
+    private StorageManager storageManager;
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -93,22 +95,23 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
 
     private void injectStorage(Object bean, Field field) {
 
-        Type type = field.getGenericType();
+       var dataType = getDataType(bean, field);
+        checkStorageAndThrow(dataType);
+        injectValue(field, bean, getStorageManage().getStorage(dataType));
+    }
 
+    private Class<?> getDataType(Object bean, Field field) {
+        Type type = field.getGenericType();
         if (!(type instanceof ParameterizedType)) {
-            throwInjectTypeError(bean, field, "Storage");
+            throw throwInjectTypeError(bean, field, "Storage");
         }
         Type[] types = ((ParameterizedType) type).getActualTypeArguments();
-        if (types.length != 2) {
-            throwInjectTypeError(bean, field, "Storage");
+        if (types.length == 2) {
+            return (Class<?>) types[1];
+        } else if (types.length == 1) {
+            return (Class<?>) types[0];
         }
-        Class<?> dataType = (Class<?>) types[1];
-
-        StorageManager manage = getStorageManage();
-
-        checkStorageAndThrow(dataType);
-
-        injectValue(field, bean, manage.getStorage(dataType));
+        throw throwInjectTypeError(bean, field, "Storage");
     }
 
     /**
@@ -128,7 +131,7 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
 
         checkStorageAndThrow(type);
         StorageManager manage = getStorageManage();
-        Storage storage = manage.getStorage(type);
+        Storage<?,?> storage = manage.getStorage(type);
         StorageInstance<?> instance = createProxyInstance(type, storage, sign);
         injectValue(field, bean, instance);
     }
@@ -137,7 +140,7 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
      *
      * @return
      */
-    private StorageInstance<?> createProxyInstance(Class<?> type, Storage storage, String key) {
+    private StorageInstance<?> createProxyInstance(Class<?> type, Storage<?,?> storage, String key) {
         try {
             var bean = getInstanceType(type).newInstance();
             ((Proxy) bean).setHandler(new StorageInstanceBridge(storage, key));
@@ -164,8 +167,8 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
         return result;
     }
 
-    private void throwInjectTypeError(Object bean, Field field, String type) {
-        throw new IllegalArgumentException(MessageFormat.format("[{0} {1} {2}] type is illegal."
+    private IllegalArgumentException throwInjectTypeError(Object bean, Field field, String type) {
+        return new IllegalArgumentException(MessageFormat.format("[{0} {1} {2}] type is illegal."
                 , bean.getClass().getName(), field.getName(), type));
     }
 
@@ -175,11 +178,7 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
     }
 
     protected StorageManager getStorageManage() {
-        try {
-            return storageManageFactory.getObject();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return this.storageManager;
     }
 
     private void checkStorageAndThrow(Class<?> type) {
@@ -189,24 +188,5 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
         if (type.isAssignableFrom(StorageInstance.class)) {
             throw new IllegalArgumentException("Error defined [" + type.getName() + "]. Storage instance must extends StorageInstance interface.");
         }
-    }
-
-    private static Set<Class<?>> getAllInterfaces(Class<?> clazz) {
-        Set<Class<?>> interfaces = new LinkedHashSet<>();
-        for (Class<?> intf : clazz.getInterfaces()) {
-            if (intf.getInterfaces().length > 0) {
-                interfaces.addAll(getAllInterfaces(intf));
-            }
-            interfaces.add(intf);
-        }
-        if (clazz.getSuperclass() != null) {
-            interfaces.addAll(getAllInterfaces(clazz.getSuperclass()));
-        }
-
-        if (clazz.isInterface()) {
-            interfaces.add(clazz);
-        }
-
-        return interfaces;
     }
 }

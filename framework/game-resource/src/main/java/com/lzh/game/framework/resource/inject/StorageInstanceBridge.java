@@ -16,7 +16,7 @@ class StorageInstanceBridge implements MethodHandler {
 
     private final String key;
 
-    public StorageInstanceBridge(Storage storage, String key) {
+    public StorageInstanceBridge(Storage<?,?> storage, String key) {
         this.storage = storage;
         this.key = key;
     }

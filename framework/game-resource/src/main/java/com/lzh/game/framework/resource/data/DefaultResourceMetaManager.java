@@ -2,6 +2,8 @@ package com.lzh.game.framework.resource.data;
 
 import com.lzh.game.framework.resource.Resource;
 import com.lzh.game.framework.resource.config.GameResourceProperties;
+import com.lzh.game.framework.resource.data.meta.ResourceMeta;
+import com.lzh.game.framework.resource.data.meta.ResourceMetaManager;
 import com.lzh.game.framework.utils.ClassScannerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
@@ -16,24 +18,24 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 @Slf4j
-public class DefaultResourceModelFactory implements ResourceMetaManager, InitializingBean, DisposableBean {
+public class DefaultResourceMetaManager implements ResourceMetaManager, InitializingBean, DisposableBean {
 
     private final GameResourceProperties resourceProperties;
 
-    public DefaultResourceModelFactory(GameResourceProperties resourceProperties) {
+    public DefaultResourceMetaManager(GameResourceProperties resourceProperties) {
         this.resourceProperties = resourceProperties;
     }
 
-    private Map<String, Class<?>> nameCache = new HashMap<>();
-    private Map<Class<?>, ResourceMeta> classCache = new HashMap<>();
+    private final Map<String, Class<?>> nameCache = new HashMap<>();
+    private final Map<Class<?>, ResourceMeta<?>> classCache = new HashMap<>();
 
     @Override
-    public ResourceMeta getResource(String resourceName) {
+    public ResourceMeta<?> getResource(String resourceName) {
         return classCache.get(nameCache.get(resourceName));
     }
 
     @Override
-    public ResourceMeta getResource(Class<?> resourceClass) {
+    public ResourceMeta<?> getResource(Class<?> resourceClass) {
         return classCache.get(resourceClass);
     }
 
@@ -48,20 +50,20 @@ public class DefaultResourceModelFactory implements ResourceMetaManager, Initial
     }
 
     @Override
-    public Iterator<ResourceMeta> iterator() {
+    public Iterator<ResourceMeta<?>> iterator() {
 
         return classCache.values().iterator();
     }
 
     private void loadModel(Class<?> type, ResourceNameStrategyStandard nameStrategyStandard) {
 
-        ResourceMeta model = parseToModel(type, nameStrategyStandard);
+        ResourceMeta<?> model = parseToModel(type, nameStrategyStandard);
 
         nameCache.put(model.getResourceName(), type);
         classCache.put(type, model);
     }
 
-    private ResourceMeta parseToModel(Class<?> type, ResourceNameStrategyStandard nameStrategyStandard) {
+    private ResourceMeta<?> parseToModel(Class<?> type, ResourceNameStrategyStandard nameStrategyStandard) {
 
         Resource resource = type.getAnnotation(Resource.class);
         String name = resource.name();
@@ -75,7 +77,7 @@ public class DefaultResourceModelFactory implements ResourceMetaManager, Initial
             throw new IllegalArgumentException("Already exist [" +  name +"] the resource name.");
         }
         // nameCache.put(name, type);
-        ResourceMeta model = ResourceMeta.of(type, name);
+        ResourceMeta<?> model = ResourceMeta.of(type, name);
         if (Objects.isNull(model.getId())) {
             throw new IllegalArgumentException("[" + type.getName() + "] not defined @Id.");
         }

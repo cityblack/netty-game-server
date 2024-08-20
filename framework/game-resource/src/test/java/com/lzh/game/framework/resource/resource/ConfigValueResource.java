@@ -7,6 +7,7 @@ import com.lzh.game.framework.utils.JsonUtils;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.*;
 
 @Resource
@@ -93,5 +94,13 @@ public class ConfigValueResource<T> implements StorageInstance<T> {
         BASE_TYPE_MAPPING.put("String", String.class);
         BASE_TYPE_MAPPING.put("Byte", Byte.class);
         BASE_TYPE_MAPPING.put("Short", Short.class);
+    }
+
+    public static void log(Serializable v) {
+        System.out.println(v);
+    }
+
+    public static void main(String[] args) {
+        log(1);
     }
 }

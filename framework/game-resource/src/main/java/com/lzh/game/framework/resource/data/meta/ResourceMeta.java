@@ -1,8 +1,10 @@
-package com.lzh.game.framework.resource.data;
+package com.lzh.game.framework.resource.data.meta;
 
 import com.lzh.game.framework.resource.Resource;
 import com.lzh.game.framework.resource.Id;
 import com.lzh.game.framework.resource.Index;
+import com.lzh.game.framework.resource.data.meta.index.GetterBuild;
+import com.lzh.game.framework.resource.data.meta.index.IndexGetter;
 import org.springframework.util.ReflectionUtils;
 
 import java.util.*;
@@ -14,13 +16,13 @@ import java.util.function.BiConsumer;
  * {@link Index}
  * Resource entity model
  */
-public class ResourceMeta {
+public class ResourceMeta<V> {
 
     private IndexGetter id;
 
     private String resourceName;
 
-    private Class<?> dataType;
+    private Class<V> dataType;
     // All index. include id index
     private Map<String, IndexGetter> index;
 
@@ -61,11 +63,11 @@ public class ResourceMeta {
         this.resourceName = resourceName;
     }
 
-    public Class<?> getDataType() {
+    public Class<V> getDataType() {
         return dataType;
     }
 
-    public void setDataType(Class<?> dataType) {
+    public void setDataType(Class<V> dataType) {
         this.dataType = dataType;
     }
 
@@ -73,8 +75,14 @@ public class ResourceMeta {
         return index.values();
     }
 
-    public static ResourceMeta of(Class<?> type, String resourceName) {
-        ResourceMeta model = new ResourceMeta();
+    /**
+     *
+     * @param type {@link com.lzh.game.framework.resource.Resource}
+     * @param resourceName -- resource name
+     * @return the class type meta
+     */
+    public static ResourceMeta<?> of(Class<?> type, String resourceName) {
+        var model = new ResourceMeta();
         model.setDataType(type);
         model.setResourceName(resourceName);
         ReflectionUtils.doWithFields(type, field -> {
