@@ -12,9 +12,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Receive {
 
-    /**
-     * If the value equals zero will auto produce a MessageDefined
-     * @return msg id
-     */
-    short value() default 0;
 }

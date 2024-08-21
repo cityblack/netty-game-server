@@ -20,8 +20,8 @@ public class GatewayClient extends GameTcpClient<GameClientSocketProperties> {
 
     private final GatewayProperties properties;
 
-    public GatewayClient(GatewayProperties properties, BootstrapContext context) {
-        super(properties.getClient(), context);
+    public GatewayClient(GatewayProperties properties) {
+        super(BootstrapContext.of(properties.getClient()));
         this.properties = properties;
     }
 

@@ -27,7 +27,7 @@ public class DefaultInvokeMethodArgumentValues implements InvokeMethodArgumentVa
                 , new IntegerConvert()
                 , new StringConvert()
                 , new ProtocConvert());
-        converts = new CopyOnWriteArrayList(cs);
+        converts = new CopyOnWriteArrayList<>(cs);
     }
 
     public DefaultInvokeMethodArgumentValues(Map<Integer, RequestConvert<?>[]> convert) {

@@ -23,12 +23,8 @@ public abstract class AbstractClient<C extends GameClientSocketProperties>
 
     private HeartbeatHandler heartbeatHandler;
 
-    public AbstractClient(C properties, BootstrapContext context) {
-        super(properties, context);
-    }
-
-    public AbstractClient(C properties) {
-        super(properties);
+    public AbstractClient(BootstrapContext<C> context) {
+        super(context);
     }
 
     @Override

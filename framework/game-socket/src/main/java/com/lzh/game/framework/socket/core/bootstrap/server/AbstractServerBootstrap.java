@@ -3,23 +3,15 @@ package com.lzh.game.framework.socket.core.bootstrap.server;
 import com.lzh.game.framework.socket.core.bootstrap.AbstractBootstrap;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.NetServer;
-import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
-import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
-import com.lzh.game.framework.socket.core.session.Session;
-import com.lzh.game.framework.socket.core.session.SessionManage;
 
 public abstract class AbstractServerBootstrap<T extends GameServerSocketProperties>
         extends AbstractBootstrap<T> implements GameServer {
 
     private NetServer netServer;
 
-    public AbstractServerBootstrap(T properties, BootstrapContext context) {
-        super(properties, context);
-    }
-
-    public AbstractServerBootstrap(T properties) {
-        super(properties);
+    public AbstractServerBootstrap(BootstrapContext<T> context) {
+        super(context);
     }
 
     protected abstract NetServer createServer(int port, T properties, ProcessorPipeline pipeline);
@@ -48,7 +40,7 @@ public abstract class AbstractServerBootstrap<T extends GameServerSocketProperti
 
     @Override
     public int getPort() {
-        return this.properties.getPort();
+        return getProperties().getPort();
     }
 
 }

@@ -1,7 +1,6 @@
 package com.lzh.game.framework.utils.bean;
 
 import javassist.*;
-import javassist.bytecode.ClassFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
@@ -28,7 +27,7 @@ public class MethodInvokeUtils {
      * @param method
      * @return
      */
-    public static MethodInvoke enhanceInvoke(Object bean, Method method) throws NotFoundException, CannotCompileException, IOException, NoSuchMethodException {
+    public static MethodInvoke enhanceInvoke(Object bean, Method method) throws NotFoundException, CannotCompileException, NoSuchMethodException {
 
         String superName = bean.getClass().getName();
         String newClassName = superName.replaceAll("(.+)\\.(\\w+)", "$1.MethodInvoke$2") + "_" + method.getName();

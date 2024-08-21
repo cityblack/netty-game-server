@@ -29,7 +29,7 @@ class GatewayAppTest {
         properties.setPort(8082);
         properties.setOpenGm(true);
         properties.getNetty().setLogLevel(LogLevel.INFO);
-        var server = new TcpServer<>(properties);
+        var server = new TcpServer<>(BootstrapContext.of(properties));
         server.addProcessor(new DefaultRequestProcess(new ActionRequestHandler(server.getContext(), new DefaultInvokeMethodArgumentValues())));
         ServerDemo demo = new ServerDemo();
         server.addInvokeBean(demo);
@@ -40,30 +40,29 @@ class GatewayAppTest {
     public void gateway() throws InterruptedException {
         var properties = new GatewayProperties();
         properties.getServerAddress().add("127.0.0.1:8082");
-
-        GatewayClient client = new GatewayClient(properties, BootstrapContext.of());
+        GatewayClient client = new GatewayClient(properties);
         client.addProcessor(new FutureResponseProcess());
         client.start();
 
         var serverProperties = properties.getServer();
         serverProperties.setPort(8081);
         serverProperties.setBodyDateToBytes(true);
-        var server = new TcpServer<>(properties.getServer(), BootstrapContext.of());
+        var server = new TcpServer<>(BootstrapContext.of(properties.getServer()));
         server.addProcessor(new ForwardGatewayProcess(client, new RandomSessionSelect(client)));
         server.start();
     }
 
     @Test
     public void request() throws InterruptedException {
-        var properties = new GameClientSocketProperties();
-        properties.setConnectTimeout(5000);
-        var client = new GameTcpClient<>(properties);
-        client.addProcessor(new FutureResponseProcess());
-        client.start();
-        Session session = client.conn("localhost", 8081, 5000);
-        client.oneWayCompose(session, (short) -1002, "request");
-        AsyncResponse<String> future = client.requestCompose(session, (short) -1000, String.class, "hello world");
-        System.out.println(future.get());
+//        var properties = new GameClientSocketProperties();
+//        properties.setConnectTimeout(5000);
+//        var client = new GameTcpClient<>(BootstrapContext.of(properties));
+//        client.addProcessor(new FutureResponseProcess());
+//        client.start();
+//        Session session = client.conn("localhost", 8081, 5000);
+//        client.oneWayCompose(session, (short) -1002, "request");
+//        AsyncResponse<String> future = client.requestCompose(session, (short) -1000, String.class, "hello world");
+//        System.out.println(future.get());
     }
 
 }

@@ -22,7 +22,7 @@ public class GateConfiguration {
 
     @Bean
     public TcpServer<GameServerSocketProperties> gameServer(GatewayClient client) {
-        var server = new TcpServer<>(properties.getServer(), BootstrapContext.of());
+        var server = new TcpServer<>(BootstrapContext.of(properties.getServer()));
         server.addProcessor(new ForwardGatewayProcess(client, new RandomSessionSelect(client)));
         server.asyncStart();
         return server;
@@ -30,7 +30,7 @@ public class GateConfiguration {
 
     @Bean
     public GatewayClient client() {
-        GatewayClient client = new GatewayClient(properties, BootstrapContext.of());
+        GatewayClient client = new GatewayClient(properties);
         client.addProcessor(new FutureResponseProcess());
         client.start();
         return client;

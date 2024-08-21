@@ -30,14 +30,4 @@ public interface GameClient extends LifeCycle {
      */
     <T> AsyncResponse<T> request(Session session, Object param, Class<T> type);
 
-    /**
-     * @param session
-     * @param msgId
-     * @param params  -- Can be null
-     */
-    void oneWayCompose(Session session, short msgId, Object... params);
-
-
-    <T> AsyncResponse<T> requestCompose(Session session, short msgId, Class<T> type, Object... params);
-
 }

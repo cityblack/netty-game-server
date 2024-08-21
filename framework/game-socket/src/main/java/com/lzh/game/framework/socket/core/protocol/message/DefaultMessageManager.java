@@ -123,4 +123,5 @@ public class DefaultMessageManager implements MessageManager {
                 .setSerializeType(protocol.serializeType());
 //                .setProtocolType(protocol.protocolType());
     }
+
 }

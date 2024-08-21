@@ -18,12 +18,8 @@ import java.util.concurrent.TimeUnit;
 public class TcpServer<T extends GameServerSocketProperties> extends AbstractServerBootstrap<T>
         implements GameServer {
 
-    public TcpServer(T properties, BootstrapContext context) {
-        super(properties, context);
-    }
-
-    public TcpServer(T properties) {
-        super(properties);
+    public TcpServer(BootstrapContext<T> context) {
+        super(context);
     }
 
     @Override
@@ -48,7 +44,7 @@ public class TcpServer<T extends GameServerSocketProperties> extends AbstractSer
             @Override
             protected void initChannel(Channel ch) throws Exception {
                 ch.pipeline()
-                        .addLast(new LoggingHandler(properties.getNetty().getLogLevel()))
+                        .addLast(new LoggingHandler(getProperties().getNetty().getLogLevel()))
                         .addLast(new IdleStateHandler(0, 0, getProperties().getServerIdleTime(), TimeUnit.MILLISECONDS))
                         .addLast("serverIdleHandler", new ServerIdleHandler())
                         .addLast("decoder", new ByteToGameMessageDecoder(context, getProperties().isBodyDateToBytes()))

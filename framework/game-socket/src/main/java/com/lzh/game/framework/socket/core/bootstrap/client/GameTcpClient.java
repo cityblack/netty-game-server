@@ -34,15 +34,12 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
 
     private final DefaultGameRequest gameRequest;
 
-    public GameTcpClient(C properties, BootstrapContext context) {
-        super(properties, context);
+    public GameTcpClient(BootstrapContext<C> context) {
+        super(context);
         this.gameRequest = new DefaultGameRequest(this);
     }
 
-    public GameTcpClient(C properties) {
-        super(properties);
-        this.gameRequest = new DefaultGameRequest(this);
-    }
+
 
     @Override
     public Session conn(String host, int port, int connectTimeout) {
@@ -78,16 +75,6 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
         return gameRequest.request(session, param, type);
     }
 
-    @Override
-    public void oneWayCompose(Session session, short msgId, Object... params) {
-        gameRequest.oneWayCompose(session, msgId, params);
-    }
-
-    @Override
-    public <T> AsyncResponse<T> requestCompose(Session session, short msgId, Class<T> type, Object... params) {
-        return gameRequest.requestCompose(session, msgId, type, params);
-    }
-
     private Bootstrap createBootstrap() {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap
@@ -96,7 +83,7 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
                 .handler(new ChannelInitializer<SocketChannel>() {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
-                                .addLast(new LoggingHandler(properties.getNetty().getLogLevel()))
+                                .addLast(new LoggingHandler(getProperties().getNetty().getLogLevel()))
                                 .addLast("decoder", new ByteToGameMessageDecoder(context, getProperties().isBodyDateToBytes()))
                                 .addLast("encoder", new GameMessageToByteEncoder(context))
                                 .addLast(getIoHandler());

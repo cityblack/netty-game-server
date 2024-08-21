@@ -4,8 +4,7 @@ import com.lzh.game.framework.socket.core.GameSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.handler.GameIoHandler;
 import com.lzh.game.framework.socket.core.filter.Filter;
 import com.lzh.game.framework.socket.core.filter.FilterHandler;
-import com.lzh.game.framework.socket.core.invoke.Receive;
-import com.lzh.game.framework.socket.core.invoke.RequestDispatch;
+import com.lzh.game.framework.socket.core.invoke.bean.InvokeBeanHelperHandler;
 import com.lzh.game.framework.socket.core.process.Processor;
 import com.lzh.game.framework.socket.core.process.impl.DefaultRequestProcess;
 import com.lzh.game.framework.socket.core.process.impl.HeartbeatProcessor;
@@ -22,29 +21,24 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     private final AtomicLifCycle STATUS = new AtomicLifCycle();
 
-    protected T properties;
 
-    protected BootstrapContext context;
+    protected BootstrapContext<T> context;
 
     private final GameIoHandler ioHandler;
 
     protected List<Filter> filters = new CopyOnWriteArrayList<>();
 
-    public AbstractBootstrap(T properties, BootstrapContext context) {
-        this.properties = properties;
+    public AbstractBootstrap(BootstrapContext<T> context) {
         this.context = context;
         this.ioHandler = new GameIoHandler(context);
     }
 
-    public AbstractBootstrap(T properties) {
-        this(properties, BootstrapContext.of());
-    }
 
     public T getProperties() {
-        return properties;
+        return context.getProperties();
     }
 
-    public BootstrapContext getContext() {
+    public BootstrapContext<T> getContext() {
         return context;
     }
 
@@ -58,7 +52,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
     public void start() {
         if (STATUS.running()) {
             init();
-            doInit(this.properties);
+            doInit(getProperties());
             startup();
             STATUS.start();
         }
@@ -66,7 +60,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     protected void init() {
         MessageSerializeManager.getInstance()
-                .registerMessage(Constant.DEFAULT_SERIAL_SIGN, new FurySerialize(context.getMessageManager(), properties.getFury()));
+                .registerMessage(Constant.DEFAULT_SERIAL_SIGN, new FurySerialize(context.getMessageManager(), getProperties().getFury()));
         this.addDefaultProtocol();
         this.addDefaultProcessor();
     }
@@ -78,16 +72,11 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     protected void addDefaultProcessor() {
 
-//        if (properties.isUseDefaultRequest()) {
-//            var dispatch = new ActionRequestHandler(context, new DefaultInvokeMethodArgumentValues());
-//            var filter = new FilterHandler(this.filters, dispatch);
-//            context.getPipeline().addFirst(new DefaultRequestProcess(filter));
-//        }
         context.getPipeline().addFirst(new HeartbeatProcessor());
     }
 
     public void addInvokeBean(Object bean) {
-        context.getBeanHelper().parseBean(bean, method -> method.isAnnotationPresent(Receive.class));
+        InvokeBeanHelperHandler.getInstance().pushBean(bean, context);
     }
 
     public void addProcessor(Processor process) {
@@ -113,7 +102,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
     public void asyncStart() {
         if (STATUS.running()) {
             init();
-            doInit(this.properties);
+            doInit(getProperties());
             asyncStartup();
             STATUS.start();
         }

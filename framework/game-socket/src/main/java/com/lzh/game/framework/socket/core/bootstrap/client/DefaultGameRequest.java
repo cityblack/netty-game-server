@@ -101,41 +101,6 @@ public class DefaultGameRequest implements GameClient {
         return request(session, protocolToRequest(param, Constant.REQUEST_SIGN), type);
     }
 
-    @Override
-    public void oneWayCompose(Session session, short msgId, Object... params) {
-        checkStatus();
-        var request = SocketUtils.createRequest(msgId, composeProtocol(msgId, params));
-        oneWayRequest(session, request);
-    }
-
-
-    @Override
-    public <T> AsyncResponse<T> requestCompose(Session session, short msgId, Class<T> type, Object... params) {
-        checkStatus();
-        var request = SocketUtils.createRequest(msgId, composeProtocol(msgId, params));
-        return request(session, request, type);
-    }
-
-    private Object composeProtocol(short msgId, Object... params) {
-        var context = client.getContext();
-        var message = context.getMessageManager().findDefine(msgId);
-        if (Objects.isNull(message)) {
-            context.getBeanHelper().parseMessage(msgId, params);
-            message = context.getMessageManager().findDefine(msgId);
-        }
-        if (message.isCompose()) {
-            try {
-                return message.getAllArgsConstructor().newInstance(params);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (params.length == 0) {
-            return null;
-        }
-        return params[0];
-    }
-
     private void checkStatus() {
         if (!isStared()) {
             throw new RuntimeException("Client is not started..");

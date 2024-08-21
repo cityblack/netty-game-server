@@ -2,7 +2,7 @@ package com.lzh.game.framework.resource.storage.impl;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import com.lzh.game.framework.resource.ResourceLoaded;
+import com.lzh.game.framework.resource.reload.ResourceLoaded;
 import com.lzh.game.framework.resource.data.load.ResourceLoadHandler;
 import com.lzh.game.framework.resource.data.meta.ResourceMeta;
 import com.lzh.game.framework.resource.data.meta.index.GetterBuild;
