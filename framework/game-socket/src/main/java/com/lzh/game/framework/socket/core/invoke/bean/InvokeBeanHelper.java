@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
  **/
 public interface InvokeBeanHelper {
 
-    InvokeModel parseBean(Object bean, Method method, BootstrapContext context);
+    InvokeModel parseBean(Object bean, Method method, BootstrapContext<?> context);
 
     boolean match(Object bean, Method method);
 }

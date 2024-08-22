@@ -2,7 +2,6 @@ package com.lzh.game.framework.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.type.AnnotationMetadata;
@@ -12,6 +11,8 @@ import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 import org.springframework.util.ClassUtils;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -23,7 +24,7 @@ public class ClassScannerUtils {
 
     static final String DEFAULT_RESOURCE_PATTERN = "/**/*.class";
 
-    private static void scanPackage(Set<Class<?>> list, String packageName, Predicate<Class<?>> classFilter) {
+    private static void scanPackage0(Set<Class<?>> list, String packageName, Predicate<Class<?>> classFilter, Consumer<Class<?>> consumer) {
         String classPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
                 + ClassUtils.convertClassNameToResourcePath(packageName)
                 + DEFAULT_RESOURCE_PATTERN;
@@ -41,14 +42,24 @@ public class ClassScannerUtils {
                         continue;
                     }
                     Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(clazzName);
+                    if (list.contains(clazz)) {
+                        continue;
+                    }
                     if (classFilter.test(clazz)) {
                         list.add(clazz);
+                        if (Objects.nonNull(consumer)) {
+                            consumer.accept(clazz);
+                        }
                     }
                 }
             }
         } catch (Exception e) {
             log.error("", e);
         }
+    }
+
+    private static void scanPackage(Set<Class<?>> list, String packageName, Predicate<Class<?>> classFilter) {
+        scanPackage0(list, packageName, classFilter, null);
     }
 
     public static Set<Class<?>> scanPackage(String packageName, Predicate<Class<?>> classFilter) {
@@ -67,4 +78,12 @@ public class ClassScannerUtils {
         }
         return result;
     }
+
+    public static void scanPackage(String[] packageNames, Predicate<Class<?>> classFilter, Consumer<Class<?>> consumer) {
+        var set = new HashSet<Class<?>>();
+        for (String packageName : packageNames) {
+            scanPackage0(set, packageName, classFilter, consumer);
+        }
+    }
+
 }

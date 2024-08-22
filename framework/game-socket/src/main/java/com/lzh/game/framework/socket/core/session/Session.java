@@ -1,6 +1,8 @@
 package com.lzh.game.framework.socket.core.session;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelPromise;
 
 import java.time.Instant;
 import java.util.Map;
@@ -71,7 +73,7 @@ public interface Session {
      */
     void close();
 
-    void write(Object data);
+    ChannelFuture write(Object data);
 
     Integer getPort();
 

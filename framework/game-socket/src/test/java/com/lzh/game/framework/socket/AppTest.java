@@ -15,7 +15,9 @@ import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.proto.RequestData;
 import io.netty.handler.logging.LogLevel;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest(classes = AppTest.class)
 public class AppTest {
 
     @Test
@@ -44,6 +46,5 @@ public class AppTest {
         var request = new RequestData(1L, 30, "lzh", 0.1D, 174.3F);
         AsyncResponse<RequestData> future = client.request(session, request, RequestData.class);
         System.out.println(future.get());
-        Thread.sleep(2000);
     }
 }

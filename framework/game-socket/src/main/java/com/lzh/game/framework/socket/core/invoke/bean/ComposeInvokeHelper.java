@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class ComposeInvokeHelper implements InvokeBeanHelper {
 
     @Override
-    public InvokeModel parseBean(Object bean, Method method, BootstrapContext context) {
+    public InvokeModel parseBean(Object bean, Method method, BootstrapContext<?> context) {
         return null;
     }
 

@@ -50,8 +50,8 @@ public class GameSocketConfiguration {
     }
 
     @Bean
-    public MessageManager messageManager() {
-        return new DefaultMessageManager();
+    public MessageManager messageManager(SpringGameServerProperties serverProperties) {
+        return new DefaultMessageManager(serverProperties);
     }
 
 }

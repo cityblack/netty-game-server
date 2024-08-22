@@ -1,5 +1,6 @@
 package com.lzh.game.framework.socket.core.bootstrap;
 
+import com.lzh.game.framework.socket.core.GameSocketProperties;
 import com.lzh.game.framework.socket.core.invoke.support.DefaultActionInvokeSupport;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.process.context.DefaultProcessorPipeline;
@@ -16,7 +17,7 @@ import lombok.Getter;
  * @since 2024-07-30 10:16
  **/
 @Getter
-public class BootstrapContext<T> {
+public class BootstrapContext<T extends GameSocketProperties> {
 
     private SessionManage<Session> sessionManage;
 
@@ -28,18 +29,18 @@ public class BootstrapContext<T> {
 
     private T properties;
 
-    public static <T>BootstrapContext<T> of(T properties) {
+    public static <T extends GameSocketProperties> BootstrapContext<T> of(T properties) {
         var context = new BootstrapContext<T>();
         context.properties = properties;
         context.sessionManage = GameSessionManage.of();
-        context.messageManager = new DefaultMessageManager();
+        context.messageManager = new DefaultMessageManager(properties);
         context.invokeSupport = new DefaultActionInvokeSupport();
         context.pipeline = new DefaultProcessorPipeline();
         return context;
     }
 
 
-    public static <T>BootstrapContext<T> of(T properties, SessionManage<Session> sessionManage, MessageManager messageManager, InvokeSupport invokeSupport) {
+    public static <T extends GameSocketProperties> BootstrapContext<T> of(T properties, SessionManage<Session> sessionManage, MessageManager messageManager, InvokeSupport invokeSupport) {
         var context = new BootstrapContext<T>();
         context.properties = properties;
         context.sessionManage = sessionManage;

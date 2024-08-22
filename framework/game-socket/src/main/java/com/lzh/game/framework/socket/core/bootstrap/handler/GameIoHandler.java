@@ -17,9 +17,9 @@ import java.util.Objects;
 @ChannelHandler.Sharable
 public class GameIoHandler extends SimpleChannelInboundHandler<AbstractCommand> {
 
-    private final BootstrapContext context;
+    private final BootstrapContext<?> context;
 
-    public GameIoHandler(BootstrapContext context) {
+    public GameIoHandler(BootstrapContext<?> context) {
         this.context = context;
     }
 

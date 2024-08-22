@@ -2,6 +2,9 @@ package com.lzh.game.framework.socket.core.session.impl;
 
 import com.lzh.game.framework.socket.core.session.Session;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelPromise;
+import io.netty.channel.DefaultChannelPromise;
 
 import java.time.Instant;
 import java.util.Map;
@@ -95,8 +98,8 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
-    public void write(Object data) {
-        channel.writeAndFlush(data);
+    public ChannelFuture write(Object data) {
+        return channel.writeAndFlush(data);
     }
 
     @Override

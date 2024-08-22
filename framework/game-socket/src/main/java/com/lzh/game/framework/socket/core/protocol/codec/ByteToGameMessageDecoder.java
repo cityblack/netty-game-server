@@ -21,11 +21,11 @@ import java.util.Objects;
 @Slf4j
 public class ByteToGameMessageDecoder extends ByteToMessageDecoder {
 
-    private final BootstrapContext context;
+    private final BootstrapContext<?> context;
 
     private final boolean dataToBytes;
 
-    public ByteToGameMessageDecoder(BootstrapContext context, boolean dataToBytes) {
+    public ByteToGameMessageDecoder(BootstrapContext<?> context, boolean dataToBytes) {
         this.context = context;
         this.dataToBytes = dataToBytes;
     }
@@ -83,7 +83,7 @@ public class ByteToGameMessageDecoder extends ByteToMessageDecoder {
             return bytes;
         }
         var define = context.getMessageManager().findDefine(msgId);
-        if (!context.getMessageManager().hasMessage(msgId)) {
+        if (!context.getMessageManager().hasDefined(msgId)) {
             log.warn("Not defined msgId [{}]", msgId);
             return null;
         }

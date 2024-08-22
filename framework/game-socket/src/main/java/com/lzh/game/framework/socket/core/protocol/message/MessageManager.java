@@ -1,5 +1,6 @@
 package com.lzh.game.framework.socket.core.protocol.message;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -12,15 +13,29 @@ public interface MessageManager {
 
     int getSerializeType(short msgId);
 
-    boolean hasMessage(short msgId);
+    boolean hasDefined(short msgId);
 
     void registerMessage(MessageDefine define);
 
     void addMessage(Class<?> message);
 
-    void addRegisterListen(Consumer<MessageDefine> consumer);
+    void addRegisterListen(String name, Consumer<MessageDefine> consumer);
+
+    void removeListen(String name);
 
     int count();
 
-    MessageDefine findDefaultDefined(Class<?> type);
+    MessageDefine findDefined(Class<?> type);
+
+    static MessageDefine classToDefine(Class<?> msg) {
+        Protocol protocol = msg.getAnnotation(Protocol.class);
+        if (Objects.isNull(protocol)) {
+            throw new IllegalArgumentException("register message " + msg.getSimpleName() + " @Protocol is null");
+        }
+        return new MessageDefine()
+                .setMsgId(protocol.value())
+                .setMsgClass(msg)
+                .setSerializeType(protocol.serializeType());
+//                .setProtocolType(protocol.protocolType());
+    }
 }

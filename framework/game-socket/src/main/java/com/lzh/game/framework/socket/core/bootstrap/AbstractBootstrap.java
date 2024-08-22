@@ -33,7 +33,6 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         this.ioHandler = new GameIoHandler(context);
     }
 
-
     public T getProperties() {
         return context.getProperties();
     }
@@ -61,13 +60,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
     protected void init() {
         MessageSerializeManager.getInstance()
                 .registerMessage(Constant.DEFAULT_SERIAL_SIGN, new FurySerialize(context.getMessageManager(), getProperties().getFury()));
-        this.addDefaultProtocol();
         this.addDefaultProcessor();
-    }
-
-    protected void addDefaultProtocol() {
-        var message = context.getMessageManager();
-        message.addMessage(HeartbeatProtocol.class);
     }
 
     protected void addDefaultProcessor() {

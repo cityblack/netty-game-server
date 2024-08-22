@@ -1,22 +1,16 @@
 package com.lzh.game.framework.socket.core.protocol.message;
 
-import com.lzh.game.framework.socket.utils.Constant;
+import com.lzh.game.framework.socket.core.GameSocketProperties;
+import com.lzh.game.framework.utils.collection.ObjectMap;
+import io.netty.util.collection.ShortObjectHashMap;
+import io.netty.util.collection.ShortObjectMap;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /**
@@ -25,103 +19,73 @@ import java.util.function.Consumer;
  **/
 public class DefaultMessageManager implements MessageManager {
 
-    private Map<Short, MessageDefine> msg;
+    private final Map<String, Consumer<MessageDefine>> listen = new ConcurrentHashMap<>();
 
-    private final List<Consumer<MessageDefine>> listen = new CopyOnWriteArrayList<>();
+    private final ObjectMap<Class<?>, MessageDefine> classContain;
 
-    private Map<Class<?>, MessageDefine> defaultDefined;
+    private final ShortObjectMap<MessageDefine> idContain;
 
-    public DefaultMessageManager() {
-        this(new ConcurrentHashMap<>());
-        initRegister();
+    public DefaultMessageManager(GameSocketProperties properties) {
+        this.classContain = new ObjectMap<>();
+        this.idContain = new ShortObjectHashMap<>();
+        initRegister(properties);
     }
 
-    private void initRegister() {
-        var types = new Class<?>[]{
-                void.class, boolean.class, byte.class, char.class, short.class, int.class,
-                float.class, long.class, double.class, Void.class, Boolean.class, Byte.class,
-                Character.class, Short.class, Integer.class, Float.class, Long.class, Double.class,
-                String.class, boolean[].class, byte[].class, char[].class, short[].class, int[].class,
-                float[].class, long[].class, double[].class, String[].class, Object[].class, ArrayList.class,
-                HashMap.class, HashSet.class, Class.class, Object.class, LinkedList.class, TreeSet.class,
-                LinkedHashMap.class, TreeMap.class, Date.class, Timestamp.class, LocalDateTime.class, Instant.class,
-                BigInteger.class, BigDecimal.class, Optional.class, OptionalInt.class,
-                Boolean[].class, Byte[].class, Short[].class, Character[].class,
-                Integer[].class, Float[].class, Long[].class, Double[].class, ConcurrentHashMap.class,
-                ArrayBlockingQueue.class, LinkedBlockingQueue.class, AtomicBoolean.class, AtomicInteger.class,
-                AtomicLong.class, AtomicReference.class, Throwable.class, StackTraceElement.class, Exception.class, RuntimeException.class,
-                NullPointerException.class, IOException.class, IllegalArgumentException.class, IllegalStateException.class,
-                IndexOutOfBoundsException.class, ArrayIndexOutOfBoundsException.class
-        };
-        Map<Class<?>, MessageDefine> defaultDefined = new HashMap<>();
-        for (int i = 0; i < types.length; i++) {
-            var defined = new MessageDefine()
-                    .setMsgId((short) i)
-                    .setMsgClass(types[i]);
-            registerMessage(defined);
-            defaultDefined.put(defined.getMsgClass(), defined);
-        }
-        this.defaultDefined = defaultDefined;
-    }
-
-    public DefaultMessageManager(Map<Short, MessageDefine> msg) {
-        this.msg = msg;
+    private void initRegister(GameSocketProperties properties) {
+        var handler = new MessageLoadHandler();
+        var list = handler.load(properties.getProtocolScanner(), properties.getDefaultSerializeType());
+        list.forEach(this::registerMessage);
     }
 
     public MessageDefine findDefine(short msgId) {
-        return this.msg.get(msgId);
+        return idContain.get(msgId);
     }
 
     public int getSerializeType(short msgId) {
-        MessageDefine define = msg.get(msgId);
+        MessageDefine define = idContain.get(msgId);
         return Objects.isNull(define) ? 0 : define.getSerializeType();
     }
 
-    public boolean hasMessage(short msgId) {
-        return this.msg.containsKey(msgId);
+    public boolean hasDefined(short msgId) {
+        return idContain.containsKey(msgId);
     }
 
     public void registerMessage(MessageDefine define) {
         if (Objects.isNull(define)) {
             throw new IllegalArgumentException("Register define is null!");
         }
-        var old = this.msg.get(define.getMsgId());
+        var old = idContain.get(define.getMsgId());
         if (Objects.nonNull(old) && old.getMsgClass() != define.getMsgClass()) {
             throw new RuntimeException(define.getMsgId() + " msg id already existed. current class: " + define.getMsgClass().getName());
         }
-        this.msg.put(define.getMsgId(), define);
-        this.listen.forEach(e -> e.accept(define));
+        idContain.put(define.getMsgId(), define);
+        classContain.put(define.getMsgClass(), define);
+        listen.values().forEach(e -> e.accept(define));
     }
 
     public void addMessage(Class<?> message) {
-        registerMessage(classToDefine(message));
+        registerMessage(MessageManager.classToDefine(message));
     }
 
     @Override
-    public void addRegisterListen(Consumer<MessageDefine> consumer) {
-        listen.add(consumer);
+    public void addRegisterListen(String name, Consumer<MessageDefine> consumer) {
+        listen.put(name, consumer);
+        idContain.values().forEach(consumer);
+    }
+
+    @Override
+    public void removeListen(String name) {
+        listen.remove(name);
     }
 
     @Override
     public int count() {
-        return msg.size();
+        return idContain.size();
     }
 
     @Override
-    public MessageDefine findDefaultDefined(Class<?> type) {
-        return defaultDefined.get(type);
-    }
-
-    public static MessageDefine classToDefine(Class<?> msg) {
-        Protocol protocol = msg.getAnnotation(Protocol.class);
-        if (Objects.isNull(protocol)) {
-            throw new IllegalArgumentException("register message " + msg.getSimpleName() + "@Protocol is null");
-        }
-        return new MessageDefine()
-                .setMsgId(protocol.value())
-                .setMsgClass(msg)
-                .setSerializeType(protocol.serializeType());
-//                .setProtocolType(protocol.protocolType());
+    public MessageDefine findDefined(Class<?> type) {
+        return classContain.get(type);
     }
 
 }

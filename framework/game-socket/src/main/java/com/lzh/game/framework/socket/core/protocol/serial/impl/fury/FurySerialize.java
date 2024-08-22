@@ -27,12 +27,13 @@ public class FurySerialize implements MessageSerialize {
             build.withLanguage(Language.JAVA);
         }
         this.fury = build.buildThreadLocalFury();
-        manager.addRegisterListen(e -> {
-            if (!e.isCompose()) {
-                return;
+        manager.addRegisterListen("Fury", e -> {
+            try {
+                var type = e.getMsgClass();
+                this.fury.register(type, e.getMsgId());
+            } catch (Exception ignored) {
+                //  Fury. Not interface has been exposed to determine the existence of a class
             }
-            var type = e.getMsgClass();
-            this.fury.register(type, e.getMsgId());
         });
     }
 

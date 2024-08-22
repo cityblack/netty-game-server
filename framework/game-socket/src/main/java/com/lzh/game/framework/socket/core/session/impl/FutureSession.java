@@ -2,6 +2,7 @@ package com.lzh.game.framework.socket.core.session.impl;
 
 import com.lzh.game.framework.socket.core.session.Session;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 
 import java.time.Instant;
 import java.util.Map;
@@ -68,8 +69,8 @@ public class FutureSession implements Session {
     }
 
     @Override
-    public void write(Object data) {
-        blockGetSession().write(data);
+    public ChannelFuture write(Object data) {
+        return blockGetSession().write(data);
     }
 
     @Override

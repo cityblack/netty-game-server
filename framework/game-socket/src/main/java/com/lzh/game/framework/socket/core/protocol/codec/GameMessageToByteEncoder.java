@@ -18,9 +18,9 @@ import java.util.Objects;
 @Slf4j
 public class GameMessageToByteEncoder extends MessageToByteEncoder<Object> {
 
-    private final BootstrapContext context;
+    private final BootstrapContext<?> context;
 
-    public GameMessageToByteEncoder(BootstrapContext context) {
+    public GameMessageToByteEncoder(BootstrapContext<?> context) {
         this.context = context;
     }
 
@@ -61,6 +61,7 @@ public class GameMessageToByteEncoder extends MessageToByteEncoder<Object> {
             out.markWriterIndex();
         } catch (Exception e) {
             out.resetWriterIndex();
+            throw e;
         }
     }
 

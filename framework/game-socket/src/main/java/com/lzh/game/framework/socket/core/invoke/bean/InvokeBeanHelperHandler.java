@@ -32,7 +32,7 @@ public class InvokeBeanHelperHandler {
 
     private final List<InvokeBeanHelper> helpers = new ArrayList<>();
 
-    public void pushBean(Object bean, BootstrapContext context) {
+    public void pushBean(Object bean, BootstrapContext<?> context) {
         var stream = parseBean(bean, context);
         stream.forEach(e -> {
             if (Objects.nonNull(e.getProtocol())) {
@@ -53,14 +53,14 @@ public class InvokeBeanHelperHandler {
         this.helpers.add(helper);
     }
 
-    public Stream<InvokeModel> parseBean(Object bean, BootstrapContext context) {
+    public Stream<InvokeModel> parseBean(Object bean, BootstrapContext<?> context) {
         Class<?> clazz = bean.getClass();
         return Stream.of(clazz.getDeclaredMethods())
                 .map(method -> toModel(bean, method, context))
                 .filter(Objects::nonNull);
     }
 
-    private InvokeModel toModel(Object bean, Method method, BootstrapContext context) {
+    private InvokeModel toModel(Object bean, Method method, BootstrapContext<?> context) {
         for (InvokeBeanHelper helper : helpers) {
             if (helper.match(bean, method)) {
                 return helper.parseBean(bean, method, context);

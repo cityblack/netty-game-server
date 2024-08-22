@@ -45,8 +45,7 @@ public class ActionRequestHandler implements RequestDispatch {
         }
         try {
             Object o = invokeForRequest(request, method);
-            response.setData(o);
-            onSuccess(request, response, !method.isVoid());
+            onSuccess(response, o, !method.isVoid());
         } catch (Exception e) {
             boolean resolved = resolveException(e, request, response);
             if (!resolved) {
@@ -74,10 +73,17 @@ public class ActionRequestHandler implements RequestDispatch {
         return this.errorHandler.resolveException(ex, request, response);
     }
 
-    private void onSuccess(Request request, Response response, boolean hasResult) {
-        if (hasResult && !request.isOneWay()) {
-            response.setDataClass(response.getData().getClass());
-            var defined = context.getMessageManager().findDefaultDefined(response.getData().getClass());
+    private void onSuccess(Response response, Object data, boolean hasResult) {
+        var request = response.getRequest();
+        if (!request.isOneWay() && hasResult) {
+            if (Objects.isNull(data)) {
+                log.error("Request {} need return data. But the result is null.", request.getMsgId());
+                return;
+            }
+            var type = response.getData().getClass();
+            response.setDataClass(type);
+            var defined = context.getMessageManager()
+                    .findDefined(type);
             response.setMsgId(defined.getMsgId());
             request.getSession().write(response);
         }

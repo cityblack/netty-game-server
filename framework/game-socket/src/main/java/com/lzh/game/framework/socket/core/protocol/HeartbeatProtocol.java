@@ -8,7 +8,7 @@ import lombok.Data;
  * @author zehong.l
  * @since 2024-08-01 16:06
  **/
-@Protocol(value = Constant.AUTH_PROTOCOL_ID)
+@Protocol(value = Constant.HEARTBEAT_PROTOCOL_ID)
 @Data
 public class HeartbeatProtocol {
 }

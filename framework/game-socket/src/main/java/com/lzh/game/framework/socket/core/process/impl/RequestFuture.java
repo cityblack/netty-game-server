@@ -81,6 +81,23 @@ public class RequestFuture extends CompletableFuture<Response> {
         }
     }
 
+    public static void requestError(RequestFuture future, Throwable throwable) {
+        FUTURES.remove(future.id);
+        if (future.isCancelled() || future.isDone()) {
+            return;
+        }
+        var timeout = future.timeoutTask;
+        if (timeout.isExpired() || timeout.isCancelled()) {
+            return;
+        }
+        future.timeoutTask.cancel();
+        Response response = new Response();
+        response.setStatus(-1);
+        response.setError(throwable);
+        response.setRequestId(future.id);
+        future.doReceived(response);
+    }
+
     private void doReceived(Response response) {
         if (Objects.isNull(response)) {
             throw new IllegalArgumentException("Response is null");
