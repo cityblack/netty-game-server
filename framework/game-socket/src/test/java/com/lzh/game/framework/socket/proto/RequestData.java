@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
  * @since 2024-06-28 18:03
  **/
 @Data
-@Protocol(10086)
+@Protocol(-10086)
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestData {

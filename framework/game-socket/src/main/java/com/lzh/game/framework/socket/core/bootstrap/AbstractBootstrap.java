@@ -8,9 +8,8 @@ import com.lzh.game.framework.socket.core.invoke.bean.InvokeBeanHelperHandler;
 import com.lzh.game.framework.socket.core.process.Processor;
 import com.lzh.game.framework.socket.core.process.impl.DefaultRequestProcess;
 import com.lzh.game.framework.socket.core.process.impl.HeartbeatProcessor;
-import com.lzh.game.framework.socket.core.protocol.HeartbeatProtocol;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerializeManager;
-import com.lzh.game.framework.socket.core.protocol.serial.impl.fury.FurySerialize;
+import com.lzh.game.framework.socket.core.protocol.serial.rookie.RookieSerialize;
 import com.lzh.game.framework.socket.utils.Constant;
 
 import java.util.List;
@@ -59,7 +58,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     protected void init() {
         MessageSerializeManager.getInstance()
-                .registerMessage(Constant.DEFAULT_SERIAL_SIGN, new FurySerialize(context.getMessageManager(), getProperties().getFury()));
+                .registerSerialize(Constant.DEFAULT_SERIAL_SIGN, new RookieSerialize(context.getMessageManager()));
         this.addDefaultProcessor();
     }
 

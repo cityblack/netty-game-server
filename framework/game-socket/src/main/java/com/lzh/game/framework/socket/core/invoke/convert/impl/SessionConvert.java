@@ -1,6 +1,6 @@
 package com.lzh.game.framework.socket.core.invoke.convert.impl;
 
-import com.lzh.game.framework.socket.core.invoke.convert.RequestConvert;
+import com.lzh.game.framework.socket.core.invoke.convert.Convert;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.session.Session;
 
@@ -8,7 +8,7 @@ import com.lzh.game.framework.socket.core.session.Session;
  * @author zehong.l
  * @since 2024-06-28 12:14
  **/
-public class SessionConvert implements RequestConvert<Session> {
+public class SessionConvert implements Convert<Session> {
 
     @Override
     public Session convert(Request request) {

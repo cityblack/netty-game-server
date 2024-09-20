@@ -26,6 +26,7 @@
         <module>game-utils</module>
         <module>game-gateway</module>
         <module>game-hotswap</module>
+        <module>rookie</module>
     </modules>
 
 </project>

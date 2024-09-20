@@ -1,16 +1,13 @@
 package com.lzh.game.framework.socket.core.protocol.message;
 
 import com.lzh.game.framework.socket.core.GameSocketProperties;
-import com.lzh.game.framework.utils.collection.ObjectMap;
+import com.lzh.game.framework.utils.collection.IdentityMap;
 import io.netty.util.collection.ShortObjectHashMap;
 import io.netty.util.collection.ShortObjectMap;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 /**
@@ -21,19 +18,19 @@ public class DefaultMessageManager implements MessageManager {
 
     private final Map<String, Consumer<MessageDefine>> listen = new ConcurrentHashMap<>();
 
-    private final ObjectMap<Class<?>, MessageDefine> classContain;
+    private final IdentityMap<Class<?>, MessageDefine> classContain;
 
     private final ShortObjectMap<MessageDefine> idContain;
 
     public DefaultMessageManager(GameSocketProperties properties) {
-        this.classContain = new ObjectMap<>();
+        this.classContain = new IdentityMap<>();
         this.idContain = new ShortObjectHashMap<>();
         initRegister(properties);
     }
 
     private void initRegister(GameSocketProperties properties) {
         var handler = new MessageLoadHandler();
-        var list = handler.load(properties.getProtocolScanner(), properties.getDefaultSerializeType());
+        var list = handler.load(properties.getProtocolScanner());
         list.forEach(this::registerMessage);
     }
 

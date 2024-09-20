@@ -1,4 +1,4 @@
-package com.lzh.game.framework.socket.core.protocol.serial.impl.fury;
+package com.lzh.game.framework.socket.core.protocol.serial.fury;
 
 import com.lzh.game.framework.socket.core.protocol.message.MessageDefine;
 import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
@@ -11,14 +11,27 @@ import org.apache.fury.ThreadSafeFury;
 import org.apache.fury.config.Language;
 
 /**
+ * msg id limit. 0 ~ Short.MAX
+ * not support c#, lua
  * @author zehong.l
  * @since 2024-07-02 15:56
  **/
 public class FurySerialize implements MessageSerialize {
 
-    private final ThreadSafeFury fury;
+    private ThreadSafeFury fury;
+
+    public FurySerialize(FuryProperties properties) {
+        this.iniFury(properties);
+    }
 
     public FurySerialize(MessageManager manager, FuryProperties properties) {
+        this.iniFury(properties);
+        manager.addRegisterListen("Fury", e -> {
+            FurySerialize.this.fury.register(e.getMsgClass(), e.getMsgId(), true);
+        });
+    }
+
+    private void iniFury(FuryProperties properties) {
         var build = Fury.builder()
                 .withRefTracking(true)
                 .requireClassRegistration(true)
@@ -27,14 +40,6 @@ public class FurySerialize implements MessageSerialize {
             build.withLanguage(Language.JAVA);
         }
         this.fury = build.buildThreadLocalFury();
-        manager.addRegisterListen("Fury", e -> {
-            try {
-                var type = e.getMsgClass();
-                this.fury.register(type, e.getMsgId());
-            } catch (Exception ignored) {
-                //  Fury. Not interface has been exposed to determine the existence of a class
-            }
-        });
     }
 
     @Override

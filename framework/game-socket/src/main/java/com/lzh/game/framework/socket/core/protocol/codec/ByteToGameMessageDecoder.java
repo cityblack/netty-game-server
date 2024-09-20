@@ -42,16 +42,9 @@ public class ByteToGameMessageDecoder extends ByteToMessageDecoder {
         in.markReaderIndex();
         int preIndex = in.readerIndex();
         int len = ByteBuffUtils.readRawVarint32(in);
-        if (preIndex != in.readerIndex()) {
-            if (len < 0) {
-                throw new CorruptedFrameException("negative length: " + len);
-            } else {
-                if (in.readableBytes() < len) {
-                    in.resetReaderIndex();
-                }
-            }
+        if (preIndex != in.readerIndex() && len < 0) {
+            throw new CorruptedFrameException("negative length: " + len);
         }
-        in.markReaderIndex();
         if (in.readableBytes() < len) {
             in.resetReaderIndex();
             return;

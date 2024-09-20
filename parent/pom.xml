@@ -69,6 +69,7 @@
                         <arg>--add-opens=java.base/sun.reflect.generics.parser=ALL-UNNAMED</arg>
                         <arg>--add-opens=java.base/sun.reflect.generics.factory=ALL-UNNAMED</arg>
                     </compilerArgs>
+                    <basedir/>
                 </configuration>
             </plugin>
             <plugin>

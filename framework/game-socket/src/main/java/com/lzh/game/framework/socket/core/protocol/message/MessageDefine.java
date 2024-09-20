@@ -23,8 +23,6 @@ public class MessageDefine {
 
     private Constructor<?> allArgsConstructor;
 
-    private boolean compose;
-
     public MessageDefine() {
     }
 }

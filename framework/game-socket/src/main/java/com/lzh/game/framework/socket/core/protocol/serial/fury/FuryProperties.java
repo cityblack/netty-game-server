@@ -1,4 +1,4 @@
-package com.lzh.game.framework.socket.core.protocol.serial.impl.fury;
+package com.lzh.game.framework.socket.core.protocol.serial.fury;
 
 import lombok.Getter;
 import lombok.Setter;

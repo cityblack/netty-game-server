@@ -43,7 +43,7 @@ public class AppTest {
         client.addProcessor(new FutureResponseProcess());
         client.start();
         Session session = client.conn("localhost", 8081, 5000);
-        var request = new RequestData(1L, 30, "lzh", 0.1D, 174.3F);
+        var request = new RequestData(-1L, 30, "lzh", 0.1D, 174.3F);
         AsyncResponse<RequestData> future = client.request(session, request, RequestData.class);
         System.out.println(future.get());
     }

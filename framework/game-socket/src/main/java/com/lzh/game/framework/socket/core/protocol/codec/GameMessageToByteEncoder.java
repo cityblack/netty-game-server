@@ -30,7 +30,7 @@ public class GameMessageToByteEncoder extends MessageToByteEncoder<Object> {
          * len: Varint32
          * msgId: sort
          * type: request / response / one way byte
-         * request: int
+         * request: int (varint32: value >= 2097152 need 4 byte or more)
          * data: Object Serializable data
          */
         try {

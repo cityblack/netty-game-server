@@ -78,7 +78,7 @@ public class DefaultGameRequest implements GameClient {
     @Override
     public <T> AsyncResponse<T> request(Session session, Request request, Class<T> type) {
         checkStatus();
-        checkReturnType(type);
+        checkType(type);
         RequestFuture future = RequestFuture.newFuture(request, client.getProperties().getRequestTimeout(), client.getRequestService());
         AsyncResponse<T> response = new FutureAsyncResponse<>(future);
         session.write(request).addListener(new WritePromise(future));
@@ -86,7 +86,7 @@ public class DefaultGameRequest implements GameClient {
     }
 
     // Must be @Protocol
-    private void checkReturnType(Class<?> type) {
+    private void checkType(Class<?> type) {
         if (!type.isAnnotationPresent(Protocol.class)) {
             throw new IllegalArgumentException("Not support the return type:" + type.getName());
         }
@@ -95,6 +95,7 @@ public class DefaultGameRequest implements GameClient {
     @Override
     public <T> AsyncResponse<T> request(Session session, Object param, Class<T> type) {
         checkStatus();
+        checkType(param.getClass());
         return request(session, protocolToRequest(param, Constant.REQUEST_SIGN), type);
     }
 

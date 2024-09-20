@@ -1,6 +1,6 @@
 package com.lzh.game.framework.socket.core.invoke.convert.impl;
 
-import com.lzh.game.framework.socket.core.invoke.convert.RequestConvert;
+import com.lzh.game.framework.socket.core.invoke.convert.Convert;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.Response;
 
@@ -8,7 +8,7 @@ import com.lzh.game.framework.socket.core.protocol.Response;
  * @author zehong.l
  * @since 2024-06-28 12:15
  **/
-public class ResponseConvert implements RequestConvert<Response> {
+public class ResponseConvert implements Convert<Response> {
 
     @Override
     public Response convert(Request request) {

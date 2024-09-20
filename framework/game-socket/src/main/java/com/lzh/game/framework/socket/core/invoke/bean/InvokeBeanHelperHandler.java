@@ -1,26 +1,12 @@
 package com.lzh.game.framework.socket.core.invoke.bean;
 
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
-import com.lzh.game.framework.socket.core.invoke.Receive;
-import com.lzh.game.framework.socket.core.invoke.convert.SysParam;
-import com.lzh.game.framework.socket.core.protocol.message.ComposeProtoc;
 import com.lzh.game.framework.socket.core.protocol.message.MessageDefine;
-import com.lzh.game.framework.socket.core.protocol.message.Protocol;
-import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
-import com.lzh.game.framework.utils.bean.HandlerMethod;
-import com.lzh.game.framework.utils.bean.MethodInvoke;
-import javassist.*;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -76,18 +62,6 @@ public class InvokeBeanHelperHandler {
 
     private InvokeBeanHelperHandler() {
         addHelper(new ReceiveInvokeBeanHelper());
-    }
-
-    public static boolean isSystemParam(Annotation[] annotations) {
-        if (Objects.isNull(annotations)) {
-            return false;
-        }
-        for (Annotation annotation : annotations) {
-            if (annotation.annotationType() == SysParam.class) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static class Instance {

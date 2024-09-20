@@ -2,6 +2,8 @@ package com.lzh.game.framework.socket.core.bootstrap.client;
 
 
 import com.lzh.game.framework.socket.core.protocol.Response;
+import com.lzh.game.framework.socket.exception.EncodeSerializeException;
+import io.netty.handler.codec.EncoderException;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;

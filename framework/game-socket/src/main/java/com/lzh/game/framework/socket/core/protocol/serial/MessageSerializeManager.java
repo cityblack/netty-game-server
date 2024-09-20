@@ -11,8 +11,8 @@ public class MessageSerializeManager {
 
     private final Map<Integer, MessageSerialize> handlers = new ConcurrentHashMap<>();
 
-    public void registerMessage(int type, MessageSerialize handler) {
-        handlers.put(type, handler);
+    public void registerSerialize(int type, MessageSerialize serialize) {
+        handlers.put(type, serialize);
     }
 
     public MessageSerialize getProtocolMessage(int type) {

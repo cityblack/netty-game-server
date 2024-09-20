@@ -1,4 +1,4 @@
-package com.lzh.game.framework.socket.core.protocol.serial.impl;
+package com.lzh.game.framework.socket.core.protocol.serial.protostuff;
 
 import com.lzh.game.framework.socket.core.protocol.message.MessageDefine;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerialize;

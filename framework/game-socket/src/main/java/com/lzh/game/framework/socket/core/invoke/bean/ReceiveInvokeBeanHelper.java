@@ -16,7 +16,7 @@ import java.util.Objects;
  * Last param must be protoc
  *
  * @author zehong.l
- * @Receive test(@ System Request request, Object param)
+ * @Receive test(Request request, Object param)
  * @Receive test(Object param)
  * @since 2024-08-21 16:08
  **/
@@ -75,17 +75,11 @@ public class ReceiveInvokeBeanHelper implements InvokeBeanHelper {
 
     private List<Class<?>> getProtoCol(HandlerMethod method) {
         var types = method.getParamsType();
-        var anno = method.getParameterAnnotations();
         List<Class<?>> list = new ArrayList<>(types.length);
         for (int i = 0; i < types.length; i++) {
             var type = types[i];
-            if (InvokeBeanHelperHandler.isSystemParam(anno[i])) {
-                continue;
-            }
             if (type.isAnnotationPresent(Protocol.class)) {
                 list.add(type);
-            } else {
-                throw new IllegalArgumentException("Param is not @SysParam or @Protocol.");
             }
         }
         return list;

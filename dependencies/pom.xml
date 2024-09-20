@@ -18,7 +18,7 @@
     <description>dependencies</description>
 
     <properties>
-        <protobuf.version>4.27.0</protobuf.version>
+        <protobuf.version>4.27.3</protobuf.version>
         <protostuff.version>1.8.0</protostuff.version>
         <netty.version>4.1.108.Final</netty.version>
         <eventbus.version>3.1.1</eventbus.version>

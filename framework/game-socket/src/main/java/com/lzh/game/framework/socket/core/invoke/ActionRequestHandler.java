@@ -80,8 +80,9 @@ public class ActionRequestHandler implements RequestDispatch {
                 log.error("Request {} need return data. But the result is null.", request.getMsgId());
                 return;
             }
-            var type = response.getData().getClass();
+            var type = data.getClass();
             response.setDataClass(type);
+            response.setData(data);
             var defined = context.getMessageManager()
                     .findDefined(type);
             response.setMsgId(defined.getMsgId());
