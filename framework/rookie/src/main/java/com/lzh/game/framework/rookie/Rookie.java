@@ -96,13 +96,6 @@ public class Rookie {
         if (clz.isArray()) {
             throw new IllegalArgumentException("Don't register array type!");
         }
-        try {
-            if (!clz.isEnum()) {
-                clz.getConstructor();
-            }
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException("Register class no have NoArgsConstructor. " + clz.getName());
-        }
         register0(id, clz, serializer);
     }
 
