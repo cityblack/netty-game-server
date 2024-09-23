@@ -84,7 +84,7 @@ public class ActionRequestHandler implements RequestDispatch {
             response.setDataClass(type);
             response.setData(data);
             var defined = context.getMessageManager()
-                    .findDefined(type);
+                    .findDefine(type);
             response.setMsgId(defined.getMsgId());
             request.getSession().write(response);
         }

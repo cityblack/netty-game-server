@@ -7,7 +7,6 @@ import com.lzh.game.start.model.core.util.reward.AbstractReward;
 import com.lzh.game.start.model.currency.model.CurrencyType;
 import com.lzh.game.start.model.i18n.I18n;
 import com.lzh.game.start.model.player.Player;
-import com.lzh.game.start.model.wallet.service.WalletService;
 
 /**
  * 金钱
@@ -37,6 +36,6 @@ public class CurrencyReward extends AbstractReward<Player> {
     @Override
     public void reward(Player player, int multiple, LogReason logReason) {
         long computed = multiple * this.value;
-        ApplicationUtils.getBean(WalletService.class).addCurrency(player, type, computed, logReason);
+//        ApplicationUtils.getBean(WalletService.class).addCurrency(player, type, computed, logReason);
     }
 }

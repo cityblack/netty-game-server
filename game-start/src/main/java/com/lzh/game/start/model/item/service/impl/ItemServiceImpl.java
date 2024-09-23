@@ -1,10 +1,9 @@
 package com.lzh.game.start.model.item.service.impl;
 
-import com.lzh.game.common.util.IdGenerator;
-import com.lzh.game.start.log.LogReason;
+
+import com.lzh.game.framework.utils.IdGenerator;
 import com.lzh.game.start.model.i18n.I18n;
 import com.lzh.game.start.model.i18n.RequestException;
-import com.lzh.game.start.model.item.bag.exception.NotEnoughItemException;
 import com.lzh.game.start.model.item.bag.service.PlayerBagService;
 import com.lzh.game.start.model.item.model.AbstractItem;
 import com.lzh.game.start.model.item.model.UseAbleItem;
@@ -60,18 +59,18 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public void useItem(Player player, long objectId, int num, Map<String, String> params) {
 
-        AbstractItem item = bagService.getItemByObjectId(player, objectId);
-        checkUseItem(item);
-        UseAbleItem useAbleItem = (UseAbleItem)item;
-        useAbleItem.useVerify(player, params);
-        LogReason reason = LogReason.USE_ITEM;
-        try {
-            bagService.reduceItemById(player, objectId, num, reason);
-            useAbleItem.useEffect(player, params, reason);
-        } catch (NotEnoughItemException e) {
-            log.error("使用道具异常:", e);
-            throw new RequestException(I18n.NOT_ENOUGH_ITEMS);
-        }
+//        AbstractItem item = bagService.getItemByObjectId(player, objectId);
+//        checkUseItem(item);
+//        UseAbleItem useAbleItem = (UseAbleItem)item;
+//        useAbleItem.useVerify(player, params);
+//        LogReason reason = LogReason.USE_ITEM;
+//        try {
+//            bagService.reduceItemById(player, objectId, num, reason);
+//            useAbleItem.useEffect(player, params, reason);
+//        } catch (NotEnoughItemException e) {
+//            log.error("使用道具异常:", e);
+//            throw new RequestException(I18n.NOT_ENOUGH_ITEMS);
+//        }
     }
 
     private void checkUseItem(AbstractItem item) {

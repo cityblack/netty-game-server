@@ -2,7 +2,6 @@ package com.lzh.game.framework.socket.core.bootstrap.client;
 
 import com.lzh.game.framework.socket.core.process.impl.RequestFuture;
 import com.lzh.game.framework.socket.core.protocol.Request;
-import com.lzh.game.framework.socket.core.protocol.message.Protocol;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.utils.Constant;
 import com.lzh.game.framework.socket.utils.SocketUtils;
@@ -61,12 +60,12 @@ public class DefaultGameRequest implements GameClient {
     }
 
     private Request protocolToRequest(Object param, byte type) {
-        var anno = param.getClass().getAnnotation(Protocol.class);
-        if (Objects.isNull(anno)) {
+        var defined = client.getContext().getMessageManager()
+                .findDefine(param.getClass());
+        if (Objects.isNull(defined)) {
             throw new RuntimeException("Param didn't has @Protocol");
         }
-        short msgId = anno.value();
-        return SocketUtils.createRequest(msgId, param, type);
+        return SocketUtils.createRequest(defined.getMsgId(), param, type);
     }
 
     @Override
@@ -78,24 +77,15 @@ public class DefaultGameRequest implements GameClient {
     @Override
     public <T> AsyncResponse<T> request(Session session, Request request, Class<T> type) {
         checkStatus();
-        checkType(type);
         RequestFuture future = RequestFuture.newFuture(request, client.getProperties().getRequestTimeout(), client.getRequestService());
         AsyncResponse<T> response = new FutureAsyncResponse<>(future);
         session.write(request).addListener(new WritePromise(future));
         return response;
     }
 
-    // Must be @Protocol
-    private void checkType(Class<?> type) {
-        if (!type.isAnnotationPresent(Protocol.class)) {
-            throw new IllegalArgumentException("Not support the return type:" + type.getName());
-        }
-    }
-
     @Override
     public <T> AsyncResponse<T> request(Session session, Object param, Class<T> type) {
         checkStatus();
-        checkType(param.getClass());
         return request(session, protocolToRequest(param, Constant.REQUEST_SIGN), type);
     }
 

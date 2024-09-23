@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  *
  */
-public class ItemReward extends AbstractReward<Player> {
+public class ItemReward extends AbstractReward {
 
     @Getter
     @Setter
@@ -35,7 +35,7 @@ public class ItemReward extends AbstractReward<Player> {
     }
 
     @Override
-    public void doVerify(Player param, VerifyResult result, int multiple) {
+    public void doVerify(Object param, VerifyResult result, int multiple) {
         int count = num * multiple;
         Map<Object, Object> context = result.getVerifyContext();
         collectItems(itemId, count, context);
@@ -49,16 +49,20 @@ public class ItemReward extends AbstractReward<Player> {
         context.put(itemModel, itemSum);
     }
 
-    private void verify(Player player, Map<Object, Object> context) {
-        for (Map.Entry<Object, Object> entry: context.entrySet()) {
-            ApplicationUtils.getBean(PlayerBagService.class).isEnoughGrid(player, (int)entry.getKey(), (int)entry.getValue());
+    private void verify(Object o, Map<Object, Object> context) {
+        if (o instanceof Player player) {
+            for (Map.Entry<Object, Object> entry: context.entrySet()) {
+                ApplicationUtils.getBean(PlayerBagService.class).isEnoughGrid(player, (int)entry.getKey(), (int)entry.getValue());
+            }
         }
     }
 
     @Override
-    public void reward(Player player, int multiple, LogReason logReason) {
-        int count = num * multiple;
-        List<AbstractItem> items = ApplicationUtils.getBean(ItemService.class).createItem(itemId, count);
-        ApplicationUtils.getBean(PlayerBagService.class).addItem(player, items, logReason);
+    public void reward(Object o, int multiple, LogReason logReason) {
+        if (o instanceof Player player) {
+            int count = num * multiple;
+            List<AbstractItem> items = ApplicationUtils.getBean(ItemService.class).createItem(itemId, count);
+            ApplicationUtils.getBean(PlayerBagService.class).addItem(player, items, logReason);
+        }
     }
 }

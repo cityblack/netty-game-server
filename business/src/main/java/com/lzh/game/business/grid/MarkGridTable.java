@@ -1,12 +1,12 @@
-package com.lzh.game.start.grid;
+package com.lzh.game.business.grid;
 
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MarkGridTable<T> extends GridTable<T> implements MarkTable<T> {
+public class MarkGridTable<T> extends DefaultGrid<T> implements MarkGrid<T> {
 
-    private transient BitSet mark = new BitSet();
+    private final transient BitSet mark = new BitSet();
 
     protected MarkGridTable(int size) {
         super(size);
@@ -34,15 +34,15 @@ public class MarkGridTable<T> extends GridTable<T> implements MarkTable<T> {
     @Override
     public int addItem(T item) {
         int index = super.addItem(item);
-        markIndex(index != -1, index);
+        markIndex(index != FULL_SIGN, index);
         return index;
     }
 
     @Override
     public void grow(int size) {
-        int oldSize = this.tableSize();
+        int oldSize = this.getCapacity();
         super.grow(size);
-        mark.set(oldSize - 1, this.tableSize() - 1);
+        mark.set(oldSize - 1, this.getCapacity() - 1);
     }
 
     private void markChangeIndex(int index) {
@@ -64,7 +64,7 @@ public class MarkGridTable<T> extends GridTable<T> implements MarkTable<T> {
     public Map<Integer, T> getChange() {
         Map<Integer, T> change = new HashMap<>();
 
-        for (int i = 0; i < this.tableSize(); i++) {
+        for (int i = 0; i < this.getCapacity(); i++) {
             if (mark.get(i)) {
                 change.put(i, this.getItem(i));
             }

@@ -27,6 +27,10 @@ public class DefaultFilterChain implements FilterChain {
     }
 
     @Override
+    public void filter(Request request) {
+        filter(request, null);
+    }
+
     public void filter(Request request, Consumer<Object> callBack) {
         if (this.index < this.filters.size()) {
             Filter filter = this.filters.get(index);

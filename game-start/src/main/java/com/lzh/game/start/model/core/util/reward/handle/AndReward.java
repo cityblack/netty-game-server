@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class AndReward extends AbstractReward<Player> implements Iterable<AbstractReward> {
+public class AndReward extends AbstractReward implements Iterable<AbstractReward> {
 
-    private List<AbstractReward> list = new ArrayList<>();
+    private final List<AbstractReward> list = new ArrayList<>(8);
 
     @Override
     protected void doParse(String value) {
@@ -19,7 +19,7 @@ public class AndReward extends AbstractReward<Player> implements Iterable<Abstra
     }
 
     @Override
-    public void doVerify(Player param, VerifyResult result, int multiple) {
+    public void doVerify(Object param, VerifyResult result, int multiple) {
         if (!list.isEmpty()) {
             for (int i = 0; i < list.size(); i++) {
                 AbstractReward reward = list.get(i);
@@ -35,7 +35,7 @@ public class AndReward extends AbstractReward<Player> implements Iterable<Abstra
     }
 
     @Override
-    public void reward(Player player, int multiple, LogReason logReason) {
+    public void reward(Object player, int multiple, LogReason logReason) {
         if (!list.isEmpty()) {
             for (AbstractReward reward: list) {
                 reward.reward(player, multiple, logReason);
@@ -49,8 +49,7 @@ public class AndReward extends AbstractReward<Player> implements Iterable<Abstra
     }
 
     public void addReward(AbstractReward reward) {
-        if (reward instanceof AndReward) {
-            AndReward and = (AndReward)reward;
+        if (reward instanceof AndReward and) {
             for (AbstractReward inner: and) {
                 addReward(inner);
             }

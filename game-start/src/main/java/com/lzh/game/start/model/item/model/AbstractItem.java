@@ -20,8 +20,6 @@ public abstract class AbstractItem {
     @Setter
     private int resourceId;
 
-    @Getter
-    @Setter
     private short num;
 
     public long getObjectId() {
@@ -68,5 +66,13 @@ public abstract class AbstractItem {
     @JsonIgnore
     public String getName() {
         return getResource().getName();
+    }
+
+    public int getNum() {
+        return num;
+    }
+
+    public void setNum(int num) {
+        this.num = (short) num;
     }
 }

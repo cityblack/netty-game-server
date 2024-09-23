@@ -41,6 +41,11 @@
             <artifactId>business</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.lzh.game.framework</groupId>
+            <artifactId>game-event</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

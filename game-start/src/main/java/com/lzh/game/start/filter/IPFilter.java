@@ -17,7 +17,7 @@ public class IPFilter implements Filter {
         if (ipArr.contains(request.getSession().getRemoteAddress())) {
 
         } else {
-            chain.filter(request, null);
+            chain.filter(request);
         }
     }
 }

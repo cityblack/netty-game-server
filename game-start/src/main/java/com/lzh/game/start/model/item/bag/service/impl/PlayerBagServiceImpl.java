@@ -8,7 +8,6 @@ import com.lzh.game.start.model.item.bag.model.ItemStorage;
 import com.lzh.game.start.model.item.bag.model.RemoveItem;
 import com.lzh.game.start.model.item.bag.service.PlayerBagService;
 import com.lzh.game.start.model.i18n.I18n;
-import com.lzh.game.start.model.item.log.ItemLog;
 import com.lzh.game.start.model.item.model.AbstractItem;
 import com.lzh.game.start.model.item.resource.ItemResource;
 import com.lzh.game.start.model.item.service.ItemResourceManage;
@@ -30,14 +29,14 @@ public class PlayerBagServiceImpl implements PlayerBagService {
     @Override
     public List<RemoveItem> reduceItems(Player player, int itemModel, int num, LogReason logReason) throws NotEnoughItemException {
 
-        ItemStorage storage = getPack(player);
-        List<RemoveItem> removeItems = storage.reduceItems(itemModel, num, removeItem -> ItemLog.reduceItem(player, removeItem, logReason));
-
-        if (removeItems.isEmpty()) {
-            throw new NotEnoughItemException(itemModel, num);
-        }
-        update(player);
-        return removeItems;
+//        ItemStorage storage = getPack(player);
+//        List<RemoveItem> removeItems = storage.reduceItems(itemModel, num, removeItem -> ItemLog.reduceItem(player, removeItem, logReason));
+//
+//        if (removeItems.isEmpty()) {
+//            throw new NotEnoughItemException(itemModel, num);
+//        }
+//        update(player);
+        return null;
     }
 
     @Override
@@ -50,7 +49,6 @@ public class PlayerBagServiceImpl implements PlayerBagService {
             throw new NotEnoughItemException(itemId, num);
         }
         update(player);
-        ItemLog.reduceItem(player, removeItem, logReason);
         return removeItem;
     }
 
@@ -63,7 +61,6 @@ public class PlayerBagServiceImpl implements PlayerBagService {
             throw new NotEnoughItemException(itemId, 1);
         }
         update(player);
-        ItemLog.reduceItem(player, remove, logReason);
         return remove;
     }
 
@@ -82,9 +79,9 @@ public class PlayerBagServiceImpl implements PlayerBagService {
     public void addItem(Player player, List<AbstractItem> abstractItems, LogReason logReason) {
         ItemStorage storage = getPack(player);
 
-        storage.addItems(abstractItems
-                , item -> ItemLog.addItem(player, item, logReason)
-                , item -> ItemLog.lossItem(player, item, logReason));
+//        storage.addItems(abstractItems
+//                , item -> ItemLog.addItem(player, item, logReason)
+//                , item -> ItemLog.lossItem(player, item, logReason));
         update(player);
         sendChange(storage.getChange());
         storage.clearMark();

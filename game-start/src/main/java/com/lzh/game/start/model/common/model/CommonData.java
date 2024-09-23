@@ -1,7 +1,6 @@
 package com.lzh.game.start.model.common.model;
 
-import com.lzh.game.repository.BaseEntity;
-import com.lzh.game.repository.db.PersistEntity;
+import com.lzh.game.framework.repository.BaseEntity;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

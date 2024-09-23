@@ -1,4 +1,4 @@
-package com.lzh.game.business.utils;
+package com.lzh.game.framework.utils;
 
 import java.net.NetworkInterface;
 import java.security.SecureRandom;

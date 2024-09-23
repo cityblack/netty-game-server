@@ -25,7 +25,7 @@ public interface MessageManager {
 
     int count();
 
-    MessageDefine findDefined(Class<?> type);
+    MessageDefine findDefine(Class<?> type);
 
     static MessageDefine classToDefine(Class<?> msg) {
         Protocol protocol = msg.getAnnotation(Protocol.class);

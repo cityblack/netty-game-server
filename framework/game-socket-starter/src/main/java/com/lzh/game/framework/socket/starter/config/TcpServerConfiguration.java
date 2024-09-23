@@ -21,8 +21,8 @@ public class TcpServerConfiguration {
             , MessageManager messageManager
             , SessionManage<Session> sessionManage
             , InvokeSupport invokeSupport) {
-        var context = BootstrapContext.of(sessionManage, messageManager, invokeSupport);
-        var tcpServer = new TcpServer<>(serverSocketProperties, context);
+        var context = BootstrapContext.of(serverSocketProperties, sessionManage, messageManager, invokeSupport);
+        var tcpServer = new TcpServer<>(context);
         var server = new SpringServer<>(tcpServer);
         server.asyncStart();
         return server;

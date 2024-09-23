@@ -81,7 +81,7 @@ public class DefaultMessageManager implements MessageManager {
     }
 
     @Override
-    public MessageDefine findDefined(Class<?> type) {
+    public MessageDefine findDefine(Class<?> type) {
         return classContain.get(type);
     }
 

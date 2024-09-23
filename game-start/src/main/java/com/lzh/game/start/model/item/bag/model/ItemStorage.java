@@ -1,11 +1,11 @@
 package com.lzh.game.start.model.item.bag.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.lzh.game.start.util.ApplicationUtils;
-import com.lzh.game.framework.grid.MarkGridTable;
+import com.lzh.game.business.grid.MarkGridTable;
 import com.lzh.game.start.model.item.model.AbstractItem;
 import com.lzh.game.start.model.item.resource.ItemResource;
 import com.lzh.game.start.model.item.service.ItemResourceManage;
+import com.lzh.game.start.util.ApplicationUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -15,6 +15,7 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
 
     /**
      * 消耗物品 当物品不足的时候 返回空列表
+     *
      * @param itemModel
      * @param num
      * @param whenReduce 消耗物品的时候
@@ -24,7 +25,7 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
         int needReduce = num;
         List<RemoveItem> removeItems = new ArrayList<>();
 
-        for (Map.Entry<Integer, AbstractItem> entry: getItems().entrySet()) {
+        for (Map.Entry<Integer, AbstractItem> entry : getItems().entrySet()) {
             if (needReduce == 0) {
                 break;
             }
@@ -32,7 +33,7 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
             if (item.getResourceId() == itemModel) {
                 if (item.getNum() > needReduce) {
                     removeItems.add(RemoveItem.of(item, needReduce, entry.getKey()));
-                } else if (item.getNum() == needReduce){
+                } else if (item.getNum() == needReduce) {
                     removeItems.add(RemoveItem.of(item, needReduce, entry.getKey()));
                 } else {
                     needReduce -= item.getNum();
@@ -40,7 +41,7 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
             }
         }
         if (needReduce > 0) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         removeItems.forEach(e -> {
             doRemove(e.getSourceIndex(), e.getNum());
@@ -51,20 +52,26 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
 
     /**
      * 根据物品唯一id消耗 当物品不足的时候返回空
+     *
      * @param itemId
      * @param num
      * @return
      */
     public RemoveItem reduceItemById(long itemId, int num) {
 
-        for (Map.Entry<Integer, AbstractItem> entry: getItems().entrySet()) {
-
-            AbstractItem item = entry.getValue();
-            if (item.getObjectId() == itemId) {
+        for (int i = 0; i < this.items.length; i++) {
+            if (indexHasItem(i)) {
+                continue;
+            }
+            AbstractItem item = (AbstractItem) items[i];
+            if (item.getObjectId() == itemId ) {
                 if (item.getNum() >= num) {
-                    return RemoveItem.of(item, num, entry.getKey());
+                    item.setNum(item.getNum() - num);
+                    if (item.getNum() == 0) {
+                        signEmptyGrid(i);
+                    }
+                    return RemoveItem.of(item, num, i);
                 }
-                break;
             }
         }
         return null;
@@ -72,40 +79,42 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
 
     private void doRemove(int index, int num) {
         AbstractItem item = getItem(index);
-        item.setNum((short) (item.getNum() - num));
+        item.setNum(item.getNum() - num);
         if (item.getNum() <= 0) {
             removeItem(index);
         }
     }
 
     public RemoveItem removeItem(long itemId) {
-
-        for (Map.Entry<Integer, AbstractItem> entry: getItems().entrySet()) {
-            if (entry.getValue().getObjectId() == itemId) {
-                AbstractItem item = removeItem(entry.getKey());
-                return RemoveItem.of(item, item.getNum(), entry.getKey());
+        for (int i = 0; i < this.items.length; i++) {
+            if (indexHasItem(i)) {
+                continue;
+            }
+            AbstractItem item = (AbstractItem) this.items[i];
+            if (item.getObjectId() == itemId) {
+                signEmptyGrid(i);
+                return RemoveItem.of(item, item.getNum(), i);
             }
         }
-
         return null;
     }
 
     public int itemNeedGridLen(int itemModel, int num) {
         int moreNum = num;
-
         if (canStack(itemModel)) {
-
-            for (Map.Entry<Integer, AbstractItem> entry: getItems().entrySet()) {
-                AbstractItem item = entry.getValue();
+            for (int i = 0; i < this.items.length; i++) {
+                if (indexHasItem(i)) {
+                    continue;
+                }
+                AbstractItem item = (AbstractItem) this.items[i];
                 if (item.getResourceId() == itemModel && item.canStack()) {
-                    moreNum = item.canStackNumMore();
+                    moreNum -= item.canStackNumMore();
                     if (moreNum <= 0) {
                         return 0;
                     }
                 }
             }
         }
-
         return needMoreGrid(itemModel, moreNum);
     }
 
@@ -113,13 +122,13 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
         int len = 0;
         Map<Long, Integer> canPutted = new HashMap<>(4);
 
-        for (AbstractItem item: items) {
+        for (AbstractItem item : items) {
             if (!item.canStack()) {
                 len++;
                 continue;
             }
             int moreNum = item.getNum();
-            for (Map.Entry<Integer, AbstractItem> entry: getItems().entrySet()) {
+            for (Map.Entry<Integer, AbstractItem> entry : getItems().entrySet()) {
                 if (moreNum <= 0) {
                     break;
                 }
@@ -148,7 +157,8 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
     @JsonIgnore
     public boolean isEnoughItems(int itemModel, int num) {
         int hasNum = 0;
-        for (Map.Entry<Integer, AbstractItem> entry: loadedItems().entrySet()) {
+
+        for (Map.Entry<Integer, AbstractItem> entry : loadedItems().entrySet()) {
             if (entry.getValue().getResourceId() == itemModel) {
                 hasNum += entry.getValue().getNum();
                 if (hasNum >= num) {
@@ -165,7 +175,8 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
     }
 
     private int needMoreGrid(int itemModel, int num) {
-        return num / getItemResource(itemModel).getStack() + 1;
+        int stack = Math.min(getItemResource(itemModel).getStack(), 1);
+        return num / stack;
     }
 
     @JsonIgnore
@@ -185,7 +196,7 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
             int itemModel = item.getResourceId();
 
             if (item.canStack()) {
-                for (Map.Entry<Integer, AbstractItem> entry: getItems().entrySet()) {
+                for (Map.Entry<Integer, AbstractItem> entry : getItems().entrySet()) {
 
                     if (item.getNum() <= 0) {
                         return;
@@ -255,7 +266,7 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
     }
 
     public static ItemStorage of() {
-        return new ItemStorage(DEFAULT_TABLE_SIZE);
+        return new ItemStorage(512);
     }
 
     public static ItemStorage of(int size) {

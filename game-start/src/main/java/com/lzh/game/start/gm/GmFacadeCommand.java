@@ -1,14 +1,6 @@
 package com.lzh.game.start.gm;
 
-import com.lzh.game.start.util.ApplicationUtils;
 import com.lzh.game.start.gm.service.DefaultGmServiceImpl;
-import com.lzh.game.start.log.LogReason;
-import com.lzh.game.start.model.item.bag.service.PlayerBagService;
-import com.lzh.game.start.model.item.model.AbstractItem;
-import com.lzh.game.start.model.item.service.ItemService;
-import com.lzh.game.start.model.player.Player;
-
-import java.util.List;
 
 /**
  * {@link com.lzh.game.start.gm.service.GmHandlerMethod}
@@ -35,14 +27,14 @@ public class GmFacadeCommand {
      * @param player
      * @param param 第一个参数为itemModel 第二个参数可选 为道具数量
      */
-    public void addItem(Player player, int[] param) {
-        if (param.length < 1) {
-            return;
-        }
-        int itemModelId = param[0];
-        int num = param.length >= 2 ? param[1] : 1;
-
-        List<AbstractItem> items = ApplicationUtils.getBean(ItemService.class).createItem(itemModelId, num);
-        ApplicationUtils.getBean(PlayerBagService.class).addItem(player, items, LogReason.CONSOLE);
-    }
+//    public void addItem(Player player, int[] param) {
+//        if (param.length < 1) {
+//            return;
+//        }
+//        int itemModelId = param[0];
+//        int num = param.length >= 2 ? param[1] : 1;
+//
+//        List<AbstractItem> items = ApplicationUtils.getBean(ItemService.class).createItem(itemModelId, num);
+//        ApplicationUtils.getBean(PlayerBagService.class).addItem(player, items, LogReason.CONSOLE);
+//    }
 }

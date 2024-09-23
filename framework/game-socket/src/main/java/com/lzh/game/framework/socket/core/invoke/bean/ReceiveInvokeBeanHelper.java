@@ -58,7 +58,7 @@ public class ReceiveInvokeBeanHelper implements InvokeBeanHelper {
                 var returnType = method.getReturnType();
                 if (returnType.isAnnotationPresent(Protocol.class)) {
                     protocols.add(returnType);
-                } else if (Objects.isNull(context.getMessageManager().findDefined(returnType))) {
+                } else if (Objects.isNull(context.getMessageManager().findDefine(returnType))) {
                     throw new IllegalArgumentException("Not support the return type :" + returnType.getName());
                 }
             }

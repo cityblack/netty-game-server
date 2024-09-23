@@ -1,10 +1,10 @@
 package com.lzh.game.framework.scheduler.impl;
 
-import com.lzh.game.common.util.IdGenerator;
 import com.lzh.game.framework.scheduler.SchedulerJob;
 import com.lzh.game.framework.scheduler.SchedulerOption;
 import com.lzh.game.framework.scheduler.SchedulerParam;
 import com.lzh.game.framework.scheduler.SchedulerTask;
+import com.lzh.game.framework.utils.IdGenerator;
 import org.quartz.*;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;

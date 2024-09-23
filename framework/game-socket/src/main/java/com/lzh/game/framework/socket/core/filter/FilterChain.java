@@ -6,6 +6,6 @@ import java.util.function.Consumer;
 
 public interface FilterChain {
 
-    void filter(Request request, Consumer<Object> callBack);
+    void filter(Request request);
 
 }

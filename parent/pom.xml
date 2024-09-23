@@ -57,6 +57,13 @@
                     <source>17</source>
                     <target>17</target>
                     <encoding>utf-8</encoding>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                     <compilerArgs>
                         <arg>--add-opens=java.base/java.util=ALL-UNNAMED</arg>
                         <arg>--add-opens=java.base/java.lang=ALL-UNNAMED</arg>
@@ -80,5 +87,6 @@
                 </configuration>
             </plugin>
         </plugins>
+
     </build>
 </project>

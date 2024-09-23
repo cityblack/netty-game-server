@@ -1,6 +1,5 @@
 package com.lzh.game.start.util;
 
-import com.lzh.game.common.serialization.JsonUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -69,7 +68,7 @@ public class RandomUtils {
                 return data.get(i);
             }
         }
-        throw new IllegalArgumentException("not hit any element." + JsonUtils.toJson(data));
+        throw new IllegalArgumentException("not hit any element.");
     }
 
     /**

@@ -1,11 +1,11 @@
 package com.lzh.game.framework.hotswap.agent;
 
 import com.sun.tools.attach.VirtualMachine;
-import com.sun.tools.classfile.ClassFile;
-import com.sun.tools.classfile.ConstantPoolException;
+import javassist.bytecode.ClassFile;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -86,13 +86,13 @@ public class HotSwapBean {
                 }
             }
             contain.put(className, newInfo);
-        } catch (IOException | ConstantPoolException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private String getClassName(byte[] bytes) throws ConstantPoolException, IOException {
-        var clz = ClassFile.read(new ByteArrayInputStream(bytes));
+    private String getClassName(byte[] bytes) throws IOException {
+        var clz = new ClassFile(new DataInputStream(new ByteArrayInputStream(bytes)));
         return clz.getName();
     }
 
