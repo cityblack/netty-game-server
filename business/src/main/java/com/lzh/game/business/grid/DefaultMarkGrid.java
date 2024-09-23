@@ -4,16 +4,16 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MarkGridTable<T> extends DefaultGrid<T> implements MarkGrid<T> {
+public class DefaultMarkGrid<T> extends DefaultGrid<T> implements MarkGrid<T> {
 
     private final transient BitSet mark = new BitSet();
 
-    protected MarkGridTable(int size) {
+    protected DefaultMarkGrid(int size) {
         super(size);
     }
 
     @Deprecated
-    public MarkGridTable() {
+    public DefaultMarkGrid() {
 
     }
 
@@ -27,7 +27,7 @@ public class MarkGridTable<T> extends DefaultGrid<T> implements MarkGrid<T> {
     @Override
     public T removeItem(int index) {
         T item = super.removeItem(index);
-        markChangeIndex(index);
+        mark(index);
         return item;
     }
 
@@ -45,13 +45,9 @@ public class MarkGridTable<T> extends DefaultGrid<T> implements MarkGrid<T> {
         mark.set(oldSize - 1, this.getCapacity() - 1);
     }
 
-    private void markChangeIndex(int index) {
-        mark.set(index);
-    }
-
     private void markIndex(boolean needMark, int index) {
         if (needMark) {
-            markChangeIndex(index);
+            mark(index);
         }
     }
 
@@ -74,5 +70,22 @@ public class MarkGridTable<T> extends DefaultGrid<T> implements MarkGrid<T> {
 
     protected BitSet getMark() {
         return mark;
+    }
+
+    @Override
+    public void mark(int index) {
+        this.mark.set(index);
+    }
+
+    @Override
+    protected void signEmptyGrid(int index) {
+        super.signEmptyGrid(index);
+        mark(index);
+    }
+
+    @Override
+    protected void setGrid(int index, T item) {
+        super.setGrid(index, item);
+        mark(index);
     }
 }

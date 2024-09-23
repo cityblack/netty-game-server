@@ -1,7 +1,7 @@
 package com.lzh.game.start.model.item.bag.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.lzh.game.business.grid.MarkGridTable;
+import com.lzh.game.business.grid.DefaultMarkGrid;
 import com.lzh.game.start.model.item.model.AbstractItem;
 import com.lzh.game.start.model.item.resource.ItemResource;
 import com.lzh.game.start.model.item.service.ItemResourceManage;
@@ -10,8 +10,9 @@ import com.lzh.game.start.util.ApplicationUtils;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class ItemStorage extends MarkGridTable<AbstractItem> {
+public class ItemStorage extends DefaultMarkGrid<AbstractItem> {
 
     /**
      * 消耗物品 当物品不足的时候 返回空列表
@@ -24,20 +25,17 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
     public List<RemoveItem> reduceItems(int itemModel, int num, Consumer<RemoveItem> whenReduce) {
         int needReduce = num;
         List<RemoveItem> removeItems = new ArrayList<>();
-
-        for (Map.Entry<Integer, AbstractItem> entry : getItems().entrySet()) {
-            if (needReduce == 0) {
-                break;
+        for (int i = 0; i < this.items.length; i++) {
+            if (!indexHasItem(i)) {
+                continue;
             }
-            AbstractItem item = entry.getValue();
+            AbstractItem item = getItem(i);
             if (item.getResourceId() == itemModel) {
-                if (item.getNum() > needReduce) {
-                    removeItems.add(RemoveItem.of(item, needReduce, entry.getKey()));
-                } else if (item.getNum() == needReduce) {
-                    removeItems.add(RemoveItem.of(item, needReduce, entry.getKey()));
-                } else {
-                    needReduce -= item.getNum();
-                }
+                removeItems.add(RemoveItem.of(item, needReduce, i));
+                needReduce -= item.getNum();
+            }
+            if (needReduce <= 0) {
+                break;
             }
         }
         if (needReduce > 0) {
@@ -63,8 +61,8 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
             if (indexHasItem(i)) {
                 continue;
             }
-            AbstractItem item = (AbstractItem) items[i];
-            if (item.getObjectId() == itemId ) {
+            AbstractItem item = getItem(i);
+            if (item.getObjectId() == itemId) {
                 if (item.getNum() >= num) {
                     item.setNum(item.getNum() - num);
                     if (item.getNum() == 0) {
@@ -83,6 +81,7 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
         if (item.getNum() <= 0) {
             removeItem(index);
         }
+        mark(index);
     }
 
     public RemoveItem removeItem(long itemId) {
@@ -90,7 +89,7 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
             if (indexHasItem(i)) {
                 continue;
             }
-            AbstractItem item = (AbstractItem) this.items[i];
+            AbstractItem item = getItem(i);
             if (item.getObjectId() == itemId) {
                 signEmptyGrid(i);
                 return RemoveItem.of(item, item.getNum(), i);
@@ -99,14 +98,14 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
         return null;
     }
 
-    public int itemNeedGridLen(int itemModel, int num) {
+    public int itemNeedGridLen(int itemModel, final int num) {
         int moreNum = num;
         if (canStack(itemModel)) {
             for (int i = 0; i < this.items.length; i++) {
                 if (indexHasItem(i)) {
                     continue;
                 }
-                AbstractItem item = (AbstractItem) this.items[i];
+                AbstractItem item = getItem(i);
                 if (item.getResourceId() == itemModel && item.canStack()) {
                     moreNum -= item.canStackNumMore();
                     if (moreNum <= 0) {
@@ -119,37 +118,10 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
     }
 
     public int itemNeedGridLen(List<AbstractItem> items) {
+        var idAndNum = AbstractItem.itemToIdAndNum(items);
         int len = 0;
-        Map<Long, Integer> canPutted = new HashMap<>(4);
-
-        for (AbstractItem item : items) {
-            if (!item.canStack()) {
-                len++;
-                continue;
-            }
-            int moreNum = item.getNum();
-            for (Map.Entry<Integer, AbstractItem> entry : getItems().entrySet()) {
-                if (moreNum <= 0) {
-                    break;
-                }
-                AbstractItem stackItem = entry.getValue();
-                if (!stackItem.canStack()) {
-                    continue;
-                }
-                if (stackItem.getResourceId() == item.getResourceId()) {
-                    int canPutSize = canPutted.getOrDefault(stackItem.getObjectId(), stackItem.canStackNumMore());
-                    if (canPutSize >= moreNum) {
-                        moreNum = 0;
-                        canPutted.put(stackItem.getObjectId(), canPutSize - moreNum);
-                    } else {
-                        moreNum -= canPutSize;
-                        canPutted.put(stackItem.getObjectId(), 0);
-                    }
-                }
-            }
-            if (moreNum > 0) {
-                len++;
-            }
+        for (Map.Entry<Integer, Integer> entry : idAndNum.entrySet()) {
+            len += itemNeedGridLen(entry.getKey(), entry.getValue());
         }
         return len;
     }
@@ -184,69 +156,44 @@ public class ItemStorage extends MarkGridTable<AbstractItem> {
         return ApplicationUtils.getBean(ItemResourceManage.class).findItemResourceById(itemModel);
     }
 
-    @Deprecated
     @Override
     public int addItem(AbstractItem item) {
-        return super.addItem(item);
-    }
-
-    public void addItems(List<AbstractItem> items, Consumer<AbstractItem> addOk, Consumer<AbstractItem> addFailure) {
-
-        items.forEach(item -> {
-            int itemModel = item.getResourceId();
-
-            if (item.canStack()) {
-                for (Map.Entry<Integer, AbstractItem> entry : getItems().entrySet()) {
-
-                    if (item.getNum() <= 0) {
-                        return;
-                    }
-                    AbstractItem stackedItem = entry.getValue();
-                    if (stackedItem.getResourceId() == itemModel && stackedItem.canStack()) {
-                        int hasMoreStack = item.canStackNumMore();
-                        if (hasMoreStack <= 0) {
-                            continue;
-                        }
-                        int canAdd = item.getNum() - hasMoreStack;
-                        if (hasMoreStack >= item.getNum()) {
-                            stackedItem(stackedItem, item.getNum(), entry.getKey());
-                            addOk.accept(item);
-                            item.reduceNum(item.getNum());
-                            return;
-                        }
-
-                        stackedItem(stackedItem, canAdd, entry.getKey());
-                        addOk.accept(item);
-                        item.reduceNum(canAdd);
-                    }
+        if (item.canStack()) {
+            int firstEmpty = -1;
+            for (int i = 0; i < this.items.length; i++) {
+                if (!indexHasItem(i)) {
+                   if (firstEmpty == -1) {
+                       firstEmpty = i;
+                   }
+                   continue;
                 }
-            }
-
-            if (item.getNum() > 0) {
-                int index = addItem(item);
-                if (index < 0) {
-                    if (Objects.nonNull(addFailure)) {
-                        addFailure.accept(item);
-                    }
-                } else {
-                    addOk.accept(item);
+                AbstractItem old = getItem(i);
+                if (old.canStack() && old.getNum() + item.getNum() <= old.getResource().getStack()) {
+                    continue;
                 }
+                old.setNum(old.getNum() + item.getNum());
+                mark(i);
+                return i;
             }
-        });
-
+            if (firstEmpty == -1) {
+                setGrid(firstEmpty, item);
+            }
+            return firstEmpty;
+        } else {
+            return super.addItem(item);
+        }
     }
 
     public List<AbstractItem> findItemsByItemModelId(int itemId) {
-        return getItems()
-                .values()
-                .stream()
+        return Stream.of(getItems())
+                .map(e -> (AbstractItem)e)
                 .filter(e -> e.getResourceId() == itemId)
                 .collect(Collectors.toList());
     }
 
     public AbstractItem findItemByObjectId(long objectId) {
-        return getItems().values()
-                .stream()
+        return  Stream.of(getItems())
+                .map(e -> (AbstractItem)e)
                 .filter(e -> e.getObjectId() == objectId)
                 .findFirst()
                 .orElse(null);

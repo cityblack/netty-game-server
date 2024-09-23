@@ -11,4 +11,6 @@ public interface MarkGrid<T> extends Grid<T> {
     void clearMark();
 
     Map<Integer, T> getChange();
+
+    void mark(int index);
 }

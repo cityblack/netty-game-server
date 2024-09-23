@@ -20,8 +20,21 @@ public interface Grid<T> {
         return isEnoughSize(1);
     }
 
+    /**
+     * Add item to the index of grid
+     * @param index
+     * @param item
+     * @return
+     */
     boolean putItem(int index, T item);
 
+    /**
+     * Find first empty grid to push item
+     * Maybe fail
+     * Call {@link #isEnoughSize()} before call this method
+     * @param item
+     * @return First empty grid index. Not find any grid when the return value is -1
+     */
     int addItem(T item);
 
     void grow(int size);

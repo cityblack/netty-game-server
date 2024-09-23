@@ -10,6 +10,10 @@ import com.lzh.game.start.model.item.service.ItemResourceManage;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public abstract class AbstractItem {
 
     @Getter
@@ -44,6 +48,7 @@ public abstract class AbstractItem {
     }
 
     @JsonIgnore
+    // accord resource id to superpose
     public boolean canStack() {
         return getResource().canStack();
     }
@@ -74,5 +79,13 @@ public abstract class AbstractItem {
 
     public void setNum(int num) {
         this.num = (short) num;
+    }
+
+    public static Map<Integer, Integer> itemToIdAndNum(List<AbstractItem> items) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (AbstractItem item : items) {
+            map.merge(item.getResourceId(), item.getNum(), Integer::sum);
+        }
+        return map;
     }
 }
