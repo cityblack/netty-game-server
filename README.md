@@ -1,6 +1,4 @@
-# Project Title
-
-Netty Game Server
+# Netty Game Server
 
 ## Introduction
 
@@ -27,35 +25,27 @@ java -jar game-start/target/*.jar
 python static-resource/run.py -h mongodb_host -p mongodb_port
 ```
 
-## Feature 
-
-* Used redis with redisson to cache player data.
-* Save data asynchronously to mongodb.
-* Integrating google proto buffer to speed ​​up serialization.
-
 ## Usage
 
 ```
 @Action
 public class HelloAction {
 
-    @RequestMapping(-10086)
+    @RequestMapping
     public ResponseHello hello(Session session, RequestHello hello) {
         System.out.println("Get session: " + session.getId() + " info:" + hello);      
         return new ResponseHello("I am server.", 10001);
     }
     
-    @RequestMapping(-10087)
-    public void request(Session session,  RequestHello hello) {
-         System.out.println("Get session: " + session.getId() + " info:" + hello); 
-    }
 }
 
+@Protcol(10086)
 public class RequestHello {
 
     private String content;
 }
 
+@Protcol(10087)
 public class ResponseHello {
 
     private String content;
