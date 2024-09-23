@@ -171,8 +171,7 @@ public class ItemStorage extends DefaultMarkGrid<AbstractItem> {
                 if (old.canStack() && old.getNum() + item.getNum() <= old.getResource().getStack()) {
                     continue;
                 }
-                old.setNum(old.getNum() + item.getNum());
-                mark(i);
+                stackedItem(old, item.getNum(), i);
                 return i;
             }
             if (firstEmpty == -1) {
