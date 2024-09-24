@@ -140,57 +140,57 @@
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-socket-starter</artifactId>
-                <version>0.1.1</version>
+                <version>${project.parent}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-repository</artifactId>
-                <version>0.1.1</version>
+                <version>${project.parent}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-resource</artifactId>
-                <version>0.1.1</version>
+                <version>${project.parent}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-gateway</artifactId>
-                <version>0.1.1</version>
+                <version>${project.parent}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-scheduler</artifactId>
-                <version>0.1.1</version>
+                <version>${project.parent}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>business</artifactId>
-                <version>0.1.1</version>
+                <version>${project.parent}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-event</artifactId>
-                <version>0.1.1</version>
+                <version>${project.parent}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>rookie</artifactId>
-                <version>0.1.1</version>
+                <version>${project.parent}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-hotswap</artifactId>
-                <version>0.1.1</version>
+                <version>${project.parent}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-logs</artifactId>
-                <version>0.1.1</version>
+                <version>${project.parent}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-utils</artifactId>
-                <version>0.1.1</version>
+                <version>${project.parent}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

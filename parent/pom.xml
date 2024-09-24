@@ -13,7 +13,6 @@
     <name>parent</name>
     <description>parent</description>
     <packaging>pom</packaging>
-
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
