@@ -11,7 +11,7 @@ public interface AfterServerStartInit extends Ordered, Comparable<AfterServerSta
 
     @Override
     default int compareTo(AfterServerStartInit o) {
-        return o.getOrder() > this.getOrder() ? 1 : o.getOrder() == this.getOrder() ? 0 : -1 ;
+        return Integer.compare(o.getOrder(), this.getOrder());
     }
 
     /**

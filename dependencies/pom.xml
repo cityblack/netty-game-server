@@ -135,62 +135,62 @@
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-socket</artifactId>
-                <version>0.1.1</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-socket-starter</artifactId>
-                <version>${project.parent}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-repository</artifactId>
-                <version>${project.parent}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-resource</artifactId>
-                <version>${project.parent}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-gateway</artifactId>
-                <version>${project.parent}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-scheduler</artifactId>
-                <version>${project.parent}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>business</artifactId>
-                <version>${project.parent}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-event</artifactId>
-                <version>${project.parent}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>rookie</artifactId>
-                <version>${project.parent}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-hotswap</artifactId>
-                <version>${project.parent}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-logs</artifactId>
-                <version>${project.parent}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-utils</artifactId>
-                <version>${project.parent}</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
