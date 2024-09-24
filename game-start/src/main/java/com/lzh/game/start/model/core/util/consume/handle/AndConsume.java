@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class AndConsume extends AbstractConsume<Player> implements Iterable<AbstractConsume> {
+public class AndConsume extends AbstractConsume implements Iterable<AbstractConsume> {
 
     private List<AbstractConsume> consumes = new ArrayList<>();
 
@@ -20,7 +20,7 @@ public class AndConsume extends AbstractConsume<Player> implements Iterable<Abst
     }
 
     @Override
-    public void doVerify(Player player, VerifyResult result, int multiple) {
+    public void doVerify(Object player, VerifyResult result, int multiple) {
         if (!consumes.isEmpty()) {
             for (int i = 0; i < consumes.size(); i++) {
                 AbstractConsume consume = consumes.get(i);
@@ -54,7 +54,7 @@ public class AndConsume extends AbstractConsume<Player> implements Iterable<Abst
     }
 
     @Override
-    public void consume(Player player, int multiple, LogReason logReason) {
+    public void consume(Object player, int multiple, LogReason logReason) {
         if (!consumes.isEmpty()) {
             for (AbstractConsume consume: consumes) {
                 consume.consume(player, multiple, logReason);

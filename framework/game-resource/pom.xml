@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
-        <groupId>com.lzh.game.framework</groupId>
+        <groupId>io.github.cityblack.game</groupId>
         <artifactId>parent</artifactId>
         <version>${revision}</version>
         <relativePath>../../parent/pom.xml</relativePath>
@@ -43,9 +43,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.lzh.game.framework</groupId>
+            <groupId>io.github.cityblack.game</groupId>
             <artifactId>game-utils</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
 
     </dependencies>

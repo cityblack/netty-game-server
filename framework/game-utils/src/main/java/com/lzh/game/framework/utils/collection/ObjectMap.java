@@ -607,6 +607,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
     }
 
     public static class Keys<K> extends MapIterator<K, Object, K> {
+        @SuppressWarnings("unchecked")
         public Keys(ObjectMap<K, ?> map) {
             super((ObjectMap<K, Object>) map);
         }

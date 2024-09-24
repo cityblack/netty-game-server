@@ -14,7 +14,7 @@ public class GmHandlerMethod extends HandlerMethod {
 
     public Object invokeForValues(Player player, String[] values) throws Exception {
         Object[] argumentValues = this.getMethodArgumentValues(player,values);
-        return doInvoke(argumentValues);
+        return invoke(argumentValues);
     }
 
     private Object[] getMethodArgumentValues(Player player, String[] values) throws Exception {

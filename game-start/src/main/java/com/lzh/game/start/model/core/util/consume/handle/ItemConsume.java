@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Item consumer handler, config format -> {type:"ITEM",value:"1000_1"} -> 1000 means itemId, 1 means num
  */
-public class ItemConsume extends AbstractConsume<Player> {
+public class ItemConsume extends AbstractConsume {
 
     @Getter
     @Setter
@@ -34,12 +34,14 @@ public class ItemConsume extends AbstractConsume<Player> {
     }
 
     @Override
-    public void doVerify(Player player, VerifyResult result, int multiple) {
-        int count = num * multiple;
-        Map<Object, Object> context = result.getVerifyContext();
-        collectItems(itemId, count, context);
-        if (result.isLastContext()) {
-            verify(player, context);
+    public void doVerify(Object data, VerifyResult result, int multiple) {
+        if (data instanceof Player player) {
+            int count = num * multiple;
+            Map<Object, Object> context = result.getVerifyContext();
+            collectItems(itemId, count, context);
+            if (result.isLastContext()) {
+                verify(player, context);
+            }
         }
     }
 
@@ -55,12 +57,14 @@ public class ItemConsume extends AbstractConsume<Player> {
     }
 
     @Override
-    public void consume(Player player, int multiple, LogReason logReason) {
-        int count = num * multiple;
-        try {
-            ApplicationUtils.getBean(PlayerBagService.class).reduceItems(player, itemId, count, logReason);
-        } catch (NotEnoughItemException e) {
-            e.printStackTrace();
+    public void consume(Object data, int multiple, LogReason logReason) {
+        if (data instanceof Player player) {
+            int count = num * multiple;
+            try {
+                ApplicationUtils.getBean(PlayerBagService.class).reduceItems(player, itemId, count, logReason);
+            } catch (NotEnoughItemException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.lzh.game.framework</groupId>
+        <groupId>io.github.cityblack.game</groupId>
         <artifactId>parent</artifactId>
         <version>${revision}</version>
         <relativePath>../parent/pom.xml</relativePath>
@@ -17,34 +17,31 @@
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>${caffeine.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.lzh.game.framework</groupId>
+            <groupId>io.github.cityblack.game</groupId>
             <artifactId>game-socket-starter</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.lzh.game.framework</groupId>
+            <groupId>io.github.cityblack.game</groupId>
             <artifactId>game-repository</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
+
         <dependency>
-            <groupId>com.lzh.game.framework</groupId>
+            <groupId>io.github.cityblack.game</groupId>
             <artifactId>game-resource</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
+
         <dependency>
-            <groupId>com.lzh.game.framework</groupId>
+            <groupId>io.github.cityblack.game</groupId>
             <artifactId>business</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
+
         <dependency>
-            <groupId>com.lzh.game.framework</groupId>
+            <groupId>io.github.cityblack.game</groupId>
             <artifactId>game-event</artifactId>
-            <version>${parent.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -54,6 +51,31 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>com.lzh.game.start.App</mainClass>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>install</goal>
+                        </goals>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.1.3</version>
+                <configuration>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
         </plugins>

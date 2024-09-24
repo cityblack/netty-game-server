@@ -2,6 +2,7 @@ package com.lzh.game.start.config;
 
 import com.lzh.game.framework.socket.core.filter.Filter;
 import com.lzh.game.start.StartProperties;
+import com.lzh.game.start.filter.GmFilter;
 import com.lzh.game.start.pool.DefaultBusinessThreadExecutorService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

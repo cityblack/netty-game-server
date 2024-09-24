@@ -12,7 +12,7 @@ import com.lzh.game.start.model.player.Player;
  * 金钱
  * {type:"CURRENCY",value:"CurrencyType_value"}
  */
-public class CurrencyReward extends AbstractReward<Player> {
+public class CurrencyReward extends AbstractReward {
 
     private CurrencyType type;
 
@@ -26,7 +26,7 @@ public class CurrencyReward extends AbstractReward<Player> {
     }
 
     @Override
-    public void doVerify(Player param, VerifyResult result, int multiple) {
+    public void doVerify(Object param, VerifyResult result, int multiple) {
         if (value * multiple <= 0) {
             result.fail();
             result.setErrorCode(I18n.SYS_ERROR);
@@ -34,7 +34,7 @@ public class CurrencyReward extends AbstractReward<Player> {
     }
 
     @Override
-    public void reward(Player player, int multiple, LogReason logReason) {
+    public void reward(Object player, int multiple, LogReason logReason) {
         long computed = multiple * this.value;
 //        ApplicationUtils.getBean(WalletService.class).addCurrency(player, type, computed, logReason);
     }

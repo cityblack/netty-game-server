@@ -25,7 +25,7 @@ public class CommonDataManage implements AfterServerStartInit {
     public void updateCommonData(CommonIdGenerator id, Object data) {
         CommonData commonData = getCommonData(id);
         commonData.setData(data);
-        dataRepository.update(commonData);
+        dataRepository.save(commonData);
     }
 
     private CommonData getCommonData(CommonIdGenerator id) {
