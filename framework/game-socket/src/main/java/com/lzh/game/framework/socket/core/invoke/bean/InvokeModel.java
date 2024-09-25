@@ -1,7 +1,7 @@
 package com.lzh.game.framework.socket.core.invoke.bean;
 
 import com.lzh.game.framework.socket.core.protocol.message.MessageDefine;
-import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
+import com.lzh.game.framework.common.method.EnhanceMethodInvoke;
 import lombok.Data;
 import lombok.experimental.Accessors;
 

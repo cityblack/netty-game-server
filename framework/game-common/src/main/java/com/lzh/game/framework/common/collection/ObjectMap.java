@@ -1,4 +1,4 @@
-package com.lzh.game.framework.utils.collection;
+package com.lzh.game.framework.common.collection;
 
 import java.util.*;
 
@@ -411,7 +411,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 
     private String toString(String separator, boolean braces) {
         if (size == 0) return braces ? "{}" : "";
-        java.lang.StringBuilder buffer = new java.lang.StringBuilder(32);
+        StringBuilder buffer = new StringBuilder(32);
         if (braces) buffer.append('{');
         K[] keyTable = this.keyTable;
         V[] valueTable = this.valueTable;

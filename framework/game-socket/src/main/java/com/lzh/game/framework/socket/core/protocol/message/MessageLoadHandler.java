@@ -1,21 +1,10 @@
 package com.lzh.game.framework.socket.core.protocol.message;
 
-import com.lzh.game.framework.utils.ClassScannerUtils;
+import org.reflections.Reflections;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author zehong.l
@@ -24,16 +13,24 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MessageLoadHandler {
 
     public List<MessageDefine> load(String[] packageNames) {
-        var list = new ArrayList<MessageDefine>();
+        var list = new LinkedList<MessageDefine>();
         loadDefined(list, packageNames);
         return list;
     }
 
-
     private void loadDefined(List<MessageDefine> list, String[] packageNames) {
-        ClassScannerUtils.scanPackage(packageNames, e -> e.isAnnotationPresent(Protocol.class), e -> {
-            var defined = MessageManager.classToDefine(e);
-            list.add(defined);
-        });
+        if (packageNames.length == 0) {
+            return;
+        }
+        Reflections reflections = null;
+        for (String packageName : packageNames) {
+            var newReflections = new Reflections(packageName);
+            reflections = Objects.isNull(reflections) ?
+                    newReflections : reflections.merge(newReflections);
+        }
+
+        for (Class<?> clz : reflections.getTypesAnnotatedWith(Protocol.class)) {
+            list.add(MessageManager.classToDefine(clz));
+        }
     }
 }

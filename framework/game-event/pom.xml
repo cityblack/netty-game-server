@@ -12,6 +12,7 @@
 
     <artifactId>game-event</artifactId>
     <name>game-event</name>
+    <version>${revision}</version>
     <description>game-event</description>
 
     <dependencies>

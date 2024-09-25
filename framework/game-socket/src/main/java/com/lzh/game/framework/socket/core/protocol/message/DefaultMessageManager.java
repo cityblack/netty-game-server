@@ -1,7 +1,7 @@
 package com.lzh.game.framework.socket.core.protocol.message;
 
 import com.lzh.game.framework.socket.core.GameSocketProperties;
-import com.lzh.game.framework.utils.collection.IdentityMap;
+import com.lzh.game.framework.common.collection.IdentityMap;
 import io.netty.util.collection.ShortObjectHashMap;
 import io.netty.util.collection.ShortObjectMap;
 

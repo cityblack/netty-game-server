@@ -1,4 +1,4 @@
-package com.lzh.game.framework.utils.bean;
+package com.lzh.game.framework.common.method;
 
 /**
  * Java reflect enhance

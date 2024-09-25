@@ -47,10 +47,10 @@ public class CrcUtils {
     /**
      * Compute CRC32 code for byte[].
      *
-     * @param array
-     * @param offset
-     * @param length
-     * @return
+     * @param array - bytes
+     * @param offset - index
+     * @param length - byte len
+     * @return crc result
      */
     public static final int crc32(byte[] array, int offset, int length) {
         CRC32 crc32 = CRC_32_THREAD_LOCAL.get();

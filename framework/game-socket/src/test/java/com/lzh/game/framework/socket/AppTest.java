@@ -46,5 +46,6 @@ public class AppTest {
         var request = new RequestData(-1L, 30, "lzh", 0.1D, 174.3F);
         AsyncResponse<RequestData> future = client.request(session, request, RequestData.class);
         System.out.println(future.get());
+        session.close();
     }
 }

@@ -3,7 +3,7 @@ package com.lzh.game.framework.socket.starter.bean;
 import com.lzh.game.framework.socket.core.invoke.support.ActionInterceptor;
 import com.lzh.game.framework.socket.core.invoke.support.InterceptorHandler;
 import com.lzh.game.framework.socket.core.protocol.Request;
-import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
+import com.lzh.game.framework.common.method.EnhanceMethodInvoke;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class SpringInterceptorHandler implements InterceptorHandler, ApplicationContextAware {
 

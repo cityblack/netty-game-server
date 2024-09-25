@@ -1,6 +1,6 @@
 package com.lzh.game.framework.socket.core.invoke.support;
 
-import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
+import com.lzh.game.framework.common.method.EnhanceMethodInvoke;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;

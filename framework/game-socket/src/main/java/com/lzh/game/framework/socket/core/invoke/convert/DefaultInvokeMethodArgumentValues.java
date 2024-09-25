@@ -2,7 +2,7 @@ package com.lzh.game.framework.socket.core.invoke.convert;
 
 import com.lzh.game.framework.socket.core.invoke.convert.impl.*;
 import com.lzh.game.framework.socket.core.protocol.Request;
-import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
+import com.lzh.game.framework.common.method.EnhanceMethodInvoke;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;

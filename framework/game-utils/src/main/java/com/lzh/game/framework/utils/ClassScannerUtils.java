@@ -24,6 +24,12 @@ public class ClassScannerUtils {
 
     static final String DEFAULT_RESOURCE_PATTERN = "/**/*.class";
 
+    /**
+     * @param list -- result
+     * @param packageName -- package name
+     * @param classFilter -- Filter conditions
+     * @param consumer do something when classes looping
+     */
     private static void scanPackage0(Set<Class<?>> list, String packageName, Predicate<Class<?>> classFilter, Consumer<Class<?>> consumer) {
         String classPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
                 + ClassUtils.convertClassNameToResourcePath(packageName)
@@ -58,6 +64,12 @@ public class ClassScannerUtils {
         }
     }
 
+    /**
+     * Scan classes
+     * @param list result
+     * @param packageName -- package name
+     * @param classFilter -- Filter conditions
+     */
     private static void scanPackage(Set<Class<?>> list, String packageName, Predicate<Class<?>> classFilter) {
         scanPackage0(list, packageName, classFilter, null);
     }
@@ -68,6 +80,12 @@ public class ClassScannerUtils {
         return result;
     }
 
+    /**
+     * Scan classes
+     * @param packageName -- package name
+     * @param classFilter -- Filter conditions
+     * @return Classes that meet the requirements
+     */
     public static Set<Class<?>> scanPackage(String[] packageName, Predicate<Class<?>> classFilter) {
         if (Objects.isNull(packageName) || packageName.length == 0) {
             return Collections.emptySet();
@@ -79,6 +97,11 @@ public class ClassScannerUtils {
         return result;
     }
 
+    /**
+     * @param packageNames -- package name
+     * @param classFilter -- Filter conditions
+     * @param consumer do something when classes looping
+     */
     public static void scanPackage(String[] packageNames, Predicate<Class<?>> classFilter, Consumer<Class<?>> consumer) {
         var set = new HashSet<Class<?>>();
         for (String packageName : packageNames) {

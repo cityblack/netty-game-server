@@ -1,6 +1,4 @@
-package com.lzh.game.framework.utils.bean;
-
-import org.springframework.util.ClassUtils;
+package com.lzh.game.framework.common.method;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -24,7 +22,7 @@ public class HandlerMethod implements MethodInvoke {
     public HandlerMethod(Object bean, Method method) {
         this.bean = bean;
         this.method = method;
-        this.beanType = ClassUtils.getUserClass(bean);
+        this.beanType = bean.getClass();
         this.paramsType = method.getParameterTypes();
         this.returnType = method.getReturnType();
     }

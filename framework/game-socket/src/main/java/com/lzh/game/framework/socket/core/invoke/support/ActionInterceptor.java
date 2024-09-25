@@ -1,9 +1,7 @@
 package com.lzh.game.framework.socket.core.invoke.support;
 
 import com.lzh.game.framework.socket.core.protocol.Request;
-import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
-
-import java.lang.reflect.Method;
+import com.lzh.game.framework.common.method.EnhanceMethodInvoke;
 
 /**
  * Before invoke request mapping method

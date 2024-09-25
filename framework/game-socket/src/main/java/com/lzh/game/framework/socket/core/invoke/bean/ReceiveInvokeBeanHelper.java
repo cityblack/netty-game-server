@@ -3,8 +3,8 @@ package com.lzh.game.framework.socket.core.invoke.bean;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.invoke.Receive;
 import com.lzh.game.framework.socket.core.protocol.message.Protocol;
-import com.lzh.game.framework.utils.bean.HandlerMethod;
-import com.lzh.game.framework.utils.bean.MethodInvokeUtils;
+import com.lzh.game.framework.common.method.HandlerMethod;
+import com.lzh.game.framework.common.method.MethodInvokeUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

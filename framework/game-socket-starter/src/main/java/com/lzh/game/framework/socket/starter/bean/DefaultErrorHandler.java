@@ -1,10 +1,9 @@
 package com.lzh.game.framework.socket.starter.bean;
 
+import com.lzh.game.framework.common.method.HandlerMethod;
 import com.lzh.game.framework.socket.core.invoke.support.ErrorHandler;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.Response;
-import com.lzh.game.framework.socket.starter.bean.ExceptionHandlerMethodResolver;
-import com.lzh.game.framework.utils.bean.HandlerMethod;
 import org.springframework.core.BridgeMethodResolver;
 
 import java.lang.reflect.Method;

@@ -1,8 +1,9 @@
 package com.lzh.game.framework.socket.core.invoke.bean;
 
-import com.lzh.game.framework.utils.bean.EnhanceMethodInvoke;
-import com.lzh.game.framework.utils.bean.HandlerMethod;
-import com.lzh.game.framework.utils.bean.MethodInvoke;
+
+import com.lzh.game.framework.common.method.EnhanceMethodInvoke;
+import com.lzh.game.framework.common.method.HandlerMethod;
+import com.lzh.game.framework.common.method.MethodInvoke;
 
 /**
  * @author zehong.l
