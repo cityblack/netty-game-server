@@ -29,16 +29,19 @@ public class GameSocketConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public SpringExceptionHandler errorHandler() {
         return new SpringExceptionHandler();
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public SpringInterceptorHandler interceptorHandler() {
         return new SpringInterceptorHandler();
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public DefaultInvokeMethodArgumentValues argumentValues() {
         return new DefaultInvokeMethodArgumentValues();
     }

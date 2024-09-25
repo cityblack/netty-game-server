@@ -4,9 +4,9 @@ import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketPrope
 import com.lzh.game.framework.socket.core.bootstrap.server.AbstractServerBootstrap;
 
 /**
- * Impl the interface to change server config when server init.
+ * Call back when server start.
  */
-public interface SocketServerInit {
+public interface SocketServerRunner {
 
-    void doInit(GameServerSocketProperties config, AbstractServerBootstrap<? extends GameServerSocketProperties> server);
+    void run(GameServerSocketProperties config, AbstractServerBootstrap<? extends GameServerSocketProperties> server);
 }

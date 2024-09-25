@@ -2,7 +2,6 @@ game:
   socket:
     server:
       port: 8089
-      protocol-version: 100101
       open-gm: true
   resource:
     resource-scanner-path: com.lzh.game
@@ -11,15 +10,9 @@ game:
 spring:
   data:
     mongodb:
-      host: 42.193.253.72
+      host: 127.0.0.1
       database: game
-      port: 17017
+      port: 27017
   redis:
-#    host: localhost
-#    port: 16379
-#    lettuce:
-#      pool:
-#        max-active: 8
-#    password: as123456
     redisson:
       config: classpath:redisson.yml
