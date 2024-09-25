@@ -97,7 +97,7 @@ public class DefaultResourceMetaManager implements ResourceMetaManager, Initiali
             Class<? extends ResourceNameStrategyStandard> standardType = resourceProperties.getNameStrategyStandard();
             ResourceNameStrategyStandard nameStrategyStandard = standardType.getDeclaredConstructor().newInstance();
 
-            var list = ClassScannerUtils.scanPackage(resourceProperties.getResourceScannerPath(), e -> e.isAnnotationPresent(Resource.class));
+            var list = ClassScannerUtils.scanPackagesWithAnnotatedType(resourceProperties.getResourceScannerPath(), Resource.class);
             if (list.isEmpty()) {
                 log.warn("Not register any resource!!");
                 return;

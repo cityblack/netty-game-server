@@ -25,7 +25,7 @@ public class LogRegisterSupport {
     public void registerRepositoriesIn(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         StopWatch watch = new StopWatch("Register log");
         watch.start();
-        var list = ClassScannerUtils.scanPackage(packageNames, e -> e.isAnnotationPresent(LogFacade.class));
+        var list = ClassScannerUtils.scanPackagesWithAnnotatedType(packageNames, LogFacade.class);
         for (Class<?> clazz : list) {
             if (registry.containsBeanDefinition(clazz.getName())) {
                 continue;

@@ -2,7 +2,8 @@ package com.lzh.game.framework.common.method;
 
 import com.lzh.game.framework.common.bean.BeanUtils;
 import javassist.*;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -13,8 +14,9 @@ import java.util.Map;
  * @author zehong.l
  * @since 2024/6/21 21:58
  **/
-@Slf4j
 public class MethodInvokeUtils {
+
+    private final static Logger LOG = LoggerFactory.getLogger(MethodInvokeUtils.class);
 
     private static ClassPool pl;
 
@@ -35,7 +37,7 @@ public class MethodInvokeUtils {
         enhance.setInterfaces(new CtClass[]{pl.getCtClass(MethodInvoke.class.getName())});
 
         CtClass beanClass = pl.getCtClass(superName);
-        log.debug("General invoke class name:{}", newClassName);
+        LOG.info("General invoke class name:{}", newClassName);
         CtField beanField = new CtField(beanClass, "bean", enhance);
         enhance.addField(beanField);
 
