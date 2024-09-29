@@ -102,16 +102,15 @@
                 <artifactId>protobuf-java</artifactId>
                 <version>${protobuf.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>io.netty</groupId>
-                <artifactId>netty-all</artifactId>
+                <artifactId>netty-parent</artifactId>
                 <version>${netty.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-common</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.apache.fury</groupId>
                 <artifactId>fury-core</artifactId>
@@ -142,67 +141,67 @@
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-socket</artifactId>
-                <version>${project.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-socket-starter</artifactId>
-                <version>${project.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-repository</artifactId>
-                <version>${project.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-resource</artifactId>
-                <version>${project.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-gateway</artifactId>
-                <version>${project.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-scheduler</artifactId>
-                <version>${project.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>business</artifactId>
-                <version>${project.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-event</artifactId>
-                <version>${project.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>rookie</artifactId>
-                <version>${project.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-hotswap</artifactId>
-                <version>${project.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-logs</artifactId>
-                <version>${project.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-utils</artifactId>
-                <version>${project.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cityblack.game</groupId>
                 <artifactId>game-common</artifactId>
-                <version>${project.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -1,6 +1,6 @@
 package com.lzh.game.start.gm.service;
 
-import com.lzh.game.framework.utils.bean.HandlerMethod;
+import com.lzh.game.framework.common.method.HandlerMethod;
 import com.lzh.game.start.model.player.Player;
 
 import java.lang.reflect.Method;

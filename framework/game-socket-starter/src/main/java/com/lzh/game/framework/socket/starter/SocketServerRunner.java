@@ -4,9 +4,9 @@ import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketPrope
 import com.lzh.game.framework.socket.core.bootstrap.server.AbstractServerBootstrap;
 
 /**
- * Call back when server start.
+ * Call back when server init.
  */
 public interface SocketServerRunner {
 
-    void run(GameServerSocketProperties config, AbstractServerBootstrap<? extends GameServerSocketProperties> server);
+    void run(AbstractServerBootstrap<? extends GameServerSocketProperties> server);
 }

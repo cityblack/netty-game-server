@@ -1,7 +1,9 @@
 package com.lzh.game.framework.socket.core.protocol.message;
 
+import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -10,9 +12,14 @@ import java.util.Objects;
  * @author zehong.l
  * @since 2024-08-22 10:44
  **/
+@Slf4j
 public class MessageLoadHandler {
 
     public List<MessageDefine> load(String[] packageNames) {
+        log.info("Loading message. scan path: {}", packageNames);
+        if (Objects.isNull(packageNames) || packageNames.length == 0) {
+            return Collections.emptyList();
+        }
         var list = new LinkedList<MessageDefine>();
         loadDefined(list, packageNames);
         return list;
@@ -28,8 +35,8 @@ public class MessageLoadHandler {
             reflections = Objects.isNull(reflections) ?
                     newReflections : reflections.merge(newReflections);
         }
-
-        for (Class<?> clz : reflections.getTypesAnnotatedWith(Protocol.class)) {
+        var pros = reflections.getTypesAnnotatedWith(Protocol.class);
+        for (Class<?> clz : pros) {
             list.add(MessageManager.classToDefine(clz));
         }
     }

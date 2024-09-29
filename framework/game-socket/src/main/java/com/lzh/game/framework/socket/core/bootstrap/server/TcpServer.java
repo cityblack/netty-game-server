@@ -9,7 +9,6 @@ import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteEncode
 import com.lzh.game.framework.socket.utils.NettyUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
-import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
