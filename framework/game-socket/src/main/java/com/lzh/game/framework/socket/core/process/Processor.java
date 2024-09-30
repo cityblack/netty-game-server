@@ -12,7 +12,14 @@ import com.lzh.game.framework.socket.core.session.Session;
  */
 public interface Processor {
 
+    /**
+     * After read io date.
+     * @param context request context
+     * @param session request session
+     * @param data request data
+     */
     void process(ProcessorContext context, Session session, Object data);
+
 
     boolean match(Session session, Object msg);
 

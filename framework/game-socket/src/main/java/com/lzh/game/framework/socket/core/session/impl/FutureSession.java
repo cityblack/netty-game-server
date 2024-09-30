@@ -43,13 +43,18 @@ public class FutureSession implements Session {
     }
 
     @Override
-    public Map<String, Object> getAttributes() {
-        return blockGetSession().getAttributes();
+    public void setAttribute(String attributeKey, Object attributeValue) {
+        blockGetSession().setAttribute(attributeKey, attributeValue);
     }
 
     @Override
-    public void setAttribute(String attributeKey, Object attributeValue) {
-        blockGetSession().setAttribute(attributeKey, attributeValue);
+    public <T> T getAttribute(String name) {
+        return blockGetSession().getAttribute(name);
+    }
+
+    @Override
+    public boolean hasAttribute(String name) {
+        return blockGetSession().hasAttribute(name);
     }
 
     @Override

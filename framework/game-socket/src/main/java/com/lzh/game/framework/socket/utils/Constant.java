@@ -1,5 +1,9 @@
 package com.lzh.game.framework.socket.utils;
 
+import com.lzh.game.framework.socket.core.protocol.AuthProtocol;
+
+import java.util.function.Function;
+
 public class Constant {
 
     public static final byte REQUEST_SIGN = 0x00;
@@ -22,9 +26,10 @@ public class Constant {
 
     public static final String AUTH_SESSION_KEY = "auth_session";
 
+    public static final String AUTH_ERROR_COUNT_KEY = "auth_error_count";
+
     public static final short AUTH_PROTOCOL_ID = -1;
 
     public static final short HEARTBEAT_PROTOCOL_ID = -2;
 
-    public static final String HEARTBEAT_TASK_KEY = "heartbeat_task";
 }

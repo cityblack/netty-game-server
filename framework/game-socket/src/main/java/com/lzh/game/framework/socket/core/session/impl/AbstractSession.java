@@ -5,6 +5,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPromise;
 import io.netty.channel.DefaultChannelPromise;
+import io.netty.util.AttributeKey;
 
 import java.time.Instant;
 import java.util.Map;
@@ -13,10 +14,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class AbstractSession implements Session {
 
-    private transient Channel channel;
+    private final transient Channel channel;
     private String id;
     private String remoteAddress;
-    private final Map<String, Object> attribute = new ConcurrentHashMap<>();
     private transient Instant lastAccessTime;
     private transient Instant creationTime;
     private Integer port;
@@ -39,6 +39,7 @@ public abstract class AbstractSession implements Session {
             this.port = Integer.valueOf(split[1]);
         }
         this.id = channel.id().asLongText();
+        setCreationTime();
     }
 
     @Override
@@ -72,13 +73,8 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
-    public Map<String, Object> getAttributes() {
-        return attribute;
-    }
-
-    @Override
     public void setAttribute(String attributeKey, Object attributeValue) {
-        this.attribute.put(attributeKey, attributeValue);
+        this.channel.attr(AttributeKey.valueOf(attributeKey)).set(attributeValue);
     }
 
     @Override
@@ -94,12 +90,22 @@ public abstract class AbstractSession implements Session {
     @Override
     public void close() {
         this.channel.close();
-        this.attribute.clear();
     }
 
     @Override
     public ChannelFuture write(Object data) {
         return channel.writeAndFlush(data);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getAttribute(String name) {
+        return (T) this.channel.attr(AttributeKey.valueOf(name)).get();
+    }
+
+    @Override
+    public boolean hasAttribute(String name) {
+        return this.channel.hasAttr(AttributeKey.valueOf(name));
     }
 
     @Override
@@ -110,4 +116,5 @@ public abstract class AbstractSession implements Session {
     public void setCreationTime() {
         this.creationTime = Instant.now();
     }
+
 }

@@ -19,6 +19,7 @@ package com.lzh.game.framework.socket.core.bootstrap.handler;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,10 +32,12 @@ public class ServerIdleHandler extends ChannelDuplexHandler {
      */
     @Override
     public void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
-        if (evt instanceof IdleStateEvent) {
+        if (evt instanceof IdleStateEvent event) {
             try {
-                log.warn("Connection idle, close it from server side: {}", ctx.channel());
-                ctx.close();
+                if (event.state() == IdleState.ALL_IDLE) {
+                    log.warn("Connection idle, close it from server side: {}", ctx.channel());
+                    ctx.close();
+                }
             } catch (Exception e) {
                 log.warn("Exception caught when closing connection in ServerIdleHandler.", e);
             }

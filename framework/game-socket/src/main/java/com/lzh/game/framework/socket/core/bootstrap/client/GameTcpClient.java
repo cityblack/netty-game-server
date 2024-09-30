@@ -1,89 +1,45 @@
 package com.lzh.game.framework.socket.core.bootstrap.client;
 
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
-import com.lzh.game.framework.socket.core.protocol.Request;
+import com.lzh.game.framework.socket.core.bootstrap.handler.ClientIdleHandler;
 import com.lzh.game.framework.socket.core.protocol.codec.ByteToGameMessageDecoder;
 import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteEncoder;
-import com.lzh.game.framework.socket.core.session.Session;
-import com.lzh.game.framework.socket.core.session.SessionUtils;
-import com.lzh.game.framework.socket.core.session.impl.FutureSession;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Client
- * Default processor: auth -> request -> response
- *
  * @param <C>
  */
 @Slf4j
 public class GameTcpClient<C extends GameClientSocketProperties> extends AbstractClient<C>
         implements GameClient {
 
-    private EventLoopGroup group;
-
-    private Bootstrap bootstrap;
-
-    private final DefaultGameRequest gameRequest;
-
     public GameTcpClient(BootstrapContext<C> context) {
         super(context);
-        this.gameRequest = new DefaultGameRequest(this);
     }
 
-
-
-    @Override
-    public Session conn(String host, int port, int connectTimeout) {
-        checkStatus();
-        var channel = createChannel(host, port, connectTimeout);
-        var future = SessionUtils.getBindFuture(channel);
-        return new FutureSession(future);
-    }
-
-    @Override
-    public void oneWay(Session session, Object param) {
-        gameRequest.oneWay(session, param);
-    }
-
-    private Channel createChannel(String host, int port, int connectTimeout) {
-        this.bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout);
-        ChannelFuture future = this.bootstrap.connect(host, port);
-        return future.channel();
-    }
-
-    @Override
-    public void oneWayRequest(Session session, Request request) {
-        gameRequest.oneWayRequest(session, request);
-    }
-
-    @Override
-    public <T> AsyncResponse<T> request(Session session, Request request, Class<T> type) {
-        return gameRequest.request(session, request, type);
-    }
-
-    @Override
-    public <T> AsyncResponse<T> request(Session session, Object param, Class<T> type) {
-        return gameRequest.request(session, param, type);
-    }
-
-    private Bootstrap createBootstrap() {
+    protected Bootstrap createBootstrap() {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap
-                .group(group)
+                .group(new NioEventLoopGroup())
                 .channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
                                 .addLast(new LoggingHandler(getProperties().getNetty().getLogLevel()))
+                                .addFirst(new IdleStateHandler(0, 0, getProperties().getClientIdleTime(), TimeUnit.MILLISECONDS))
+                                .addFirst(new ClientIdleHandler(getProperties().getHeartFailCloseTimes()))
                                 .addLast("decoder", new ByteToGameMessageDecoder(context, getProperties().isBodyDateToBytes()))
                                 .addLast("encoder", new GameMessageToByteEncoder(context))
                                 .addLast(getIoHandler());
@@ -96,24 +52,6 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
     protected void doInit(C properties) {
         if (Objects.isNull(getRequestService())) {
             setRequestService(Executors.newCachedThreadPool());
-        }
-        group = new NioEventLoopGroup();
-        this.bootstrap = createBootstrap();
-    }
-
-    @Override
-    protected void startup() {
-        this.bootstrap = createBootstrap();
-    }
-
-    @Override
-    protected void asyncStartup() {
-        this.bootstrap = createBootstrap();
-    }
-
-    private void checkStatus() {
-        if (!isStared()) {
-            throw new RuntimeException("Client is not started..");
         }
     }
 }

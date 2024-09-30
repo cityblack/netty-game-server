@@ -18,4 +18,7 @@ public abstract class GameSocketProperties {
 
     private String[] protocolScanner = {"com.lzh"};
 
+    private String authSlot = "lzh";
+
+    private int authErrorCloseLimit = 10;
 }

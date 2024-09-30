@@ -18,5 +18,7 @@ public class GameClientSocketProperties extends GameSocketProperties {
 
     private int requestTimeout = 5000;
 
-    private long heartbeatInterval = 30000;
+    private long clientIdleTime = TimeUnit.MINUTES.toMillis(1);
+
+    private int heartFailCloseTimes = 3;
 }

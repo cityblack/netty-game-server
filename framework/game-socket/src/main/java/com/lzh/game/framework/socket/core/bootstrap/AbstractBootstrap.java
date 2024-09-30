@@ -6,6 +6,7 @@ import com.lzh.game.framework.socket.core.filter.Filter;
 import com.lzh.game.framework.socket.core.filter.FilterHandler;
 import com.lzh.game.framework.socket.core.invoke.bean.InvokeBeanHelperHandler;
 import com.lzh.game.framework.socket.core.process.Processor;
+import com.lzh.game.framework.socket.core.process.impl.AuthProcessor;
 import com.lzh.game.framework.socket.core.process.impl.DefaultRequestProcess;
 import com.lzh.game.framework.socket.core.process.impl.HeartbeatProcessor;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerializeManager;
@@ -57,6 +58,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
     }
 
     protected void init() {
+        context.getPipeline().addFirst(new AuthProcessor(context));
         MessageSerializeManager.getInstance()
                 .registerSerialize(Constant.DEFAULT_SERIAL_SIGN, new RookieSerialize(context.getMessageManager()));
         this.addDefaultProcessor();

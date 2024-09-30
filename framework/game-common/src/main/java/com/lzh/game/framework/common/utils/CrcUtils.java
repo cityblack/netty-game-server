@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.lzh.game.framework.utils;
+package com.lzh.game.framework.common.utils;
 
 import java.util.zip.CRC32;
 

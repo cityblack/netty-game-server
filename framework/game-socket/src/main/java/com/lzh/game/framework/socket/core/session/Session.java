@@ -2,10 +2,8 @@ package com.lzh.game.framework.socket.core.session;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelPromise;
 
 import java.time.Instant;
-import java.util.Map;
 import java.util.Objects;
 
 public interface Session {
@@ -24,10 +22,7 @@ public interface Session {
     Instant getLastAccessTime();
 
     void updateLastAccessTime();
-    /**
-     * Return a map that holds session attributes.
-     */
-    Map<String, Object> getAttributes();
+
 
     void setAttribute(String attributeKey, Object attributeValue);
 
@@ -38,31 +33,9 @@ public interface Session {
      * @param <T>  the attribute type
      * @return the attribute value
      */
-    @SuppressWarnings("unchecked")
-    default <T> T getAttribute(String name) {
-        return (T) getAttributes().get(name);
-    }
+    <T> T getAttribute(String name);
 
-    default boolean hasAttribute(String name) {
-        return getAttributes().containsKey(name);
-    }
-
-    /**
-     * Return the session attribute value or if not present raise an
-     * {@link IllegalArgumentException}.
-     *
-     * @param name the attribute name
-     * @param <T>  the attribute type
-     * @return the attribute value
-     */
-    @SuppressWarnings("unchecked")
-    default <T> T getRequiredAttribute(String name) {
-        T value = getAttribute(name);
-        if (Objects.isNull(value)) {
-            throw new RuntimeException("Required attribute '" + name + "' is missing.");
-        }
-        return value;
-    }
+    boolean hasAttribute(String name);
 
     boolean isOpened();
 
