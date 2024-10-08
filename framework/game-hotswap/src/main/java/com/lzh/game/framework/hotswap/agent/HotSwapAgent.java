@@ -9,6 +9,7 @@ import java.lang.instrument.Instrumentation;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Objects;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -70,6 +71,9 @@ public class HotSwapAgent {
     }
 
     private static void checkParent(File file) throws IOException {
+        if (Objects.isNull(file.getParent())) {
+            return;
+        }
         var parent = Paths.get(file.getParent());
         if (!Files.exists(parent)) {
             Files.createDirectories(parent);

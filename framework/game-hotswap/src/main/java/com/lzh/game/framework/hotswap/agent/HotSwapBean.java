@@ -1,7 +1,9 @@
 package com.lzh.game.framework.hotswap.agent;
 
 import com.sun.tools.attach.VirtualMachine;
+import javassist.CannotCompileException;
 import javassist.bytecode.ClassFile;
+import javassist.util.proxy.DefineClassHelper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
@@ -27,11 +29,11 @@ public class HotSwapBean {
 
     private final Map<String, ClassFileInfo> CLASS_INFO = new HashMap<>();
 
-    public synchronized List<ClassFileInfo> swap(String hotDir, String agentLib) {
+    public List<ClassFileInfo> swap(String[] hotDir, String agentLib) {
         try {
             var files = getSwapFiles(hotDir);
             if (files.isEmpty()) {
-                log.warn("{} not have swap file", hotDir);
+                log.warn("{} not have swap file", Arrays.toString(hotDir));
                 return Collections.emptyList();
             }
             var able = parseSwapFiles(files);
@@ -40,25 +42,30 @@ public class HotSwapBean {
                 return Collections.emptyList();
             }
             loadNewClass(able);
+            var list = new ArrayList<>(able.values());
+            updateData = HotSwapUtils.classToBytes(list);
             starVM(agentLib);
             if (Objects.nonNull(error)) {
                 log.error("Hot swap fail. ", error);
                 return Collections.emptyList();
             }
-            return new ArrayList<>(able.values());
+            CLASS_INFO.putAll(able);
+            return list;
         } catch (Exception e) {
             log.error("Hot swap fail. ", e);
             throw new RuntimeException(e);
         }
     }
 
-    private void loadNewClass(Map<String, ClassFileInfo> files) {
-        try {
-            for (String className : files.keySet()) {
-                Thread.currentThread().getContextClassLoader().loadClass(className);
+    private void loadNewClass(Map<String, ClassFileInfo> files) throws CannotCompileException {
+        var loader = Thread.currentThread().getContextClassLoader();
+        for (Map.Entry<String, ClassFileInfo> entry : files.entrySet()) {
+            String className = entry.getKey();
+            try {
+                loader.loadClass(className);
+            } catch (Exception e) {
+                DefineClassHelper.toClass(className, null, loader, null, entry.getValue().getData());
             }
-        } catch (Exception e) {
-
         }
     }
 
@@ -81,7 +88,7 @@ public class HotSwapBean {
             if (Objects.nonNull(old)) {
                 if (old.getLastModifyTime() == newInfo.getLastModifyTime()
                         || Objects.equals(old.getMd5(), newInfo.getMd5())) {
-                    log.info("Ignore class: [{}] update. cause one is not change", className);
+                    log.info("Ignore [{}] update. cause one is not change", className);
                     return;
                 }
             }
@@ -96,17 +103,19 @@ public class HotSwapBean {
         return clz.getName();
     }
 
-    private Map<String, Long> getSwapFiles(String dir) throws IOException {
-        var path = Paths.get(dir);
-        if (!Files.isDirectory(path)) {
-            throw new RuntimeException(dir + ". Hot swap path is not dir.");
-        }
+    private Map<String, Long> getSwapFiles(String[] dirs) throws IOException {
         var files = new HashMap<String, Long>();
-        try (var paths = Files.walk(path)) {
-            paths.filter(e -> !Files.isDirectory(e))
-                    .map(Path::toFile)
-                    .filter(e -> e.getName().endsWith(".class"))
-                    .forEach(e -> files.put(e.getAbsolutePath(), e.lastModified()));
+        for (String dir : dirs) {
+            var path = Paths.get(dir);
+            if (!Files.isDirectory(path)) {
+                throw new RuntimeException(dir + ". Hot swap path is not dir.");
+            }
+            try (var paths = Files.walk(path)) {
+                paths.filter(e -> !Files.isDirectory(e))
+                        .map(Path::toFile)
+                        .filter(e -> e.getName().endsWith(".class"))
+                        .forEach(e -> files.put(e.getAbsolutePath(), e.lastModified()));
+            }
         }
         return files;
     }
@@ -138,5 +147,8 @@ public class HotSwapBean {
 
     public static class Instance {
         public static final HotSwapBean INSTANCE = new HotSwapBean();
+    }
+
+    private HotSwapBean() {
     }
 }

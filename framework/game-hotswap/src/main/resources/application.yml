@@ -1,0 +1,3 @@
+game:
+  hot-swap:
+    agent-lib: hot_agent.jar
