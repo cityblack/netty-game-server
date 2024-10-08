@@ -15,17 +15,17 @@ import java.util.Objects;
 @Slf4j
 public class MessageLoadHandler {
 
-    public List<MessageDefine> load(String[] packageNames) {
+    public List<Class<?>> load(String[] packageNames) {
         log.info("Loading message. scan path: {}", packageNames);
         if (Objects.isNull(packageNames) || packageNames.length == 0) {
             return Collections.emptyList();
         }
-        var list = new LinkedList<MessageDefine>();
+        var list = new LinkedList<Class<?>>();
         loadDefined(list, packageNames);
         return list;
     }
 
-    private void loadDefined(List<MessageDefine> list, String[] packageNames) {
+    private void loadDefined(List<Class<?>> list, String[] packageNames) {
         if (packageNames.length == 0) {
             return;
         }
@@ -37,7 +37,7 @@ public class MessageLoadHandler {
         }
         var pros = reflections.getTypesAnnotatedWith(Protocol.class);
         for (Class<?> clz : pros) {
-            list.add(MessageManager.classToDefine(clz));
+            list.add(clz);
         }
     }
 }

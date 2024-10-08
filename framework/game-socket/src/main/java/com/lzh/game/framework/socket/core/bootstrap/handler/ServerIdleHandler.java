@@ -34,7 +34,7 @@ public class ServerIdleHandler extends ChannelDuplexHandler {
     public void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent event) {
             try {
-                if (event.state() == IdleState.ALL_IDLE) {
+                if (event.state() == IdleState.READER_IDLE) {
                     log.warn("Connection idle, close it from server side: {}", ctx.channel());
                     ctx.close();
                 }

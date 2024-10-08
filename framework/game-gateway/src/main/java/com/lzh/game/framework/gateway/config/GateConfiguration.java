@@ -5,7 +5,7 @@ import com.lzh.game.framework.gateway.process.ForwardGatewayProcess;
 import com.lzh.game.framework.gateway.process.RandomSessionSelect;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
-import com.lzh.game.framework.socket.core.bootstrap.server.TcpServer;
+import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpServer;
 import com.lzh.game.framework.socket.core.process.impl.FutureResponseProcess;
 import jakarta.annotation.Resource;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

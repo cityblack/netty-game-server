@@ -1,8 +1,11 @@
-package com.lzh.game.framework.socket.core.bootstrap.server;
+package com.lzh.game.framework.socket.core.bootstrap.tcp;
 
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.NetServer;
 import com.lzh.game.framework.socket.core.bootstrap.handler.ServerIdleHandler;
+import com.lzh.game.framework.socket.core.bootstrap.server.AbstractServerBootstrap;
+import com.lzh.game.framework.socket.core.bootstrap.server.GameServer;
+import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
 import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
 import com.lzh.game.framework.socket.core.protocol.codec.ByteToGameMessageDecoder;
 import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteEncoder;
@@ -44,7 +47,7 @@ public class TcpServer<T extends GameServerSocketProperties> extends AbstractSer
             protected void initChannel(Channel ch) throws Exception {
                 ch.pipeline()
                         .addLast(new LoggingHandler(getProperties().getNetty().getLogLevel()))
-                        .addLast(new IdleStateHandler(0, 0, getProperties().getServerIdleTime(), TimeUnit.MILLISECONDS))
+                        .addLast(new IdleStateHandler(getProperties().getServerIdleTime(), 0, 0, TimeUnit.MILLISECONDS))
                         .addLast("serverIdleHandler", new ServerIdleHandler())
                         .addLast("decoder", new ByteToGameMessageDecoder(context, getProperties().isBodyDateToBytes()))
                         .addLast("encoder", new GameMessageToByteEncoder(context))

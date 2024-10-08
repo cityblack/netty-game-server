@@ -33,7 +33,7 @@ public class ClientIdleHandler extends ChannelDuplexHandler {
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent stateEvent) {
-            if (stateEvent.state() == IdleState.ALL_IDLE) {
+            if (stateEvent.state() == IdleState.WRITER_IDLE) {
                 var count = getChannelIdleTimes(ctx.channel());
                 // server lose response.
                 if (count >= heartFailCloseTimes) {

@@ -4,9 +4,9 @@ import com.lzh.game.framework.socket.bean.ServerDemo;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.client.AsyncResponse;
 import com.lzh.game.framework.socket.core.bootstrap.client.GameClientSocketProperties;
-import com.lzh.game.framework.socket.core.bootstrap.client.GameTcpClient;
+import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpClient;
 import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
-import com.lzh.game.framework.socket.core.bootstrap.server.TcpServer;
+import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpServer;
 import com.lzh.game.framework.socket.core.invoke.ActionRequestHandler;
 import com.lzh.game.framework.socket.core.invoke.convert.DefaultInvokeMethodArgumentValues;
 import com.lzh.game.framework.socket.core.process.impl.DefaultRequestProcess;
@@ -38,7 +38,7 @@ public class AppTest {
     public void startClient() throws InterruptedException {
         var properties = new GameClientSocketProperties();
         properties.setConnectTimeout(5000);
-        var client = new GameTcpClient<>(BootstrapContext.of(properties));
+        var client = new TcpClient<>(BootstrapContext.of(properties));
         // response
         client.addProcessor(new FutureResponseProcess());
         client.start();

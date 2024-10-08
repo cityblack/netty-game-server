@@ -2,7 +2,7 @@ package com.lzh.game.framework.socket.starter.config;
 
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.server.GameServer;
-import com.lzh.game.framework.socket.core.bootstrap.server.TcpServer;
+import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpServer;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
 import com.lzh.game.framework.socket.core.session.Session;

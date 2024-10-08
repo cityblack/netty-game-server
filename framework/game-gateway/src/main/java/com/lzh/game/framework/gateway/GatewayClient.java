@@ -3,10 +3,7 @@ package com.lzh.game.framework.gateway;
 import com.lzh.game.framework.gateway.config.GatewayProperties;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.client.GameClientSocketProperties;
-import com.lzh.game.framework.socket.core.bootstrap.client.GameTcpClient;
-import com.lzh.game.framework.socket.core.session.Session;
-import com.lzh.game.framework.socket.core.session.SessionManage;
-import com.lzh.game.framework.socket.core.session.monitor.DefaultConnectMonitor;
+import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpClient;
 import com.lzh.game.framework.socket.core.session.monitor.ConnectMonitorConfig;
 
 import java.util.List;
@@ -16,7 +13,7 @@ import java.util.function.Consumer;
  * Read remote server from properties
  * Read servers from register center?(nacos)
  */
-public class GatewayClient extends GameTcpClient<GameClientSocketProperties> {
+public class GatewayClient extends TcpClient<GameClientSocketProperties> {
 
     private final GatewayProperties properties;
 

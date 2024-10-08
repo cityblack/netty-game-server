@@ -1,10 +1,12 @@
 package com.lzh.game.framework.socket.core.protocol.message;
 
-import com.lzh.game.framework.socket.core.GameSocketProperties;
 import com.lzh.game.framework.common.collection.IdentityMap;
+import com.lzh.game.framework.socket.core.GameSocketProperties;
+import com.lzh.game.framework.socket.utils.Constant;
 import io.netty.util.collection.ShortObjectHashMap;
 import io.netty.util.collection.ShortObjectMap;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,9 +31,16 @@ public class DefaultMessageManager implements MessageManager {
     }
 
     private void initRegister(GameSocketProperties properties) {
+        registerDefault();
         var handler = new MessageLoadHandler();
         var list = handler.load(properties.getProtocolScanner());
         list.forEach(this::registerMessage);
+    }
+
+    private void registerDefault() {
+        for (Class<?> clz : Constant.INNER_MSG) {
+            registerMessage(clz);
+        }
     }
 
     public MessageDefine findDefine(short msgId) {
@@ -60,7 +69,10 @@ public class DefaultMessageManager implements MessageManager {
         listen.values().forEach(e -> e.accept(define));
     }
 
-    public void addMessage(Class<?> message) {
+    public void registerMessage(Class<?> message) {
+        if (!message.isAnnotationPresent(Protocol.class)) {
+            throw new IllegalArgumentException(message.getName() + "No have @Protocol.");
+        }
         registerMessage(MessageManager.classToDefine(message));
     }
 

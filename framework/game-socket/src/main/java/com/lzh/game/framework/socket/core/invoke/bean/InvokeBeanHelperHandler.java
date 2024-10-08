@@ -4,7 +4,6 @@ import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.protocol.message.MessageDefine;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Stream;
@@ -23,7 +22,7 @@ public class InvokeBeanHelperHandler {
         stream.forEach(e -> {
             if (Objects.nonNull(e.getProtocol())) {
                 for (Class<?> c : e.getProtocol()) {
-                    context.getMessageManager().addMessage(c);
+                    context.getMessageManager().registerMessage(c);
                 }
             }
             if (Objects.nonNull(e.getDefines())) {

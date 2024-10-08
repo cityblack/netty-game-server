@@ -1,8 +1,7 @@
 package com.lzh.game.framework.socket.utils;
 
 import com.lzh.game.framework.socket.core.protocol.AuthProtocol;
-
-import java.util.function.Function;
+import com.lzh.game.framework.socket.core.protocol.HeartbeatProtocol;
 
 public class Constant {
 
@@ -26,10 +25,11 @@ public class Constant {
 
     public static final String AUTH_SESSION_KEY = "auth_session";
 
-    public static final String AUTH_ERROR_COUNT_KEY = "auth_error_count";
-
+    // auth msg id
     public static final short AUTH_PROTOCOL_ID = -1;
-
+    // heartbeat msg id
     public static final short HEARTBEAT_PROTOCOL_ID = -2;
+    // auth, heartbeat. class type
+    public static final Class<?>[] INNER_MSG = new Class<?>[]{AuthProtocol.class, HeartbeatProtocol.class};
 
 }

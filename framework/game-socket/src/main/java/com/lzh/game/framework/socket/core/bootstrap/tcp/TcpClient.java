@@ -1,6 +1,9 @@
-package com.lzh.game.framework.socket.core.bootstrap.client;
+package com.lzh.game.framework.socket.core.bootstrap.tcp;
 
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
+import com.lzh.game.framework.socket.core.bootstrap.client.AbstractClient;
+import com.lzh.game.framework.socket.core.bootstrap.client.GameClient;
+import com.lzh.game.framework.socket.core.bootstrap.client.GameClientSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.handler.ClientIdleHandler;
 import com.lzh.game.framework.socket.core.protocol.codec.ByteToGameMessageDecoder;
 import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteEncoder;
@@ -22,10 +25,10 @@ import java.util.concurrent.TimeUnit;
  * @param <C>
  */
 @Slf4j
-public class GameTcpClient<C extends GameClientSocketProperties> extends AbstractClient<C>
+public class TcpClient<C extends GameClientSocketProperties> extends AbstractClient<C>
         implements GameClient {
 
-    public GameTcpClient(BootstrapContext<C> context) {
+    public TcpClient(BootstrapContext<C> context) {
         super(context);
     }
 
@@ -38,7 +41,7 @@ public class GameTcpClient<C extends GameClientSocketProperties> extends Abstrac
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
                                 .addLast(new LoggingHandler(getProperties().getNetty().getLogLevel()))
-                                .addFirst(new IdleStateHandler(0, 0, getProperties().getClientIdleTime(), TimeUnit.MILLISECONDS))
+                                .addFirst(new IdleStateHandler(0, getProperties().getClientIdleTime(), 0, TimeUnit.MILLISECONDS))
                                 .addFirst(new ClientIdleHandler(getProperties().getHeartFailCloseTimes()))
                                 .addLast("decoder", new ByteToGameMessageDecoder(context, getProperties().isBodyDateToBytes()))
                                 .addLast("encoder", new GameMessageToByteEncoder(context))

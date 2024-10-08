@@ -17,7 +17,7 @@ public interface MessageManager {
 
     void registerMessage(MessageDefine define);
 
-    void addMessage(Class<?> message);
+    void registerMessage(Class<?> message);
 
     void addRegisterListen(String name, Consumer<MessageDefine> consumer);
 
