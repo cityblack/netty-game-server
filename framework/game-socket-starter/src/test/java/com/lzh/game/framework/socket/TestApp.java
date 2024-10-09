@@ -1,4 +1,4 @@
-package com.lzh.game.framework.socket.starter;
+package com.lzh.game.framework.socket;
 
 import com.lzh.game.framework.socket.starter.anno.EnableTcpServer;
 import org.springframework.boot.SpringApplication;
@@ -10,10 +10,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  **/
 @EnableTcpServer
 @SpringBootApplication
-public class App {
+public class TestApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
+        SpringApplication.run(TestApp.class, args);
     }
 
 }

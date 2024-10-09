@@ -19,7 +19,6 @@ public abstract class AbstractServerBootstrap<T extends GameServerSocketProperti
     @Override
     protected void doInit(T properties) {
         this.netServer = createServer(getPort(), properties, getContext().getPipeline());
-        this.filters = null;
     }
 
     @Override

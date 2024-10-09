@@ -26,8 +26,6 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     private final GameIoHandler ioHandler;
 
-    protected List<Filter> filters = new CopyOnWriteArrayList<>();
-
     public AbstractBootstrap(BootstrapContext<T> context) {
         this.context = context;
         this.ioHandler = new GameIoHandler(context);
@@ -58,15 +56,14 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
     }
 
     protected void init() {
-        context.getPipeline().addFirst(new AuthProcessor(context));
+        this.addDefaultProcessor();
         MessageSerializeManager.getInstance()
                 .registerSerialize(Constant.DEFAULT_SERIAL_SIGN, new RookieSerialize(context.getMessageManager()));
-        this.addDefaultProcessor();
     }
 
     protected void addDefaultProcessor() {
-
         context.getPipeline().addFirst(new HeartbeatProcessor());
+        context.getPipeline().addFirst(new AuthProcessor(context));
     }
 
     public void addInvokeBean(Object bean) {
@@ -74,11 +71,6 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
     }
 
     public void addProcessor(Processor process) {
-        if (process instanceof DefaultRequestProcess requestProcess) {
-            if (!(requestProcess.getDispatch() instanceof FilterHandler)) {
-                requestProcess.setDispatch(new FilterHandler(this.filters, requestProcess.getDispatch()));
-            }
-        }
         context.getPipeline().addLast(process);
     }
 
@@ -104,9 +96,5 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     public GameIoHandler getIoHandler() {
         return ioHandler;
-    }
-
-    public void addFilter(Filter filter) {
-        this.filters.add(filter);
     }
 }

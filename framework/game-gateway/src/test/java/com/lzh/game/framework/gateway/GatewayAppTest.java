@@ -26,7 +26,7 @@ class GatewayAppTest {
         properties.setOpenGm(true);
         properties.getNetty().setLogLevel(LogLevel.INFO);
         var server = new TcpServer<>(BootstrapContext.of(properties));
-        server.addProcessor(new DefaultRequestProcess(new ActionRequestHandler(server.getContext(), new DefaultInvokeMethodArgumentValues())));
+        server.addProcessor(new DefaultRequestProcess(new ActionRequestHandler(server.getContext())));
         ServerDemo demo = new ServerDemo();
         server.addInvokeBean(demo);
         server.start();

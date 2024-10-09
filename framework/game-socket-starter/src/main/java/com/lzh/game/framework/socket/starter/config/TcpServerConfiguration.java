@@ -3,6 +3,7 @@ package com.lzh.game.framework.socket.starter.config;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.server.GameServer;
 import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpServer;
+import com.lzh.game.framework.socket.core.invoke.convert.InvokeMethodArgumentValues;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
 import com.lzh.game.framework.socket.core.session.Session;
@@ -20,8 +21,9 @@ public class TcpServerConfiguration {
     public GameServer gameServer(SpringGameServerProperties serverSocketProperties
             , MessageManager messageManager
             , SessionManage<Session> sessionManage
-            , InvokeSupport invokeSupport) {
-        var context = BootstrapContext.of(serverSocketProperties, sessionManage, messageManager, invokeSupport);
+            , InvokeSupport invokeSupport
+            , InvokeMethodArgumentValues values) {
+        var context = BootstrapContext.of(serverSocketProperties, sessionManage, messageManager, invokeSupport, values);
         var tcpServer = new TcpServer<>(context);
         var server = new SpringServer<>(tcpServer);
         server.asyncStart();

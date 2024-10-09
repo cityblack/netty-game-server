@@ -1,14 +1,13 @@
 package com.lzh.game.framework.socket.core.invoke;
 
+import com.lzh.game.framework.common.method.EnhanceMethodInvoke;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
-import com.lzh.game.framework.socket.core.invoke.convert.InvokeMethodArgumentValues;
 import com.lzh.game.framework.socket.core.invoke.support.ErrorHandler;
 import com.lzh.game.framework.socket.core.invoke.support.InterceptorHandler;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.Response;
 import com.lzh.game.framework.socket.exception.NotDefinedResponseProtocolException;
 import com.lzh.game.framework.socket.exception.NotFondProtocolException;
-import com.lzh.game.framework.common.method.EnhanceMethodInvoke;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -21,18 +20,15 @@ public class ActionRequestHandler implements RequestDispatch {
 
     private final InterceptorHandler interceptorHandler;
 
-    private final InvokeMethodArgumentValues transfer;
-
     private final BootstrapContext context;
 
-    public ActionRequestHandler(BootstrapContext context, InvokeMethodArgumentValues transfer) {
-        this(context, transfer, null, null);
+    public ActionRequestHandler(BootstrapContext context) {
+        this(context, null, null);
     }
 
-    public ActionRequestHandler(BootstrapContext context, InvokeMethodArgumentValues transfer, ErrorHandler errorHandler, InterceptorHandler interceptorHandler) {
+    public ActionRequestHandler(BootstrapContext context, ErrorHandler errorHandler, InterceptorHandler interceptorHandler) {
         this.errorHandler = errorHandler;
         this.interceptorHandler = interceptorHandler;
-        this.transfer = transfer;
         this.context = context;
     }
 
@@ -55,7 +51,7 @@ public class ActionRequestHandler implements RequestDispatch {
     }
 
     private Object invokeForRequest(Request request, EnhanceMethodInvoke handlerMethod) throws Exception {
-        Object[] args = transfer.transfer(request, handlerMethod);
+        Object[] args = context.getValues().transfer(request, handlerMethod);
         if (isIntercept(request, handlerMethod, args)) {
             return null;
         }
