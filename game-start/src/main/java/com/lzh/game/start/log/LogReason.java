@@ -1,12 +1,15 @@
 package com.lzh.game.start.log;
 
+import com.lzh.game.framework.logs.param.LogReasonParam;
 import lombok.Getter;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public enum LogReason {
+public enum LogReason implements LogReasonParam {
+
+    NONE(0, "none"),
 
     CONSOLE(1001, "console"),
 
@@ -33,5 +36,10 @@ public enum LogReason {
             }
             ids.add(id);
         });
+    }
+
+    @Override
+    public int getLogReason() {
+        return id;
     }
 }

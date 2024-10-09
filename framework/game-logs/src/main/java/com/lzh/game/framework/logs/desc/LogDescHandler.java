@@ -1,6 +1,5 @@
 package com.lzh.game.framework.logs.desc;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**

@@ -43,7 +43,13 @@
             <groupId>io.github.cityblack.game</groupId>
             <artifactId>game-event</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>io.github.cityblack.game</groupId>
+            <artifactId>game-logs</artifactId>
+        </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
