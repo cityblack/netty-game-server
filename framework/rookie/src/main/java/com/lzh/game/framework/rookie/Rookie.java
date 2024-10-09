@@ -82,7 +82,11 @@ public class Rookie {
 
     private short nextId() {
         int value = DEFINED_CONTAIN.size();
-        return value <= INNER_TYPE_ID_MAX ? INNER_TYPE_ID_MAX + 1 : (short) value;
+        short target = value <= INNER_TYPE_ID_MAX ? INNER_TYPE_ID_MAX + 1 : (short) value;
+        if (containId(target)) {
+            return nextId();
+        }
+        return target;
     }
 
     public void register(short id, Class<?> clz) {

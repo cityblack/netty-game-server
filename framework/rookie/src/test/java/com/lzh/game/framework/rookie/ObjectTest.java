@@ -59,7 +59,7 @@ public class ObjectTest {
         rookie.register((short) 1003, AbstractItem.class);
         rookie.register((short) 1004, Item.class);
         rookie.register((short) 1005, EnumOT.class);
-        rookie.register((short) 1006, TestEnum.class);
+        rookie.register(TestEnum.class);
         var ot = EnumOT.of();
         var buf = ByteBufAllocator.DEFAULT.heapBuffer();
         rookie.serializer(buf, ot);

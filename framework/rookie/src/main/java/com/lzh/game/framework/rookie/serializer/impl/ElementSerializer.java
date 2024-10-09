@@ -5,7 +5,6 @@ import com.lzh.game.framework.rookie.serializer.ClassInfo;
 import com.lzh.game.framework.rookie.serializer.Serializer;
 import com.lzh.game.framework.rookie.utils.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
-import org.springframework.beans.BeanUtils;
 
 import java.util.Collection;
 import java.util.Map;
@@ -15,7 +14,7 @@ import java.util.Objects;
  * @author zehong.l
  * @since 2024-09-13 17:27
  **/
-public abstract class ElementSerializer<T>  implements Serializer<T> {
+public abstract class ElementSerializer<T> implements Serializer<T> {
 
     protected Rookie rookie;
 
@@ -49,7 +48,11 @@ public abstract class ElementSerializer<T>  implements Serializer<T> {
     }
 
     protected T newBean(Class<T> clz) {
-        return BeanUtils.instantiateClass(clz);
+        try {
+            return clz.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("New bean error", e);
+        }
     }
 
     protected int getCollectionSize(Collection<?> collection) {
