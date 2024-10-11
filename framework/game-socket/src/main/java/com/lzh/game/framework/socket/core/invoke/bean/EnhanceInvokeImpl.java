@@ -5,6 +5,8 @@ import com.lzh.game.framework.common.method.EnhanceMethodInvoke;
 import com.lzh.game.framework.common.method.HandlerMethod;
 import com.lzh.game.framework.common.method.MethodInvoke;
 
+import java.lang.reflect.Method;
+
 /**
  * @author zehong.l
  * @since 2024-08-21 17:10
@@ -28,6 +30,11 @@ public class EnhanceInvokeImpl implements EnhanceMethodInvoke {
     @Override
     public boolean isVoid() {
         return method.isVoid();
+    }
+
+    @Override
+    public Method method() {
+        return method.getMethod();
     }
 
     @Override
