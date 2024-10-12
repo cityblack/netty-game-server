@@ -1,6 +1,6 @@
 package com.lzh.game.start.model.item.bag;
 
-import com.lzh.game.framework.repository.BaseEntity;
+import com.lzh.game.framework.repository.element.BaseEntity;
 import com.lzh.game.start.model.item.bag.model.ItemStorage;
 import lombok.Getter;
 import lombok.Setter;

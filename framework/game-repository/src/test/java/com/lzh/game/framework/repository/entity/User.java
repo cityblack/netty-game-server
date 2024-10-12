@@ -1,6 +1,6 @@
 package com.lzh.game.framework.repository.entity;
 
-import com.lzh.game.framework.repository.BaseEntity;
+import com.lzh.game.framework.repository.element.BaseEntity;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;

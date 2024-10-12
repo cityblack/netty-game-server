@@ -3,7 +3,6 @@ game:
     server:
       port: 8089
       open-gm: true
-
   resource:
     resource-scanner-path: com.lzh.game
   repository:

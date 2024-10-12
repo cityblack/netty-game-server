@@ -1,5 +1,7 @@
 package com.lzh.game.framework.repository.cache;
 
+import com.lzh.game.framework.repository.element.CacheEntity;
+
 import java.io.Serializable;
 
 /**

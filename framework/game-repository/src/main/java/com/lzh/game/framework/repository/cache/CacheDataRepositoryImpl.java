@@ -1,7 +1,7 @@
 package com.lzh.game.framework.repository.cache;
 
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
+
+import com.lzh.game.framework.repository.element.CacheEntity;
 
 import java.io.Serializable;
 
@@ -11,21 +11,22 @@ import java.io.Serializable;
  **/
 public class CacheDataRepositoryImpl<PK extends Serializable & Comparable<PK>, T extends CacheEntity<PK>> implements CacheDataRepository<PK, T> {
 
-    private CacheManager cache;
+    private final Cache cache;
 
-    private Class<T> cacheClass;
+    private final Class<T> cacheClass;
 
-    private String cacheName;
+    private final String cacheName;
 
-    public CacheDataRepositoryImpl(CacheManager cache, Class<T> cacheClass) {
+    public CacheDataRepositoryImpl(String name, Cache cache, Class<T> cacheClass) {
         this.cache = cache;
         this.cacheClass = cacheClass;
-        this.cacheName = cacheClass.getSimpleName();
+        this.cacheName = name;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public T get(PK pk) {
-        return getCache().get(pk, cacheClass);
+        return (T) getCache().get(pk);
     }
 
     @Override
@@ -45,6 +46,6 @@ public class CacheDataRepositoryImpl<PK extends Serializable & Comparable<PK>, T
     }
 
     private Cache getCache() {
-        return cache.getCache(this.cacheName);
+        return cache;
     }
 }

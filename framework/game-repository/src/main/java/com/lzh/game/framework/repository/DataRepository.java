@@ -1,7 +1,8 @@
 package com.lzh.game.framework.repository;
 
 import com.lzh.game.framework.repository.cache.CacheDataRepository;
-import com.lzh.game.framework.repository.db.PersistEntity;
+import com.lzh.game.framework.repository.element.BaseEntity;
+import com.lzh.game.framework.repository.persist.PersistEntity;
 
 import java.io.Serializable;
 import java.util.function.Function;
@@ -45,4 +46,6 @@ public interface DataRepository<PK extends Serializable & Comparable<PK>, T exte
     default void deleter(T data) {
         deleter(data.cacheKey());
     }
+
+    void shutdown();
 }

@@ -1,7 +1,7 @@
 package com.lzh.game.start.model.item.bag.dao.impl;
 
 import com.lzh.game.framework.repository.DataRepository;
-import com.lzh.game.framework.repository.Repository;
+import com.lzh.game.framework.repository.anno.Repository;
 import com.lzh.game.start.model.item.bag.Bag;
 import com.lzh.game.start.model.item.bag.dao.BagDataManage;
 import com.lzh.game.start.model.player.Player;

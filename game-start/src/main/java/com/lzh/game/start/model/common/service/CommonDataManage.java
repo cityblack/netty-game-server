@@ -1,15 +1,13 @@
 package com.lzh.game.start.model.common.service;
 
 import com.lzh.game.framework.repository.DataRepository;
-import com.lzh.game.framework.repository.Repository;
+import com.lzh.game.framework.repository.anno.Repository;
 import com.lzh.game.start.model.common.CommonIdGenerator;
 import com.lzh.game.start.model.common.model.CommonData;
 import com.lzh.game.start.server.AfterServerStartInit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
-
-import java.util.stream.Stream;
 
 @Component
 @Slf4j

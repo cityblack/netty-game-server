@@ -1,28 +1,23 @@
 package com.lzh.game.framework.repository;
 
 import com.lzh.game.framework.repository.cache.CacheDataRepository;
-import com.lzh.game.framework.repository.cache.CacheEntity;
-import com.lzh.game.framework.repository.db.Element;
-import com.lzh.game.framework.repository.db.Persist;
-import com.lzh.game.framework.repository.db.PersistEntity;
-import com.lzh.game.framework.repository.db.PersistRepository;
+import com.lzh.game.framework.repository.element.BaseEntity;
+import com.lzh.game.framework.repository.persist.Element;
+import com.lzh.game.framework.repository.persist.Persist;
+import com.lzh.game.framework.repository.persist.PersistRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Function;
 
 /**
- *
  * @param <PK>
  * @param <T>
  */
 @Slf4j
 public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T extends BaseEntity<PK>>
-        implements DataRepository<PK, T>, DisposableBean {
+        implements DataRepository<PK, T> {
 
     private Persist persist;
 
@@ -71,7 +66,7 @@ public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T exte
         T entity = load(pk);
         if (Objects.isNull(entity)) {
             synchronized (this) {
-                entity = load(pk);
+                entity = get(pk);
                 if (Objects.isNull(entity)) {
                     entity = create.apply(pk);
                     add(entity);
@@ -80,13 +75,6 @@ public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T exte
             }
         }
         return entity;
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        if (clearMemAfterClose) {
-            this.clear();
-        }
     }
 
     @Override
@@ -120,6 +108,13 @@ public class DataRepositoryImpl<PK extends Serializable & Comparable<PK>, T exte
         }
     }
 
+    @Override
+    public void shutdown() {
+        if (clearMemAfterClose) {
+            this.clear();
+        }
+        persist.shutDown();
+    }
 
     private void saveToDb(T entity) {
         this.persist.put(Element.saveOf(entity, this.cacheClass));

@@ -1,7 +1,7 @@
 package com.lzh.game.start.model.player;
 
 import com.lzh.game.business.utils.TimeUtils;
-import com.lzh.game.framework.repository.LongBaseEntity;
+import com.lzh.game.framework.repository.element.LongBaseEntity;
 import com.lzh.game.start.util.ApplicationUtils;
 import com.lzh.game.start.model.item.bag.Bag;
 import com.lzh.game.start.model.item.bag.dao.BagDataManage;
