@@ -97,7 +97,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
     @Override
     public boolean shutDown() {
         if (STATUS.shutDown()) {
-
+            context.shutdown();
             return true;
         }
         return false;

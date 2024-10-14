@@ -44,7 +44,6 @@ public class BootstrapContext<T extends GameSocketProperties> {
         return context;
     }
 
-
     public static <T extends GameSocketProperties> BootstrapContext<T> of(T properties, SessionManage<Session> sessionManage
             , MessageManager messageManager, InvokeSupport invokeSupport, InvokeMethodArgumentValues values) {
         var context = new BootstrapContext<T>();
