@@ -27,4 +27,6 @@ public interface SessionManage<T extends Session> extends SessionFactory<T> {
     void addConnectListener(Consumer<T> connected);
 
     List<T> getAllSession();
+
+    void shutdown();
 }

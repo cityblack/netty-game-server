@@ -76,9 +76,10 @@ public class NetServer implements GameServer {
     }
 
     @Override
-    public void shutDown() {
+    public boolean shutDown() {
         sendCloseEvent();
         this.eventLoopGroup.shutdownGracefully();
+        return true;
     }
 
     private void startDaemonAwaitThread(ChannelFuture future) {

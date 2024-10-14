@@ -5,7 +5,7 @@ import com.lzh.game.framework.socket.core.invoke.support.DefaultActionInvokeSupp
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.protocol.message.DefaultMessageManager;
 import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
-import com.lzh.game.framework.socket.core.session.GameSessionManage;
+import com.lzh.game.framework.socket.core.session.DefaultSessionManage;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionManage;
 import com.lzh.game.framework.socket.starter.bean.SpringExceptionHandler;
@@ -49,7 +49,7 @@ public class GameSocketConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public SessionManage<Session> sessionManage() {
-        return GameSessionManage.of();
+        return new DefaultSessionManage<>();
     }
 
     @Bean

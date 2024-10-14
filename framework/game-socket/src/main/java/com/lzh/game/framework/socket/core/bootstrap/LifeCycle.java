@@ -6,7 +6,7 @@ public interface LifeCycle {
 
     boolean isStared();
 
-    void shutDown();
+    boolean shutDown();
 
     void asyncStart();
 }

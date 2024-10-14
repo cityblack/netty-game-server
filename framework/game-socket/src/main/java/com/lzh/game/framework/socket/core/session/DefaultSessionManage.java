@@ -1,5 +1,8 @@
 package com.lzh.game.framework.socket.core.session;
 
+import com.lzh.game.framework.socket.core.session.contain.ConcurrentHashSessionContain;
+import com.lzh.game.framework.socket.core.session.contain.SessionContain;
+import com.lzh.game.framework.socket.core.session.impl.GameSession;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,17 +12,20 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 @Slf4j
-public abstract class AbstractSessionManage<S extends Session>
+public class DefaultSessionManage<S extends Session>
         implements SessionManage<S> {
+    private SessionContain<String, S> contain;
 
-    private List<Consumer<S>> closeListener = new CopyOnWriteArrayList<>();
+    private final List<Consumer<S>> closeListener = new CopyOnWriteArrayList<>();
 
-    private List<Consumer<S>> connectListener = new CopyOnWriteArrayList<>();
+    private final List<Consumer<S>> connectListener = new CopyOnWriteArrayList<>();
 
-    private SessionFactory<S> factory;
+    public DefaultSessionManage(SessionContain<String, S> contain) {
+        this.contain = contain;
+    }
 
-    public AbstractSessionManage(SessionFactory<S> factory) {
-        this.factory = factory;
+    public DefaultSessionManage() {
+        this(new ConcurrentHashSessionContain<>());
     }
 
     @Override
@@ -39,13 +45,13 @@ public abstract class AbstractSessionManage<S extends Session>
 
     @Override
     public void pushSession(String sessionId, S session) {
-        doPutSession(sessionId, session);
+        getContain().put(sessionId, session);
         doConnect(session);
     }
 
     @Override
     public boolean removeSession(String sessionId) {
-        S session = doRemoveSession(sessionId);
+        S session = getContain().remove(sessionId);
         if (Objects.isNull(session)) {
             return false;
         }
@@ -54,8 +60,9 @@ public abstract class AbstractSessionManage<S extends Session>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public S createSession(Channel channel) {
-        return factory.createSession(channel);
+        return (S) GameSession.of(channel);
     }
 
     protected void doConnect(S session) {
@@ -78,7 +85,35 @@ public abstract class AbstractSessionManage<S extends Session>
         }
     }
 
-    protected abstract void doPutSession(String sessionId, S session);
+    @Override
+    public void shutdown() {
+        this.closeListener.clear();
+        this.connectListener.clear();
+        for (S s : getContain().getAll()) {
+            s.close();
+        }
+    }
 
-    protected abstract S doRemoveSession(String sessionId);
+    @Override
+    public S getSession(String sessionId) {
+        return getContain().get(sessionId);
+    }
+
+    @Override
+    public boolean contain(String sessionId) {
+        return Objects.nonNull(getContain().get(sessionId));
+    }
+
+    @Override
+    public List<S> getAllSession() {
+        return getContain().getAll();
+    }
+
+    public SessionContain<String, S> getContain() {
+        return contain;
+    }
+
+    public void setContain(SessionContain<String, S> contain) {
+        this.contain = contain;
+    }
 }

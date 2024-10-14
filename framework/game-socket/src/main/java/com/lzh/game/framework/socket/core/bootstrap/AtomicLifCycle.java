@@ -25,8 +25,8 @@ public class AtomicLifCycle implements LifeCycle {
     }
 
     @Override
-    public void shutDown() {
-        STATUS.compareAndSet(STARTED, NO_STARED);
+    public boolean shutDown() {
+        return STATUS.compareAndSet(STARTED, NO_STARED);
     }
 
     @Override

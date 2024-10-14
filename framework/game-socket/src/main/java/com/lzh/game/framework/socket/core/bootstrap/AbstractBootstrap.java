@@ -19,8 +19,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class AbstractBootstrap<T extends GameSocketProperties>
         implements LifeCycle {
 
+    private static final String SHUTDOWN_HOOK_THREAD_NAME = "SocketShutdownHook";
     private final AtomicLifCycle STATUS = new AtomicLifCycle();
-
+    private Thread shutdownHook;
 
     protected BootstrapContext<T> context;
 
@@ -59,6 +60,20 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
         this.addDefaultProcessor();
         MessageSerializeManager.getInstance()
                 .registerSerialize(Constant.DEFAULT_SERIAL_SIGN, new RookieSerialize(context.getMessageManager()));
+        this.registerShutdownHook();
+    }
+
+    private void registerShutdownHook() {
+        if (this.shutdownHook == null) {
+            // No shutdown hook registered yet.
+            this.shutdownHook = new Thread(SHUTDOWN_HOOK_THREAD_NAME) {
+                @Override
+                public void run() {
+                    shutDown();
+                }
+            };
+            Runtime.getRuntime().addShutdownHook(this.shutdownHook);
+        }
     }
 
     protected void addDefaultProcessor() {
@@ -80,8 +95,12 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
     }
 
     @Override
-    public void shutDown() {
-        STATUS.shutDown();
+    public boolean shutDown() {
+        if (STATUS.shutDown()) {
+
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -96,5 +115,13 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     public GameIoHandler getIoHandler() {
         return ioHandler;
+    }
+
+    public Thread getShutdownHook() {
+        return shutdownHook;
+    }
+
+    public void setShutdownHook(Thread shutdownHook) {
+        this.shutdownHook = shutdownHook;
     }
 }

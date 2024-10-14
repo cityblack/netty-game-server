@@ -1,14 +1,12 @@
-package com.lzh.game.framework.socket.core.session.cache;
+package com.lzh.game.framework.socket.core.session.contain;
 
 import com.lzh.game.framework.socket.core.session.Session;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultSessionMemoryCache<T extends Session> implements SessionMemoryCache<String, T> {
+public class ConcurrentHashSessionContain<T extends Session> implements SessionContain<String, T> {
 
     private Map<String, T> cache = new ConcurrentHashMap<>();
 
@@ -45,7 +43,7 @@ public class DefaultSessionMemoryCache<T extends Session> implements SessionMemo
 
     @Override
     public List<T> getAll() {
-        return Collections.unmodifiableList(new ArrayList<>(cache.values()));
+        return List.copyOf(cache.values());
     }
 
 }

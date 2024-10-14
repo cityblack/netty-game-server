@@ -39,8 +39,8 @@ public class DefaultGameRequest implements GameClient {
     }
 
     @Override
-    public void shutDown() {
-        client.shutDown();
+    public boolean shutDown() {
+        return client.shutDown();
     }
 
     @Override

@@ -1,11 +1,11 @@
-package com.lzh.game.framework.socket.core.session.cache;
+package com.lzh.game.framework.socket.core.session.contain;
 
 import com.lzh.game.framework.socket.core.session.Session;
 
 import java.util.List;
 import java.util.Objects;
 
-public interface SessionMemoryCache<K, V extends Session> {
+public interface SessionContain<K, V extends Session> {
 
     String SESSION_PREFIX = "GameSession_";
 

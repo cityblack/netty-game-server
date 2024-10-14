@@ -55,8 +55,8 @@ public class SpringServer<T extends GameServerSocketProperties> implements GameS
     }
 
     @Override
-    public void shutDown() {
-        bootstrap.asyncStart();
+    public boolean shutDown() {
+        return bootstrap.shutDown();
     }
 
     @Override

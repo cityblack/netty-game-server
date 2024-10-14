@@ -9,7 +9,7 @@ import com.lzh.game.framework.socket.core.process.context.DefaultProcessorPipeli
 import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
 import com.lzh.game.framework.socket.core.protocol.message.DefaultMessageManager;
 import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
-import com.lzh.game.framework.socket.core.session.GameSessionManage;
+import com.lzh.game.framework.socket.core.session.DefaultSessionManage;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionManage;
 import lombok.Getter;
@@ -36,7 +36,7 @@ public class BootstrapContext<T extends GameSocketProperties> {
     public static <T extends GameSocketProperties> BootstrapContext<T> of(T properties) {
         var context = new BootstrapContext<T>();
         context.properties = properties;
-        context.sessionManage = GameSessionManage.of();
+        context.sessionManage = new DefaultSessionManage<>();
         context.messageManager = new DefaultMessageManager(properties);
         context.invokeSupport = new DefaultActionInvokeSupport();
         context.pipeline = new DefaultProcessorPipeline();
@@ -55,5 +55,9 @@ public class BootstrapContext<T extends GameSocketProperties> {
         context.values = values;
         context.pipeline = new DefaultProcessorPipeline();
         return context;
+    }
+
+    public void shutdown() {
+        sessionManage.shutdown();
     }
 }

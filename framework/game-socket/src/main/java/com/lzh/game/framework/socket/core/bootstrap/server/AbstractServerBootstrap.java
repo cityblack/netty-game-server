@@ -32,9 +32,9 @@ public abstract class AbstractServerBootstrap<T extends GameServerSocketProperti
     }
 
     @Override
-    public void shutDown() {
-        super.shutDown();
+    public boolean shutDown() {
         this.netServer.shutDown();
+        return super.shutDown();
     }
 
     @Override

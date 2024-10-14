@@ -79,8 +79,8 @@ public abstract class AbstractClient<C extends GameClientSocketProperties>
     }
 
     @Override
-    public void shutDown() {
-        super.shutDown();
+    public boolean shutDown() {
+       return super.shutDown();
     }
 
     @Override
