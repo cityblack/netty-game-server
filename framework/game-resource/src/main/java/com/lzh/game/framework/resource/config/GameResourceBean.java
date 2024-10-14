@@ -4,13 +4,12 @@ import com.lzh.game.framework.resource.data.DefaultResourceMetaManager;
 import com.lzh.game.framework.resource.data.load.MongoResourceLoadHandler;
 import com.lzh.game.framework.resource.data.load.ResourceLoadHandler;
 import com.lzh.game.framework.resource.data.meta.ResourceMetaManager;
-import com.lzh.game.framework.resource.storage.manager.DefaultStorageManager;
 import com.lzh.game.framework.resource.storage.manager.StorageManageFactory;
 import com.lzh.game.framework.resource.storage.manager.StorageManager;
 import com.lzh.game.framework.resource.reload.ResourceReloadHandler;
 import com.lzh.game.framework.resource.reload.SpringResourceReloadHandler;
 import com.lzh.game.framework.resource.storage.StorageFactory;
-import com.lzh.game.framework.resource.storage.impl.CASStorageFactory;
+import com.lzh.game.framework.resource.storage.impl.CasStorageFactory;
 import com.lzh.game.framework.resource.storage.impl.DefaultStorageFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -40,7 +39,7 @@ public class GameResourceBean {
     @Bean
     @ConditionalOnMissingBean
     public StorageFactory storageFactory(ResourceLoadHandler resourceLoadHandler) {
-        return new CASStorageFactory(new DefaultStorageFactory(resourceLoadHandler));
+        return new CasStorageFactory(new DefaultStorageFactory(resourceLoadHandler));
     }
 
     @Bean

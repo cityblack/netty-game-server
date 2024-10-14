@@ -47,7 +47,8 @@ public abstract class AbstractStorage<K extends Serializable, V, C extends Map<K
 
     @Override
     public List<V> getIndex(String indexName, Serializable value) {
-        return indexDataContain.get(indexName, value);
+        var list = indexDataContain.get(indexName, value);
+        return Objects.isNull(list) ? Collections.emptyList() : list;
     }
 
     @Override

@@ -4,7 +4,7 @@ package com.lzh.game.framework.resource.storage.manager;
 import com.lzh.game.framework.resource.data.meta.ResourceMeta;
 import com.lzh.game.framework.resource.storage.Storage;
 import com.lzh.game.framework.resource.storage.StorageFactory;
-import com.lzh.game.framework.resource.storage.impl.CASStorageFactory;
+import com.lzh.game.framework.resource.storage.impl.CasStorageFactory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,12 +43,12 @@ public class DefaultStorageManager implements StorageManager {
         var storages = checkClass(clz);
         try {
             for (Storage<?, ?> storage : storages) {
-                if (storage instanceof CASStorageFactory.CASStorage<?,?> cas) {
+                if (storage instanceof CasStorageFactory.CASStorage<?,?> cas) {
                     cas.setWait();
                 }
             }
             for (Storage<?, ?> storage : storages) {
-                if (storage instanceof CASStorageFactory.CASStorage<?,?> cas) {
+                if (storage instanceof CasStorageFactory.CASStorage<?,?> cas) {
                     cas.getStorage().reload();
                 } else {
                     storage.reload();
@@ -56,7 +56,7 @@ public class DefaultStorageManager implements StorageManager {
             }
         } finally {
             for (Storage<?, ?> storage : storages) {
-                if (storage instanceof CASStorageFactory.CASStorage<?,?> cas) {
+                if (storage instanceof CasStorageFactory.CASStorage<?,?> cas) {
                     cas.freeWait();
                 }
             }

@@ -6,6 +6,7 @@ import com.lzh.game.framework.resource.storage.Storage;
 import com.lzh.game.framework.resource.storage.StorageFactory;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,7 @@ public class DefaultStorageFactory implements StorageFactory {
 
         @Override
         protected Map<K, V> newContain() {
-            return new LinkedHashMap<>();
+            return new HashMap<>();
         }
 
     }
