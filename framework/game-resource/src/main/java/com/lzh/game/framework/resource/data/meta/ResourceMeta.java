@@ -1,8 +1,8 @@
 package com.lzh.game.framework.resource.data.meta;
 
-import com.lzh.game.framework.resource.Resource;
 import com.lzh.game.framework.resource.Id;
 import com.lzh.game.framework.resource.Index;
+import com.lzh.game.framework.resource.Resource;
 import com.lzh.game.framework.resource.data.meta.index.GetterBuild;
 import com.lzh.game.framework.resource.data.meta.index.IndexGetter;
 import org.springframework.util.ReflectionUtils;
@@ -23,6 +23,9 @@ public class ResourceMeta<V> {
     private String resourceName;
 
     private Class<V> dataType;
+
+    private Class<? extends Comparator<?>> comparator;
+
     // All index. include id index
     private Map<String, IndexGetter> index;
 
@@ -75,14 +78,24 @@ public class ResourceMeta<V> {
         return index.values();
     }
 
+    public void setComparator(Class<? extends Comparator<?>> comparator) {
+        this.comparator = comparator;
+    }
+
+    public Class<? extends Comparator<?>> getComparator() {
+        return comparator;
+    }
+
     /**
-     *
-     * @param type {@link com.lzh.game.framework.resource.Resource}
+     * @param type         {@link com.lzh.game.framework.resource.Resource}
      * @param resourceName -- resource name
      * @return the class type meta
      */
-    public static ResourceMeta<?> of(Class<?> type, String resourceName) {
-        var model = new ResourceMeta();
+    public static <T> ResourceMeta<T> of(Class<T> type, String resourceName) {
+        ResourceMeta<T> model = new ResourceMeta<>();
+        Resource resource = type.getAnnotation(Resource.class);
+        var comparator = resource.comparator();
+        model.setComparator(comparator == NoneComparator.class ? null : comparator);
         model.setDataType(type);
         model.setResourceName(resourceName);
         ReflectionUtils.doWithFields(type, field -> {

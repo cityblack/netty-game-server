@@ -2,30 +2,30 @@ package com.lzh.game.framework.resource.storage.impl;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import com.lzh.game.framework.resource.reload.ResourceLoaded;
 import com.lzh.game.framework.resource.data.load.ResourceLoadHandler;
 import com.lzh.game.framework.resource.data.meta.ResourceMeta;
 import com.lzh.game.framework.resource.data.meta.index.GetterBuild;
 import com.lzh.game.framework.resource.data.meta.index.IndexGetter;
+import com.lzh.game.framework.resource.reload.ResourceDataLoaded;
 import com.lzh.game.framework.resource.storage.Storage;
 import com.lzh.game.framework.utils.JsonUtils;
+import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author zehong.l
  * @since 2024-08-20 11:25
  **/
-public abstract class AbstractStorage<K extends Serializable, V> implements Storage<K, V> {
+public abstract class AbstractStorage<K extends Serializable, V, C extends Map<K, V>> implements Storage<K, V> {
 
     protected final ResourceLoadHandler loadHandle;
 
     protected final ResourceMeta<V> meta;
+    protected C contain;
+    protected List<V> sortData;
 
     public AbstractStorage(ResourceLoadHandler loadHandle, ResourceMeta<V> meta) {
         this.loadHandle = loadHandle;
@@ -61,15 +61,26 @@ public abstract class AbstractStorage<K extends Serializable, V> implements Stor
 
     @Override
     public void reload() {
+        pushData(loadHandle.loadList(meta), meta);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void pushData(List<V> dataList, ResourceMeta<V> meta) {
         Table<String, Serializable, List<V>> index = HashBasedTable.create();
         Table<String, Serializable, V> uniqueIndex = HashBasedTable.create();
-        Map<K, V> contain = newContain();
-        for (V data : loadHandle.loadList(meta)) {
+        List<V> sortData = new LinkedList<>();
+        C contain = newContain();
+        for (V data : dataList) {
             contain.put((K) meta.getId().get(data), data);
             meta.forEachIndex((indexName, i) -> this.buildIndex(data, indexName, i, uniqueIndex, index));
+            sortData.add(data);
             afterData(data);
         }
-        setContain(contain);
+        if (Objects.nonNull(meta.getComparator())) {
+            sortData.sort((Comparator<V>) BeanUtils.instantiateClass(meta.getComparator()));
+        }
+        this.contain = contain;
+        this.sortData = Collections.unmodifiableList(sortData);
         this.indexDataContain = index;
         this.uniqueIndexContain = uniqueIndex;
     }
@@ -89,17 +100,24 @@ public abstract class AbstractStorage<K extends Serializable, V> implements Stor
                 indexContain.put(indexName, value, new ArrayList<>());
             }
             List<V> list = indexContain.get(indexName, value);
-            list.add(data);
+            Objects.requireNonNull(list).add(data);
         }
     }
 
     protected void afterData(Object data) {
-        if (data instanceof ResourceLoaded) {
-            ((ResourceLoaded) data).loaded();
+        if (data instanceof ResourceDataLoaded loaded) {
+            loaded.loaded();
         }
     }
 
-    protected abstract Map<K, V> newContain();
+    @Override
+    public List<V> getAll() {
+        return sortData;
+    }
 
-    protected abstract void setContain(Map<K, V> contain);
+    protected abstract C newContain();
+
+    public C getContain() {
+        return contain;
+    }
 }

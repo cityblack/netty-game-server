@@ -20,6 +20,8 @@ public class ItemResource {
 
     private boolean pile;
 
+    private float[] size;
+
     @Index(INDEX)
     public String getIndex() {
         return name + type;

@@ -24,6 +24,7 @@ public class DefaultStorageFactory implements StorageFactory {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <K extends Serializable, V> Storage<K, V> createStorage(ResourceMeta<V> meta) {
         var type = meta.getId().getType();
         if (type == int.class || type == Integer.class) {
@@ -34,9 +35,7 @@ public class DefaultStorageFactory implements StorageFactory {
         return new DefaultStorage<>(loadHandle, meta);
     }
 
-    private class DefaultStorage<K extends Serializable, V> extends AbstractStorage<K, V> {
-
-        private Map<K, V> contain;
+    private static class DefaultStorage<K extends Serializable, V> extends AbstractStorage<K, V, Map<K, V>> {
 
         public DefaultStorage(ResourceLoadHandler loadHandle, ResourceMeta<V> meta) {
             super(loadHandle, meta);
@@ -44,12 +43,12 @@ public class DefaultStorageFactory implements StorageFactory {
 
         @Override
         public List<V> getAll() {
-            return List.copyOf(contain.values());
+            return List.copyOf(getContain().values());
         }
 
         @Override
         public V get(K k) {
-            return contain.get(k);
+            return getContain().get(k);
         }
 
         @Override
@@ -57,9 +56,5 @@ public class DefaultStorageFactory implements StorageFactory {
             return new LinkedHashMap<>();
         }
 
-        @Override
-        protected void setContain(Map<K, V> contain) {
-            this.contain = contain;
-        }
     }
 }

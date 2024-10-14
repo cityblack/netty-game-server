@@ -13,9 +13,7 @@ import java.util.Map;
  * @author zehong.l
  * @since 2024-08-20 12:11
  **/
-public class LongKeyStorageImpl<V> extends AbstractStorage<Long, V> implements LongKeyStorage<V> {
-
-    private LongObjectMap<V> contain;
+public class LongKeyStorageImpl<V> extends AbstractStorage<Long, V, LongObjectMap<V>> implements LongKeyStorage<V> {
 
     public LongKeyStorageImpl(ResourceLoadHandler loadHandle, ResourceMeta<V> meta) {
         super(loadHandle, meta);
@@ -23,26 +21,16 @@ public class LongKeyStorageImpl<V> extends AbstractStorage<Long, V> implements L
 
     @Override
     public V get(long id) {
-        return contain.get(id);
-    }
-
-    @Override
-    public List<V> getAll() {
-        return List.copyOf(contain.values());
+        return getContain().get(id);
     }
 
     @Override
     public V get(Long id) {
-        return contain.get(id);
+        return getContain().get(id);
     }
 
     @Override
-    protected Map<Long, V> newContain() {
+    protected LongObjectMap<V> newContain() {
         return new LongObjectHashMap<>();
-    }
-
-    @Override
-    protected void setContain(Map<Long, V> contain) {
-        this.contain = (LongObjectMap<V>) contain;
     }
 }

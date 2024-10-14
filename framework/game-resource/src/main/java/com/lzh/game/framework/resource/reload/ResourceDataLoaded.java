@@ -1,9 +1,9 @@
 package com.lzh.game.framework.resource.reload;
 
 /**
- * Loading data
+ * Execute when data loading
  */
-public interface ResourceLoaded {
+public interface ResourceDataLoaded {
 
     void loaded();
 }

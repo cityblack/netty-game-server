@@ -13,9 +13,7 @@ import java.util.Map;
  * @author zehong.l
  * @since 2024-08-20 12:06
  **/
-public class IntKeyStorageImpl<V> extends AbstractStorage<Integer, V> implements IntKeyStorage<V> {
-
-    private IntObjectMap<V> contain;
+public class IntKeyStorageImpl<V> extends AbstractStorage<Integer, V, IntObjectMap<V>> implements IntKeyStorage<V> {
 
     public IntKeyStorageImpl(ResourceLoadHandler loadHandle, ResourceMeta<V> meta) {
         super(loadHandle, meta);
@@ -23,28 +21,17 @@ public class IntKeyStorageImpl<V> extends AbstractStorage<Integer, V> implements
 
     @Override
     public V get(int id) {
-        return contain.get(id);
-    }
-
-    @Override
-    public List<V> getAll() {
-        return List.copyOf(contain.values());
+        return getContain().get(id);
     }
 
     @Override
     public V get(Integer integer) {
-        return contain.get(integer);
+        return getContain().get(integer);
     }
 
-
     @Override
-    protected Map<Integer, V> newContain() {
+    protected IntObjectMap<V> newContain() {
         return new IntObjectHashMap<>();
-    }
-
-    @Override
-    protected void setContain(Map<Integer, V> contain) {
-        this.contain = (IntObjectMap<V>) contain;
     }
 
 }
