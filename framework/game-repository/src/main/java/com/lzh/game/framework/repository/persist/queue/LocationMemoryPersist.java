@@ -1,12 +1,12 @@
 package com.lzh.game.framework.repository.persist.queue;
 
 import com.lzh.game.framework.repository.persist.Element;
+import com.lzh.game.framework.repository.persist.EventType;
 import com.lzh.game.framework.repository.persist.Persist;
 import com.lzh.game.framework.repository.persist.consumer.PersistConsumer;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -21,9 +21,9 @@ public class LocationMemoryPersist implements Persist {
 
     private long consumeInterval;
 
-    private Map<String, Element> mergeCache = new ConcurrentHashMap<>();
+    private final Map<Element, Boolean> deleterCache;
 
-    private ScheduledExecutorService consumeTimer;
+    private final ScheduledExecutorService consumeTimer;
 
     private Class<?> type;
 
@@ -34,6 +34,7 @@ public class LocationMemoryPersist implements Persist {
         this.enable = new AtomicBoolean(true);
         this.consumeTimer = Executors.newScheduledThreadPool(1);
         this.consumeInterval = consumeInterval;
+        this.deleterCache = new ConcurrentHashMap<>();
         this.startTimer();
     }
 
@@ -43,17 +44,34 @@ public class LocationMemoryPersist implements Persist {
             return;
         }
         if (enable.get()) {
-            replaceElement(element);
+            if (element.getEventType() == EventType.DELETER) {
+                deleterCache.put(element, Boolean.TRUE);
+            } else {
+                if (deleterCache.containsKey(element)) {
+                    log.error("[{}-{}] is already deleted. EventType: {}", element.getClazz(), element.getId(), element.getEventType());
+                    return;
+                }
+            }
             queue.offer(element);
         } else {
-            log.error("Persist queue is stopping. not allow add new element.");
+            log.error("Persist queue is not running. not allow add new element.");
         }
     }
 
     @Override
     public void shutDown() {
-        log.info("Close Persist entity queue. {} scheduler size: {}", type, this.queue.size());
+        log.debug("Close Persist entity queue. {} scheduler size: {}", type, this.queue.size());
+        int size = queue.size();
         this.consumeQueue(queue);
+        this.consumeTimer.shutdown();
+        if (size > 0) {
+            try {
+                Thread.sleep(5_000);
+            } catch (InterruptedException e) {
+                log.error("", e);
+            }
+            log.debug("Wait 5 second to persist {} element.", type.getSimpleName());
+        }
         var list = this.consumeTimer.shutdownNow();
         for (Runnable runnable : list) {
             runnable.run();
@@ -65,52 +83,10 @@ public class LocationMemoryPersist implements Persist {
             log.debug("Consumer element from persist queue. element:{}", element);
         }
         try {
-            this.mergeCache.remove(getMergeKey(element));
             persistConsumer.onConsumer(element);
         } catch (Exception e) {
-            log.error("Consume element [{}-{}] error", element.getClazz(), element.getId());
+            log.error("Consume element [{}-{}] error", element.getClazz(), element.getId(), e);
         }
-    }
-
-    private String getMergeKey(Element element) {
-
-        String className = element.getClazz().getSimpleName();
-        String typeName = element.getEventType().name();
-        String key = element.getId().toString();
-
-        return String.join(":", className, typeName, key);
-    }
-
-    private void replaceElement(Element element) {
-
-        String mergeKey = getMergeKey(element);
-        Element oldElement = mergeCache.get(mergeKey);
-
-        if (Objects.nonNull(oldElement)) {
-            replaceStrategy(oldElement, element);
-            mergeCache.put(mergeKey, element);
-        }
-    }
-
-    private void replaceStrategy(final Element oldElement, Element newElement) {
-
-        newElement.eventBack(new Element.EventTypeBack() {
-
-            @Override
-            public void onSave(Element element) {
-                queue.remove(oldElement);
-            }
-
-            @Override
-            public void onUpdate(Element element) {
-                queue.remove(oldElement);
-            }
-
-            @Override
-            public void onDeleter(Element element) {
-                queue.remove(oldElement);
-            }
-        });
     }
 
     protected void startTimer() {
@@ -119,23 +95,37 @@ public class LocationMemoryPersist implements Persist {
             throw new RuntimeException("Persist queue not start.");
         }
         log.info("Open Persist timer.");
-        consumeTimer.scheduleAtFixedRate(() -> {
-            if (enable.get()) {
-                consumeQueue(queue);
-            }
-        }, consumeInterval, consumeInterval, TimeUnit.MILLISECONDS);
+        consumeTimer.scheduleAtFixedRate(() -> consumeQueue(queue), consumeInterval
+                , consumeInterval, TimeUnit.MILLISECONDS);
     }
 
     private void consumeQueue(BlockingQueue<Element> queue) {
+        var arr = queue.toArray(Element[]::new);
+        var merge = mergeElement(arr);
+        for (Element element : merge) {
+            consumer(element);
+        }
+    }
 
-        int size = queue.size();
-
-        for (int i = 0; i < size; i++) {
-            Element element = queue.poll();
-            if (Objects.nonNull(element)) {
-                consumer(element);
+    private Collection<Element> mergeElement(Element[] arr) {
+        List<Element> result = new ArrayList<>();
+        Map<Element, Integer> cache = new HashMap<>();
+        for (Element element : arr) {
+            if (Objects.isNull(element)) {
+                continue;
+            }
+            if (deleterCache.containsKey(element)) {
+                continue;
+            }
+            int index = cache.getOrDefault(element, -1);
+            if (index >= 0) {
+                result.set(index, element);
+            } else {
+                cache.put(element, result.size());
+                result.add(element);
             }
         }
+        return result;
     }
 
     public void setQueue(BlockingQueue<Element> queue) {
@@ -152,10 +142,6 @@ public class LocationMemoryPersist implements Persist {
 
     public void setConsumeInterval(long consumeInterval) {
         this.consumeInterval = consumeInterval;
-    }
-
-    public void setMergeCache(Map<String, Element> mergeCache) {
-        this.mergeCache = mergeCache;
     }
 
 }

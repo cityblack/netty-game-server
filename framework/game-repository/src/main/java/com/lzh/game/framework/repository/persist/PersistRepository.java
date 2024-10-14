@@ -1,7 +1,5 @@
 package com.lzh.game.framework.repository.persist;
 
-import com.lzh.game.framework.repository.persist.PersistEntity;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;

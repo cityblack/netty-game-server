@@ -48,6 +48,7 @@ public class CacheDataRepositoryTest {
         User user = getUser(USER_ID);
         user.setAge(22);
         dataRepository.save(user);
+        dataRepository.save(getUser(USER_ID));
     }
 
     private User getUser(String key) {

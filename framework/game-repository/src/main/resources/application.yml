@@ -1,17 +1,19 @@
 spring:
   data:
     mongodb:
-      host: localhost
+      host: 119.91.20.242
       database: game
-      port: 17217
-  redis:
-    redisson:
-      config: classpath:redisson.yml
+      port: 17017
+      username: game
+      password: as123456
+      authentication-database: admin
 
 logging:
   level:
-    com.lzh.game.repository: debug
+    com.lzh.game.framework.repository: debug
 game:
   repository:
+    cache-size: 3000
+    cache-expire: 0
     clear-after-close: false
 

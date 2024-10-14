@@ -43,9 +43,4 @@ public class RepositoryBean {
         return new MongoPersistRepository(mongoTemplate, mongoTemplate.getConverter().getMappingContext());
     }
 
-    @Bean
-    public RepositoryInjectProcessor repositoryInjectProcessor() {
-        return new RepositoryInjectProcessor();
-    }
-
 }

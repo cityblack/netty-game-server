@@ -10,11 +10,13 @@ import com.lzh.game.framework.repository.config.RepositoryConfig;
 import com.lzh.game.framework.repository.element.BaseEntity;
 import com.lzh.game.framework.repository.persist.PersistFactory;
 import com.lzh.game.framework.repository.persist.PersistRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
@@ -27,14 +29,17 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
-public class RepositoryInjectProcessor implements DataRepositoryManager, DisposableBean
-        , BeanPostProcessor, Ordered, ApplicationContextAware {
+@Slf4j
+public class RepositoryInjectProcessor implements DataRepositoryManager
+        , BeanPostProcessor, Ordered, ApplicationContextAware, ApplicationListener<ContextClosedEvent> {
 
     private ApplicationContext applicationContext;
 
-    private final Map<Class<?>, DataRepository<?,?>> repositories = new HashMap<>();
+    private final Map<Class<?>, DataRepository<?, ?>> repositories = new HashMap<>();
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -117,11 +122,28 @@ public class RepositoryInjectProcessor implements DataRepositoryManager, Disposa
         ReflectionUtils.setField(field, bean, data);
     }
 
-
     @Override
-    public void destroy() throws Exception {
-        for (DataRepository<?, ?> value : this.repositories.values()) {
-            value.shutdown();
+    @SuppressWarnings("all")
+    public void onApplicationEvent(ContextClosedEvent event) {
+        try {
+            int size = Math.min(this.repositories.size(), Runtime.getRuntime().availableProcessors());
+            CountDownLatch latch = new CountDownLatch(size);
+
+            ExecutorService service = Executors.newFixedThreadPool(size);
+            // Use muilt threads to persist data
+            for (DataRepository<?, ?> value : this.repositories.values()) {
+                service.submit(() -> {
+                    try {
+                        value.shutdown();
+                    } finally {
+                        latch.countDown();
+                    }
+                });
+            }
+            log.info("Waitting 30 second to close repository.");
+            latch.await(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            log.error("Repository close error:", e);
         }
     }
 }
