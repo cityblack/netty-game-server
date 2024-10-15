@@ -40,7 +40,7 @@ public class StorageTest {
 
     @Test
     public void getIndex() {
-        List<ItemResource> list = itemResourceStorage.getIndex(ItemResource.INDEX, "新产品1");
+        List<ItemResource> list = itemResourceStorage.getIndex(ItemResource.TYPE_INDEX, "CONSUME");
         log.info("{}", list);
     }
 

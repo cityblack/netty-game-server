@@ -69,7 +69,7 @@ public abstract class AbstractStorage<K extends Serializable, V, C extends Map<K
     protected void pushData(List<V> dataList, ResourceMeta<V> meta) {
         Table<String, Serializable, List<V>> index = HashBasedTable.create();
         Table<String, Serializable, V> uniqueIndex = HashBasedTable.create();
-        List<V> sortData = new LinkedList<>();
+        List<V> sortData = new ArrayList<>(dataList.size());
         C contain = newContain();
         for (V data : dataList) {
             contain.put((K) meta.getId().get(data), data);

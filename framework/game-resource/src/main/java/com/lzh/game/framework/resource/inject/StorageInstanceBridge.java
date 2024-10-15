@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
  **/
 class StorageInstanceBridge implements MethodHandler {
 
+    @SuppressWarnings({"rawtypes"})
     private final Storage storage;
 
     private final String key;
@@ -22,6 +23,7 @@ class StorageInstanceBridge implements MethodHandler {
     }
 
     @Override
+    @SuppressWarnings({"rawtypes","unchecked"})
     public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
         var instance = (StorageInstance) storage.get(key);
         return instance.getValue();

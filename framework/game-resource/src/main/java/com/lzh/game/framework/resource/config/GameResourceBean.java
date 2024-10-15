@@ -6,8 +6,8 @@ import com.lzh.game.framework.resource.data.load.ResourceLoadHandler;
 import com.lzh.game.framework.resource.data.meta.ResourceMetaManager;
 import com.lzh.game.framework.resource.storage.manager.StorageManageFactory;
 import com.lzh.game.framework.resource.storage.manager.StorageManager;
-import com.lzh.game.framework.resource.reload.ResourceReloadHandler;
-import com.lzh.game.framework.resource.reload.SpringResourceReloadHandler;
+import com.lzh.game.framework.resource.reload.ResourceReloadManager;
+import com.lzh.game.framework.resource.reload.SpringResourceReloadManager;
 import com.lzh.game.framework.resource.storage.StorageFactory;
 import com.lzh.game.framework.resource.storage.impl.CasStorageFactory;
 import com.lzh.game.framework.resource.storage.impl.DefaultStorageFactory;
@@ -32,8 +32,8 @@ public class GameResourceBean {
     }
 
     @Bean
-    public ResourceReloadHandler reloadMeta(StorageManager storageManager, ResourceMetaManager resourceModelManage) {
-        return new SpringResourceReloadHandler(storageManager, resourceModelManage);
+    public ResourceReloadManager reloadMeta(StorageManager storageManager, ResourceMetaManager resourceModelManage) {
+        return new SpringResourceReloadManager(storageManager, resourceModelManage);
     }
 
     @Bean

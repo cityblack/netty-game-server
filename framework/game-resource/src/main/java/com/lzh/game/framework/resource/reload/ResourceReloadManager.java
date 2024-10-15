@@ -3,7 +3,7 @@ package com.lzh.game.framework.resource.reload;
 import java.util.List;
 import java.util.Set;
 
-public interface ResourceReloadHandler {
+public interface ResourceReloadManager {
 
     Set<ResourceReload> getReload(Class<?> resource);
 

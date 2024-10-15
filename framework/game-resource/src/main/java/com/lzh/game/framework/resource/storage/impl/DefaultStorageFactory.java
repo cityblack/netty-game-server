@@ -7,12 +7,10 @@ import com.lzh.game.framework.resource.storage.StorageFactory;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- *
  * @author zehong.l
  * @since 2024-08-20 12:35
  **/
@@ -28,9 +26,9 @@ public class DefaultStorageFactory implements StorageFactory {
     @SuppressWarnings("unchecked")
     public <K extends Serializable, V> Storage<K, V> createStorage(ResourceMeta<V> meta) {
         var type = meta.getId().getType();
-        if (type == int.class || type == Integer.class) {
+        if (type == Integer.TYPE || type == Integer.class) {
             return (Storage<K, V>) new IntKeyStorageImpl<>(loadHandle, meta);
-        } else if (type == long.class || type == Long.class) {
+        } else if (type == Long.TYPE || type == Long.class) {
             return (Storage<K, V>) new LongKeyStorageImpl<>(loadHandle, meta);
         }
         return new DefaultStorage<>(loadHandle, meta);

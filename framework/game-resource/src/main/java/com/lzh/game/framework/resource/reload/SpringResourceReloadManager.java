@@ -3,7 +3,6 @@ package com.lzh.game.framework.resource.reload;
 import com.lzh.game.framework.resource.data.meta.ResourceMetaManager;
 import com.lzh.game.framework.resource.storage.manager.StorageManager;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
@@ -11,7 +10,7 @@ import org.springframework.util.Assert;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SpringResourceReloadHandler implements ResourceReloadHandler, ApplicationContextAware {
+public class SpringResourceReloadManager implements ResourceReloadManager, ApplicationContextAware {
 
     private final Map<Class<?>, Set<ResourceReload>> contain = new HashMap<>();
 
@@ -19,7 +18,7 @@ public class SpringResourceReloadHandler implements ResourceReloadHandler, Appli
 
     private final ResourceMetaManager resourceMetas;
 
-    public SpringResourceReloadHandler(StorageManager storageManager, ResourceMetaManager resourceMetas) {
+    public SpringResourceReloadManager(StorageManager storageManager, ResourceMetaManager resourceMetas) {
         this.storageManager = storageManager;
         this.resourceMetas = resourceMetas;
     }

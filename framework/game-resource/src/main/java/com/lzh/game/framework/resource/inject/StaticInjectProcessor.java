@@ -9,6 +9,7 @@ import com.lzh.game.framework.resource.storage.manager.StorageManager;
 import javassist.util.proxy.Proxy;
 import javassist.util.proxy.ProxyFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -142,9 +143,9 @@ public class StaticInjectProcessor implements BeanPostProcessor, Ordered {
      */
     private StorageInstance<?> createProxyInstance(Class<?> type, Storage<?,?> storage, String key) {
         try {
-            var bean = getInstanceType(type).newInstance();
+            var bean = BeanUtils.instantiateClass(getInstanceType(type));
             ((Proxy) bean).setHandler(new StorageInstanceBridge(storage, key));
-            return (StorageInstance) bean;
+            return (StorageInstance<?>) bean;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
