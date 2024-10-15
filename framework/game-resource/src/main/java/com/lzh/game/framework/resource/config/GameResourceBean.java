@@ -38,8 +38,9 @@ public class GameResourceBean {
 
     @Bean
     @ConditionalOnMissingBean
-    public StorageFactory storageFactory(ResourceLoadHandler resourceLoadHandler) {
-        return new CasStorageFactory(new DefaultStorageFactory(resourceLoadHandler));
+    public StorageFactory storageFactory(GameResourceProperties properties, ResourceLoadHandler resourceLoadHandler) {
+        var factory = new DefaultStorageFactory(resourceLoadHandler);
+        return properties.isUseCasStorage() ? new CasStorageFactory(factory) : factory;
     }
 
     @Bean
