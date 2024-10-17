@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutorService;
  * @author zehong.l
  * @since 2024-07-12 18:26
  **/
-public class DefaultLogInvoke extends AbstractLogInvoke implements LogInvoke {
+public class DefaultLogInvoke extends Slf4jLogInvoke implements LogInvoke {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LogConstant.LOGGER_NAME);
 

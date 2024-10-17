@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.lzh.game.framework.logs.LogHandlerConfig
+com.lzh.game.framework.logs.LogConfig

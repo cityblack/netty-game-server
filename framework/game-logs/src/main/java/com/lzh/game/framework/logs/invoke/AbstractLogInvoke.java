@@ -23,18 +23,15 @@ public abstract class AbstractLogInvoke implements LogInvoke, DisposableBean {
 
     private final ExecutorService executorService;
 
-    private final LogContentSerializer serializer;
-
-    public AbstractLogInvoke(LogContentSerializer serializer) {
-        this(Executors.newFixedThreadPool(2), serializer);
+    public AbstractLogInvoke() {
+        this(Executors.newFixedThreadPool(2));
     }
 
-    public AbstractLogInvoke(ExecutorService executorService, LogContentSerializer serializer) {
+    public AbstractLogInvoke(ExecutorService executorService) {
         this.executorService = executorService;
-        this.serializer = serializer;
     }
 
-    protected abstract Logger getLogger(String logFile);
+    protected abstract void doLog(String name, Map<String, Object> content);
 
     @Override
     public void invoke(LogInvokeInfo invokeInfo, Object[] args) {
@@ -52,7 +49,7 @@ public abstract class AbstractLogInvoke implements LogInvoke, DisposableBean {
                 content.put(param.name, param.value);
             }
             try {
-                getLogger(logFile).info(serializer.serializer(content));
+                doLog(logFile, content);
             } catch (Exception e) {
                 log.error("", e);
             }
