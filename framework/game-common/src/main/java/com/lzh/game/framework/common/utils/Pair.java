@@ -1,4 +1,4 @@
-package com.lzh.game.framework.utils;
+package com.lzh.game.framework.common.utils;
 
 public final class Pair<First, Second> {
 

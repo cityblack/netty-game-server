@@ -34,6 +34,7 @@
         <fury.version>0.5.1</fury.version>
         <jackson.version>2.17.1</jackson.version>
         <reflections.version>0.10.2</reflections.version>
+        <apache-commons.version>3.17.0</apache-commons.version>
     </properties>
 
     <dependencyManagement>
@@ -67,6 +68,12 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${apache-commons.version}</version>
             </dependency>
 
             <dependency>

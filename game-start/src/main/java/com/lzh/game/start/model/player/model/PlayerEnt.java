@@ -1,6 +1,6 @@
 package com.lzh.game.start.model.player.model;
 
-import com.lzh.game.business.utils.TimeUtils;
+import com.lzh.game.framework.utils.TimeUtils;
 import com.lzh.game.framework.repository.element.LongBaseEntity;
 import com.lzh.game.start.model.wallet.Wallet;
 import lombok.Data;
