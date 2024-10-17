@@ -17,4 +17,8 @@ public interface LogTest {
 
     @DefaultLogDesc(logFile = "helloWorld")
     void test2(int hello, LogParam user, LogReasonParam logReason);
+
+    static void log() {
+        System.out.println("Test log");
+    }
 }

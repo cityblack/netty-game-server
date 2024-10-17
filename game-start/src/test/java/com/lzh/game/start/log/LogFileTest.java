@@ -16,7 +16,7 @@ class LogFileTest {
 
     @Test
     public void log() {
-        LogHandler.getLog(Log.class).create(1, LogReason.CONSOLE);
+        LogHandler.getInstance().getLog(Log.class).create(1, LogReason.CONSOLE);
     }
 
     @LogFacade

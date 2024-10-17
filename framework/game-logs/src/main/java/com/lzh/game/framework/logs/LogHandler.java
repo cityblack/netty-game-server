@@ -15,6 +15,7 @@ import java.util.Objects;
  * @since 2023-05-31 15:42
  **/
 @Slf4j
+@Component
 public class LogHandler implements ApplicationContextAware {
 
     private static final Map<Class<?>, Object> INVOKE_BEAN = new HashMap<>();
@@ -23,7 +24,7 @@ public class LogHandler implements ApplicationContextAware {
 
     // Reduce Spring Bean Search Process
     @SuppressWarnings("unchecked")
-    public static <T> T getLog(Class<T> clazz) {
+    public <T> T getLog(Class<T> clazz) {
         Object invoke = INVOKE_BEAN.get(clazz);
         if (Objects.isNull(invoke)) {
             synchronized (INVOKE_BEAN) {
@@ -45,7 +46,6 @@ public class LogHandler implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         context = applicationContext;
     }
-
 
     public static LogHandler getInstance() {
         return Instance.INSTANCE;

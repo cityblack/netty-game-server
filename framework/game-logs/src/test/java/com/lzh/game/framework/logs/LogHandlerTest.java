@@ -22,6 +22,7 @@ public class LogHandlerTest {
 
         logTest.logTest(1, "world");
         logTest.test2(2, name -> "lzh", () -> 1001);
+        LogHandler.getInstance().getLog(LogTest.class).logTest(3, "hello");
     }
 
 }
