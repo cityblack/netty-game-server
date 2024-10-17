@@ -7,9 +7,11 @@ import com.lzh.game.framework.logs.invoke.DefaultLogInvoke;
 import com.lzh.game.framework.logs.invoke.LogInvoke;
 import com.lzh.game.framework.logs.invoke.serializer.FastJson2ContentSerializer;
 import com.lzh.game.framework.logs.invoke.serializer.LogContentSerializer;
+import jakarta.annotation.Resource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import java.util.Objects;
 
@@ -18,6 +20,7 @@ import java.util.Objects;
  * @since 2024-07-12 18:30
  **/
 @Configuration
+@Import(LogHandler.class)
 public class LogConfig {
 
     @Bean

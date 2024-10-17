@@ -85,7 +85,9 @@ public abstract class AbstractLogInvoke implements LogInvoke, DisposableBean {
         this.executorService.shutdown();
         if (!this.executorService.isTerminated() && !this.executorService.awaitTermination(10, TimeUnit.SECONDS)) {
             log.info("Waiting log write to file.");
-            this.executorService.shutdownNow();
+            for (Runnable runnable : this.executorService.shutdownNow()) {
+                runnable.run();
+            }
         }
         log.info("Closed log thead pool.");
     }

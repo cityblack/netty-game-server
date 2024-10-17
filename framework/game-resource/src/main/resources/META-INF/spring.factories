@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.lzh.game.framework.resource.config.GameResourceBean
+

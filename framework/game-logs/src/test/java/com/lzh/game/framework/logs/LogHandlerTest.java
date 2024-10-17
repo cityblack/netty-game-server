@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
  **/
 @Slf4j
 @SpringBootTest(classes = {com.lzh.game.framework.logs.AppTest.class})
-@EnableLog({"com.lzh.game.framework.*"})
 public class LogHandlerTest {
 
     @Resource

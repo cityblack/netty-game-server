@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
  * Use spring properties
  */
 @ConfigurationProperties("game.socket.server")
+@Configuration
 public class SpringGameServerProperties extends GameServerSocketProperties {
 
 }
