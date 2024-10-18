@@ -7,8 +7,10 @@ import org.springframework.util.Assert;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public final class TimeUtils {
 
@@ -28,6 +30,13 @@ public final class TimeUtils {
         return System.currentTimeMillis();
     }
 
+    /**
+     * According "yyyy-MM-dd HH:mm:ss" to parse date string.
+     * <p>
+     * str2Date("2024-10-01 12:00:00") is right
+     * <p>
+     * str2Date("2024-10-01") is error
+     */
     public static Date str2Date(String dataString) {
         try {
             return DATE_FORMAT.parse(dataString);
@@ -36,18 +45,33 @@ public final class TimeUtils {
         }
     }
 
+    /**
+     * @see #str2Date
+     */
     public static String now2Str() {
         return date2Str(new Date());
     }
 
+    /**
+     * @see #str2Date
+     */
     public static String timestamp2Str(long timestamp) {
         return date2Str(new Date(timestamp));
     }
 
+    /**
+     * Formats a {@link Date} object using a {@link GregorianCalendar}.
+     *
+     * @param date the date to format
+     * @return the formatted string
+     */
     public static String date2Str(Date date) {
         return DATE_FORMAT.format(date);
     }
 
+    /**
+     * (non-javadoc)
+     */
     public static boolean isSameDay(long time1, long time2) {
         Calendar cal1 = Calendar.getInstance();
         Calendar cal2 = Calendar.getInstance();
@@ -59,10 +83,16 @@ public final class TimeUtils {
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
     }
 
+    /**
+     * (non-javadoc)
+     */
     public static boolean isSameDayWithNow(long timestamp) {
         return isSameDay(timestamp, now());
     }
 
+    /**
+     * (non-javadoc)
+     */
     public static boolean isSameMonth(long time1, long time2) {
         Calendar cal1 = Calendar.getInstance();
         Calendar cal2 = Calendar.getInstance();
@@ -74,22 +104,50 @@ public final class TimeUtils {
                 cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH);
     }
 
+    /**
+     * Get the timestamp of tomorrow's zero clock
+     *
+     * @return Zero clock of tomorrow
+     */
     public static long getZeroTimeOfTomorrow() {
         return getHourMinuteTimeOfTomorrow(0, 0);
     }
 
+    /**
+     * Get the timestamp of today's zero clock
+     *
+     * @return Zero clock of today
+     */
     public static long getZeroTimeOfToDay() {
         return getHourMinuteTimeOfToday(0, 0);
     }
 
+    /**
+     * @see #hourMinuteAddDay
+     */
     public static long getHourMinuteTimeOfTomorrow(int hour, int minute) {
         return hourMinuteAddDay(hour, minute, 1);
     }
 
+    /**
+     * @see #hourMinuteAddDay
+     */
     public static long getHourMinuteTimeOfToday(int hour, int minute) {
         return hourMinuteAddDay(hour, minute, 0);
     }
 
+    /**
+     * Get timestamp of a few days later (hour:minute).
+     * <p>
+     * Now is "2024-10-18"
+     * <p>
+     * hourMinuteAddDay(10,10,1) return timestamp of "2024-10-19 10:10:0"
+     * <p>
+     * hourMinuteAddDay(22,30,3) return timestamp of "2024-10-21 22:30:0"
+     *
+     * @param addDays a few days later
+     * @return - timestamp
+     */
     public static long hourMinuteAddDay(int hour, int minute, int addDays) {
         Calendar calendar = Calendar.getInstance();
         if (addDays != 0) {
@@ -102,18 +160,31 @@ public final class TimeUtils {
         return calendar.getTimeInMillis();
     }
 
-    public static boolean isNowGoneClockFromTime(long timestamp) {
-        return !isNowGoneCronFromTime(FIVE_EXPRESSION, timestamp);
+    /**
+     * @see #isNowGoneCronFromTime
+     */
+    public static boolean isNowGoneFiveClockFromTime(long timestamp) {
+        return isNowGoneCronFromTime(FIVE_EXPRESSION, timestamp);
     }
 
-    public static boolean isNowGoneZeroFromTime(long timestamp) {
+    /**
+     * @see #isNowGoneCronFromTime
+     */
+    public static boolean isNowGoneZeroClockFromTime(long timestamp) {
         return isNowGoneCronFromTime(ZERO_EXPRESSION, timestamp);
     }
 
+    /**
+     * @see #isNowGoneCronFromTime(CronExpression, long)
+     */
     public static boolean isNowGoneCronFromTime(String cron, long timestamp) {
         return isNowGoneCronFromTime(CronExpression.parse(cron), timestamp);
     }
 
+    /**
+     * Current time is over the next time of timestamp
+     * @param expression cron
+     */
     private static boolean isNowGoneCronFromTime(CronExpression expression, long timestamp) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timestamp);
@@ -122,6 +193,9 @@ public final class TimeUtils {
         return !next.isBefore(LocalDateTime.now());
     }
 
+    /**
+     * @see CronExpression#next(Temporal) 
+     */
     public static LocalDateTime getCronNextTime(String cron, long timestamp) {
         var cronExpression = CronExpression.parse(cron);
         var calendar = Calendar.getInstance();

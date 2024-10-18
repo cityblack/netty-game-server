@@ -1,4 +1,4 @@
-package com.lzh.game.business.utils;
+package com.lzh.game.framework.utils;
 
 import org.springframework.util.Assert;
 
@@ -85,7 +85,7 @@ public class RandomUtils {
         if (probCurr >= probAll) {
             return true;
         }
-        int hitValue = randomFromOne(probAll);
+        int hitValue = randomValueFromOne(probAll);
         return probCurr >= hitValue;
     }
 
@@ -181,7 +181,7 @@ public class RandomUtils {
         if (sum <= 0) {
             throw new IllegalArgumentException("sum probability <= 0");
         }
-        int random = randomFromOne(sum);
+        int random = randomValueFromOne(sum);
         int computeValue = 0;
         for (int i = 0; i < probList.size(); i++) {
             computeValue += probList.get(i);
@@ -193,7 +193,7 @@ public class RandomUtils {
         throw new IllegalArgumentException("Get random index error");
     }
 
-    private static int randomFromOne(int max) {
+    private static int randomValueFromOne(int max) {
         return randomValue(1, max);
     }
 
