@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ExecutorService;
 
 /**
+ * Default log invoke. Use an append named 'OP_LOGGER'
+ *
  * @author zehong.l
  * @since 2024-07-12 18:26
  **/

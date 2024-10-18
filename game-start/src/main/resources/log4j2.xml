@@ -47,5 +47,18 @@
                 <!--<SizeBasedTriggeringPolicy size="100 MB"/>-->
             </Policies>
         </RollingFile>
+
+        <RollingFile name="OP_LOG" fileName="log/operate/operate.log"
+                     filePattern="log/operate.%d{yyyyMMdd}.log">
+            <Filters>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+
+            <PatternLayout pattern="%m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+                <!--<SizeBasedTriggeringPolicy size="100 MB"/>-->
+            </Policies>
+        </RollingFile>
     </appenders>
 </configuration>
