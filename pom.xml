@@ -18,7 +18,7 @@
     </modules>
 
     <properties>
-        <revision>0.1.10</revision>
+        <revision>0.1.10-M1.PRE</revision>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
