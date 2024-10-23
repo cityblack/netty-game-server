@@ -2,19 +2,13 @@ package com.lzh.game.framework.socket.core.bootstrap;
 
 import com.lzh.game.framework.socket.core.GameSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.handler.GameIoHandler;
-import com.lzh.game.framework.socket.core.filter.Filter;
-import com.lzh.game.framework.socket.core.filter.FilterHandler;
 import com.lzh.game.framework.socket.core.invoke.bean.InvokeBeanHelperHandler;
 import com.lzh.game.framework.socket.core.process.Processor;
-import com.lzh.game.framework.socket.core.process.impl.AuthProcessor;
-import com.lzh.game.framework.socket.core.process.impl.DefaultRequestProcess;
 import com.lzh.game.framework.socket.core.process.impl.HeartbeatProcessor;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerializeManager;
 import com.lzh.game.framework.socket.core.protocol.serial.rookie.RookieSerialize;
 import com.lzh.game.framework.socket.utils.Constant;
-
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import com.lzh.game.framework.socket.utils.ShutdownHook;
 
 public abstract class AbstractBootstrap<T extends GameSocketProperties>
         implements LifeCycle {
@@ -70,6 +64,7 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
                 @Override
                 public void run() {
                     shutDown();
+                    ShutdownHook.shutdown();
                 }
             };
             Runtime.getRuntime().addShutdownHook(this.shutdownHook);
@@ -78,7 +73,6 @@ public abstract class AbstractBootstrap<T extends GameSocketProperties>
 
     protected void addDefaultProcessor() {
         context.getPipeline().addFirst(new HeartbeatProcessor());
-        context.getPipeline().addFirst(new AuthProcessor(context));
     }
 
     public void addInvokeBean(Object bean) {

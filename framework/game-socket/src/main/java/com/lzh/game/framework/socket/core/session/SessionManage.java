@@ -1,7 +1,7 @@
 package com.lzh.game.framework.socket.core.session;
 
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 /**
  * Main class for access to the {@link Session ,Channel}
@@ -14,17 +14,24 @@ public interface SessionManage<T extends Session> extends SessionFactory<T> {
 
     void pushSession(String sessionId, T session);
 
-    void addCloseListening(Consumer<T> consumer);
-
     boolean contain(String sessionId);
 
     boolean removeSession(String sessionId);
 
+    default void addListener(SessionEvent event, BiConsumer<T, Object> call) {
+        addListener(event, call.getClass().getName(), call);
+    }
+
     /**
-     * Session connect event
-     * @param connected
+     * Session listener
+     *
+     * @param call call back
      */
-    void addConnectListener(Consumer<T> connected);
+    void addListener(SessionEvent event, String key, BiConsumer<T, Object> call);
+
+    void removeListener(SessionEvent event, String key);
+
+    void pushEvent(SessionEvent event, T session, Object data);
 
     List<T> getAllSession();
 

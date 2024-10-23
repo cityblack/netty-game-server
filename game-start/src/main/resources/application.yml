@@ -10,9 +10,12 @@ game:
 spring:
   data:
     mongodb:
-      host: 127.0.0.1
+      host: 119.91.20.242
       database: game
-      port: 27017
+      port: 17017
+      username: game
+      password: as123456
+      authentication-database: admin
   redis:
     redisson:
       config: classpath:redisson.yml

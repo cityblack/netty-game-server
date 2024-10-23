@@ -5,6 +5,8 @@ import com.lzh.game.framework.rookie.Rookie;
 import io.netty.buffer.ByteBuf;
 
 /**
+ * Auto boxing is a problem, but not fatal
+ *
  * @author zehong.l
  * @since 2024-08-28 16:32
  **/

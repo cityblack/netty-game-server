@@ -15,7 +15,7 @@ public class MessageSerializeManager {
         handlers.put(type, serialize);
     }
 
-    public MessageSerialize getProtocolMessage(int type) {
+    public MessageSerialize getProtocolSerialize(int type) {
         return handlers.get(type);
     }
 

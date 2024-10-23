@@ -1,12 +1,12 @@
 package com.lzh.game.framework.socket.core.session;
 
+import com.lzh.game.framework.socket.core.exchange.ProtoRequest;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 
 import java.time.Instant;
-import java.util.Objects;
 
-public interface Session {
+public interface Session extends ProtoRequest {
 
     String getRemoteAddress();
 
@@ -22,7 +22,6 @@ public interface Session {
     Instant getLastAccessTime();
 
     void updateLastAccessTime();
-
 
     void setAttribute(String attributeKey, Object attributeValue);
 

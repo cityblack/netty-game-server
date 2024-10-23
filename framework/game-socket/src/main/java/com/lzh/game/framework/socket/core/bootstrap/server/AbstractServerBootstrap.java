@@ -4,6 +4,7 @@ import com.lzh.game.framework.socket.core.bootstrap.AbstractBootstrap;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.NetServer;
 import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
+import com.lzh.game.framework.socket.core.process.impl.AuthProcessor;
 
 public abstract class AbstractServerBootstrap<T extends GameServerSocketProperties>
         extends AbstractBootstrap<T> implements GameServer {
@@ -42,4 +43,9 @@ public abstract class AbstractServerBootstrap<T extends GameServerSocketProperti
         return getProperties().getPort();
     }
 
+    @Override
+    protected void addDefaultProcessor() {
+        context.getPipeline().addFirst(new AuthProcessor(context));
+        super.addDefaultProcessor();
+    }
 }

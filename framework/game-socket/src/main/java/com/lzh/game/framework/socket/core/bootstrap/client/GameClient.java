@@ -11,23 +11,4 @@ public interface GameClient extends LifeCycle {
 
     Session conn(String host, int port, int connectTimeout);
 
-    /**
-     * @param session
-     * @param param   -- @Protocol class
-     */
-    void oneWay(Session session, Object param);
-
-
-    void oneWayRequest(Session session, Request request);
-
-
-    <T> AsyncResponse<T> request(Session session, Request request, Class<T> type);
-
-    /**
-     * @param session
-     * @param param   -- @protocol
-     * @return
-     */
-    <T> AsyncResponse<T> request(Session session, Object param, Class<T> type);
-
 }

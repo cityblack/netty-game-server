@@ -2,9 +2,10 @@ package com.lzh.game.framework.socket.core.bootstrap.client;
 
 import com.lzh.game.framework.socket.core.bootstrap.AbstractBootstrap;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
+import com.lzh.game.framework.socket.core.bootstrap.heartbeat.HeartbeatTimerTask;
 import com.lzh.game.framework.socket.core.protocol.AuthProtocol;
-import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.session.Session;
+import com.lzh.game.framework.socket.core.session.SessionEvent;
 import com.lzh.game.framework.socket.core.session.SessionUtils;
 import com.lzh.game.framework.socket.core.session.impl.AbstractSession;
 import com.lzh.game.framework.socket.core.session.impl.FutureSession;
@@ -17,7 +18,6 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -32,8 +32,6 @@ public abstract class AbstractClient<C extends GameClientSocketProperties>
 
     private ExecutorService requestService;
 
-    private DefaultGameRequest gameRequest;
-
     private Bootstrap bootstrap;
 
     private final AuthProtocol authProtocol;
@@ -42,10 +40,12 @@ public abstract class AbstractClient<C extends GameClientSocketProperties>
         @Override
         public void operationComplete(ChannelFuture future) throws Exception {
             var ch = future.channel();
-            // send auth protocol
-            oneWay(new AuthSession(ch), authProtocol);
-            if (log.isInfoEnabled()) {
-                log.info("{} send auth protocol", ch.id().asLongText());
+            if (ch.isActive() && ch.isOpen()) {
+                // send auth protocol
+                new AuthSession(ch, context).oneWay(authProtocol);
+                if (log.isDebugEnabled()) {
+                    log.debug("{} send auth protocol", ch.id().asLongText());
+                }
             }
         }
     };
@@ -58,9 +58,14 @@ public abstract class AbstractClient<C extends GameClientSocketProperties>
     @Override
     protected void init() {
         super.init();
-        this.monitor = new DefaultConnectMonitor(getContext().getSessionManage());
-        this.gameRequest = new DefaultGameRequest(this);
+        var sessionManager = getContext().getSessionManage();
+        this.monitor = new DefaultConnectMonitor(sessionManager);
+        sessionManager
+                .addListener(SessionEvent.CONNECT, (session, o) -> HeartbeatTimerTask.newTimerTask(session, context.getProperties().getHeartbeatInterval()));
+        sessionManager
+                .addListener(SessionEvent.CLOSE, (session, o) -> HeartbeatTimerTask.removeTimerTask(session));
     }
+
 
     public ConnectMonitor getMonitor() {
         return monitor;
@@ -79,42 +84,11 @@ public abstract class AbstractClient<C extends GameClientSocketProperties>
     }
 
     @Override
-    public boolean shutDown() {
-       return super.shutDown();
-    }
-
-    @Override
     public Session conn(String host, int port, int connectTimeout) {
         checkStatus();
         var channel = createChannel(host, port, connectTimeout);
         var future = SessionUtils.getBindFuture(channel);
         return new FutureSession(future);
-    }
-
-    @Override
-    public void oneWay(Session session, Object param) {
-        gameRequest.oneWay(session, param);
-    }
-
-    @Override
-    public void oneWayRequest(Session session, Request request) {
-        gameRequest.oneWayRequest(session, request);
-    }
-
-    @Override
-    public <T> AsyncResponse<T> request(Session session, Request request, Class<T> type) {
-        return gameRequest.request(session, request, type);
-    }
-
-    @Override
-    public <T> AsyncResponse<T> request(Session session, Object param, Class<T> type) {
-        return gameRequest.request(session, param, type);
-    }
-
-    protected void checkStatus() {
-        if (!isStared()) {
-            throw new RuntimeException("Client is not started..");
-        }
     }
 
     protected Channel createChannel(String host, int port, int connectTimeout) {
@@ -134,12 +108,18 @@ public abstract class AbstractClient<C extends GameClientSocketProperties>
         this.bootstrap = createBootstrap();
     }
 
+    protected void checkStatus() {
+        if (!isStared()) {
+            throw new RuntimeException("The client has not been started yet.");
+        }
+    }
+
     protected abstract Bootstrap createBootstrap();
 
     private static class AuthSession extends AbstractSession {
 
-        protected AuthSession(Channel channel) {
-            super(channel);
+        public AuthSession(Channel channel, BootstrapContext<?> context) {
+            super(channel, context);
         }
     }
 }

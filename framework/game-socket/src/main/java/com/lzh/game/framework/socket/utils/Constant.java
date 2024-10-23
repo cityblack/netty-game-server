@@ -29,7 +29,14 @@ public class Constant {
     public static final short AUTH_PROTOCOL_ID = -1;
     // heartbeat msg id
     public static final short HEARTBEAT_PROTOCOL_ID = -2;
+
+    public static final String HEARTBEAT_TASK_KEY = "heartbeat_task";
+
     // auth, heartbeat. class type
     public static final Class<?>[] INNER_MSG = new Class<?>[]{AuthProtocol.class, HeartbeatProtocol.class};
+
+    public static boolean canParseToBytes(short msgId) {
+        return msgId != AUTH_PROTOCOL_ID && msgId != HEARTBEAT_PROTOCOL_ID;
+    }
 
 }

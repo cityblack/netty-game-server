@@ -1,8 +1,6 @@
 package com.lzh.game.framework.rookie.serializer.impl;
 
-import com.lzh.game.framework.rookie.serializer.Serializer;
 import com.lzh.game.framework.rookie.utils.ByteBufUtils;
-import com.lzh.game.framework.rookie.Rookie;
 import com.lzh.game.framework.rookie.utils.Constant;
 import io.netty.buffer.ByteBuf;
 

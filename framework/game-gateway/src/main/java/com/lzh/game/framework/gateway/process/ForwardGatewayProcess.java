@@ -2,7 +2,6 @@ package com.lzh.game.framework.gateway.process;
 
 import com.lzh.game.framework.socket.core.bootstrap.client.AsyncResponse;
 import com.lzh.game.framework.socket.core.bootstrap.client.FutureAsyncResponse;
-import com.lzh.game.framework.socket.core.bootstrap.client.GameClient;
 import com.lzh.game.framework.socket.core.process.Processor;
 import com.lzh.game.framework.socket.core.process.ProcessorExecutorService;
 import com.lzh.game.framework.socket.core.process.context.ProcessorContext;
@@ -21,38 +20,31 @@ import java.util.Objects;
  */
 @Slf4j
 public class ForwardGatewayProcess implements Processor {
-
-    private final GameClient client;
-
     private final ForwardSessionSelect strategy;
 
-    public ForwardGatewayProcess(GameClient client, ForwardSessionSelect strategy) {
+    public ForwardGatewayProcess(ForwardSessionSelect strategy) {
         // io
-        this.client = client;
         this.strategy = strategy;
     }
 
     public void process(Session session, Request command) {
         short msgId = command.getMsgId();
-        byte[] bytes = (byte[]) command.getData();
-        Request request = SocketUtils.createRequest(msgId, bytes, command.getType());
+        Request request = SocketUtils.createRequest(msgId, command.getData(), command.getType());
         request.setSession(session);
         request.setType(command.getType());
-        request.setData(bytes);
-        request.setBytesBody(true);
         Session forwardSession = strategy.selected(request);
         if (Objects.isNull(forwardSession)) {
             log.error("select session is null");
             return;
         }
+        log.debug("Forward command [{}]", msgId);
         if (command.getType() == Constant.ONEWAY_SIGN) {
-            client.oneWay(forwardSession, request);
+            forwardSession.oneWay(request);
         } else {
-            AsyncResponse<byte[]> result = client.request(forwardSession, request, byte[].class);
+            AsyncResponse<byte[]> result = forwardSession.request(request, byte[].class);
             result.getResponseFuture()
                     .thenAccept(response -> ForwardGatewayProcess.this.doResponse(command, request.getSession(), response));
         }
-
     }
 
     private void doResponse(Request request, Session session, Response response) {

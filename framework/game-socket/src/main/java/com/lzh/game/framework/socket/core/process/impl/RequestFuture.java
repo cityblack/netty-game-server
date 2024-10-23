@@ -3,6 +3,7 @@ package com.lzh.game.framework.socket.core.process.impl;
 import com.lzh.game.framework.socket.core.process.NameThreadFactory;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.Response;
+import com.lzh.game.framework.socket.utils.ShutdownHook;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.Timer;
@@ -21,7 +22,11 @@ public class RequestFuture extends CompletableFuture<Response> {
 
     private static final Map<Integer, RequestFuture> FUTURES = new ConcurrentHashMap<>();
 
-    private static final Timer TIME_OUT_TIMER = new HashedWheelTimer(new NameThreadFactory("remote-future-timeout", true), 30, TimeUnit.MILLISECONDS);
+    private static final Timer TIME_OUT_TIMER = new HashedWheelTimer(new NameThreadFactory("remote-future-timeout"), 30, TimeUnit.MILLISECONDS);
+
+    static {
+        ShutdownHook.register(RequestFuture::shutdown);
+    }
 
     private final int id;
 
@@ -83,14 +88,14 @@ public class RequestFuture extends CompletableFuture<Response> {
 
     public static void requestError(RequestFuture future, Throwable throwable) {
         FUTURES.remove(future.id);
-        if (future.isCancelled() || future.isDone()) {
-            return;
-        }
         var timeout = future.timeoutTask;
         if (timeout.isExpired() || timeout.isCancelled()) {
             return;
         }
         future.timeoutTask.cancel();
+        if (future.isCancelled() || future.isDone()) {
+            return;
+        }
         Response response = new Response();
         response.setStatus(-1);
         response.setError(throwable);
@@ -102,6 +107,14 @@ public class RequestFuture extends CompletableFuture<Response> {
         if (Objects.isNull(response)) {
             throw new IllegalArgumentException("Response is null");
         }
+        if (Objects.nonNull(service)) {
+            service.submit(() -> doReceived0(response));
+        } else {
+            doReceived0(response);
+        }
+    }
+
+    private void doReceived0(Response response) {
         if (response.getStatus() == 0) {
             this.complete(response);
         } else {
@@ -118,23 +131,23 @@ public class RequestFuture extends CompletableFuture<Response> {
     private record TimeoutCheckTask(int requestId) implements TimerTask {
 
         @Override
-            public void run(Timeout timeout) throws Exception {
-                RequestFuture future = RequestFuture.getFuture(requestId);
-                if (Objects.isNull(future) || future.isDone() || future.isCancelled()) {
-                    return;
-                }
-                if (Objects.nonNull(future.service)) {
-                    future.service.execute(() -> notifyTimeout(future));
-                } else {
-                    notifyTimeout(future);
-                }
+        public void run(Timeout timeout) throws Exception {
+            RequestFuture future = RequestFuture.getFuture(requestId);
+            if (Objects.isNull(future) || future.isDone() || future.isCancelled()) {
+                return;
             }
-
-            private void notifyTimeout(RequestFuture future) {
-                Response response = new Response();
-                response.setError(new TimeoutException());
-                response.setRequestId(future.id);
-                RequestFuture.received(response, true);
-            }
+            notifyTimeout(future);
         }
+
+        private void notifyTimeout(RequestFuture future) {
+            Response response = new Response();
+            response.setError(new TimeoutException());
+            response.setRequestId(future.id);
+            RequestFuture.received(response, true);
+        }
+    }
+
+    private static void shutdown() {
+        TIME_OUT_TIMER.stop();
+    }
 }

@@ -21,4 +21,6 @@ public abstract class GameSocketProperties {
     private String authSlot = "lzh";
 
     private int authErrorCloseLimit = 10;
+
+    private int requestTimeout = 10_000;
 }

@@ -2,6 +2,7 @@ package com.lzh.game.framework.socket.core.session.monitor;
 
 import com.lzh.game.framework.socket.core.process.NameThreadFactory;
 import com.lzh.game.framework.socket.core.session.Session;
+import com.lzh.game.framework.socket.core.session.SessionEvent;
 import com.lzh.game.framework.socket.core.session.SessionManage;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
@@ -20,13 +21,13 @@ public class DefaultConnectMonitor implements ConnectMonitor {
     private final Map<String, MonitorMate> monitorContain = new ConcurrentHashMap<>();
 
     public DefaultConnectMonitor(SessionManage<Session> sessionManage) {
-        sessionManage.addConnectListener(this::doConnect);
-        sessionManage.addCloseListening(this::doCloseConnect);
+        sessionManage.addListener(SessionEvent.CONNECT, this::doConnect);
+        sessionManage.addListener(SessionEvent.CLOSE, this::doCloseConnect);
     }
 
-    private final Timer TASK_TIME = new HashedWheelTimer(new NameThreadFactory("session-monitor-re-connect", true), 30, TimeUnit.MILLISECONDS);
+    private final Timer TASK_TIME = new HashedWheelTimer(new NameThreadFactory("session-monitor-re-connect"), 30, TimeUnit.MILLISECONDS);
 
-    private void doConnect(Session session) {
+    private void doConnect(Session session, Object o) {
         if (monitorContain.isEmpty()) {
             return;
         }
@@ -40,7 +41,7 @@ public class DefaultConnectMonitor implements ConnectMonitor {
         log.info("{} connected. close monitor task", session.getId());
     }
 
-    private void doCloseConnect(Session session) {
+    private void doCloseConnect(Session session, Object o) {
         if (monitorContain.isEmpty()) {
             return;
         }
@@ -93,7 +94,7 @@ public class DefaultConnectMonitor implements ConnectMonitor {
             log.info("Check {} connect. times:{}", address, mate.failCount);
             if (!mate.connected) {
                 mate.addFailCount();
-                log.info("{} is not connected. retry to connect. retry times:{}", address, mate.failCount);
+                log.info("{} didn't connected. retry to connect. retry times:{}", address, mate.failCount);
                 mate.notConnectedCall.accept(address);
             } else {
                 mate.clearFailCount();

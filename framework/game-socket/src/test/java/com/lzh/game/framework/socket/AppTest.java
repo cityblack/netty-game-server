@@ -17,6 +17,8 @@ import io.netty.handler.logging.LogLevel;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.stream.IntStream;
+
 @SpringBootTest(classes = AppTest.class)
 public class AppTest {
 
@@ -43,9 +45,11 @@ public class AppTest {
         client.addProcessor(new FutureResponseProcess());
         client.start();
         Session session = client.conn("localhost", 8081, 5000);
-        var request = new RequestData(-1L, 30, "lzh", 0.1D, 174.3F);
-        AsyncResponse<RequestData> future = client.request(session, request, RequestData.class);
-        System.out.println(future.get());
+        for (int i = 0; i < 100; i++) {
+            var request = new RequestData(-1L, 30, "lzh", 0.1D, 174.3F);
+            AsyncResponse<RequestData> future = session.request(request, RequestData.class);
+            System.out.println(i + ":" + future.get());
+        }
         session.close();
     }
 }

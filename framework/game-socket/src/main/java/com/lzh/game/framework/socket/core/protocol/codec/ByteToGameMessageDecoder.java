@@ -1,14 +1,14 @@
 package com.lzh.game.framework.socket.core.protocol.codec;
 
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
-import com.lzh.game.framework.socket.core.session.SessionUtils;
-import com.lzh.game.framework.socket.utils.ByteBuffUtils;
-import com.lzh.game.framework.socket.utils.Constant;
 import com.lzh.game.framework.socket.core.protocol.AbstractCommand;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.Response;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerialize;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerializeManager;
+import com.lzh.game.framework.socket.core.session.SessionUtils;
+import com.lzh.game.framework.socket.utils.ByteBuffUtils;
+import com.lzh.game.framework.socket.utils.Constant;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -23,11 +23,8 @@ public class ByteToGameMessageDecoder extends ByteToMessageDecoder {
 
     private final BootstrapContext<?> context;
 
-    private final boolean dataToBytes;
-
-    public ByteToGameMessageDecoder(BootstrapContext<?> context, boolean dataToBytes) {
+    public ByteToGameMessageDecoder(BootstrapContext<?> context) {
         this.context = context;
-        this.dataToBytes = dataToBytes;
     }
 
     @Override
@@ -39,6 +36,7 @@ public class ByteToGameMessageDecoder extends ByteToMessageDecoder {
          * request: int
          * data: Object Serializable data
          */
+        log.debug("[{}] message parse", ctx.channel().id().asLongText());
         in.markReaderIndex();
         int preIndex = in.readerIndex();
         int len = ByteBuffUtils.readRawVarint32(in);
@@ -54,13 +52,14 @@ public class ByteToGameMessageDecoder extends ByteToMessageDecoder {
         byte type = in.readByte();
         int requestId = in.readInt();
         int dataLen = len - in.readerIndex() + startIndex;
-
+        log.debug("parse to [{}] - [{}]", ctx.channel().id().asLongText(), msgId);
         Object o = decode(ctx, in.readSlice(dataLen), msgId, dataLen);
         if (Objects.isNull(o)) {
             return;
         }
         AbstractCommand command = Constant.isRequest(type) ?
                 Request.of(msgId, context.getMessageManager().findDefine(msgId), requestId, o) : Response.of(msgId, requestId, o);
+
         if (command instanceof Request request) {
             request.setSession(SessionUtils.channelGetSession(ctx.channel()));
         }
@@ -69,7 +68,7 @@ public class ByteToGameMessageDecoder extends ByteToMessageDecoder {
     }
 
     public Object decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, short msgId, int dataLen) throws Exception {
-        if (dataToBytes && msgId != Constant.HEARTBEAT_PROTOCOL_ID) {
+        if (context.getProperties().isBodyDateToBytes() && Constant.canParseToBytes(msgId)) {
             byte[] bytes = new byte[dataLen];
             in.readBytes(bytes, in.readerIndex(), bytes.length);
             in.markReaderIndex();
@@ -82,7 +81,7 @@ public class ByteToGameMessageDecoder extends ByteToMessageDecoder {
         }
         int serializeType = context.getMessageManager().getSerializeType(msgId);
         MessageSerialize handler = MessageSerializeManager.getInstance()
-                .getProtocolMessage(serializeType);
+                .getProtocolSerialize(serializeType);
         if (Objects.isNull(handler)) {
             log.warn("Not defined msg serialize type [{}-{}]", msgId, serializeType);
             return null;

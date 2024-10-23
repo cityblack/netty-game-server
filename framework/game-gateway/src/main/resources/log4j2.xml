@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="INFO" monitorInterval="30">
+    <loggers>
+
+        <logger name="io.netty" level="ERROR" />
+        <logger name="com.lzh.game" level="debug" />
+
+        <root level="INFO">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFileInfo"/>
+            <appender-ref ref="RollingFileError"/>
+        </root>
+    </loggers>
+    <appenders>
+        <console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%6p} %style{%5pid}{bright,magenta} --- [%15.15t] %style{%-40.40logger{39}}{bright,cyan}: %m%n"/>
+        </console>
+
+        <RollingFile name="RollingFileInfo" fileName="log/console.log"
+                     filePattern="log/%d{yyyyMMdd}/console.%d{yyyyMMddHH}.log">
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss:SSS} [%t] - %l - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="RollingFileError" fileName="log/error.log"
+                     filePattern="log/%d{yyyyMMdd}/error.%d{yyyyMMddHH}.log">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss:SSS} [%t] - %l - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1" />
+                <!--<SizeBasedTriggeringPolicy size="100 MB"/>-->
+            </Policies>
+        </RollingFile>
+
+    </appenders>
+</configuration>

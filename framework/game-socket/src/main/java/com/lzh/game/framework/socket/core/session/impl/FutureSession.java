@@ -1,5 +1,6 @@
 package com.lzh.game.framework.socket.core.session.impl;
 
+import com.lzh.game.framework.socket.core.bootstrap.client.AsyncResponse;
 import com.lzh.game.framework.socket.core.session.Session;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -7,6 +8,7 @@ import io.netty.channel.ChannelFuture;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 public class FutureSession implements Session {
@@ -94,5 +96,15 @@ public class FutureSession implements Session {
         } catch (InterruptedException | ExecutionException exception) {
             throw new RuntimeException(exception);
         }
+    }
+
+    @Override
+    public void oneWay(Object param) {
+        blockGetSession().oneWay(param);
+    }
+
+    @Override
+    public <T> AsyncResponse<T> request(Object param, Class<T> returnType, ExecutorService service) {
+        return blockGetSession().request(param, returnType, service);
     }
 }

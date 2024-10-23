@@ -49,7 +49,7 @@ public class TcpServer<T extends GameServerSocketProperties> extends AbstractSer
                         .addLast(new LoggingHandler(getProperties().getNetty().getLogLevel()))
                         .addLast(new IdleStateHandler(getProperties().getServerIdleTime(), 0, 0, TimeUnit.MILLISECONDS))
                         .addLast("serverIdleHandler", new ServerIdleHandler())
-                        .addLast("decoder", new ByteToGameMessageDecoder(context, getProperties().isBodyDateToBytes()))
+                        .addLast("decoder", new ByteToGameMessageDecoder(context))
                         .addLast("encoder", new GameMessageToByteEncoder(context))
                         .addLast(getIoHandler())
                 ;

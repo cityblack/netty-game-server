@@ -42,8 +42,8 @@ public class TcpClient<C extends GameClientSocketProperties> extends AbstractCli
                         ch.pipeline()
                                 .addLast(new LoggingHandler(getProperties().getNetty().getLogLevel()))
                                 .addFirst(new IdleStateHandler(0, getProperties().getClientIdleTime(), 0, TimeUnit.MILLISECONDS))
-                                .addFirst(new ClientIdleHandler(getProperties().getHeartFailCloseTimes()))
-                                .addLast("decoder", new ByteToGameMessageDecoder(context, getProperties().isBodyDateToBytes()))
+                                .addFirst(new ClientIdleHandler())
+                                .addLast("decoder", new ByteToGameMessageDecoder(context))
                                 .addLast("encoder", new GameMessageToByteEncoder(context))
                                 .addLast(getIoHandler());
                     }

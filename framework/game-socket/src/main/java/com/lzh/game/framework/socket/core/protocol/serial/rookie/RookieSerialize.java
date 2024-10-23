@@ -18,9 +18,11 @@ public class RookieSerialize implements MessageSerialize {
 
     public RookieSerialize(MessageManager manager) {
         this.rookie = new Rookie();
-        manager.addRegisterListen("Rookie", e -> {
-            rookie.register(e.getMsgId(), e.getMsgClass());
-        });
+        manager.addRegisterListen("Rookie", this::registerMessage);
+    }
+
+    private void registerMessage(MessageDefine define) {
+        rookie.register(define.getMsgId(), define.getMsgClass());
     }
 
     @Override

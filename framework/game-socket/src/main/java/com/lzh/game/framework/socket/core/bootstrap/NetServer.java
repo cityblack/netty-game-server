@@ -1,7 +1,7 @@
 package com.lzh.game.framework.socket.core.bootstrap;
 
-import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.server.GameServer;
+import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
 import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
 import com.lzh.game.framework.socket.core.process.event.ProcessEvent;
 import com.lzh.game.framework.socket.core.session.impl.AbstractSession;
@@ -110,7 +110,7 @@ public class NetServer implements GameServer {
     static class ServerSession extends AbstractSession {
 
         protected ServerSession(Channel channel) {
-            super(channel, false);
+            super(channel, false, null);
         }
     }
 }

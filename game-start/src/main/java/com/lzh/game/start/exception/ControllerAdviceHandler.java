@@ -21,7 +21,7 @@ public class ControllerAdviceHandler {
             if (log.isDebugEnabled()) {
                 log.debug("Request error: ", ex);
             }
-            PacketUtils.send(response.getRequest().getSession(), Notify.of(i18n));
+            response.getRequest().getSession().oneWay(Notify.of(i18n));
         } else {
             log.error("", ex);
             PacketUtils.send(response.getRequest().getSession(), Notify.of(I18n.SYS_ERROR));

@@ -2,14 +2,8 @@ package com.lzh.game.framework.rookie;
 
 import com.lzh.game.framework.rookie.model.*;
 import io.netty.buffer.ByteBufAllocator;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.apache.fury.Fury;
 import org.junit.jupiter.api.Test;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author zehong.l
@@ -33,10 +27,11 @@ public class ObjectTest {
     @Test
     public void compareObject() {
         var rookie = new Rookie();
-        rookie.register((short) 1001, OT.class);
-        rookie.register((short) 1002, OtInner.class);
-        rookie.register((short) 1003, AbstractItem.class);
-        rookie.register((short) 1004, Item.class);
+        rookie.register(101, OT.class);
+        rookie.register(102, OtInner.class);
+        // Auto register 103
+        rookie.register(AbstractItem.class);
+        rookie.register(105, Item.class);
         var ot = OT.createOT();
         var buf = ByteBufAllocator.DEFAULT.heapBuffer();
         rookie.serializer(buf, ot);
@@ -54,11 +49,11 @@ public class ObjectTest {
     @Test
     public void testObject() {
         var rookie = new Rookie();
-        rookie.register((short) 1001, OT.class);
-        rookie.register((short) 1002, OtInner.class);
-        rookie.register((short) 1003, AbstractItem.class);
-        rookie.register((short) 1004, Item.class);
-        rookie.register((short) 1005, EnumOT.class);
+        rookie.register(101, OT.class);
+        rookie.register(102, OtInner.class);
+        rookie.register(AbstractItem.class);
+        rookie.register(103, Item.class);
+        rookie.register(104, EnumOT.class);
         rookie.register(TestEnum.class);
         var ot = EnumOT.of();
         var buf = ByteBufAllocator.DEFAULT.heapBuffer();

@@ -4,6 +4,7 @@ import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.process.event.ProcessEvent;
 import com.lzh.game.framework.socket.core.protocol.AbstractCommand;
 import com.lzh.game.framework.socket.core.session.Session;
+import com.lzh.game.framework.socket.core.session.SessionEvent;
 import com.lzh.game.framework.socket.core.session.SessionUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -26,7 +27,7 @@ public class GameIoHandler extends SimpleChannelInboundHandler<AbstractCommand> 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         var sessionManage = context.getSessionManage();
-        var session = sessionManage.createSession(ctx.channel());
+        var session = sessionManage.createSession(ctx.channel(), context);
         sessionManage.pushSession(session.getId(), session);
         log.info("session [{}/{}] is connected.", session.getId(), session.getRemoteAddress());
 
@@ -51,6 +52,8 @@ public class GameIoHandler extends SimpleChannelInboundHandler<AbstractCommand> 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         context.getPipeline().fireEvent(ProcessEvent.EXCEPTION, getSession(ctx.channel()), cause);
         log.error("", cause);
+        Session session = getSession(ctx.channel());
+        context.getSessionManage().pushEvent(SessionEvent.ERROR, session, cause);
         super.exceptionCaught(ctx, cause);
     }
 
