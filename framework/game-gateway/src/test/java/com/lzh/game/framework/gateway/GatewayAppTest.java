@@ -40,17 +40,9 @@ class GatewayAppTest {
     public void gateway() throws InterruptedException {
         var properties = new GatewayProperties();
         properties.getServerAddress().add("127.0.0.1:8082");
-        properties.getClient().setBodyDateToBytes(true);
-        GatewayClient client = new GatewayClient(properties);
-        client.addProcessor(new FutureResponseProcess());
-        client.start();
-
-        var serverProperties = properties.getServer();
-        serverProperties.setPort(8081);
-        serverProperties.setBodyDateToBytes(true);
-        var server = new TcpServer<>(BootstrapContext.of(properties.getServer()));
-        server.addProcessor(new ForwardGatewayProcess(new RandomSessionSelect(client)));
-        server.start();
+        properties.getServer().setPort(8081);
+        var gateway = new GateWay(properties);
+        gateway.start();
     }
 
     @Test
