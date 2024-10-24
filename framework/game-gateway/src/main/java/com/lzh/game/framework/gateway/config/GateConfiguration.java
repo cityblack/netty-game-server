@@ -1,14 +1,8 @@
 package com.lzh.game.framework.gateway.config;
 
-import com.lzh.game.framework.gateway.GatewayClient;
-import com.lzh.game.framework.gateway.process.ForwardGatewayProcess;
-import com.lzh.game.framework.gateway.process.ForwardSessionSelect;
-import com.lzh.game.framework.gateway.process.RandomSessionSelect;
-import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
-import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
-import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpServer;
-import com.lzh.game.framework.socket.core.process.impl.FutureResponseProcess;
-import jakarta.annotation.Resource;
+import com.lzh.game.framework.gateway.GateWay;
+import com.lzh.game.framework.socket.core.invoke.select.factory.RandomSessionSelectFactory;
+import com.lzh.game.framework.socket.core.invoke.select.factory.SessionSelectFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -19,30 +13,14 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(GatewayProperties.class)
 public class GateConfiguration {
 
-    @Resource
-    private GatewayProperties properties;
-
-
     @Bean
-    @ConditionalOnMissingBean
-    public ForwardSessionSelect sessionSelect(GatewayClient client) {
-        return new RandomSessionSelect(client);
+    @ConditionalOnMissingBean(name = "gatewaySelectFactory")
+    public SessionSelectFactory selectFactory() {
+        return new RandomSessionSelectFactory();
     }
 
     @Bean
-    public TcpServer<GameServerSocketProperties> gameServer(ForwardSessionSelect sessionSelect) {
-        var server = new TcpServer<>(BootstrapContext.of(properties.getServer()));
-        server.addProcessor(new ForwardGatewayProcess(sessionSelect));
-        server.asyncStart();
-        return server;
+    public GateWay gateWay(GatewayProperties properties) {
+        return new GateWay(properties, selectFactory());
     }
-
-    @Bean
-    public GatewayClient client() {
-        GatewayClient client = new GatewayClient(properties);
-        client.addProcessor(new FutureResponseProcess());
-        client.start();
-        return client;
-    }
-
 }

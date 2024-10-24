@@ -31,7 +31,7 @@ public class DefaultConnectMonitor implements ConnectMonitor {
         if (monitorContain.isEmpty()) {
             return;
         }
-        var ip = session.getRemoteAddress();
+        var ip = session.getRemoteAddressStr();
         var mate = monitorContain.get(ip);
         if (Objects.isNull(mate)) {
             return;
@@ -45,7 +45,7 @@ public class DefaultConnectMonitor implements ConnectMonitor {
         if (monitorContain.isEmpty()) {
             return;
         }
-        var ip = session.getRemoteAddress();
+        var ip = session.getRemoteAddressStr();
         var mate = monitorContain.get(ip);
         mate.connected = false;
         checkTask(ip);

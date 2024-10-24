@@ -11,6 +11,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.SocketAddress;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -51,7 +52,12 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
-    public String getRemoteAddress() {
+    public SocketAddress getRemoteAddress() {
+        return channel.remoteAddress();
+    }
+
+    @Override
+    public String getRemoteAddressStr() {
         return remoteAddress;
     }
 

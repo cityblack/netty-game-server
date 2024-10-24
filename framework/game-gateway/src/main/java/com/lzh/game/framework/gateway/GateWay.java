@@ -2,8 +2,8 @@ package com.lzh.game.framework.gateway;
 
 import com.lzh.game.framework.gateway.config.GatewayProperties;
 import com.lzh.game.framework.gateway.process.ForwardGatewayProcess;
-import com.lzh.game.framework.gateway.process.ForwardSessionSelect;
-import com.lzh.game.framework.gateway.process.RandomSessionSelect;
+import com.lzh.game.framework.socket.core.invoke.select.factory.RandomSessionSelectFactory;
+import com.lzh.game.framework.socket.core.invoke.select.factory.SessionSelectFactory;
 import com.lzh.game.framework.socket.core.bootstrap.AtomicLifCycle;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.server.AbstractServerBootstrap;
@@ -25,10 +25,15 @@ public class GateWay extends AtomicLifCycle {
 
     private GatewayClient client;
 
-    private ForwardSessionSelect sessionSelect;
+    private final SessionSelectFactory selectFactory;
 
     public GateWay(GatewayProperties properties) {
+        this(properties, new RandomSessionSelectFactory());
+    }
+
+    public GateWay(GatewayProperties properties, SessionSelectFactory selectFactory) {
         this.properties = properties;
+        this.selectFactory = selectFactory;
     }
 
     private void init() {
@@ -38,8 +43,7 @@ public class GateWay extends AtomicLifCycle {
         client.addProcessor(new FutureResponseProcess());
         if (Objects.isNull(gameServer)) {
             gameServer = new TcpServer<>(BootstrapContext.of(properties.getServer()));
-            var select = Objects.nonNull(sessionSelect) ? sessionSelect : new RandomSessionSelect(client);
-            gameServer.addProcessor(new ForwardGatewayProcess(select));
+            gameServer.addProcessor(new ForwardGatewayProcess(selectFactory.createSessionSelect(this.getClient())));
         }
     }
 
@@ -77,11 +81,4 @@ public class GateWay extends AtomicLifCycle {
         return client;
     }
 
-    public ForwardSessionSelect getSessionSelect() {
-        return sessionSelect;
-    }
-
-    public void setSessionSelect(ForwardSessionSelect sessionSelect) {
-        this.sessionSelect = sessionSelect;
-    }
 }

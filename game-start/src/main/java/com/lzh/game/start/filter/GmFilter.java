@@ -21,7 +21,7 @@ public class GmFilter implements Filter {
 
         if (request.getMsgId() == Constant.GM_MSG_ID && !properties.isOpenGm()) {
             log.error("Gm server is not open, please check the request is valid [{}-{}]"
-                    , request.getSession().getId(), request.getSession().getRemoteAddress());
+                    , request.getSession().getId(), request.getSession().getRemoteAddressStr());
             return;
         }
 

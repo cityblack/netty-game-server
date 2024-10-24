@@ -42,7 +42,7 @@ public class AuthProcessor implements Processor {
             return;
         }
         if (!session.hasAttribute(Constant.AUTH_SESSION_KEY)) {
-            log.error("session [{}-{}-{}] 401", session.getId(), session.getRemoteAddress(), data.getClass());
+            log.error("session [{}-{}-{}] 401", session.getId(), session.getRemoteAddressStr(), data.getClass());
             Integer time = session.getAttribute(Constant.AUTH_SESSION_KEY);
 
             if (Objects.nonNull(time) && time >= this.context.getProperties().getAuthErrorCloseLimit()) {

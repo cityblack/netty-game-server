@@ -4,11 +4,14 @@ import com.lzh.game.framework.socket.core.exchange.ProtoRequest;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 
+import java.net.SocketAddress;
 import java.time.Instant;
 
 public interface Session extends ProtoRequest {
 
-    String getRemoteAddress();
+    SocketAddress getRemoteAddress();
+
+    String getRemoteAddressStr();
 
     /**
      * Return the session id

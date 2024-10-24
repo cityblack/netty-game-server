@@ -29,7 +29,7 @@ public class GameIoHandler extends SimpleChannelInboundHandler<AbstractCommand> 
         var sessionManage = context.getSessionManage();
         var session = sessionManage.createSession(ctx.channel(), context);
         sessionManage.pushSession(session.getId(), session);
-        log.info("session [{}/{}] is connected.", session.getId(), session.getRemoteAddress());
+        log.info("session [{}/{}] is connected.", session.getId(), session.getRemoteAddressStr());
 
         SessionUtils.channelBindSession(ctx.channel(), session);
         doEvent(ProcessEvent.CONNECT, session);
@@ -42,7 +42,7 @@ public class GameIoHandler extends SimpleChannelInboundHandler<AbstractCommand> 
         if (Objects.isNull(session)) {
             return;
         }
-        log.info("session [{}/{}] is close.", session.getId(), session.getRemoteAddress());
+        log.info("session [{}/{}] is close.", session.getId(), session.getRemoteAddressStr());
         doEvent(ProcessEvent.CLOSE, session);
         context.getSessionManage().removeSession(session.getId());
         SessionUtils.channelUnbindSession(ctx.channel());

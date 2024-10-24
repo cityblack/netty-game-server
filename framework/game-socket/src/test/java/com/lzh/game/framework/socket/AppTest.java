@@ -14,12 +14,14 @@ import com.lzh.game.framework.socket.core.process.impl.FutureResponseProcess;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.proto.RequestData;
 import io.netty.handler.logging.LogLevel;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.stream.IntStream;
 
 @SpringBootTest(classes = AppTest.class)
+@Slf4j
 public class AppTest {
 
     @Test
@@ -45,10 +47,11 @@ public class AppTest {
         client.addProcessor(new FutureResponseProcess());
         client.start();
         Session session = client.conn("localhost", 8081, 5000);
-        for (int i = 0; i < 100; i++) {
+        log.info("remote: {}", session.getRemoteAddress());
+        for (int i = 0; i < 10; i++) {
             var request = new RequestData(-1L, 30, "lzh", 0.1D, 174.3F);
             AsyncResponse<RequestData> future = session.request(request, RequestData.class);
-            System.out.println(i + ":" + future.get());
+            log.info("i: {} {}", i, future.get());
         }
         session.close();
     }

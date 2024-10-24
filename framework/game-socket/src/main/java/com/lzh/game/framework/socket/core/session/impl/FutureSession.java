@@ -5,8 +5,8 @@ import com.lzh.game.framework.socket.core.session.Session;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 
+import java.net.SocketAddress;
 import java.time.Instant;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -20,8 +20,13 @@ public class FutureSession implements Session {
     private Future<Session> fact;
 
     @Override
-    public String getRemoteAddress() {
+    public SocketAddress getRemoteAddress() {
         return blockGetSession().getRemoteAddress();
+    }
+
+    @Override
+    public String getRemoteAddressStr() {
+        return blockGetSession().getRemoteAddressStr();
     }
 
     @Override
