@@ -8,7 +8,7 @@ import com.lzh.game.framework.socket.core.protocol.serial.MessageSerialize;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerializeManager;
 import com.lzh.game.framework.socket.core.session.SessionUtils;
 import com.lzh.game.framework.socket.utils.ByteBuffUtils;
-import com.lzh.game.framework.socket.utils.Constant;
+import com.lzh.game.framework.socket.Constant;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;

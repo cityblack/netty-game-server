@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutorService;
  * @since 2024-07-22 17:40
  **/
 @Slf4j
-public abstract class AbstractClient<C extends GameClientSocketProperties>
+public abstract class AbstractClient<C extends ClientSocketProperties>
         extends AbstractBootstrap<C> implements GameClient {
 
     private ConnectMonitor monitor;

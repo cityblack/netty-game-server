@@ -1,11 +1,10 @@
 package com.lzh.game.framework.gateway.config;
 
-import com.lzh.game.framework.socket.core.bootstrap.client.GameClientSocketProperties;
-import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.client.ClientSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.server.ServerSocketProperties;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,7 @@ public class GatewayProperties {
 
     private List<String> serverAddress = new ArrayList<>();
 
-    private GameServerSocketProperties server = new GameServerSocketProperties();
+    private ServerSocketProperties server = new ServerSocketProperties();
 
-    private GameClientSocketProperties client = new GameClientSocketProperties();
+    private ClientSocketProperties client = new ClientSocketProperties();
 }

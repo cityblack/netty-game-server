@@ -6,7 +6,7 @@ import com.lzh.game.framework.socket.core.bootstrap.client.FutureAsyncResponse;
 import com.lzh.game.framework.socket.core.process.impl.RequestFuture;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.session.Session;
-import com.lzh.game.framework.socket.utils.Constant;
+import com.lzh.game.framework.socket.Constant;
 import com.lzh.game.framework.socket.utils.SocketUtils;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;

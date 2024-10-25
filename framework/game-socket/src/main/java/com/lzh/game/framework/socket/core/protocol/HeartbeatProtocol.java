@@ -1,7 +1,7 @@
 package com.lzh.game.framework.socket.core.protocol;
 
 import com.lzh.game.framework.socket.core.protocol.message.Protocol;
-import com.lzh.game.framework.socket.utils.Constant;
+import com.lzh.game.framework.socket.Constant;
 import lombok.Data;
 
 /**

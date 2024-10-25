@@ -2,8 +2,8 @@ package com.lzh.game.framework.gateway;
 
 import com.lzh.game.framework.gateway.config.GatewayProperties;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
-import com.lzh.game.framework.socket.core.bootstrap.client.GameClientSocketProperties;
-import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.client.ClientSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.server.ServerSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpClient;
 import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpServer;
 import com.lzh.game.framework.socket.core.invoke.ActionRequestHandler;
@@ -21,7 +21,7 @@ class GatewayAppTest {
 
     @Test
     public void server() {
-        var properties = new GameServerSocketProperties();
+        var properties = new ServerSocketProperties();
         properties.setPort(8082);
         properties.setOpenGm(true);
         properties.getNetty().setLogLevel(LogLevel.DEBUG);
@@ -43,7 +43,7 @@ class GatewayAppTest {
 
     @Test
     public void request() throws InterruptedException {
-        var properties = new GameClientSocketProperties();
+        var properties = new ClientSocketProperties();
         properties.setConnectTimeout(5000);
         var client = new TcpClient<>(BootstrapContext.of(properties));
         client.addProcessor(new FutureResponseProcess());

@@ -2,7 +2,7 @@ package com.lzh.game.framework.socket.starter.server;
 
 import com.lzh.game.framework.socket.core.bootstrap.server.AbstractServerBootstrap;
 import com.lzh.game.framework.socket.core.bootstrap.server.GameServer;
-import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.server.ServerSocketProperties;
 import com.lzh.game.framework.socket.core.filter.Filter;
 import com.lzh.game.framework.socket.core.filter.FilterHandler;
 import com.lzh.game.framework.socket.core.invoke.ActionRequestHandler;
@@ -18,7 +18,7 @@ import org.springframework.context.ApplicationContextAware;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class SpringServer<T extends GameServerSocketProperties> implements GameServer, ApplicationContextAware {
+public class SpringServer<T extends ServerSocketProperties> implements GameServer, ApplicationContextAware {
 
     private final AbstractServerBootstrap<T> bootstrap;
 

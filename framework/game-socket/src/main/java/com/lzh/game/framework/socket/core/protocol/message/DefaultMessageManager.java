@@ -1,12 +1,11 @@
 package com.lzh.game.framework.socket.core.protocol.message;
 
 import com.lzh.game.framework.common.collection.IdentityMap;
-import com.lzh.game.framework.socket.core.GameSocketProperties;
-import com.lzh.game.framework.socket.utils.Constant;
+import com.lzh.game.framework.socket.core.SocketProperties;
+import com.lzh.game.framework.socket.Constant;
 import io.netty.util.collection.ShortObjectHashMap;
 import io.netty.util.collection.ShortObjectMap;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,13 +23,13 @@ public class DefaultMessageManager implements MessageManager {
 
     private final ShortObjectMap<MessageDefine> idContain;
 
-    public DefaultMessageManager(GameSocketProperties properties) {
+    public DefaultMessageManager(SocketProperties properties) {
         this.classContain = new IdentityMap<>();
         this.idContain = new ShortObjectHashMap<>();
         initRegister(properties);
     }
 
-    private void initRegister(GameSocketProperties properties) {
+    private void initRegister(SocketProperties properties) {
         registerDefault();
         var handler = new MessageLoadHandler();
         var list = handler.load(properties.getProtocolScanner());

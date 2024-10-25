@@ -1,6 +1,6 @@
 package com.lzh.game.framework.socket.core.bootstrap.client;
 
-import com.lzh.game.framework.socket.core.GameSocketProperties;
+import com.lzh.game.framework.socket.core.SocketProperties;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  **/
 @Getter
 @Setter
-public class GameClientSocketProperties extends GameSocketProperties {
+public class ClientSocketProperties extends SocketProperties {
 
     private int connectTimeout = 2000;
 

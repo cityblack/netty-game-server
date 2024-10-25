@@ -1,7 +1,7 @@
 package com.lzh.game.framework.socket.core.bootstrap;
 
 import com.lzh.game.framework.socket.core.bootstrap.server.GameServer;
-import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.server.ServerSocketProperties;
 import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
 import com.lzh.game.framework.socket.core.process.event.ProcessEvent;
 import com.lzh.game.framework.socket.core.session.impl.AbstractSession;
@@ -25,7 +25,7 @@ public class NetServer implements GameServer {
 
     private ProcessorPipeline pipeline;
 
-    private GameServerSocketProperties properties;
+    private ServerSocketProperties properties;
 
     private int port;
 
@@ -35,7 +35,7 @@ public class NetServer implements GameServer {
 
     private AtomicLong openTimestamp = new AtomicLong();
 
-    public NetServer(int port, GameServerSocketProperties properties, ProcessorPipeline pipeline) {
+    public NetServer(int port, ServerSocketProperties properties, ProcessorPipeline pipeline) {
         this.port = port;
         this.properties = properties;
         this.pipeline = pipeline;

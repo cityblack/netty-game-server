@@ -1,16 +1,16 @@
 package com.lzh.game.framework.socket.core.bootstrap;
 
-import com.lzh.game.framework.socket.core.GameSocketProperties;
+import com.lzh.game.framework.socket.core.SocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.handler.GameIoHandler;
 import com.lzh.game.framework.socket.core.invoke.bean.InvokeBeanHelperHandler;
 import com.lzh.game.framework.socket.core.process.Processor;
 import com.lzh.game.framework.socket.core.process.impl.HeartbeatProcessor;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerializeManager;
 import com.lzh.game.framework.socket.core.protocol.serial.rookie.RookieSerialize;
-import com.lzh.game.framework.socket.utils.Constant;
+import com.lzh.game.framework.socket.Constant;
 import com.lzh.game.framework.socket.utils.ShutdownHook;
 
-public abstract class AbstractBootstrap<T extends GameSocketProperties>
+public abstract class AbstractBootstrap<T extends SocketProperties>
         implements LifeCycle {
 
     private static final String SHUTDOWN_HOOK_THREAD_NAME = "SocketShutdownHook";

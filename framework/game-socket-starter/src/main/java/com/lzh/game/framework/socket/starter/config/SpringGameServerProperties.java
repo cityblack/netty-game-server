@@ -1,6 +1,6 @@
 package com.lzh.game.framework.socket.starter.config;
 
-import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.server.ServerSocketProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,6 +9,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @ConfigurationProperties("game.socket.server")
 @Configuration
-public class SpringGameServerProperties extends GameServerSocketProperties {
+public class SpringGameServerProperties extends ServerSocketProperties {
 
 }

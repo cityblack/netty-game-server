@@ -1,4 +1,4 @@
-package com.lzh.game.framework.socket.utils;
+package com.lzh.game.framework.socket;
 
 import com.lzh.game.framework.socket.core.protocol.AuthProtocol;
 import com.lzh.game.framework.socket.core.protocol.HeartbeatProtocol;

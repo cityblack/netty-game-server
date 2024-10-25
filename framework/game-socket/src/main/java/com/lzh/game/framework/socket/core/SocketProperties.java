@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public abstract class GameSocketProperties {
+public abstract class SocketProperties {
 
     // Set false which custom processor
     private NettyProperties netty = new NettyProperties();

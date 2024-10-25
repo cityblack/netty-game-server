@@ -10,7 +10,7 @@ import com.lzh.game.framework.socket.core.process.context.ProcessorContext;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.Response;
 import com.lzh.game.framework.socket.core.session.Session;
-import com.lzh.game.framework.socket.utils.Constant;
+import com.lzh.game.framework.socket.Constant;
 import com.lzh.game.framework.socket.utils.SocketUtils;
 import lombok.extern.slf4j.Slf4j;
 

@@ -46,7 +46,7 @@ public class Rookie {
     private ClassInfo arrayClassInfo;
     // False Sharing
     private long p1, p2, p3, p4, p5, p6, p7;
-    private volatile boolean init;
+    private volatile long init;
     private long p11, p12, p13, p14, p15, p16, p17;
 
     public ClassInfo getClassInfo(short id) {
@@ -102,11 +102,11 @@ public class Rookie {
     }
 
     private void checkInit() {
-        if (!init) {
+        if (init == 0) {
             synchronized (Rookie.class) {
-                if (!init) {
+                if (init == 0) {
                     init();
-                    init = true;
+                    init = 1;
                 }
             }
         }

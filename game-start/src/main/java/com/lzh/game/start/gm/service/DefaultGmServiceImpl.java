@@ -1,7 +1,7 @@
 package com.lzh.game.start.gm.service;
 
+import com.lzh.game.framework.socket.core.bootstrap.server.ServerSocketProperties;
 import com.lzh.game.start.util.ApplicationUtils;
-import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
 import com.lzh.game.start.gm.GmFacade;
 import com.lzh.game.start.model.player.Player;
 import com.lzh.game.framework.socket.core.session.Session;
@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 public class DefaultGmServiceImpl implements GmService, InitializingBean, ApplicationContextAware, DisposableBean {
 
     @Autowired
-    private GameServerSocketProperties properties;
+    private ServerSocketProperties properties;
 
     private final Map<String, GmHandlerMethod> methodMap = new HashMap<>();
 

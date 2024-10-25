@@ -1,6 +1,6 @@
 package com.lzh.game.start.filter;
 
-import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.server.ServerSocketProperties;
 import com.lzh.game.framework.socket.core.filter.Filter;
 import com.lzh.game.framework.socket.core.filter.FilterChain;
 import com.lzh.game.framework.socket.core.protocol.Request;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class GmFilter implements Filter {
 
     @Resource
-    private GameServerSocketProperties properties;
+    private ServerSocketProperties properties;
 
     @Override
     public void doFilter(Request request, FilterChain chain) {

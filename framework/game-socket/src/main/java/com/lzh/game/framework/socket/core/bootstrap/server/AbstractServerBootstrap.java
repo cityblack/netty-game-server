@@ -6,7 +6,7 @@ import com.lzh.game.framework.socket.core.bootstrap.NetServer;
 import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
 import com.lzh.game.framework.socket.core.process.impl.AuthProcessor;
 
-public abstract class AbstractServerBootstrap<T extends GameServerSocketProperties>
+public abstract class AbstractServerBootstrap<T extends ServerSocketProperties>
         extends AbstractBootstrap<T> implements GameServer {
 
     private NetServer netServer;

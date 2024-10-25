@@ -1,9 +1,9 @@
 package com.lzh.game.framework.socket.core.bootstrap.heartbeat;
 
-import com.lzh.game.framework.socket.core.process.NameThreadFactory;
+import com.lzh.game.framework.socket.utils.NameThreadFactory;
 import com.lzh.game.framework.socket.core.protocol.HeartbeatProtocol;
 import com.lzh.game.framework.socket.core.session.Session;
-import com.lzh.game.framework.socket.utils.Constant;
+import com.lzh.game.framework.socket.Constant;
 import com.lzh.game.framework.socket.utils.ShutdownHook;
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,6 +1,6 @@
 package com.lzh.game.framework.socket.core.session.monitor;
 
-import com.lzh.game.framework.socket.core.process.NameThreadFactory;
+import com.lzh.game.framework.socket.utils.NameThreadFactory;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionEvent;
 import com.lzh.game.framework.socket.core.session.SessionManage;

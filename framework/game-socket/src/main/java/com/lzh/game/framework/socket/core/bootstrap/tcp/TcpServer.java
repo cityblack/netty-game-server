@@ -5,7 +5,7 @@ import com.lzh.game.framework.socket.core.bootstrap.NetServer;
 import com.lzh.game.framework.socket.core.bootstrap.handler.ServerIdleHandler;
 import com.lzh.game.framework.socket.core.bootstrap.server.AbstractServerBootstrap;
 import com.lzh.game.framework.socket.core.bootstrap.server.GameServer;
-import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.server.ServerSocketProperties;
 import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
 import com.lzh.game.framework.socket.core.protocol.codec.ByteToGameMessageDecoder;
 import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteEncoder;
@@ -17,7 +17,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.concurrent.TimeUnit;
 
-public class TcpServer<T extends GameServerSocketProperties> extends AbstractServerBootstrap<T>
+public class TcpServer<T extends ServerSocketProperties> extends AbstractServerBootstrap<T>
         implements GameServer {
 
     public TcpServer(BootstrapContext<T> context) {

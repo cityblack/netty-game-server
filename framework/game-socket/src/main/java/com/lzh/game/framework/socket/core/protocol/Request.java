@@ -1,6 +1,6 @@
 package com.lzh.game.framework.socket.core.protocol;
 
-import com.lzh.game.framework.socket.utils.Constant;
+import com.lzh.game.framework.socket.Constant;
 import com.lzh.game.framework.socket.core.protocol.message.MessageDefine;
 import com.lzh.game.framework.socket.core.session.Session;
 

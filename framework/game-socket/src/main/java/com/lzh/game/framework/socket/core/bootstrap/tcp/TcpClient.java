@@ -3,7 +3,7 @@ package com.lzh.game.framework.socket.core.bootstrap.tcp;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.client.AbstractClient;
 import com.lzh.game.framework.socket.core.bootstrap.client.GameClient;
-import com.lzh.game.framework.socket.core.bootstrap.client.GameClientSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.client.ClientSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.handler.ClientIdleHandler;
 import com.lzh.game.framework.socket.core.protocol.codec.ByteToGameMessageDecoder;
 import com.lzh.game.framework.socket.core.protocol.codec.GameMessageToByteEncoder;
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  * @param <C>
  */
 @Slf4j
-public class TcpClient<C extends GameClientSocketProperties> extends AbstractClient<C>
+public class TcpClient<C extends ClientSocketProperties> extends AbstractClient<C>
         implements GameClient {
 
     public TcpClient(BootstrapContext<C> context) {

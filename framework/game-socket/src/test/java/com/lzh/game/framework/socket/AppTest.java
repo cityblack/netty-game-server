@@ -3,12 +3,11 @@ package com.lzh.game.framework.socket;
 import com.lzh.game.framework.socket.bean.ServerDemo;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.client.AsyncResponse;
-import com.lzh.game.framework.socket.core.bootstrap.client.GameClientSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.client.ClientSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpClient;
-import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.server.ServerSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpServer;
 import com.lzh.game.framework.socket.core.invoke.ActionRequestHandler;
-import com.lzh.game.framework.socket.core.invoke.convert.DefaultInvokeMethodArgumentValues;
 import com.lzh.game.framework.socket.core.process.impl.DefaultRequestProcess;
 import com.lzh.game.framework.socket.core.process.impl.FutureResponseProcess;
 import com.lzh.game.framework.socket.core.session.Session;
@@ -18,15 +17,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.stream.IntStream;
-
 @SpringBootTest(classes = AppTest.class)
 @Slf4j
 public class AppTest {
 
     @Test
     public void startServer() {
-        var properties = new GameServerSocketProperties();
+        var properties = new ServerSocketProperties();
         properties.setPort(8081);
         properties.setOpenGm(true);
         properties.getNetty().setLogLevel(LogLevel.INFO);
@@ -40,7 +37,7 @@ public class AppTest {
 
     @Test
     public void startClient() throws InterruptedException {
-        var properties = new GameClientSocketProperties();
+        var properties = new ClientSocketProperties();
         properties.setConnectTimeout(5000);
         var client = new TcpClient<>(BootstrapContext.of(properties));
         // response

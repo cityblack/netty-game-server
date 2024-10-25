@@ -1,8 +1,8 @@
 package com.lzh.game.start.server;
 
 import com.lzh.game.framework.event.SubscribeListener;
+import com.lzh.game.framework.socket.core.bootstrap.server.ServerSocketProperties;
 import com.lzh.game.start.util.ApplicationUtils;
-import com.lzh.game.framework.socket.core.bootstrap.server.GameServerSocketProperties;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.greenrobot.eventbus.Subscribe;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class GameGlobalServer implements SubscribeListener {
 
     @Resource
-    private GameServerSocketProperties gameServerSocketProperties;
+    private ServerSocketProperties gameServerSocketProperties;
 
 
     @Subscribe

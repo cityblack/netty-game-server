@@ -8,7 +8,7 @@ import com.lzh.game.framework.socket.core.protocol.AuthProtocol;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionEvent;
-import com.lzh.game.framework.socket.utils.Constant;
+import com.lzh.game.framework.socket.Constant;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;

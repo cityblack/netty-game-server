@@ -1,6 +1,6 @@
 package com.lzh.game.framework.socket.core.process.impl;
 
-import com.lzh.game.framework.socket.core.process.NameThreadFactory;
+import com.lzh.game.framework.socket.utils.NameThreadFactory;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.protocol.Response;
 import com.lzh.game.framework.socket.utils.ShutdownHook;
