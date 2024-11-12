@@ -1,8 +1,7 @@
-package com.lzh.game.framework.socket.core.invoke.select.factory;
+package com.lzh.game.framework.gateway.select.factory;
 
+import com.lzh.game.framework.gateway.select.SessionSelect;
 import com.lzh.game.framework.socket.core.bootstrap.client.AbstractClient;
-import com.lzh.game.framework.socket.core.invoke.select.SessionSelect;
-import com.lzh.game.framework.socket.core.invoke.select.SessionSelectContext;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionEvent;
@@ -13,11 +12,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RandomSessionSelectFactory implements SessionSelectFactory {
 
     @Override
-    public SessionSelect<SessionSelectContext> createSessionSelect(AbstractClient<?> client) {
+    public SessionSelect createSessionSelect(AbstractClient<?> client) {
         return new Select(client);
     }
 
-    static class Select implements SessionSelect<SessionSelectContext> {
+    static class Select implements SessionSelect {
         private final AtomicInteger COUNT = new AtomicInteger(0);
 
         private final AbstractClient<?> client;
@@ -37,7 +36,7 @@ public class RandomSessionSelectFactory implements SessionSelectFactory {
         }
 
         @Override
-        public Session selected(SessionSelectContext context) {
+        public Session selected(Request request) {
             if (sessions.isEmpty()) {
                 return null;
             }

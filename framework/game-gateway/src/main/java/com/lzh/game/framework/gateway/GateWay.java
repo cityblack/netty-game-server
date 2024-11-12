@@ -2,8 +2,8 @@ package com.lzh.game.framework.gateway;
 
 import com.lzh.game.framework.gateway.config.GatewayProperties;
 import com.lzh.game.framework.gateway.process.ForwardGatewayProcess;
-import com.lzh.game.framework.socket.core.invoke.select.factory.RandomSessionSelectFactory;
-import com.lzh.game.framework.socket.core.invoke.select.factory.SessionSelectFactory;
+import com.lzh.game.framework.gateway.select.factory.RandomSessionSelectFactory;
+import com.lzh.game.framework.gateway.select.factory.SessionSelectFactory;
 import com.lzh.game.framework.socket.core.bootstrap.AtomicLifCycle;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.server.AbstractServerBootstrap;

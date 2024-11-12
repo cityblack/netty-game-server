@@ -141,8 +141,6 @@ public class ByteBufUtils {
                     && buffer.readByte() < 0
                     && buffer.readByte() < 0
                     && buffer.readByte() < 0) {
-            }
-            {
                 buffer.readerIndex(readerIndex);
                 return (int) readRawVarint64SlowPath(buffer);
             }

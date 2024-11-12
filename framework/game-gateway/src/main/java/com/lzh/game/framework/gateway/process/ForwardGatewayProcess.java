@@ -1,9 +1,9 @@
 package com.lzh.game.framework.gateway.process;
 
-import com.lzh.game.framework.socket.core.invoke.select.SessionSelect;
+import com.lzh.game.framework.gateway.select.SessionSelect;
 import com.lzh.game.framework.socket.core.bootstrap.client.AsyncResponse;
 import com.lzh.game.framework.socket.core.bootstrap.client.FutureAsyncResponse;
-import com.lzh.game.framework.socket.core.invoke.select.SessionSelectContext;
+import com.lzh.game.framework.gateway.select.SessionSelectContext;
 import com.lzh.game.framework.socket.core.process.Processor;
 import com.lzh.game.framework.socket.core.process.ProcessorExecutorService;
 import com.lzh.game.framework.socket.core.process.context.ProcessorContext;
@@ -29,12 +29,13 @@ public class ForwardGatewayProcess implements Processor {
         this.strategy = strategy;
     }
 
+    @SuppressWarnings("unchecked")
     public void process(Session session, Request command) {
         short msgId = command.getMsgId();
         Request request = SocketUtils.createRequest(msgId, command.getData(), command.getType());
         request.setSession(session);
         request.setType(command.getType());
-        Session forwardSession = strategy.selected(new SessionSelectContext(request));
+        Session forwardSession = strategy.selected(request);
         if (Objects.isNull(forwardSession)) {
             log.error("select session is null");
             return;

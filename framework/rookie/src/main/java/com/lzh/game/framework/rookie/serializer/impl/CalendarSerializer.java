@@ -14,7 +14,7 @@ public class CalendarSerializer implements Serializer<Calendar> {
 
     @Override
     public Calendar readObject(ByteBuf in, Class<Calendar> clz) {
-        long time = ByteBufUtils.readInt64(in);
+        long time = ByteBufUtils.readRawVarint64(in);
         var calendar = Calendar.getInstance();
         calendar.setTimeInMillis(time);
         return calendar;
@@ -22,6 +22,6 @@ public class CalendarSerializer implements Serializer<Calendar> {
 
     @Override
     public void writeObject(ByteBuf out, Calendar calendar) {
-        ByteBufUtils.writeInt64(out, calendar.getTimeInMillis());
+        ByteBufUtils.writeRawVarint64(out, calendar.getTimeInMillis());
     }
 }
