@@ -14,11 +14,11 @@ public class DateSerializer implements Serializer<Date> {
 
     @Override
     public Date readObject(ByteBuf in, Class<Date> clz) {
-        return new Date(ByteBufUtils.readInt64(in));
+        return new Date(ByteBufUtils.readRawVarint64SlowPath(in));
     }
 
     @Override
     public void writeObject(ByteBuf out, Date date) {
-        ByteBufUtils.writeInt64(out, date.getTime());
+        ByteBufUtils.writeRawVarint64(out, date.getTime());
     }
 }

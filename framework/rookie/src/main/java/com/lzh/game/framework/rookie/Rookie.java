@@ -9,6 +9,7 @@ import io.netty.util.collection.ShortObjectHashMap;
 import io.netty.util.collection.ShortObjectMap;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.jar.Attributes;
@@ -219,6 +220,7 @@ public class Rookie {
             registerNext(String.class, new StringSerializer());
             registerNext(Date.class, new DateSerializer());
             registerNext(Calendar.class, new CalendarSerializer());
+            registerNext(LocalDateTime.class, new LocalDateTimeSerializer());
 
             initCollection();
             initMap();
