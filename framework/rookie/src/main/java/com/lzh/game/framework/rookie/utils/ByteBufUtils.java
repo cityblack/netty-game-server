@@ -118,34 +118,35 @@ public class ByteBufUtils {
     }
 
     public static int readRawVarint32(ByteBuf buffer) {
-        int readerIndex = buffer.readerIndex();
-        if (buffer.readableBytes() - readerIndex < 5) {
-            return (int) readRawVarint64SlowPath(buffer);
-        }
-        int x;
-        if ((x = buffer.readByte()) >= 0) {
-            return x;
-        } else if ((x ^= (buffer.readByte() << 7)) < 0) {
-            x ^= (~0 << 7);
-        } else if ((x ^= (buffer.readByte() << 14)) >= 0) {
-            x ^= (~0 << 7) ^ (~0 << 14);
-        } else if ((x ^= (buffer.readByte() << 21)) < 0) {
-            x ^= (~0 << 7) ^ (~0 << 14) ^ (~0 << 21);
-        } else {
-            int y = buffer.readByte();
-            x ^= y << 28;
-            x ^= (~0 << 7) ^ (~0 << 14) ^ (~0 << 21) ^ (~0 << 28);
-            if (y < 0
-                    && buffer.readByte() < 0
-                    && buffer.readByte() < 0
-                    && buffer.readByte() < 0
-                    && buffer.readByte() < 0
-                    && buffer.readByte() < 0) {
-                buffer.readerIndex(readerIndex);
-                return (int) readRawVarint64SlowPath(buffer);
+        fastpath:
+        {
+            int readerIndex = buffer.readerIndex();
+            int x;
+            if ((x = buffer.readByte()) >= 0) {
+                return x;
+            } else if ((x ^= (buffer.readByte() << 7)) < 0) {
+                x ^= (~0 << 7);
+            } else if ((x ^= (buffer.readByte() << 14)) >= 0) {
+                x ^= (~0 << 7) ^ (~0 << 14);
+            } else if ((x ^= (buffer.readByte() << 21)) < 0) {
+                x ^= (~0 << 7) ^ (~0 << 14) ^ (~0 << 21);
+            } else {
+                int y = buffer.readByte();
+                x ^= y << 28;
+                x ^= (~0 << 7) ^ (~0 << 14) ^ (~0 << 21) ^ (~0 << 28);
+                if (y < 0
+                        && buffer.readByte() < 0
+                        && buffer.readByte() < 0
+                        && buffer.readByte() < 0
+                        && buffer.readByte() < 0
+                        && buffer.readByte() < 0) {
+                    buffer.readerIndex(readerIndex);
+                    break fastpath;
+                }
             }
+            return x;
         }
-        return x;
+        return (int) readRawVarint64SlowPath(buffer);
     }
 
     public static void writeRawVarint32(ByteBuf out, int value) {
@@ -157,52 +158,53 @@ public class ByteBufUtils {
     }
 
     public static long readRawVarint64(ByteBuf buffer) {
-        int readerIndex = buffer.readerIndex();
-        if (buffer.readableBytes() - readerIndex < 9) {
-            return (int) readRawVarint64SlowPath(buffer);
-        }
-        long x;
-        int y;
-        if ((y = buffer.readByte()) >= 0) {
-            return y;
-        } else if ((y ^= (buffer.readByte() << 7)) < 0) {
-            x = y ^ (~0 << 7);
-        } else if ((y ^= (buffer.readByte() << 14)) >= 0) {
-            x = y ^ ((~0 << 7) ^ (~0 << 14));
-        } else if ((y ^= (buffer.readByte() << 21)) < 0) {
-            x = y ^ ((~0 << 7) ^ (~0 << 14) ^ (~0 << 21));
-        } else if ((x = y ^ ((long) buffer.readByte() << 28)) >= 0L) {
-            x ^= (~0L << 7) ^ (~0L << 14) ^ (~0L << 21) ^ (~0L << 28);
-        } else if ((x ^= ((long) buffer.readByte() << 35)) < 0L) {
-            x ^= (~0L << 7) ^ (~0L << 14) ^ (~0L << 21) ^ (~0L << 28) ^ (~0L << 35);
-        } else if ((x ^= ((long) buffer.readByte() << 42)) >= 0L) {
-            x ^= (~0L << 7) ^ (~0L << 14) ^ (~0L << 21) ^ (~0L << 28) ^ (~0L << 35) ^ (~0L << 42);
-        } else if ((x ^= ((long) buffer.readByte() << 49)) < 0L) {
-            x ^=
-                    (~0L << 7)
-                            ^ (~0L << 14)
-                            ^ (~0L << 21)
-                            ^ (~0L << 28)
-                            ^ (~0L << 35)
-                            ^ (~0L << 42)
-                            ^ (~0L << 49);
-        } else {
-            x ^= ((long) buffer.readByte() << 56);
-            x ^=
-                    (~0L << 7)
-                            ^ (~0L << 14)
-                            ^ (~0L << 21)
-                            ^ (~0L << 28)
-                            ^ (~0L << 35)
-                            ^ (~0L << 42)
-                            ^ (~0L << 49)
-                            ^ (~0L << 56);
-            if (x < 0L && buffer.readByte() < 0L) {
-                buffer.readerIndex(readerIndex);
-                return readRawVarint64SlowPath(buffer);
+        fastPath:
+        {
+            int readerIndex = buffer.readerIndex();
+            long x;
+            int y;
+            if ((y = buffer.readByte()) >= 0) {
+                return y;
+            } else if ((y ^= (buffer.readByte() << 7)) < 0) {
+                x = y ^ (~0 << 7);
+            } else if ((y ^= (buffer.readByte() << 14)) >= 0) {
+                x = y ^ ((~0 << 7) ^ (~0 << 14));
+            } else if ((y ^= (buffer.readByte() << 21)) < 0) {
+                x = y ^ ((~0 << 7) ^ (~0 << 14) ^ (~0 << 21));
+            } else if ((x = y ^ ((long) buffer.readByte() << 28)) >= 0L) {
+                x ^= (~0L << 7) ^ (~0L << 14) ^ (~0L << 21) ^ (~0L << 28);
+            } else if ((x ^= ((long) buffer.readByte() << 35)) < 0L) {
+                x ^= (~0L << 7) ^ (~0L << 14) ^ (~0L << 21) ^ (~0L << 28) ^ (~0L << 35);
+            } else if ((x ^= ((long) buffer.readByte() << 42)) >= 0L) {
+                x ^= (~0L << 7) ^ (~0L << 14) ^ (~0L << 21) ^ (~0L << 28) ^ (~0L << 35) ^ (~0L << 42);
+            } else if ((x ^= ((long) buffer.readByte() << 49)) < 0L) {
+                x ^=
+                        (~0L << 7)
+                                ^ (~0L << 14)
+                                ^ (~0L << 21)
+                                ^ (~0L << 28)
+                                ^ (~0L << 35)
+                                ^ (~0L << 42)
+                                ^ (~0L << 49);
+            } else {
+                x ^= ((long) buffer.readByte() << 56);
+                x ^=
+                        (~0L << 7)
+                                ^ (~0L << 14)
+                                ^ (~0L << 21)
+                                ^ (~0L << 28)
+                                ^ (~0L << 35)
+                                ^ (~0L << 42)
+                                ^ (~0L << 49)
+                                ^ (~0L << 56);
+                if (x < 0L && buffer.readByte() < 0L) {
+                    buffer.readerIndex(readerIndex);
+                    break fastPath;
+                }
             }
+            return x;
         }
-        return x;
+        return readRawVarint64SlowPath(buffer);
     }
 
     public static long readRawVarint64SlowPath(ByteBuf buf) {

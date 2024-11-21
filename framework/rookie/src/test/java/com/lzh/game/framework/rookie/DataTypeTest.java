@@ -5,11 +5,7 @@ import io.netty.buffer.UnpooledByteBufAllocator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Random;
 
 /**
  * @author zehong.l
@@ -19,66 +15,61 @@ import java.util.concurrent.Executors;
 public class DataTypeTest {
 
     @Test
-    public void intType() throws InterruptedException {
-        numberTest(Integer.MIN_VALUE, Integer.MAX_VALUE, true);
+    public void intType() {
+        final var buf = UnpooledByteBufAllocator.DEFAULT.heapBuffer(10);
+
+        for (int i = Integer.MIN_VALUE; i < Integer.MAX_VALUE; i++) {
+            ByteBufUtils.writeInt32(buf, i);
+            int read = ByteBufUtils.readInt32(buf);
+            if (i != read) {
+                log.error("error: {} -> {}", i, read);
+            }
+            buf.clear();
+        }
     }
 
     @Test
-    public void longType() throws InterruptedException {
-        numberTest(Long.MIN_VALUE, Long.MAX_VALUE, false);
+    public void longType() {
+        var random = new Random();
+        final var buf = UnpooledByteBufAllocator.DEFAULT.heapBuffer(10);
+        for (long i = 0; i < Long.MAX_VALUE; i++) {
+            long num = random.nextLong(Long.MIN_VALUE, Long.MAX_VALUE);
+            ByteBufUtils.writeInt64(buf, num);
+            long read = ByteBufUtils.readInt64(buf);
+            if (num != read) {
+                log.error("error: {} -> {}", num, read);
+            }
+            buf.clear();
+        }
     }
 
-    public void numberTest(long min, long max, boolean int32) throws InterruptedException {
-        var tasks = computeNumberTask(min, max, int32);
-        CountDownLatch latch = new CountDownLatch(tasks.size());
-        ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        for (long[] task : tasks) {
-            service.submit(() -> {
-                try {
-                    final var buf = UnpooledByteBufAllocator.DEFAULT.heapBuffer(10);
-                    long start = task[0], end = task[1];
-                    for (long c = start; c < end; c++) {
-                        if (int32) {
-                            ByteBufUtils.writeInt32(buf, (int) c);
-                        } else {
-                            ByteBufUtils.writeInt64(buf, c);
-                        }
-                        long read = int32 ? ByteBufUtils.readInt32(buf) : ByteBufUtils.readInt64(buf);
-                        buf.clear();
-                        if (c != read) {
-                            log.error("error: {} -> {}", c, read);
-                        }
-                    }
-                    log.info("star: {} end: {}", start, end);
-                } catch (Exception e) {
-                    log.error("", e);
-                } finally {
-                    latch.countDown();
-                }
-            });
+    @Test
+    public void doubleType() {
+        var random = new Random();
+        final var buf = UnpooledByteBufAllocator.DEFAULT.heapBuffer(10);
+        for (double i = 0; i < Double.MAX_VALUE; i++) {
+            double num = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+            ByteBufUtils.writeFloat64(buf, num);
+            double read = ByteBufUtils.readFloat64(buf);
+            if (num != read) {
+                log.error("error: {} -> {}", num, read);
+            }
+            buf.clear();
         }
-        latch.await();
     }
 
-    private List<long[]> computeNumberTask(long min, long max, boolean int32) {
-        long num = int32 ? 2 << 25 : (long) 2 << 58;
-        List<long[]> tasks = new LinkedList<>();
-
-        for (long i = min; ; i += num) {
-            long end;
-            if (i > 0 && (i + num < 0)) {
-                end = max;
-            } else {
-                end = i + num - 1;
+    @Test
+    public void floatType() {
+        var random = new Random();
+        final var buf = UnpooledByteBufAllocator.DEFAULT.heapBuffer(10);
+        for (float i = 0; i < Float.MAX_VALUE; i++) {
+            float num = random.nextFloat(Float.MIN_VALUE, Float.MAX_VALUE);
+            ByteBufUtils.writeFloat32(buf, num);
+            double read = ByteBufUtils.readFloat32(buf);
+            if (num != read) {
+                log.error("error: {} -> {}", num, read);
             }
-            long[] numbers = new long[2];
-            numbers[0] = i;
-            numbers[1] = end;
-            tasks.add(numbers);
-            if (i > 0 && (i + num < 0 || i + num > max)) {
-                break;
-            }
+            buf.clear();
         }
-        return tasks;
     }
 }
