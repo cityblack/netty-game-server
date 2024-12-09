@@ -1,6 +1,7 @@
 package com.lzh.game.framework.socket.core;
 
 import com.lzh.game.framework.socket.core.bootstrap.NettyProperties;
+import com.lzh.game.framework.socket.core.bootstrap.server.WebSocketProperties;
 import com.lzh.game.framework.socket.core.protocol.serial.fury.FuryProperties;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,4 +24,8 @@ public abstract class SocketProperties {
     private int authErrorCloseLimit = 10;
 
     private int requestTimeout = 10_000;
+
+    private WebSocketProperties webSocket = new WebSocketProperties();
+
+    private boolean ableAuth = true;
 }

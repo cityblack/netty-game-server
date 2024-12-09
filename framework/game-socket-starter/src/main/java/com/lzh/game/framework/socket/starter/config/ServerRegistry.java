@@ -1,7 +1,7 @@
 package com.lzh.game.framework.socket.starter.config;
 
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
-import com.lzh.game.framework.socket.core.bootstrap.server.AbstractServerBootstrap;
+import com.lzh.game.framework.socket.core.bootstrap.server.ServerBootstrap;
 import com.lzh.game.framework.socket.core.invoke.convert.InvokeMethodArgumentValues;
 import com.lzh.game.framework.socket.core.invoke.support.InvokeSupport;
 import com.lzh.game.framework.socket.core.protocol.message.MessageManager;
@@ -34,7 +34,7 @@ public abstract class ServerRegistry implements FactoryBean<SpringServer>, BeanF
         return server;
     }
 
-    protected abstract AbstractServerBootstrap<SpringGameServerProperties> createServer(BootstrapContext<SpringGameServerProperties> context);
+    protected abstract ServerBootstrap<SpringGameServerProperties> createServer(BootstrapContext<SpringGameServerProperties> context);
 
     @Override
     public Class<?> getObjectType() {

@@ -139,7 +139,7 @@ public final class TimeUtils {
     /**
      * Get timestamp of a few days later (hour:minute).
      * <p>
-     * Now is "2024-10-18"
+     * Today is "2024-10-18"
      * <p>
      * hourMinuteAddDay(10,10,1) return timestamp of "2024-10-19 10:10:0"
      * <p>

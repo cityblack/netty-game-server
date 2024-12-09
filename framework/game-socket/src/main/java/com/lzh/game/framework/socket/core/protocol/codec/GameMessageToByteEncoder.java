@@ -1,10 +1,10 @@
 package com.lzh.game.framework.socket.core.protocol.codec;
 
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
-import com.lzh.game.framework.socket.utils.ByteBuffUtils;
 import com.lzh.game.framework.socket.core.protocol.AbstractCommand;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerialize;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerializeManager;
+import com.lzh.game.framework.socket.utils.ByteBuffUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -22,6 +22,12 @@ public class GameMessageToByteEncoder extends MessageToByteEncoder<Object> {
     }
 
     @Override
+    public boolean acceptOutboundMessage(Object msg) throws Exception {
+        return msg instanceof AbstractCommand || msg instanceof ByteBuf
+                || msg instanceof byte[];
+    }
+
+    @Override
     public void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
         /**
          * len: Varint32
@@ -32,7 +38,6 @@ public class GameMessageToByteEncoder extends MessageToByteEncoder<Object> {
          */
         try {
             if (msg instanceof AbstractCommand command) {
-
                 out.markWriterIndex();
                 var wrapper = this.allocateBuffer(ctx, msg, isPreferDirect());
                 try {

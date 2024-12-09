@@ -30,10 +30,15 @@ public abstract class ElementSerializer<T> implements Serializer<T> {
     // support abstract class. write impl class id to byte
     @SuppressWarnings("unchecked")
     protected void writeElement(ByteBuf out, Object element) {
-        var target = Objects.isNull(element) ? Void.TYPE : element.getClass();
-        var classInfo = rookie.getClassInfo(target);
-        writeClassInfo(out, classInfo);
-        classInfo.getSerializer().writeObject(out, element);
+        if (Objects.isNull(element)) {
+            var classInfo = rookie.getClassInfo(Void.TYPE);
+            writeClassInfo(out, classInfo);
+            return;
+        }
+        var target = element.getClass().isArray() ? rookie.getArrayClassInfo()
+                : rookie.getClassInfo(element.getClass());
+        writeClassInfo(out, target);
+        this.rookie.serializer(out, element);
     }
 
     protected ClassInfo readClassInfo(ByteBuf in) {
@@ -44,7 +49,10 @@ public abstract class ElementSerializer<T> implements Serializer<T> {
     @SuppressWarnings("unchecked")
     protected Object readElement(ByteBuf in) {
         ClassInfo info = readClassInfo(in);
-        return info.getSerializer().readObject(in, info.getClz());
+        if (info.getClz() == Void.TYPE) {
+            return null;
+        }
+        return this.rookie.deserializer(in, info.getClz());
     }
 
     protected T newBean(Class<T> clz) {

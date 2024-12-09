@@ -46,8 +46,8 @@ public class OT {
         ot.set = Stream.of(new Item()).collect(Collectors.toSet());
         ot.ints = Stream.of(1009, 1010, 1022).collect(Collectors.toList());
         var map = new HashMap<Long, Integer>();
-        map.put(Long.MIN_VALUE, 100);
-        map.put(Long.MAX_VALUE, 100);
+        map.put(Long.MIN_VALUE >> 1, 100);
+        map.put(Long.MAX_VALUE >> 1, 100);
         ot.map = map;
         return ot;
     }

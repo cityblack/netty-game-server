@@ -1,6 +1,6 @@
 package com.lzh.game.framework.socket.starter.server;
 
-import com.lzh.game.framework.socket.core.bootstrap.server.AbstractServerBootstrap;
+import com.lzh.game.framework.socket.core.bootstrap.server.ServerBootstrap;
 import com.lzh.game.framework.socket.core.bootstrap.server.GameServer;
 import com.lzh.game.framework.socket.core.bootstrap.server.ServerSocketProperties;
 import com.lzh.game.framework.socket.core.filter.Filter;
@@ -20,9 +20,9 @@ import java.util.Map;
 
 public class SpringServer<T extends ServerSocketProperties> implements GameServer, ApplicationContextAware {
 
-    private final AbstractServerBootstrap<T> bootstrap;
+    private final ServerBootstrap<T> bootstrap;
 
-    public SpringServer(AbstractServerBootstrap<T> bootstrap) {
+    public SpringServer(ServerBootstrap<T> bootstrap) {
         this.bootstrap = bootstrap;
     }
 

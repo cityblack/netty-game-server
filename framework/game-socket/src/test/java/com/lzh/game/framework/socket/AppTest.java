@@ -4,14 +4,19 @@ import com.lzh.game.framework.socket.bean.ServerDemo;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.client.AsyncResponse;
 import com.lzh.game.framework.socket.core.bootstrap.client.ClientSocketProperties;
-import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpClient;
 import com.lzh.game.framework.socket.core.bootstrap.server.ServerSocketProperties;
+import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpClient;
 import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpServer;
 import com.lzh.game.framework.socket.core.invoke.ActionRequestHandler;
+import com.lzh.game.framework.socket.core.process.Processor;
+import com.lzh.game.framework.socket.core.process.ProcessorExecutorService;
+import com.lzh.game.framework.socket.core.process.context.ProcessorContext;
 import com.lzh.game.framework.socket.core.process.impl.DefaultRequestProcess;
 import com.lzh.game.framework.socket.core.process.impl.FutureResponseProcess;
 import com.lzh.game.framework.socket.core.session.Session;
+import com.lzh.game.framework.socket.core.session.SessionEvent;
 import com.lzh.game.framework.socket.proto.RequestData;
+import com.lzh.game.framework.socket.utils.SocketUtils;
 import io.netty.handler.logging.LogLevel;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -27,9 +32,31 @@ public class AppTest {
         properties.setPort(8081);
         properties.setOpenGm(true);
         properties.getNetty().setLogLevel(LogLevel.INFO);
-
+        properties.getWebSocket().setAble(true);
+        properties.setAbleAuth(false);
         var server = new TcpServer<>(BootstrapContext.of(properties));
-        server.addProcessor(new DefaultRequestProcess(new ActionRequestHandler(server.getContext())));
+//        server.getContext().getSessionManage().addListener(SessionEvent.CONNECT, ((session, o) -> {
+//            var request = SocketUtils.createOneWayRequest(-10086, new RequestData());
+//            session.write(request);
+//        }));
+//        server.addProcessor(new DefaultRequestProcess(new ActionRequestHandler(server.getContext())));
+        server.addProcessor(new Processor() {
+            @Override
+            public void process(ProcessorContext context, Session session, Object data) {
+                var request = SocketUtils.createOneWayRequest(-10086, new RequestData());
+                session.write(request);
+            }
+
+            @Override
+            public boolean match(Session session, Object msg) {
+                return true;
+            }
+
+            @Override
+            public ProcessorExecutorService service() {
+                return null;
+            }
+        });
         ServerDemo demo = new ServerDemo();
         server.addInvokeBean(demo);
         server.start();

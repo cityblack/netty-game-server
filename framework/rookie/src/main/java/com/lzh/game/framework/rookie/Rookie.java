@@ -75,6 +75,10 @@ public class Rookie {
         return info;
     }
 
+    public ClassInfo getArrayClassInfo() {
+        return arrayClassInfo;
+    }
+
     private ClassInfo nullFindCollectType(Class<?> clz) {
         // Some protect type. em: ImmutableCollections
         if (List.class.isAssignableFrom(clz)) {

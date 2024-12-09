@@ -3,23 +3,22 @@ package com.lzh.game.framework.socket.core.bootstrap.server;
 import com.lzh.game.framework.socket.core.bootstrap.AbstractBootstrap;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.bootstrap.NetServer;
-import com.lzh.game.framework.socket.core.process.context.ProcessorPipeline;
+import com.lzh.game.framework.socket.core.process.event.ProcessEvent;
 import com.lzh.game.framework.socket.core.process.impl.AuthProcessor;
+import com.lzh.game.framework.socket.core.session.Session;
 
-public abstract class AbstractServerBootstrap<T extends ServerSocketProperties>
+public class ServerBootstrap<T extends ServerSocketProperties>
         extends AbstractBootstrap<T> implements GameServer {
-
     private NetServer netServer;
 
-    public AbstractServerBootstrap(BootstrapContext<T> context) {
+    public ServerBootstrap(BootstrapContext<T> context, NetServer netServer) {
         super(context);
+        this.netServer = netServer;
     }
-
-    protected abstract NetServer createServer(int port, T properties, ProcessorPipeline pipeline);
 
     @Override
     protected void doInit(T properties) {
-        this.netServer = createServer(getPort(), properties, getContext().getPipeline());
+        this.netServer.init(properties, this::onServerEvent);
     }
 
     @Override
@@ -45,7 +44,21 @@ public abstract class AbstractServerBootstrap<T extends ServerSocketProperties>
 
     @Override
     protected void addDefaultProcessor() {
-        context.getPipeline().addFirst(new AuthProcessor(context));
+        if (getProperties().isAbleAuth()) {
+            context.getPipeline().addFirst(new AuthProcessor(context));
+        }
         super.addDefaultProcessor();
+    }
+
+    public NetServer getNetServer() {
+        return netServer;
+    }
+
+    public void setNetServer(NetServer netServer) {
+        this.netServer = netServer;
+    }
+
+    private void onServerEvent(ProcessEvent event, Session session) {
+        this.getContext().getPipeline().fireEvent(event, session);
     }
 }
