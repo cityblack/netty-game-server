@@ -2,6 +2,16 @@ import { memory } from "../memonry";
 import { ClassInfo } from "../rookies";
 import { Serilaze } from "./Serilaze";
 
+export class Int64Serilaze implements Serilaze {
+  serilaze(data: any, _: ClassInfo, mem: memory): void {
+    mem.writeInt64(data);
+  }
+  deserilaze(_: ClassInfo, mem: memory): any {
+    return mem.readInt64();
+  }
+}
+
+
 export class Int32Serilaze implements Serilaze {
   serilaze(data: any, _: ClassInfo, mem: memory): void {
     mem.writeInt32(data);
@@ -63,6 +73,7 @@ export class StringSerilaze implements Serilaze {
     } else {
       const encoded = new TextEncoder().encode(data);
       mem.writeRawVarint32(encoded.length);
+      mem.writeBytes(encoded.buffer);
     }
   }
   deserilaze(_: ClassInfo, mem: memory): any {

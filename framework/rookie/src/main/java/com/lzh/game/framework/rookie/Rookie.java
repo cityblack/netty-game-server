@@ -7,6 +7,7 @@ import com.lzh.game.framework.rookie.serializer.impl.collection.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.collection.ShortObjectHashMap;
 import io.netty.util.collection.ShortObjectMap;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -49,6 +50,16 @@ public class Rookie {
     private long p1, p2, p3, p4, p5, p6, p7;
     private volatile long init;
     private long p11, p12, p13, p14, p15, p16, p17;
+
+    @Getter
+    private final RookieConfig config;
+    public Rookie() {
+        this(new RookieConfig());
+    }
+
+    public Rookie(RookieConfig config) {
+        this.config = config;
+    }
 
     public ClassInfo getClassInfo(short id) {
         var defined = definedContain.get(id);
@@ -207,6 +218,8 @@ public class Rookie {
             initSpecialType();
 
             registerNext(Void.TYPE, new EmptySerializer());
+            registerNext(Byte.class, new ByteSerializer());
+            registerNext(Byte.TYPE, new ByteSerializer());
             registerNext(Boolean.class, new BooleanSerializer());
             registerNext(Boolean.TYPE, new BooleanSerializer());
             registerNext(Short.class, new ShotSerializer());

@@ -1,9 +1,17 @@
 export type memory = Memory;
 
+const resizeArrayBuffer = (buffer: ArrayBuffer, len: number): ArrayBuffer => {
+  const newBuffer = new ArrayBuffer(len);
+  const newView = new Uint8Array(newBuffer);
+  const oldView = new Uint8Array(buffer);
+  newView.set(oldView);
+  return newBuffer;
+};
 class Memory {
   private buffer: ArrayBuffer;
   private dataView: DataView;
   private _offset: number;
+  private _readOffset: number;
 
   constructor(buffer: ArrayBuffer) {
     if (!buffer || !(buffer instanceof ArrayBuffer)) {
@@ -13,6 +21,7 @@ class Memory {
     this.buffer = buffer;
     this.dataView = new DataView(buffer);
     this._offset = 0;
+    this._readOffset = 0;
   }
 
   getBuff(): ArrayBuffer {
@@ -21,40 +30,45 @@ class Memory {
 
   // Ensure safe read operations
   private ensureReadable(bytes: number): void {
-    if (this._offset + bytes > this.buffer.byteLength) {
-      throw new Error(
-        `Cannot read ${bytes} bytes at offset ${this._offset}. Buffer size: ${this.buffer.byteLength}`
-      );
+    if (this._readOffset + bytes > this.dataView.byteLength) {
+      throw new Error("Out of bounds read:" + this._offset + " + " + bytes);
     }
   }
 
   // Ensure safe write operations
   private ensureWritable(bytes: number): void {
     if (this._offset + bytes > this.buffer.byteLength) {
-      throw new Error(
-        `Cannot write ${bytes} bytes at offset ${this._offset}. Buffer size: ${this.buffer.byteLength}`
-      );
+      this._resizeArrayBuffer();
     }
   }
 
+  private _resizeArrayBuffer() {
+    this.buffer = resizeArrayBuffer(this.buffer, this.buffer.byteLength * 1.5);
+    this.dataView = new DataView(this.buffer);
+  }
+
   readBytes(length: number): ArrayBuffer {
-    const buffer = this.buffer.slice(this._offset, this._offset + length);
-    this._offset += length;
+    this.ensureReadable(length);
+    const buffer = this.buffer.slice(
+      this._readOffset,
+      this._readOffset + length
+    );
+    this._readOffset += length;
     return buffer;
   }
 
   // Read methods with improved safety
   readInt8(): number {
     this.ensureReadable(1);
-    const value = this.dataView.getInt8(this._offset);
-    this._offset += 1;
+    const value = this.dataView.getInt8(this._readOffset);
+    this._readOffset += 1;
     return value;
   }
 
   readInt16(): number {
     this.ensureReadable(2);
-    const value = this.dataView.getInt16(this._offset);
-    this._offset += 2;
+    const value = this.dataView.getInt16(this._readOffset);
+    this._readOffset += 2;
     return value;
   }
 
@@ -62,17 +76,21 @@ class Memory {
     return this.decodeZigZag32(this.readRawVarint32());
   }
 
+  readInt64(): number {
+    return this.decodeZigZag64(this.readRawVarint64());
+  }
+
   readFloat32(): number {
     this.ensureReadable(4);
-    const value = this.dataView.getFloat32(this._offset);
-    this._offset += 4;
+    const value = this.dataView.getFloat32(this._readOffset);
+    this._readOffset += 4;
     return value;
   }
 
   readFloat64(): number {
     this.ensureReadable(8);
-    const value = this.dataView.getFloat64(this._offset);
-    this._offset += 8;
+    const value = this.dataView.getFloat64(this._readOffset);
+    this._readOffset += 8;
     return value;
   }
 
@@ -88,7 +106,7 @@ class Memory {
 
     while (true) {
       this.ensureReadable(1);
-      const currentByte = this.dataView.getUint8(this._offset++);
+      const currentByte = this.readInt8();
       result |= (currentByte & 0x7f) << shift;
 
       if ((currentByte & 0x80) === 0) {
@@ -116,10 +134,24 @@ class Memory {
     return (value << 1) ^ (value >> 63);
   }
 
+  decodeZigZag64(value: number): number {
+    return (value >>> 1) ^ -(value & 1);
+  }
+
+  writeBytes(encoded: ArrayBuffer): void {
+    this.ensureWritable(encoded.byteLength);
+    const newView = new DataView(encoded);
+    for (let i = 0; i < encoded.byteLength; i++) {
+      this.dataView.setInt8(this._offset + i, newView.getInt8(i));
+    }
+    this._offset += encoded.byteLength;
+  }
+
   // Write methods with improved safety
   writeInt8(value: number): void {
     this.ensureWritable(1);
-    this.dataView.setInt8(this._offset++, value);
+    this.dataView.setInt8(this._offset, value);
+    this._offset += 1;
   }
 
   writeInt16(value: number): void {
@@ -135,20 +167,19 @@ class Memory {
 
   writeInt64(value: number): void {
     this.ensureWritable(8);
-    // Note: JavaScript has limitations with 64-bit integers
-    // Consider using BigInt for full 64-bit support
-    this.dataView.setBigInt64(this._offset, BigInt(value));
-    this._offset += 8;
+    this.writeRawVarint64(this.encodeZigZag64(value));
   }
 
   writeRawVarint32(value: number): void {
+    this.writeRawVarint64(value);
+  }
+
+  writeRawVarint64(value: number): void {
     while (value >= 0x80) {
       this.writeInt8((value & 0x7f) | 0x80);
-      this._offset++;
       value = value >> 7;
     }
     this.writeInt8(value);
-    this._offset++;
   }
 
   writeFloat32(value: number): void {

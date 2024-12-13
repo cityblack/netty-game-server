@@ -1,12 +1,12 @@
 import { memory } from "../memonry";
-import { Proto, ClassInfo } from "../rookies";
+import { StructDesc } from "../meta";
 
 export interface ProtoSerilaze {
-  serilaze(data: Proto): ArrayBuffer;
-  deserilaze(id: number, buff: ArrayBuffer): Proto;
+  serilaze(data: any): ArrayBuffer;
+  deserilaze(id: number, buff: ArrayBuffer): any;
 }
 
 export interface Serilaze {
-  serilaze(data: any, field: ClassInfo, mem: memory): void;
-  deserilaze(field: ClassInfo, mem: memory): any;
+  serilaze(data: any, desc: StructDesc, mem: memory): void;
+  deserilaze(desc: StructDesc, mem: memory): any;
 }

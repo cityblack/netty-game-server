@@ -1,6 +1,7 @@
-import { Field, Proto } from "./rookies";
+import { Field, Proto } from "./meta";
 
-class Item implements Proto {
+@Proto(2002)
+export class Item {
   constructor() {
     this.name = "hello";
     this.age = 10;
@@ -10,12 +11,10 @@ class Item implements Proto {
   name: string;
   @Field("int32")
   age: number;
-  get protoId() {
-    return 2;
-  }
 }
 
-export class Test implements Proto {
+@Proto(2001)
+export class Test {
   @Field("string")
   name: string;
   @Field("int32")
@@ -26,26 +25,22 @@ export class Test implements Proto {
   content: string[];
   @Field("map", "int64", "string")
   map: Record<number, string>;
-  @Field("array", 2)
+  @Field("array", 2002)
   items: Item[];
-  @Field("list", 2)
+  @Field("list", 2002)
   listItems: Item[];
-  get protoId() {
-    return 1;
+
+  constructor() {
+    this.name = "hello";
+    this.age = 10;
+    this.ids = [1, 2, 3];
+    this.content = ["a", "b", "c"];
+    this.map = {
+      1: "a",
+      2: "b",
+      3: "c",
+    };
+    this.items = [new Item(), new Item(), new Item(), new Item()];
+    this.listItems = [new Item(), new Item(), new Item(), new Item()];
   }
 }
-
-const test = new Test();
-test.name = "hello";
-test.age = 10;
-test.ids = [1, 2, 3];
-test.content = ["a", "b", "c"];
-test.map = {
-  1: "a",
-  2: "b",
-  3: "c",
-};
-test.items = [new Item(), new Item(), new Item(), new Item()];
-test.listItems = [new Item(), new Item(), new Item(), new Item()];
-
-

@@ -6,7 +6,7 @@ import com.lzh.game.framework.gateway.select.factory.RandomSessionSelectFactory;
 import com.lzh.game.framework.gateway.select.factory.SessionSelectFactory;
 import com.lzh.game.framework.socket.core.bootstrap.AtomicLifCycle;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
-import com.lzh.game.framework.socket.core.bootstrap.server.AbstractServerBootstrap;
+import com.lzh.game.framework.socket.core.bootstrap.server.ServerBootstrap;
 import com.lzh.game.framework.socket.core.bootstrap.server.ServerSocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpServer;
 import com.lzh.game.framework.socket.core.process.impl.FutureResponseProcess;
@@ -21,7 +21,7 @@ public class GateWay extends AtomicLifCycle {
 
     private final GatewayProperties properties;
 
-    private AbstractServerBootstrap<ServerSocketProperties> gameServer;
+    private ServerBootstrap<ServerSocketProperties> gameServer;
 
     private GatewayClient client;
 
@@ -72,7 +72,7 @@ public class GateWay extends AtomicLifCycle {
     }
 
 
-    public AbstractServerBootstrap<ServerSocketProperties> getGameServer() {
+    public ServerBootstrap<ServerSocketProperties> getGameServer() {
         return gameServer;
     }
 
