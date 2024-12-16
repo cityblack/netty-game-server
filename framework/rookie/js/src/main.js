@@ -28,17 +28,50 @@
 //         console.error('WebSocket is not connected');
 //     }
 // }
-import { Test, Item } from "./proto.ts";
+import { RequestData } from "./proto.ts";
 import Rookie from "./rookies.ts";
+import Memory from "./memonry.ts";
+import { DefaultClient, SimpleCoder } from "./client/client";
+import { WebSocketSessionFactory } from "./client/session.ts";
 
 const rookie = new Rookie();
-rookie.register(Test);
-rookie.register(Item);
+rookie.register(RequestData);
 console.log(rookie);
-const test = new Test();
-const buff = rookie.serialze(test);
-const deserilaze = rookie.deserilaze(2001, buff);
-console.log(deserilaze);
+const coder = new SimpleCoder(rookie);
+const factory = new WebSocketSessionFactory();
+const client = new DefaultClient(coder, factory);
+client.addProcessor({
+  onConnect(sess) {
+    console.log("connect:", sess);
+  },
+  onMessage(sess, msg) {
+    console.log(sess, msg);
+  },
+  onError(err) {
+    console.error(err);
+  },
+});
+client.connect("ws://localhost:8081/ws").then((sess) => {
+  const request = new RequestData();
+  request.id = 100;
+  request.name = "hello";
+  request.age = 10;
+  request.price = 10.1;
+  request.tail = 10.1;
+  request.list = [1, 2, 3];
+  request.set = [1, 2, 3];
+  request.map = {
+    1: 1,
+    2: 2,
+    3: 3,
+  };
+  sess.send(request);
+});
+// const mem = new Memory(new ArrayBuffer(1024));
+// const test = new Test();
+// rookie.serialze(test, mem);
+// const deserilaze = rookie.deserilaze(2001, mem);
+// console.log(deserilaze);
 // import Memory from "./memonry.ts";
 
 // const mem = new Memory(new ArrayBuffer(1024));

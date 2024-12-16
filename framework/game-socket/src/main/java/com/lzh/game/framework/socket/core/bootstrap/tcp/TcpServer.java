@@ -70,7 +70,7 @@ public class TcpServer<T extends ServerSocketProperties> extends ServerBootstrap
             ch.pipeline()
                     .addLast(new ChunkedWriteHandler())
                     .addLast(new WebSocketFrameDecoderHandler())
-//                    .addLast(new ByteToGameMessageDecoder(context))
+                    .addLast(new ByteToGameMessageDecoder(context))
                     .addLast(new WebSocketFrameEncoderHandler())
                     .addLast(new GameMessageToByteEncoder(context))
                     .addLast(getIoHandler())

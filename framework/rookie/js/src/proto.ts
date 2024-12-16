@@ -44,3 +44,34 @@ export class Test {
     this.listItems = [new Item(), new Item(), new Item(), new Item()];
   }
 }
+
+@Proto(-10086)
+export class RequestData {
+  @Field("int64")
+  id: number;
+  @Field("int32")
+  age: number;
+  @Field("string")
+  name: string;
+  @Field("float64")
+  price: number;
+  @Field("float32")
+  tail: number;
+  @Field("list", "int32")
+  list: number[];
+  @Field("set", "int64")
+  set: number[];
+  @Field("map", "int64", "int32")
+  map: Record<number, number>;
+
+  constructor() {
+    this.id = 0;
+    this.age = 0;
+    this.name = "";
+    this.price = 0;
+    this.tail = 0;
+    this.list = [];
+    this.set = [];
+    this.map = {};
+  }
+}

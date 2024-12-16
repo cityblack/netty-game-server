@@ -42,7 +42,7 @@ public abstract class AbstractCollectionSerializer<T extends Collection<Object>>
             var classInfo = readClassInfo(in);
             for (int i = 0; i < len; i++) {
                 collection.add(classInfo.getClz() == Void.class ? null
-                        : this.rookie.deserializer(in, classInfo.getClz()));
+                        : this.rookie.readObject(in, classInfo.getClz()));
             }
         } else {
             for (int i = 0; i < len; i++) {
@@ -60,10 +60,9 @@ public abstract class AbstractCollectionSerializer<T extends Collection<Object>>
             boolean compress = isCompressClass(rookie, collection);
             ByteBufUtils.writeBoolean(out, compress);
             if (compress) {
-                var classInfo = getCompressClassInfo(rookie, collection);
-                writeClassInfo(out, classInfo);
+                writeClassInfo(out, getCompressClassInfo(rookie, collection));
                 for (Object element : collection) {
-                    this.rookie.serializer(out, element);
+                    this.rookie.writeObject(out, element);
                 }
             } else {
                 for (Object el : collection) {
@@ -79,8 +78,7 @@ public abstract class AbstractCollectionSerializer<T extends Collection<Object>>
             if (Objects.isNull(element)) {
                 continue;
             }
-            return element.getClass().isArray() ? rookie.getArrayClassInfo()
-                    : rookie.getClassInfo(element.getClass());
+            return rookie.getClassInfo(element.getClass());
         }
         return rookie.getClassInfo(Void.class);
     }

@@ -35,10 +35,8 @@ public abstract class ElementSerializer<T> implements Serializer<T> {
             writeClassInfo(out, classInfo);
             return;
         }
-        var target = element.getClass().isArray() ? rookie.getArrayClassInfo()
-                : rookie.getClassInfo(element.getClass());
-        writeClassInfo(out, target);
-        this.rookie.serializer(out, element);
+        writeClassInfo(out, rookie.getClassInfo(element.getClass()));
+        this.rookie.writeObject(out, element);
     }
 
     protected ClassInfo readClassInfo(ByteBuf in) {
@@ -52,7 +50,7 @@ public abstract class ElementSerializer<T> implements Serializer<T> {
         if (info.getClz() == Void.TYPE) {
             return null;
         }
-        return this.rookie.deserializer(in, info.getClz());
+        return this.rookie.readObject(in, info.getClz());
     }
 
     protected T newBean(Class<T> clz) {

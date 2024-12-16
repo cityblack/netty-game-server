@@ -4,16 +4,6 @@ import Rookie from "../rookies";
 import Memory, { memory } from "../memonry";
 import { StructDesc } from "../meta";
 
-export const protoSerilaze = (
-  id: number,
-  data: any,
-  rookie: Rookie
-): ArrayBuffer => {
-  const info = rookie.getClassInfo(id);
-  const mem = new Memory(new ArrayBuffer(1024));
-  info.serializer?.serilaze(data, info, mem);
-  return mem.getBuff();
-};
 
 export const protoDeserilaze = (
   id: number,

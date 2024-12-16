@@ -4,6 +4,7 @@ import com.lzh.game.framework.rookie.serializer.ClassInfo;
 import com.lzh.game.framework.rookie.serializer.Serializer;
 import com.lzh.game.framework.rookie.serializer.impl.*;
 import com.lzh.game.framework.rookie.serializer.impl.collection.*;
+import com.lzh.game.framework.rookie.utils.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.collection.ShortObjectHashMap;
 import io.netty.util.collection.ShortObjectMap;
@@ -53,6 +54,7 @@ public class Rookie {
 
     @Getter
     private final RookieConfig config;
+
     public Rookie() {
         this(new RookieConfig());
     }
@@ -72,22 +74,17 @@ public class Rookie {
     }
 
     public ClassInfo getClassInfo(Class<?> clz) {
-        var type = clz.isArray() ? clz.getComponentType() : clz;
-        var info = classContain.get(type);
+        if (clz.isArray() || clz == ArraySerializer.class) {
+            return arrayClassInfo;
+        }
+        var info = classContain.get(clz);
         if (Objects.isNull(info)) {
-            info = nullFindCollectType(type);
+            info = nullFindCollectType(clz);
         }
         if (Objects.isNull(info)) {
             throw new NullPointerException("Not defined " + clz.getName());
         }
-        if (clz.isArray()) {
-            return ClassInfo.array(arrayClassInfo.getId(), info.getClz(), arrayClassInfo.getSerializer());
-        }
         return info;
-    }
-
-    public ClassInfo getArrayClassInfo() {
-        return arrayClassInfo;
     }
 
     private ClassInfo nullFindCollectType(Class<?> clz) {
@@ -184,10 +181,10 @@ public class Rookie {
     @SuppressWarnings("unchecked")
     public <T> T deserializer(ByteBuf in, Class<T> clz) {
         checkInit();
-        if (clz.isArray()) {
-            return (T) arrayClassInfo.getSerializer().readObject(in, clz.getComponentType());
+        if (getConfig().isWriteClassWrapper()) {
+            return (T) readObject(in, getClassInfo(ByteBufUtils.readInt16(in)).getClz());
         }
-        return (T) getClassInfo(clz).getSerializer().readObject(in, clz);
+        return (T) readObject(in, clz);
     }
 
     @SuppressWarnings("unchecked")
@@ -196,11 +193,10 @@ public class Rookie {
         if (Objects.isNull(value)) {
             throw new IllegalArgumentException("Value cannot null.");
         }
-        if (value.getClass().isArray()) {
-            arrayClassInfo.getSerializer().writeObject(out, value);
-        } else {
-            getClassInfo(value.getClass()).getSerializer().writeObject(out, value);
+        if (getConfig().isWriteClassWrapper()) {
+            ByteBufUtils.writeInt16(out, getClassInfo(value.getClass()).getId());
         }
+        writeObject(out, value);
     }
 
     private void init() {
@@ -371,5 +367,15 @@ public class Rookie {
                 }
             }
         }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public void writeObject(ByteBuf out, Object value) {
+        getClassInfo(value.getClass()).getSerializer().writeObject(out, value);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Object readObject(ByteBuf in, Class clz) {
+        return getClassInfo(clz).getSerializer().readObject(in, clz);
     }
 }

@@ -1,8 +1,6 @@
 import {
   ArraySerilaze,
   DefaultObjectSerilaze,
-  protoSerilaze,
-  protoDeserilaze,
 } from "./serilaze/DefaultSerilaze";
 import { Serilaze } from "./serilaze/Serilaze";
 import {
@@ -21,6 +19,7 @@ import {
   DateSerilaze,
 } from "./serilaze/DefaultSerilaze";
 import { DataType, FieldInfo, FIELDS_KEY, ID_KEY, StructDesc } from "./meta";
+import Memory, { memory } from "./memonry";
 
 export const EMPTY_ID = 1,
   ARRAY_ID = 0,
@@ -46,7 +45,7 @@ export default class Rookie {
   baseInfo: Record<string, ClassInfo> = {};
   status: number = 0;
   // Not support base type
-  serialze(data: any): ArrayBuffer {
+  serialze(data: any, mem: Memory) {
     this._check();
     const id = data[ID_KEY];
     if (!id) {
@@ -60,10 +59,11 @@ export default class Rookie {
     if (!serilaze) {
       throw new Error("serializer not found:" + id);
     }
-    return protoSerilaze(id, data, this);
+    const info = this.getClassInfo(id);
+    info.serializer?.serilaze(data, info, mem);
   }
 
-  deserilaze(id: number, buff: ArrayBuffer): any {
+  deserilaze(id: number, mem: memory): any {
     this._check();
     const classInfo = this.classInfo[id];
     if (!classInfo) {
@@ -73,7 +73,8 @@ export default class Rookie {
     if (!serilaze) {
       throw new Error("serializer not found:" + id);
     }
-    return protoDeserilaze(id, buff, this);
+    const info = this.getClassInfo(id);
+    return info.serializer?.deserilaze(info, mem);
   }
 
   register(classInfo: any) {
@@ -162,7 +163,7 @@ class RigsterDefined {
 
     this._registerMulit("list", new ListSerilaze(this._rookie), 7);
     this._registerMulit("map", new MapSerilaze(this._rookie), 10);
-    this._registerMulit("set", new MapSerilaze(this._rookie), 5);
+    this._registerMulit("set", new ListSerilaze(this._rookie), 5);
   }
 
   _registerSpecial() {

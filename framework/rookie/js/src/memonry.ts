@@ -25,7 +25,7 @@ class Memory {
   }
 
   getBuff(): ArrayBuffer {
-    return this.buffer;
+    return this.buffer.slice(this._readOffset, this._offset);
   }
 
   // Ensure safe read operations
@@ -175,9 +175,9 @@ class Memory {
   }
 
   writeRawVarint64(value: number): void {
-    while (value >= 0x80) {
+    while ((value & -0x80) != 0) {
       this.writeInt8((value & 0x7f) | 0x80);
-      value = value >> 7;
+      value >>= 7;
     }
     this.writeInt8(value);
   }
@@ -193,6 +193,8 @@ class Memory {
     this.dataView.setFloat64(this._offset, value);
     this._offset += 8;
   }
+
+  close(): void {}
 }
 
 export default Memory;
