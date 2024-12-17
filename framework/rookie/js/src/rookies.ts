@@ -44,6 +44,10 @@ export default class Rookie {
   classInfo: Record<number, ClassInfo> = {};
   baseInfo: Record<string, ClassInfo> = {};
   status: number = 0;
+  config: RookieConfig;
+  constructor(config: RookieConfig = defaultConfig()) {
+    this.config = config;
+  }
   // Not support base type
   serialze(data: any, mem: Memory) {
     this._check();
@@ -60,21 +64,25 @@ export default class Rookie {
       throw new Error("serializer not found:" + id);
     }
     const info = this.getClassInfo(id);
+    if (this.config.writeClassWrapper) {
+      mem.writeInt16(info.id);
+    }
     info.serializer?.serilaze(data, info, mem);
   }
 
   deserilaze(id: number, mem: memory): any {
     this._check();
-    const classInfo = this.classInfo[id];
+    const tagetId = this.config.writeClassWrapper ? mem.readInt16() : id;
+
+    const classInfo = this.classInfo[tagetId];
     if (!classInfo) {
-      throw new Error("classInfo not found:" + id);
+      throw new Error("classInfo not found:" + tagetId);
     }
     const serilaze = classInfo.serializer;
     if (!serilaze) {
-      throw new Error("serializer not found:" + id);
+      throw new Error("serializer not found:" + tagetId);
     }
-    const info = this.getClassInfo(id);
-    return info.serializer?.deserilaze(info, mem);
+    return classInfo.serializer?.deserilaze(classInfo, mem);
   }
 
   register(classInfo: any) {
@@ -139,7 +147,21 @@ export default class Rookie {
       }
     }
   }
+
+  getConfig() {
+    return this.config;
+  }
 }
+
+export type RookieConfig = {
+  writeClassWrapper: boolean;
+  compressMapKeyValueClassSize: number;
+};
+
+export const defaultConfig = (): RookieConfig => ({
+  writeClassWrapper: false,
+  compressMapKeyValueClassSize: 0,
+});
 
 class RigsterDefined {
   private _rookie: Rookie;
@@ -160,10 +182,14 @@ class RigsterDefined {
     this._registerMulit("float64", new Float64Serilaze());
     this._registerMulit("string", new StringSerilaze(), 3, false);
     this._registerMulit("date", new DateSerilaze(), 3, false);
-
-    this._registerMulit("list", new ListSerilaze(this._rookie), 7);
-    this._registerMulit("map", new MapSerilaze(this._rookie), 10);
-    this._registerMulit("set", new ListSerilaze(this._rookie), 5);
+    // 22 - 28
+    this._registerMulit("list", new ListSerilaze(this._rookie), 7, false);
+    // 29 - 38
+    this._registerMulit("map", new MapSerilaze(this._rookie), 10, false);
+    // 39 - 42
+    this._registerMulit("queue", new ListSerilaze(this._rookie), 4, false);
+    // 43 - 48
+    this._registerMulit("set", new ListSerilaze(this._rookie), 6, false);
   }
 
   _registerSpecial() {

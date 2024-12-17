@@ -13,14 +13,20 @@ import com.lzh.game.framework.socket.core.process.ProcessorExecutorService;
 import com.lzh.game.framework.socket.core.process.context.ProcessorContext;
 import com.lzh.game.framework.socket.core.process.impl.DefaultRequestProcess;
 import com.lzh.game.framework.socket.core.process.impl.FutureResponseProcess;
+import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionEvent;
 import com.lzh.game.framework.socket.proto.RequestData;
 import com.lzh.game.framework.socket.utils.SocketUtils;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.handler.logging.LogLevel;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import static io.netty.buffer.ByteBufUtil.appendPrettyHexDump;
+import static io.netty.util.internal.StringUtil.NEWLINE;
 
 @SpringBootTest(classes = AppTest.class)
 @Slf4j
@@ -43,8 +49,11 @@ public class AppTest {
         server.addProcessor(new Processor() {
             @Override
             public void process(ProcessorContext context, Session session, Object data) {
-                var request = SocketUtils.createOneWayRequest(-10086, new RequestData());
-                session.write(request);
+                if (data instanceof Request request) {
+                    var msg = SocketUtils.createOneWayRequest(-10086, request.getData());
+                    session.write(msg);
+                }
+
             }
 
             @Override

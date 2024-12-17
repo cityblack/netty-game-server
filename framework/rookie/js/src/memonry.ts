@@ -65,6 +65,10 @@ class Memory {
     return value;
   }
 
+  readBoolean(): boolean {
+    return this.readInt8() !== 0;
+  }
+
   readInt16(): number {
     this.ensureReadable(2);
     const value = this.dataView.getInt16(this._readOffset);
@@ -72,12 +76,25 @@ class Memory {
     return value;
   }
 
-  readInt32(): number {
-    return this.decodeZigZag32(this.readRawVarint32());
+  readInt32(compress = true): number {
+    if (compress) {
+      return this.decodeZigZag32(this.readRawVarint32());
+    } else {
+      this.ensureReadable(4);
+      const value = this.dataView.getInt32(this._readOffset);
+      this._readOffset += 4;
+      return value;
+    }
   }
 
-  readInt64(): number {
-    return this.decodeZigZag64(this.readRawVarint64());
+  readInt64(compress = true): number {
+    if (compress) {
+      return this.decodeZigZag64(this.readRawVarint64());
+    }
+    this.ensureReadable(8);
+    const value = this.dataView.getBigInt64(this._readOffset);
+    this._readOffset += 8;
+    return Number(value);
   }
 
   readFloat32(): number {
@@ -154,20 +171,34 @@ class Memory {
     this._offset += 1;
   }
 
+  writeBoolean(value: boolean): void {
+    this.writeInt8(value ? 1 : 0);
+  }
+
   writeInt16(value: number): void {
     this.ensureWritable(2);
     this.dataView.setInt16(this._offset, value);
     this._offset += 2;
   }
 
-  writeInt32(value: number): void {
+  writeInt32(value: number, compress = true): void {
     this.ensureWritable(4);
-    this.writeRawVarint32(this.encodeZigZag32(value));
+    if (compress) {
+      this.writeRawVarint32(this.encodeZigZag32(value));
+    } else {
+      this.dataView.setInt32(this._offset, value);
+      this._offset += 4;
+    }
   }
 
-  writeInt64(value: number): void {
+  writeInt64(value: number, compress = true): void {
     this.ensureWritable(8);
-    this.writeRawVarint64(this.encodeZigZag64(value));
+    if (compress) {
+      this.writeRawVarint64(this.encodeZigZag64(value));
+    } else {
+      this.dataView.setBigInt64(this._offset, BigInt(value));
+      this._offset += 8;
+    }
   }
 
   writeRawVarint32(value: number): void {
@@ -175,7 +206,7 @@ class Memory {
   }
 
   writeRawVarint64(value: number): void {
-    while ((value & -0x80) != 0) {
+    while (value >= 0x80) {
       this.writeInt8((value & 0x7f) | 0x80);
       value >>= 7;
     }
@@ -195,6 +226,14 @@ class Memory {
   }
 
   close(): void {}
+
+  getWriteIndex(): number {
+    return this._offset;
+  }
+
+  getReadIndex(): number {
+    return this._readOffset;
+  }
 }
 
 export default Memory;

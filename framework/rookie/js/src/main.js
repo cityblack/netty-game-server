@@ -51,20 +51,20 @@ client.addProcessor({
     console.error(err);
   },
 });
+const request = new RequestData();
+request.id = 100;
+request.name = "hello";
+request.age = 10;
+request.price = 10.1;
+request.tail = 10.1;
+request.list = [1, 2, 3];
+request.set = [1, 2, 3];
+request.map = {
+  1: 1,
+  2: 2,
+  3: 3,
+};
 client.connect("ws://localhost:8081/ws").then((sess) => {
-  const request = new RequestData();
-  request.id = 100;
-  request.name = "hello";
-  request.age = 10;
-  request.price = 10.1;
-  request.tail = 10.1;
-  request.list = [1, 2, 3];
-  request.set = [1, 2, 3];
-  request.map = {
-    1: 1,
-    2: 2,
-    3: 3,
-  };
   sess.send(request);
 });
 // const mem = new Memory(new ArrayBuffer(1024));

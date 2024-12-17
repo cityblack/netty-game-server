@@ -14,13 +14,5 @@ public class RookieConfig {
      */
     private boolean writeClassWrapper;
 
-    /**
-     * compress collection serialize class info
-     * If value == 0. Ignore compress class info
-     * Compress class info when value == x and collection.size() >= x
-     */
-    private int compressCollectionValueSize;
-
-
-    private boolean compressMapKeyValueClass;
+    private int compressMapKeyValueClassSize;
 }

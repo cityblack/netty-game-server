@@ -8,6 +8,7 @@ import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.session.Session;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.VoidChannelPromise;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 
@@ -111,7 +112,7 @@ public abstract class AbstractSession implements Session {
         if (log.isDebugEnabled() && data instanceof Request re) {
             log.debug("[{}] send meg id:{}", getId(), re.getMsgId());
         }
-        return channel.writeAndFlush(data);
+        return channel.writeAndFlush(data, new VoidChannelPromise(channel, true));
     }
 
     @Override

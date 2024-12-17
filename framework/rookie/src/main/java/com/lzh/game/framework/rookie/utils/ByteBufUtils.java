@@ -2,18 +2,15 @@ package com.lzh.game.framework.rookie.utils;
 
 import io.netty.buffer.ByteBuf;
 
-import java.nio.ByteOrder;
-
 /**
  * Base on netty
  * Java nio is BIG_ENDIAN
+ * RawVarInt32/64 LITTLE_ENDIAN
  *
  * @author zehong.l
  * @since 2024-08-30 16:11
  **/
 public class ByteBufUtils {
-
-    private static final boolean LITTLE_ENDIAN = (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN);
 
     public static byte readInt8(ByteBuf in) {
         return in.readByte();
@@ -50,14 +47,10 @@ public class ByteBufUtils {
     }
 
     public static short readInt16(ByteBuf in) {
-        return LITTLE_ENDIAN ? in.readShortLE() : in.readShort();
+        return in.readShort();
     }
 
     public static void writeInt16(ByteBuf out, short data) {
-        if (LITTLE_ENDIAN) {
-            out.writeShortLE(data);
-            return;
-        }
         out.writeShort(data);
     }
 
@@ -78,26 +71,18 @@ public class ByteBufUtils {
     }
 
     public static float readFloat32(ByteBuf in) {
-        return LITTLE_ENDIAN ? in.readFloatLE() : in.readFloat();
+        return in.readFloat();
     }
 
     public static void writeFloat32(ByteBuf out, float data) {
-        if (LITTLE_ENDIAN) {
-            out.writeFloatLE(data);
-            return;
-        }
         out.writeFloat(data);
     }
 
     public static double readFloat64(ByteBuf in) {
-        return LITTLE_ENDIAN ? in.readDoubleLE() : in.readDouble();
+        return in.readDouble();
     }
 
     public static void writeFloat64(ByteBuf out, Double value) {
-        if (LITTLE_ENDIAN) {
-            out.writeDoubleLE(value);
-            return;
-        }
         out.writeDouble(value);
     }
 

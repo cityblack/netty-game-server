@@ -24,6 +24,9 @@ public class RequestData {
         this.name = name;
         this.price = price;
         this.tail = tail;
+        this.list = List.of(1,2,3);
+        this.set = Set.of(1L, 100L, 1000L, 10000L);
+        this.map = Map.of(100L, 100);
     }
 
     private long id;
@@ -36,9 +39,9 @@ public class RequestData {
 
     private float tail;
 
-    private List<Integer> list = List.of(1,2,3,4);
+    private List<Integer> list;
 
-    private Set<Long> set = Set.of(1L, 100L, 1000L, 10000L);
+    private Set<Long> set;
 
-    private Map<Long, Integer> map = Map.of(100L, 100);
+    private Map<Long, Integer> map ;
 }

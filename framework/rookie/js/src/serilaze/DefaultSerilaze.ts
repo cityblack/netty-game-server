@@ -4,7 +4,6 @@ import Rookie from "../rookies";
 import Memory, { memory } from "../memonry";
 import { StructDesc } from "../meta";
 
-
 export const protoDeserilaze = (
   id: number,
   buff: ArrayBuffer,
@@ -116,9 +115,11 @@ export class ListSerilaze implements Serilaze {
     if (desc.valueType) {
       const len = data.length;
       mem.writeRawVarint32(len);
-      const classInfo = this.rookie.getClassInfo(desc.valueType);
-      for (const item of data) {
-        writeElement(item, classInfo, classInfo, mem);
+      if (len > 0) {
+        const classInfo = this.rookie.getClassInfo(desc.valueType);
+        for (const item of data) {
+          writeElement(item, classInfo, classInfo, mem);
+        }
       }
     }
   }
