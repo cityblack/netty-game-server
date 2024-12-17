@@ -73,7 +73,7 @@ export class StringSerilaze implements Serilaze {
     } else {
       const encoded = new TextEncoder().encode(data);
       mem.writeRawVarint32(encoded.length);
-      mem.writeBytes(encoded.buffer);
+      mem.writeBytes(encoded.slice().buffer);
     }
   }
   deserilaze(_: ClassInfo, mem: memory): any {

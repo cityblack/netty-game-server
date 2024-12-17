@@ -1,4 +1,4 @@
-import { Field, Proto } from "./meta";
+import { Field, Proto } from "../meta";
 
 @Proto(2002)
 export class Item {
