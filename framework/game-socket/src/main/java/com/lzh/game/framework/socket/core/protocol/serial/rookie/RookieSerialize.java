@@ -27,7 +27,7 @@ public class RookieSerialize implements MessageSerialize {
 
     @Override
     public Object decode(MessageDefine define, ByteBuf in) throws DecodeSerializeException {
-        return rookie.deserializer(in, define.getMsgClass());
+        return rookie.deserializer(in);
     }
 
     @Override

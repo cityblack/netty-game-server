@@ -134,7 +134,7 @@ export class SimpleCoder implements Coder {
     const id = mem.readInt16();
     const type = mem.readInt8();
     const requestId = mem.readInt32(false);
-    const value = this._rookie.deserilaze(id, mem);
+    const value = this._rookie.deserilaze(mem);
     return {
       sess,
       id,

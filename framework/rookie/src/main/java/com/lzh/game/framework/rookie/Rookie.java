@@ -179,12 +179,9 @@ public class Rookie {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T deserializer(ByteBuf in, Class<T> clz) {
+    public <T> T deserializer(ByteBuf in) {
         checkInit();
-        if (getConfig().isWriteClassWrapper()) {
-            return (T) readObject(in, getClassInfo(ByteBufUtils.readInt16(in)).getClz());
-        }
-        return (T) readObject(in, clz);
+        return (T) readObject(in, getClassInfo(ByteBufUtils.readInt16(in)).getClz());
     }
 
     @SuppressWarnings("unchecked")
@@ -193,9 +190,7 @@ public class Rookie {
         if (Objects.isNull(value)) {
             throw new IllegalArgumentException("Value cannot null.");
         }
-        if (getConfig().isWriteClassWrapper()) {
-            ByteBufUtils.writeInt16(out, getClassInfo(value.getClass()).getId());
-        }
+        ByteBufUtils.writeInt16(out, getClassInfo(value.getClass()).getId());
         writeObject(out, value);
     }
 

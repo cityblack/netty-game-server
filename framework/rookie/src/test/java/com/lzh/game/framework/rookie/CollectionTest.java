@@ -22,7 +22,7 @@ public class CollectionTest {
         map.put(2, new int[]{4, 5, 6});
         Rookie rookie = new Rookie();
         rookie.serializer(buf, map);
-        var result = rookie.deserializer(buf, Map.class);
+        var result = rookie.deserializer(buf);
         System.out.println(result);
     }
 
@@ -34,7 +34,7 @@ public class CollectionTest {
         map.put(2, List.of(4, 5, 6));
         Rookie rookie = new Rookie();
         rookie.serializer(buf, map);
-        var result = rookie.deserializer(buf, Map.class);
+        var result = rookie.deserializer(buf);
         System.out.println(result);
     }
 
@@ -46,7 +46,7 @@ public class CollectionTest {
         list.add(List.of(4, 5, 6));
         Rookie rookie = new Rookie();
         rookie.serializer(buf, list);
-        var result = rookie.deserializer(buf, List.class);
+        var result = rookie.deserializer(buf);
         System.out.println(result);
     }
 }

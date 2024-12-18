@@ -9,10 +9,5 @@ import lombok.Data;
 @Data
 public class RookieConfig {
 
-    /**
-     * Whether write wrapper class info
-     */
-    private boolean writeClassWrapper;
-
     private int compressMapKeyValueClassSize;
 }

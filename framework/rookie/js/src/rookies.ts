@@ -64,17 +64,14 @@ export default class Rookie {
       throw new Error("serializer not found:" + id);
     }
     const info = this.getClassInfo(id);
-    if (this.config.writeClassWrapper) {
-      mem.writeInt16(info.id);
-    }
+    mem.writeInt16(info.id);
     info.serializer?.serilaze(data, info, mem);
   }
 
-  deserilaze(id: number, mem: memory): any {
+  deserilaze(mem: memory): any {
     this._check();
-    const tagetId = this.config.writeClassWrapper ? mem.readInt16() : id;
-
-    const classInfo = this.classInfo[tagetId];
+    const tagetId = mem.readInt16();
+    const classInfo = this.getClassInfo(tagetId);
     if (!classInfo) {
       throw new Error("classInfo not found:" + tagetId);
     }

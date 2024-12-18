@@ -22,7 +22,7 @@ test("serialize", () => {
     3: 3,
   };
   rookie.serialze(test, mem);
-  const deserialize = rookie.deserilaze(-10086, mem);
+  const deserialize = rookie.deserilaze(mem);
   console.log(deserialize);
   expect(deserialize).toEqual(test);
 });

@@ -65,7 +65,7 @@ public class ObjectTest {
         rookie.serializer(buf, ot);
         System.out.println(buf.writerIndex());
 
-        var de = rookie.deserializer(buf, EnumOT.class);
+        EnumOT de = rookie.deserializer(buf);
         System.out.println(de);
         System.out.println(de.getOt().getItem().getIndex());
 
