@@ -111,7 +111,7 @@ export class SimpleCoder implements Coder {
   }
 
   encode(_: Session, data: Msg): ArrayBuffer {
-    const mem = new Memory(new ArrayBuffer(1024));
+    const mem = new Memory(new ArrayBuffer(512));
     // mem.writeRawVarint32(data.value.length);
     mem.writeInt16(data.id);
     mem.writeInt8(data.type);

@@ -1,4 +1,4 @@
-import { memory } from "../memonry";
+import Memory from "../memonry";
 import { StructDesc } from "../meta";
 
 export interface ProtoSerilaze {
@@ -7,6 +7,6 @@ export interface ProtoSerilaze {
 }
 
 export interface Serilaze {
-  serilaze(data: any, desc: StructDesc, mem: memory): void;
-  deserilaze(desc: StructDesc, mem: memory): any;
+  serilaze(data: any, desc: StructDesc, mem: Memory): void;
+  deserilaze(desc: StructDesc, mem: Memory): any;
 }

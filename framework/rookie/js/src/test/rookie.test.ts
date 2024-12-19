@@ -6,7 +6,12 @@ import * as proto from "./proto";
 
 test("serialize", () => {
   const rookie = new Rookie();
-  rookie.register(proto.RequestData);
+  Object.values(proto).forEach((value) => {
+    if (typeof value === "function") {
+      rookie.register(value);
+    }
+  });
+
   const mem = new Memory(new ArrayBuffer(1024));
   const test = new RequestData();
   test.id = 100;

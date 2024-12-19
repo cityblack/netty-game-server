@@ -1,6 +1,8 @@
 .idea
 *.iml
 **/target/**
+**/node_modules/**
 
 *.log
 .DS_Store
+.*pom.xml

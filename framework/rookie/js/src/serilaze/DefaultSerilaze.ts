@@ -1,7 +1,7 @@
 import { Serilaze } from "./Serilaze";
 import { ClassInfo, EMPTY_ID } from "../rookies";
 import Rookie from "../rookies";
-import Memory, { memory } from "../memonry";
+import Memory from "../memonry";
 import { StructDesc } from "../meta";
 
 export const protoDeserilaze = (
@@ -19,7 +19,7 @@ export class DefaultObjectSerilaze implements Serilaze {
   constructor(rookie: Rookie) {
     this._rookie = rookie;
   }
-  serilaze(data: any, desc: StructDesc, mem: memory): void {
+  serilaze(data: any, desc: StructDesc, mem: Memory): void {
     const classInfo = this._rookie.getClassInfo(desc.type);
     const fields = classInfo.fields;
     if (fields) {
@@ -35,7 +35,7 @@ export class DefaultObjectSerilaze implements Serilaze {
       }
     }
   }
-  deserilaze(desc: StructDesc, mem: memory) {
+  deserilaze(desc: StructDesc, mem: Memory) {
     const data: any = {};
     const classInfo = this._rookie.getClassInfo(desc.type);
     const fields = classInfo.fields;
@@ -60,7 +60,7 @@ export class ArraySerilaze implements Serilaze {
     this.rookie = rookie;
   }
 
-  serilaze(data: any, desc: StructDesc, mem: memory): void {
+  serilaze(data: any, desc: StructDesc, mem: Memory): void {
     if (!desc.valueType) {
       throw new Error(desc.type + " valueType not defined");
     }
@@ -72,7 +72,7 @@ export class ArraySerilaze implements Serilaze {
       classInfo.serializer?.serilaze(item, classInfo, mem);
     }
   }
-  deserilaze(_: ClassInfo, mem: memory) {
+  deserilaze(_: ClassInfo, mem: Memory) {
     const len = mem.readRawVarint32();
     const data = [];
     const classInfo = this.rookie.getClassInfo(mem.readInt16());
@@ -87,7 +87,7 @@ const writeElement = (
   data: any,
   desc: StructDesc,
   info: ClassInfo,
-  mem: memory
+  mem: Memory
 ) => {
   if (!data) {
     mem.writeInt16(EMPTY_ID);
@@ -97,7 +97,7 @@ const writeElement = (
   info.serializer?.serilaze(data, desc, mem);
 };
 
-const readElement = (mem: memory, rookie: Rookie) => {
+const readElement = (mem: Memory, rookie: Rookie) => {
   const id = mem.readInt16();
   if (id === EMPTY_ID) {
     return null;
@@ -111,7 +111,7 @@ export class ListSerilaze implements Serilaze {
   constructor(rookie: Rookie) {
     this.rookie = rookie;
   }
-  serilaze(data: any, desc: StructDesc, mem: memory): void {
+  serilaze(data: any, desc: StructDesc, mem: Memory): void {
     if (desc.valueType) {
       const len = data.length;
       mem.writeRawVarint32(len);
@@ -123,7 +123,7 @@ export class ListSerilaze implements Serilaze {
       }
     }
   }
-  deserilaze(_: StructDesc, mem: memory): any {
+  deserilaze(_: StructDesc, mem: Memory): any {
     const len = mem.readRawVarint32();
     const data = [];
     for (let i = 0; i < len; i++) {
@@ -138,7 +138,7 @@ export class MapSerilaze implements Serilaze {
   constructor(rookie: Rookie) {
     this.rookie = rookie;
   }
-  serilaze(data: any, desc: StructDesc, mem: memory): void {
+  serilaze(data: any, desc: StructDesc, mem: Memory): void {
     if (!desc.type || !desc.valueType || !desc.mapValueType) {
       throw new Error(desc.type + " valueType not defined");
     }
@@ -155,7 +155,7 @@ export class MapSerilaze implements Serilaze {
       writeElement(value, valueInfo, valueInfo, mem);
     }
   }
-  deserilaze(_: ClassInfo, mem: memory): any {
+  deserilaze(_: ClassInfo, mem: Memory): any {
     const len = mem.readRawVarint32();
     const data: any = {};
     for (let i = 0; i < len; i++) {
@@ -168,10 +168,10 @@ export class MapSerilaze implements Serilaze {
 }
 
 export class DateSerilaze implements Serilaze {
-  serilaze(data: any, _: StructDesc, mem: memory): void {
+  serilaze(data: any, _: StructDesc, mem: Memory): void {
     mem.writeInt64(data.getTime());
   }
-  deserilaze(_: StructDesc, mem: memory): any {
+  deserilaze(_: StructDesc, mem: Memory): any {
     return new Date(mem.readInt64());
   }
 }

@@ -19,7 +19,7 @@ import {
   DateSerilaze,
 } from "./serilaze/DefaultSerilaze";
 import { DataType, FieldInfo, FIELDS_KEY, ID_KEY, StructDesc } from "./meta";
-import Memory, { memory } from "./memonry";
+import Memory from "./memonry";
 
 export const EMPTY_ID = 1,
   ARRAY_ID = 0,
@@ -68,7 +68,7 @@ export default class Rookie {
     info.serializer?.serilaze(data, info, mem);
   }
 
-  deserilaze(mem: memory): any {
+  deserilaze(mem: Memory): any {
     this._check();
     const tagetId = mem.readInt16();
     const classInfo = this.getClassInfo(tagetId);

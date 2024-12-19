@@ -1,5 +1,3 @@
-export type memory = Memory;
-
 const resizeArrayBuffer = (buffer: ArrayBuffer, len: number): ArrayBuffer => {
   const newBuffer = new ArrayBuffer(len);
   const newView = new Uint8Array(newBuffer);
