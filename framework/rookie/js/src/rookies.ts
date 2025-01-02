@@ -96,15 +96,12 @@ export default class Rookie {
       );
     }
     const property = classInfo[FIELDS_KEY];
-    if (!property) {
-      throw new Error(id + " classInfo must be a class");
-    }
     if (this.classInfo[id]) {
       throw new Error(id + " classInfo already exists");
     }
     this.classInfo[id] = {
       id: id,
-      fields: classInfo[FIELDS_KEY],
+      fields: property,
       type: id,
       writeClass: true,
     };

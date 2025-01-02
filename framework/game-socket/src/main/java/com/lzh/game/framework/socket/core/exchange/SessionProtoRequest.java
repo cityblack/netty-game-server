@@ -40,8 +40,7 @@ public class SessionProtoRequest implements ProtoRequest {
         if (param instanceof Request request) {
             oneWayRequest(request);
         } else {
-            session.write(protocolToRequest(param, Constant.ONEWAY_SIGN))
-                    .addListener(new WritePromise());
+            session.write(protocolToRequest(param, Constant.ONEWAY_SIGN));
         }
     }
 
@@ -62,7 +61,7 @@ public class SessionProtoRequest implements ProtoRequest {
         var timeout = context.getProperties().getRequestTimeout();
         RequestFuture future = RequestFuture.newFuture(request, timeout, service);
         AsyncResponse<T> response = new FutureAsyncResponse<>(future, returnType, timeout);
-        session.write(request).addListener(new WritePromise(future));
+        session.write(request, true).addListener(new WritePromise(future));
         return response;
     }
 

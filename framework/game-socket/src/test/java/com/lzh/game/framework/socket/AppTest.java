@@ -8,25 +8,19 @@ import com.lzh.game.framework.socket.core.bootstrap.server.ServerSocketPropertie
 import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpClient;
 import com.lzh.game.framework.socket.core.bootstrap.tcp.TcpServer;
 import com.lzh.game.framework.socket.core.invoke.ActionRequestHandler;
-import com.lzh.game.framework.socket.core.process.Processor;
-import com.lzh.game.framework.socket.core.process.ProcessorExecutorService;
-import com.lzh.game.framework.socket.core.process.context.ProcessorContext;
+import com.lzh.game.framework.socket.core.process.event.ProcessEvent;
+import com.lzh.game.framework.socket.core.process.event.ProcessEventListen;
 import com.lzh.game.framework.socket.core.process.impl.DefaultRequestProcess;
 import com.lzh.game.framework.socket.core.process.impl.FutureResponseProcess;
-import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.session.Session;
-import com.lzh.game.framework.socket.core.session.SessionEvent;
 import com.lzh.game.framework.socket.proto.RequestData;
-import com.lzh.game.framework.socket.utils.SocketUtils;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import com.lzh.game.framework.socket.proto.ResponseData;
 import io.netty.handler.logging.LogLevel;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static io.netty.buffer.ByteBufUtil.appendPrettyHexDump;
-import static io.netty.util.internal.StringUtil.NEWLINE;
 
 @SpringBootTest(classes = AppTest.class)
 @Slf4j
@@ -38,32 +32,14 @@ public class AppTest {
         properties.setPort(8081);
         properties.setOpenGm(true);
         properties.getNetty().setLogLevel(LogLevel.INFO);
-        properties.getWebSocket().setAble(true);
-        properties.setAbleAuth(false);
+//        properties.getWebSocket().setEnable(true);
+        properties.setAbleAuth(true);
         var server = new TcpServer<>(BootstrapContext.of(properties));
-//        server.getContext().getSessionManage().addListener(SessionEvent.CONNECT, ((session, o) -> {
-//            var request = SocketUtils.createOneWayRequest(-10086, new RequestData());
-//            session.write(request);
-//        }));
-//        server.addProcessor(new DefaultRequestProcess(new ActionRequestHandler(server.getContext())));
-        server.addProcessor(new Processor() {
+        server.addProcessor(new DefaultRequestProcess(new ActionRequestHandler(server.getContext())));
+        server.addProcessEventListen(ProcessEvent.AUTH, new ProcessEventListen() {
             @Override
-            public void process(ProcessorContext context, Session session, Object data) {
-                if (data instanceof Request request) {
-                    var msg = SocketUtils.createOneWayRequest(-10086, request.getData());
-                    session.write(msg);
-                }
-
-            }
-
-            @Override
-            public boolean match(Session session, Object msg) {
-                return true;
-            }
-
-            @Override
-            public ProcessorExecutorService service() {
-                return null;
+            public void event(Session session, Object data) {
+                session.oneWay(new ResponseData(new RequestData(1L, 2, "xxx", 4.5, 6.7F)));
             }
         });
         ServerDemo demo = new ServerDemo();

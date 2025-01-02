@@ -109,10 +109,19 @@ public abstract class AbstractSession implements Session {
 
     @Override
     public ChannelFuture write(Object data) {
+        return write(data, false);
+    }
+
+    @Override
+    public ChannelFuture write(Object data, boolean closeFuture) {
         if (log.isDebugEnabled() && data instanceof Request re) {
             log.debug("[{}] send meg id:{}", getId(), re.getMsgId());
         }
+        if (closeFuture) {
+            return channel.writeAndFlush(data);
+        }
         return channel.writeAndFlush(data, new VoidChannelPromise(channel, true));
+
     }
 
     @Override

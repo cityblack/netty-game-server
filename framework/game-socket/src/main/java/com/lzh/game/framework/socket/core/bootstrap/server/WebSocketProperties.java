@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class WebSocketProperties {
 
-    private boolean able;
+    private boolean enable = false;
 
     private String path = "/ws";
 

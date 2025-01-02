@@ -29,6 +29,8 @@ export class Test {
   items: Item[];
   @Field("list", 2002)
   listItems: Item[];
+  @Field(2002)
+  item?: Item;
 
   constructor() {
     this.name = "hello";
@@ -42,6 +44,7 @@ export class Test {
     };
     this.items = [new Item(), new Item(), new Item(), new Item()];
     this.listItems = [new Item(), new Item(), new Item(), new Item()];
+    this.item = new Item();
   }
 }
 
@@ -74,4 +77,10 @@ export class RequestData {
     this.set = [];
     this.map = {};
   }
+}
+
+@Proto(-10087)
+export class ResponseData {
+  @Field(-10086)
+  data?: RequestData
 }

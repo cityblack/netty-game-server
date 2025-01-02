@@ -40,7 +40,7 @@ public abstract class AbstractClient<C extends ClientSocketProperties>
         @Override
         public void operationComplete(ChannelFuture future) throws Exception {
             var ch = future.channel();
-            if (ch.isActive() && ch.isOpen()) {
+            if (getProperties().isAbleAuth() && ch.isActive() && ch.isOpen()) {
                 // send auth protocol
                 new AuthSession(ch, context).oneWay(authProtocol);
                 if (log.isDebugEnabled()) {

@@ -4,6 +4,8 @@ import com.lzh.game.framework.socket.core.SocketProperties;
 import com.lzh.game.framework.socket.core.bootstrap.handler.GameIoHandler;
 import com.lzh.game.framework.socket.core.invoke.bean.InvokeBeanHelperHandler;
 import com.lzh.game.framework.socket.core.process.Processor;
+import com.lzh.game.framework.socket.core.process.event.ProcessEvent;
+import com.lzh.game.framework.socket.core.process.event.ProcessEventListen;
 import com.lzh.game.framework.socket.core.process.impl.HeartbeatProcessor;
 import com.lzh.game.framework.socket.core.protocol.serial.MessageSerializeManager;
 import com.lzh.game.framework.socket.core.protocol.serial.rookie.RookieSerialize;
@@ -81,6 +83,10 @@ public abstract class AbstractBootstrap<T extends SocketProperties>
 
     public void addProcessor(Processor process) {
         context.getPipeline().addLast(process);
+    }
+
+    public void addProcessEventListen(ProcessEvent event, ProcessEventListen listen) {
+        context.getPipeline().addProcessEventListen(event, listen);
     }
 
     @Override

@@ -68,7 +68,11 @@ public class DefaultProcessorPipeline implements ProcessorPipeline {
 
     @Override
     public ProcessorPipeline fireEvent(ProcessEvent event, Session session, Object o) {
-        for (ProcessEventListen listen : events.getOrDefault(event, Collections.emptyList())) {
+        var list = events.getOrDefault(event, Collections.emptyList());
+        if (list.isEmpty()) {
+            return this;
+        }
+        for (ProcessEventListen listen : list) {
             listen.event(session, o);
         }
         return this;

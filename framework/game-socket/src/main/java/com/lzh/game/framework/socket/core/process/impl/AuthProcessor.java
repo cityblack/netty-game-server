@@ -1,14 +1,15 @@
 package com.lzh.game.framework.socket.core.process.impl;
 
+import com.lzh.game.framework.socket.Constant;
 import com.lzh.game.framework.socket.core.bootstrap.BootstrapContext;
 import com.lzh.game.framework.socket.core.process.Processor;
 import com.lzh.game.framework.socket.core.process.ProcessorExecutorService;
 import com.lzh.game.framework.socket.core.process.context.ProcessorContext;
+import com.lzh.game.framework.socket.core.process.event.ProcessEvent;
 import com.lzh.game.framework.socket.core.protocol.AuthProtocol;
 import com.lzh.game.framework.socket.core.protocol.Request;
 import com.lzh.game.framework.socket.core.session.Session;
 import com.lzh.game.framework.socket.core.session.SessionEvent;
-import com.lzh.game.framework.socket.Constant;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -38,7 +39,8 @@ public class AuthProcessor implements Processor {
                 log.info("connect [{}] verification successful", session.getId());
                 session.setAttribute(Constant.AUTH_SESSION_KEY, true);
             }
-            this.context.getSessionManage().pushEvent(SessionEvent.AUTH, session, null);
+            this.context.getSessionManage().pushEvent(SessionEvent.AUTH, session, data);
+            this.context.getPipeline().fireEvent(ProcessEvent.AUTH, session, data);
             return;
         }
         if (!session.hasAttribute(Constant.AUTH_SESSION_KEY)) {

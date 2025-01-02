@@ -5,6 +5,7 @@ public enum ProcessEvent {
     CONNECT,
     CLOSE,
     EXCEPTION,
+    AUTH,
 
     SERVER_START,
     SEVER_STOP

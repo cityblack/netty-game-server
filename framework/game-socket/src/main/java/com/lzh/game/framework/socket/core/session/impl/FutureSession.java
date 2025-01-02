@@ -86,6 +86,11 @@ public class FutureSession implements Session {
     }
 
     @Override
+    public ChannelFuture write(Object data, boolean closeFuture) {
+        return blockGetSession().write(data, closeFuture);
+    }
+
+    @Override
     public Integer getPort() {
         return blockGetSession().getPort();
     }

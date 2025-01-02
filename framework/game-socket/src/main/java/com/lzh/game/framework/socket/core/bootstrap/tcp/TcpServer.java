@@ -12,8 +12,6 @@ import com.lzh.game.framework.socket.core.websocket.WebSocketFrameDecoderHandler
 import com.lzh.game.framework.socket.core.websocket.WebSocketFrameEncoderHandler;
 import com.lzh.game.framework.socket.utils.NettyUtils;
 import io.netty.channel.*;
-import io.netty.handler.codec.ByteToMessageDecoder;
-import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
@@ -53,36 +51,20 @@ public class TcpServer<T extends ServerSocketProperties> extends ServerBootstrap
                         .addLast(new LoggingHandler(getProperties().getNetty().getLogLevel()))
                         .addLast(new IdleStateHandler(getProperties().getServerIdleTime(), 0, 0, TimeUnit.MILLISECONDS))
                         .addLast("serverIdleHandler", new ServerIdleHandler());
-                setWebSocketFrame(ch, new ByteToGameMessageDecoder(context), new GameMessageToByteEncoder(context));
-//                        .addLast("decoder", )
-//                        .addLast("encoder", );
-//                        .addLast(getIoHandler());
+                var websocket = getProperties().getWebSocket();
+                if (websocket.isEnable()) {
+                    ch.pipeline().addLast(new HttpServerCodec()
+                            , new HttpObjectAggregator(websocket.getMaxContentLength())
+                            , new WebSocketServerProtocolHandler(websocket.getPath(), null, true));
+                    ch.pipeline()
+                            .addLast(new ChunkedWriteHandler())
+                            .addLast(new WebSocketFrameDecoderHandler())
+                            .addLast(new WebSocketFrameEncoderHandler());
+                }
+                ch.pipeline().addLast(new ByteToGameMessageDecoder(context))
+                        .addLast(new GameMessageToByteEncoder(context))
+                        .addLast(getIoHandler());
             }
         };
-    }
-
-    protected void setWebSocketFrame(Channel ch, ByteToMessageDecoder decoder, MessageToByteEncoder<Object> encoder) {
-        var webSocket = getProperties().getWebSocket();
-        if (webSocket.isAble()) {
-            ch.pipeline().addLast(new HttpServerCodec()
-                    , new HttpObjectAggregator(webSocket.getMaxContentLength())
-                    , new WebSocketServerProtocolHandler(webSocket.getPath(), null, true));
-            ch.pipeline()
-                    .addLast(new ChunkedWriteHandler())
-                    .addLast(new WebSocketFrameDecoderHandler())
-                    .addLast(new ByteToGameMessageDecoder(context))
-                    .addLast(new WebSocketFrameEncoderHandler())
-                    .addLast(new GameMessageToByteEncoder(context))
-                    .addLast(getIoHandler())
-            ;
-
-//                    .addAfter("decoder", "websocketDecoder",new WebSocketFrameDecoderHandler());
-//            ch.pipeline()
-//                    .addAfter("serverIdleHandler", "httpCoder", new HttpServerCodec())
-//                    .addAfter("httpCoder", "agregator", new HttpObjectAggregator(webSocket.getMaxContentLength()))
-//                    .addAfter("agregator", "websocketHandler", new WebSocketServerProtocolHandler(webSocket.getPath(), null, true))
-//                    .addLast(new WebSocketFrameDecoderHandler())
-//                    .addAfter("encoder", "websocketEncoder", new WebSocketFrameEncoderHandler());
-        }
     }
 }

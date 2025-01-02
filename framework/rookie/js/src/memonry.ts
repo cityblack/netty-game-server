@@ -1,237 +1,236 @@
 const resizeArrayBuffer = (buffer: ArrayBuffer, len: number): ArrayBuffer => {
-  const newBuffer = new ArrayBuffer(len);
-  const newView = new Uint8Array(newBuffer);
-  const oldView = new Uint8Array(buffer);
-  newView.set(oldView);
-  return newBuffer;
+	const newBuffer = new ArrayBuffer(len);
+	const newView = new Uint8Array(newBuffer);
+	const oldView = new Uint8Array(buffer);
+	newView.set(oldView);
+	return newBuffer;
 };
-class Memory {
-  private buffer: ArrayBuffer;
-  private dataView: DataView;
-  private _offset: number;
-  private _readOffset: number;
 
-  constructor(buffer: ArrayBuffer) {
-    if (!buffer || !(buffer instanceof ArrayBuffer)) {
-      throw new Error("Invalid buffer: must be a valid ArrayBuffer");
-    }
+export default class Memory {
+	private buffer: ArrayBuffer;
+	private dataView: DataView;
+	private _offset: number;
+	private _readOffset: number;
 
-    this.buffer = buffer;
-    this.dataView = new DataView(buffer);
-    this._offset = 0;
-    this._readOffset = 0;
-  }
+	constructor(buffer: ArrayBuffer) {
+		if (!buffer || !(buffer instanceof ArrayBuffer)) {
+			throw new Error("Invalid buffer: must be a valid ArrayBuffer");
+		}
 
-  getBuff(): ArrayBuffer {
-    return this.buffer.slice(this._readOffset, this._offset);
-  }
+		this.buffer = buffer;
+		this.dataView = new DataView(buffer);
+		this._offset = 0;
+		this._readOffset = 0;
+	}
 
-  // Ensure safe read operations
-  private ensureReadable(bytes: number): void {
-    if (this._readOffset + bytes > this.dataView.byteLength) {
-      throw new Error("Out of bounds read:" + this._offset + " + " + bytes);
-    }
-  }
+	getBuff(): ArrayBuffer {
+		return this.buffer.slice(this._readOffset, this._offset);
+	}
 
-  // Ensure safe write operations
-  private ensureWritable(bytes: number): void {
-    if (this._offset + bytes > this.buffer.byteLength) {
-      this._resizeArrayBuffer();
-    }
-  }
+	// Ensure safe read operations
+	private ensureReadable(bytes: number): void {
+		if (this._readOffset + bytes > this.dataView.byteLength) {
+			throw new Error("Out of bounds read:" + this._offset + " + " + bytes);
+		}
+	}
 
-  private _resizeArrayBuffer() {
-    this.buffer = resizeArrayBuffer(this.buffer, this.buffer.byteLength * 1.5);
-    this.dataView = new DataView(this.buffer);
-  }
+	// Ensure safe write operations
+	private ensureWritable(bytes: number): void {
+		if (this._offset + bytes > this.buffer.byteLength) {
+			this._resizeArrayBuffer();
+		}
+	}
 
-  readBytes(length: number): ArrayBuffer {
-    this.ensureReadable(length);
-    const buffer = this.buffer.slice(
-      this._readOffset,
-      this._readOffset + length
-    );
-    this._readOffset += length;
-    return buffer;
-  }
+	private _resizeArrayBuffer() {
+		this.buffer = resizeArrayBuffer(this.buffer, this.buffer.byteLength * 1.5);
+		this.dataView = new DataView(this.buffer);
+	}
 
-  // Read methods with improved safety
-  readInt8(): number {
-    this.ensureReadable(1);
-    const value = this.dataView.getInt8(this._readOffset);
-    this._readOffset += 1;
-    return value;
-  }
+	readBytes(length: number): ArrayBuffer {
+		this.ensureReadable(length);
+		const buffer = this.buffer.slice(
+			this._readOffset,
+			this._readOffset + length
+		);
+		this._readOffset += length;
+		return buffer;
+	}
 
-  readBoolean(): boolean {
-    return this.readInt8() !== 0;
-  }
+	// Read methods with improved safety
+	readInt8(): number {
+		this.ensureReadable(1);
+		const value = this.dataView.getInt8(this._readOffset);
+		this._readOffset += 1;
+		return value;
+	}
 
-  readInt16(): number {
-    this.ensureReadable(2);
-    const value = this.dataView.getInt16(this._readOffset);
-    this._readOffset += 2;
-    return value;
-  }
+	readBoolean(): boolean {
+		return this.readInt8() !== 0;
+	}
 
-  readInt32(compress = true): number {
-    if (compress) {
-      return this.decodeZigZag32(this.readRawVarint32());
-    } else {
-      this.ensureReadable(4);
-      const value = this.dataView.getInt32(this._readOffset);
-      this._readOffset += 4;
-      return value;
-    }
-  }
+	readInt16(): number {
+		this.ensureReadable(2);
+		const value = this.dataView.getInt16(this._readOffset);
+		this._readOffset += 2;
+		return value;
+	}
 
-  readInt64(compress = true): number {
-    if (compress) {
-      return this.decodeZigZag64(this.readRawVarint64());
-    }
-    this.ensureReadable(8);
-    const value = this.dataView.getBigInt64(this._readOffset);
-    this._readOffset += 8;
-    return Number(value);
-  }
+	readInt32(compress = true): number {
+		if (compress) {
+			return this.decodeZigZag32(this.readRawVarint32());
+		} else {
+			this.ensureReadable(4);
+			const value = this.dataView.getInt32(this._readOffset);
+			this._readOffset += 4;
+			return value;
+		}
+	}
 
-  readFloat32(): number {
-    this.ensureReadable(4);
-    const value = this.dataView.getFloat32(this._readOffset);
-    this._readOffset += 4;
-    return value;
-  }
+	readInt64(compress = true): number {
+		if (compress) {
+			return this.decodeZigZag64(this.readRawVarint64());
+		}
+		this.ensureReadable(8);
+		const value = this.dataView.getBigInt64(this._readOffset);
+		this._readOffset += 8;
+		return Number(value);
+	}
 
-  readFloat64(): number {
-    this.ensureReadable(8);
-    const value = this.dataView.getFloat64(this._readOffset);
-    this._readOffset += 8;
-    return value;
-  }
+	readFloat32(): number {
+		this.ensureReadable(4);
+		const value = this.dataView.getFloat32(this._readOffset);
+		this._readOffset += 4;
+		return value;
+	}
 
-  readRawVarint32(): number {
-    return this.readRawVarint64();
-  }
+	readFloat64(): number {
+		this.ensureReadable(8);
+		const value = this.dataView.getFloat64(this._readOffset);
+		this._readOffset += 8;
+		return value;
+	}
 
-  readRawVarint64(): number {
-    // Note: JavaScript has limitations with 64-bit integers
-    // Consider using BigInt for full 64-bit support
-    let result = 0;
-    let shift = 0;
+	readRawVarint32(): number {
+		return this.readRawVarint64();
+	}
 
-    while (true) {
-      this.ensureReadable(1);
-      const currentByte = this.readInt8();
-      result |= (currentByte & 0x7f) << shift;
+	readRawVarint64(): number {
+		// Note: JavaScript has limitations with 64-bit integers
+		// Consider using BigInt for full 64-bit support
+		let result = 0;
+		let shift = 0;
 
-      if ((currentByte & 0x80) === 0) {
-        break;
-      }
+		while (true) {
+			this.ensureReadable(1);
+			const currentByte = this.readInt8();
+			result |= (currentByte & 0x7f) << shift;
 
-      shift += 7;
-      if (shift > 64) {
-        throw new Error("Varint is too long");
-      }
-    }
+			if ((currentByte & 0x80) === 0) {
+				break;
+			}
 
-    return result;
-  }
+			shift += 7;
+			if (shift > 64) {
+				throw new Error("Varint is too long");
+			}
+		}
 
-  encodeZigZag32(value: number): number {
-    return (value << 1) ^ (value >> 31);
-  }
+		return result;
+	}
 
-  decodeZigZag32(value: number): number {
-    return (value >>> 1) ^ -(value & 1);
-  }
+	encodeZigZag32(value: number): number {
+		return (value << 1) ^ (value >> 31);
+	}
 
-  encodeZigZag64(value: number): number {
-    return (value << 1) ^ (value >> 63);
-  }
+	decodeZigZag32(value: number): number {
+		return (value >>> 1) ^ -(value & 1);
+	}
 
-  decodeZigZag64(value: number): number {
-    return (value >>> 1) ^ -(value & 1);
-  }
+	encodeZigZag64(value: number): number {
+		return (value << 1) ^ (value >> 63);
+	}
 
-  writeBytes(encoded: ArrayBuffer): void {
-    this.ensureWritable(encoded.byteLength);
-    const newView = new DataView(encoded);
-    for (let i = 0; i < encoded.byteLength; i++) {
-      this.dataView.setInt8(this._offset + i, newView.getInt8(i));
-    }
-    this._offset += encoded.byteLength;
-  }
+	decodeZigZag64(value: number): number {
+		return (value >>> 1) ^ -(value & 1);
+	}
 
-  // Write methods with improved safety
-  writeInt8(value: number): void {
-    this.ensureWritable(1);
-    this.dataView.setInt8(this._offset, value);
-    this._offset += 1;
-  }
+	writeBytes(encoded: ArrayBuffer): void {
+		this.ensureWritable(encoded.byteLength);
+		const newView = new DataView(encoded);
+		for (let i = 0; i < encoded.byteLength; i++) {
+			this.dataView.setInt8(this._offset + i, newView.getInt8(i));
+		}
+		this._offset += encoded.byteLength;
+	}
 
-  writeBoolean(value: boolean): void {
-    this.writeInt8(value ? 1 : 0);
-  }
+	// Write methods with improved safety
+	writeInt8(value: number): void {
+		this.ensureWritable(1);
+		this.dataView.setInt8(this._offset, value);
+		this._offset += 1;
+	}
 
-  writeInt16(value: number): void {
-    this.ensureWritable(2);
-    this.dataView.setInt16(this._offset, value);
-    this._offset += 2;
-  }
+	writeBoolean(value: boolean): void {
+		this.writeInt8(value ? 1 : 0);
+	}
 
-  writeInt32(value: number, compress = true): void {
-    this.ensureWritable(4);
-    if (compress) {
-      this.writeRawVarint32(this.encodeZigZag32(value));
-    } else {
-      this.dataView.setInt32(this._offset, value);
-      this._offset += 4;
-    }
-  }
+	writeInt16(value: number): void {
+		this.ensureWritable(2);
+		this.dataView.setInt16(this._offset, value);
+		this._offset += 2;
+	}
 
-  writeInt64(value: number, compress = true): void {
-    this.ensureWritable(8);
-    if (compress) {
-      this.writeRawVarint64(this.encodeZigZag64(value));
-    } else {
-      this.dataView.setBigInt64(this._offset, BigInt(value));
-      this._offset += 8;
-    }
-  }
+	writeInt32(value: number, compress = true): void {
+		this.ensureWritable(4);
+		if (compress) {
+			this.writeRawVarint32(this.encodeZigZag32(value));
+		} else {
+			this.dataView.setInt32(this._offset, value);
+			this._offset += 4;
+		}
+	}
 
-  writeRawVarint32(value: number): void {
-    this.writeRawVarint64(value);
-  }
+	writeInt64(value: number, compress = true): void {
+		this.ensureWritable(8);
+		if (compress) {
+			this.writeRawVarint64(this.encodeZigZag64(value));
+		} else {
+			this.dataView.setBigInt64(this._offset, BigInt(value));
+			this._offset += 8;
+		}
+	}
 
-  writeRawVarint64(value: number): void {
-    while (value >= 0x80) {
-      this.writeInt8((value & 0x7f) | 0x80);
-      value >>= 7;
-    }
-    this.writeInt8(value);
-  }
+	writeRawVarint32(value: number): void {
+		this.writeRawVarint64(value);
+	}
 
-  writeFloat32(value: number): void {
-    this.ensureWritable(4);
-    this.dataView.setFloat32(this._offset, value);
-    this._offset += 4;
-  }
+	writeRawVarint64(value: number): void {
+		while (value >= 0x80) {
+			this.writeInt8((value & 0x7f) | 0x80);
+			value >>= 7;
+		}
+		this.writeInt8(value);
+	}
 
-  writeFloat64(value: number): void {
-    this.ensureWritable(8);
-    this.dataView.setFloat64(this._offset, value);
-    this._offset += 8;
-  }
+	writeFloat32(value: number): void {
+		this.ensureWritable(4);
+		this.dataView.setFloat32(this._offset, value);
+		this._offset += 4;
+	}
 
-  close(): void {}
+	writeFloat64(value: number): void {
+		this.ensureWritable(8);
+		this.dataView.setFloat64(this._offset, value);
+		this._offset += 8;
+	}
 
-  getWriteIndex(): number {
-    return this._offset;
-  }
+	close(): void {}
 
-  getReadIndex(): number {
-    return this._readOffset;
-  }
+	getWriteIndex(): number {
+		return this._offset;
+	}
+
+	getReadIndex(): number {
+		return this._readOffset;
+	}
 }
-
-export default Memory;

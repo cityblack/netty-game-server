@@ -50,6 +50,8 @@ public interface Session extends ProtoRequest {
 
     ChannelFuture write(Object data);
 
+    ChannelFuture write(Object data, boolean closeFuture);
+
     Integer getPort();
 
     Channel getChannel();
