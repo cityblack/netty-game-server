@@ -4,6 +4,8 @@ import com.lzh.game.framework.resource.Id;
 import com.lzh.game.framework.resource.Resource;
 import lombok.Data;
 
+import java.util.List;
+
 @Resource
 @Data
 public class PandoraResource {
@@ -16,6 +18,6 @@ public class PandoraResource {
      */
     private int type;
 
-    private PandoraModel[] item;
+    private List<PandoraModel> item;
 
 }

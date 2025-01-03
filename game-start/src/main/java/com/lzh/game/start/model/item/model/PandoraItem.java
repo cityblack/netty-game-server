@@ -1,5 +1,6 @@
 package com.lzh.game.start.model.item.model;
 
+import com.lzh.game.framework.utils.RandomUtils;
 import com.lzh.game.start.util.ApplicationUtils;
 import com.lzh.game.start.model.item.bag.service.PlayerBagService;
 import com.lzh.game.start.model.item.resource.PandoraModel;
@@ -10,7 +11,6 @@ import com.lzh.game.start.model.i18n.RequestException;
 import com.lzh.game.start.model.item.service.ItemResourceManage;
 import com.lzh.game.start.model.item.service.ItemService;
 import com.lzh.game.start.model.player.Player;
-import com.lzh.game.start.util.RandomUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -40,7 +40,7 @@ public class PandoraItem extends UseAbleItem {
      */
     private void verifyFreeSpace(Player player, PandoraResource resource) {
 
-        PandoraModel[] models = resource.getItem();
+        var models = resource.getItem();
         for (PandoraModel model: models) {
             Map<Integer, Integer> items = new HashMap<>(model.getItem().length);
             for (PandoraModel.PandoraModelInner inner: model.getItem()) {
@@ -65,7 +65,7 @@ public class PandoraItem extends UseAbleItem {
     private List<AbstractItem> openPandora(PandoraResource resource, Map<String, String> params) {
 
         if (isRandomPandora(resource)) {
-            PandoraModel selected = RandomUtils.enhanceRandList(Arrays.asList(resource.getItem()), model -> model.getWeight());
+            PandoraModel selected = RandomUtils.randomSelectOne(resource.getItem(), PandoraModel::getWeight);
             if (log.isDebugEnabled()) {
                 log.debug("Pandora抽中:{}", selected);
             }
@@ -73,7 +73,7 @@ public class PandoraItem extends UseAbleItem {
 
         } else {
             int selectIndex = Integer.parseInt(params.getOrDefault(selectParamKey(), "0"));
-            PandoraModel selected = resource.getItem()[selectIndex];
+            PandoraModel selected = resource.getItem().get(selectIndex);
             if (log.isDebugEnabled()) {
                 log.debug("Pandora选中:{}", selected);
             }

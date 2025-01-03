@@ -103,6 +103,22 @@ public class RandomUtils {
     }
 
     /**
+     * Randomly select an element from the collection
+     *
+     * @param list     - All elements
+     * @param probFunc - Extraction probability replacement function of elements
+     * @param <T>      - Element type
+     * @return - Element
+     */
+    public static <T> T randomSelectOne(List<T> list, Function<T, Integer> probFunc) {
+        checkList(list);
+        List<Integer> probList = list.stream()
+                .map(probFunc)
+                .collect(Collectors.toList());
+        return list.get(randomProbabilityIndex(probList));
+    }
+
+    /**
      * Randomly select some elements from the collection with equal probability
      *
      * @param list    - All elements
