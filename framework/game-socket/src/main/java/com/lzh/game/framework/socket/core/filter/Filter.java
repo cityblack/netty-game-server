@@ -1,8 +1,8 @@
 package com.lzh.game.framework.socket.core.filter;
 
-import com.lzh.game.framework.socket.core.protocol.Request;
+import com.lzh.game.framework.socket.core.invoke.RequestContext;
 
 public interface Filter {
 
-    void doFilter(Request request, FilterChain chain);
+    void doFilter(RequestContext context, FilterChain chain);
 }

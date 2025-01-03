@@ -1,10 +1,9 @@
 package com.lzh.game.framework.socket.core.filter;
 
-import com.lzh.game.framework.socket.core.protocol.Request;
+import com.lzh.game.framework.socket.core.invoke.RequestContext;
 import com.lzh.game.framework.socket.core.invoke.RequestDispatch;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class FilterHandler implements RequestDispatch {
 
@@ -15,7 +14,7 @@ public class FilterHandler implements RequestDispatch {
     }
 
     @Override
-    public void handle(Request request, Consumer<Object> callBack) {
-        this.chain.filter(request, callBack);
+    public void handle(RequestContext context) {
+        this.chain.filter(context);
     }
 }

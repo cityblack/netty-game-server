@@ -32,16 +32,18 @@ public class ActionRequestHandler implements RequestDispatch {
         this.context = context;
     }
 
-    protected void executeAction(Request request, Response response) {
+    protected void executeAction(RequestContext context) {
+        var request = context.getRequest();
+        var response = context.getResponse();
         var msgId = request.getMsgId();
-        var method = context.getInvokeSupport().getActionHandler(msgId);
+        var method = this.context.getInvokeSupport().getActionHandler(msgId);
         if (Objects.isNull(method)) {
             this.onError(request, response, new NotFondProtocolException(msgId));
             return;
         }
         try {
             Object o = invokeForRequest(request, method);
-            onSuccess(response, o, !method.isVoid());
+            onSuccess(context, o, !method.isVoid());
         } catch (Exception e) {
             boolean resolved = resolveException(e, request, response);
             if (!resolved) {
@@ -69,8 +71,9 @@ public class ActionRequestHandler implements RequestDispatch {
         return this.errorHandler.resolveException(ex, request, response);
     }
 
-    private void onSuccess(Response response, Object data, boolean hasResult) {
-        var request = response.getRequest();
+    private void onSuccess(RequestContext context, Object data, boolean hasResult) {
+        var response = context.getResponse();
+        var request = context.getRequest();
         if (!request.isOneWay() && hasResult) {
             if (Objects.isNull(data)) {
                 log.error("Request {} need return data. But the result is null.", request.getMsgId());
@@ -79,10 +82,13 @@ public class ActionRequestHandler implements RequestDispatch {
             var type = data.getClass();
             response.setDataClass(type);
             response.setData(data);
-            var defined = context.getMessageManager()
+            var defined = this.context.getMessageManager()
                     .findDefine(type);
             response.setMsgId(defined.getMsgId());
             request.getSession().write(response);
+            if (Objects.nonNull(context.getBack())) {
+                context.getBack().accept(context);
+            }
         }
     }
 
@@ -97,8 +103,7 @@ public class ActionRequestHandler implements RequestDispatch {
     }
 
     @Override
-    public void handle(Request request, Consumer<Object> callBack) {
-        Response response = Response.of(request);
-        executeAction(request, response);
+    public void handle(RequestContext context) {
+        executeAction(context);
     }
 }

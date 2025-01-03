@@ -5,6 +5,8 @@ import com.lzh.game.framework.socket.core.protocol.message.MessageDefine;
 import com.lzh.game.framework.socket.core.session.Session;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class Request extends AbstractCommand implements Serializable {
 
@@ -15,7 +17,6 @@ public class Request extends AbstractCommand implements Serializable {
     private Response response;
 
     private MessageDefine define;
-
     public static Request of(short msgId, MessageDefine define, int requestId, Object data) {
         Request request = new Request();
         request.define = define;

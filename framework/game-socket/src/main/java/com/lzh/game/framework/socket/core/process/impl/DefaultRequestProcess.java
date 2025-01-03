@@ -1,12 +1,16 @@
 package com.lzh.game.framework.socket.core.process.impl;
 
+import com.lzh.game.framework.socket.core.invoke.RequestContext;
 import com.lzh.game.framework.socket.core.invoke.RequestDispatch;
 import com.lzh.game.framework.socket.core.process.Processor;
 import com.lzh.game.framework.socket.core.process.ProcessorExecutorService;
 import com.lzh.game.framework.socket.core.process.context.ProcessorContext;
 import com.lzh.game.framework.socket.core.protocol.Request;
+import com.lzh.game.framework.socket.core.protocol.Response;
 import com.lzh.game.framework.socket.core.session.Session;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.function.Consumer;
 
 /**
  * Parse target Object data earlier
@@ -30,11 +34,13 @@ public class DefaultRequestProcess implements Processor {
     @Override
     public void process(ProcessorContext context, Session session, Object data) {
         Request request = (Request) data;
-        dispatch.handle(request, response -> requestBack(context, session, response));
+        RequestContext c = new RequestContext(request, Response.of(request));
+        c.setBack(requestBack(context, session));
+        dispatch.handle(c);
     }
 
-    public static void requestBack(ProcessorContext context, Session session, Object data) {
-        context.fireReceive(session, data);
+    public static Consumer<Object> requestBack(ProcessorContext context, Session session) {
+        return (data) -> context.fireReceive(session, data);
     }
 
     @Override

@@ -1,10 +1,9 @@
 package com.lzh.game.framework.socket.core.filter;
 
-import com.lzh.game.framework.socket.core.protocol.Request;
+import com.lzh.game.framework.socket.core.invoke.RequestContext;
 import com.lzh.game.framework.socket.core.invoke.RequestDispatch;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class DefaultFilterChain implements FilterChain {
 
@@ -27,16 +26,12 @@ public class DefaultFilterChain implements FilterChain {
     }
 
     @Override
-    public void filter(Request request) {
-        filter(request, null);
-    }
-
-    public void filter(Request request, Consumer<Object> callBack) {
+    public void filter(RequestContext context) {
         if (this.index < this.filters.size()) {
             Filter filter = this.filters.get(index);
-            filter.doFilter(request, new DefaultFilterChain(this, index + 1));
+            filter.doFilter(context, new DefaultFilterChain(this, index + 1));
         } else {
-            handler.handle(request, callBack);
+            handler.handle(context);
         }
     }
 }
