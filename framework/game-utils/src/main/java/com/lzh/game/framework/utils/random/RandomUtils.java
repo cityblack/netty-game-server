@@ -1,4 +1,4 @@
-package com.lzh.game.framework.utils;
+package com.lzh.game.framework.utils.random;
 
 import org.springframework.util.Assert;
 

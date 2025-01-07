@@ -1,4 +1,4 @@
-package com.lzh.game.framework.utils;
+package com.lzh.game.framework.utils.time;
 
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.scheduling.support.CronExpression;
@@ -13,6 +13,29 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public final class TimeUtils {
+
+    public static final long MILLIS_PER_SECOND = 1_000;
+
+    /**
+     * Number of milliseconds in a standard minute.
+     *
+     * @since 2.1
+     */
+    public static final long MILLIS_PER_MINUTE = 60 * MILLIS_PER_SECOND;
+
+    /**
+     * Number of milliseconds in a standard hour.
+     *
+     * @since 2.1
+     */
+    public static final long MILLIS_PER_HOUR = 60 * MILLIS_PER_MINUTE;
+
+    /**
+     * Number of milliseconds in a standard day.
+     *
+     * @since 2.1
+     */
+    public static final long MILLIS_PER_DAY = 24 * MILLIS_PER_HOUR;
 
     private static final String DATA_FORMAT_STR = "yyyy-MM-dd HH:mm:ss";
 
@@ -151,7 +174,7 @@ public final class TimeUtils {
     public static long hourMinuteAddDay(int hour, int minute, int addDays) {
         Calendar calendar = Calendar.getInstance();
         if (addDays != 0) {
-            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            calendar.add(Calendar.DAY_OF_MONTH, addDays);
         }
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
@@ -203,6 +226,21 @@ public final class TimeUtils {
         var next = cronExpression.next(LocalDateTime.ofInstant(calendar.toInstant(), ZoneId.systemDefault()));
         Assert.notNull(next, timestamp + " cannot find next time.");
         return next;
+    }
+
+    /**
+     * Get the first day of the current month
+     * @return timestamp
+     */
+    public static long getMonthFirstTime() {
+        var ca = Calendar.getInstance();
+        ca.setTimeInMillis(TimeUtils.now());
+        ca.set(Calendar.DAY_OF_MONTH, 1);
+        ca.set(Calendar.HOUR_OF_DAY, 0);
+        ca.set(Calendar.MINUTE ,0);
+        ca.set(Calendar.SECOND, 0);
+        ca.set(Calendar.MILLISECOND, 0);
+        return ca.getTimeInMillis();
     }
 
     private TimeUtils() {

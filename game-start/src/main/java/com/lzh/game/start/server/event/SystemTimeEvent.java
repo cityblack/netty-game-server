@@ -1,6 +1,6 @@
 package com.lzh.game.start.server.event;
 
-import com.lzh.game.framework.utils.TimeUtils;
+import com.lzh.game.framework.utils.time.TimeUtils;
 import com.lzh.game.start.server.SystemFiveClockEvent;
 import org.greenrobot.eventbus.EventBus;
 import org.springframework.scheduling.annotation.Scheduled;

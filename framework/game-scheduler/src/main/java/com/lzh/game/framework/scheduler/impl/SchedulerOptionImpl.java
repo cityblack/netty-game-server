@@ -4,7 +4,7 @@ import com.lzh.game.framework.scheduler.SchedulerJob;
 import com.lzh.game.framework.scheduler.SchedulerOption;
 import com.lzh.game.framework.scheduler.SchedulerParam;
 import com.lzh.game.framework.scheduler.SchedulerTask;
-import com.lzh.game.framework.utils.IdGenerator;
+import com.lzh.game.framework.utils.id.IdGeneratorHelp;
 import org.quartz.*;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
@@ -101,7 +101,7 @@ public class SchedulerOptionImpl implements SchedulerOption {
     private SchedulerJob buildJobInfo(JobDetail detail) {
         SchedulerJobEntity entity = new SchedulerJobEntity();
         entity.setName(detail.getKey().getName());
-        entity.setJobId(IdGenerator.singleton().createLongId());
+        entity.setJobId(IdGeneratorHelp.nextId());
         entity.setGroup(detail.getKey().getGroup());
         return entity;
     }

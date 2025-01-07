@@ -1,7 +1,7 @@
 package com.lzh.game.start.model.item.service.impl;
 
 
-import com.lzh.game.framework.utils.IdGenerator;
+import com.lzh.game.framework.utils.id.IdGeneratorHelp;
 import com.lzh.game.start.model.i18n.I18n;
 import com.lzh.game.start.model.i18n.RequestException;
 import com.lzh.game.start.model.item.bag.service.PlayerBagService;
@@ -45,7 +45,7 @@ public class ItemServiceImpl implements ItemService {
 
     private AbstractItem create(ItemResource resource, int num) {
         AbstractItem item = resource.getType().create();
-        item.setObjectId(IdGenerator.singleton().createLongId());
+        item.setObjectId(IdGeneratorHelp.nextId());
         item.setResourceId(resource.getKey());
         item.setNum((short) num);
         return item;

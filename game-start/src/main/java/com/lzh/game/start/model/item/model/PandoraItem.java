@@ -1,6 +1,6 @@
 package com.lzh.game.start.model.item.model;
 
-import com.lzh.game.framework.utils.RandomUtils;
+import com.lzh.game.framework.utils.random.RandomUtils;
 import com.lzh.game.start.util.ApplicationUtils;
 import com.lzh.game.start.model.item.bag.service.PlayerBagService;
 import com.lzh.game.start.model.item.resource.PandoraModel;
